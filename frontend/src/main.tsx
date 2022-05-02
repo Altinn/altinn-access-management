@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 import OrganisationRequests from './components/organisation-requests';
 
-const root = document.getElementById('root');
+const root = document.getElementById('altinn3-root');
 
 if (root) {
   ReactDOM.createRoot(root).render(

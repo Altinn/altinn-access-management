@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import OrganisationRequests from './components/organisation-requests';
+import OrganisationGrantRequests from './components/organisation-grant-requests';
 
 const root = document.getElementById('altinn3-root');
 
 if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <OrganisationRequests />
+      <OrganisationGrantRequests />
     </React.StrictMode>,
   );
 } else {

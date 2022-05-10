@@ -36,5 +36,24 @@ namespace Altinn.AuthorizationAdmin.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(delegationRequest);
         }
+
+        [Fact]
+        public async Task Test2()
+        {
+            HttpClient client = SetupUtil.GetTestClient(_factory);
+
+            string requestUri = "/api/DelegationRequests/23";
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri)
+            {
+            };
+
+            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationRequest? delegationRequest = System.Text.Json.JsonSerializer.Deserialize<DelegationRequest>(responseContent, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) as DelegationRequest;
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(delegationRequest);
+        }
     }
 }

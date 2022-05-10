@@ -1,4 +1,5 @@
 export type Grant = {
+  id: string;
   entity: {
     name: string;
     type: string;

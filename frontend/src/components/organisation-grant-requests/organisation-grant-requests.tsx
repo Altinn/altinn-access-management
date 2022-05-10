@@ -1,17 +1,29 @@
-import AsyncLoader from '../async-loader';
-import GrantList from '../grant-list';
+import { useQuery } from 'react-query';
 
-import { useOrganisationGrantRequests } from './api';
+import GrantList from '../grant-list';
+import { Grant } from '../grant-list/models';
 
 const OrganisationRequests = () => {
-  const { isLoading, data: grantRequests } = useOrganisationGrantRequests();
+  const { data: grantRequests } = useQuery(
+    'OrganisationRequests',
+    async () => {
+      return await new Promise<Grant[]>((r, x) => {
+        setTimeout(() => {
+          x('oh noes sad');
+        }, 0);
+      });
+      // const data = await fetch(
+      //   'https://api.github.com/repos/tannerlinsley/react-query',
+      // );
+      // return await data.json();
+    },
+    { suspense: true },
+  );
 
   return (
     <div>
       <div>Some header</div>
-      <AsyncLoader isLoading={isLoading}>
-        <GrantList grants={grantRequests} />
-      </AsyncLoader>
+      <GrantList grants={grantRequests} />
       <div>Some footer</div>
     </div>
   );

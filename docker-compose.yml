@@ -7,7 +7,8 @@ services:
     working_dir: /app/Altinn.Authorizationadmin/Altinn.Authorizationadmin
     command: "dotnet watch run --no-launch-profile"
     environment:
-      - ASPNETCORE_URLS=http://*:5117
+      - ASPNETCORE_URLS=http://+:5117
+      - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - type: bind
         source: ./backend/src

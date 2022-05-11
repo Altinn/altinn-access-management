@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    container_name: altinn-auth-admin_backend
+    working_dir: /app/Altinn.Authorizationadmin/Altinn.Authorizationadmin
+    command: "dotnet watch run --no-launch-profile"
+    environment:
+      - ASPNETCORE_URLS=http://*:5117
+    volumes:
+      - type: bind
+        source: ./backend/src
+        target: /app
+    networks:
+      - altinn-auth-admin
+    ports:
+      - "5117:5117"
+
+  frontend:
+    image: node:18-alpine
+    container_name: altinn-auth-admin_frontend
+    working_dir: /app
+    command:
+      ["sh", "-c", "yarn -v && yarn install --immutable && yarn dev --host"]
+    environment:
+      - GITHUB_PACKAGES_PAT=${GITHUB_PACKAGES_PAT}
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /app
+    networks:
+      - altinn-auth-admin
+    ports:
+      - "3000:3000"
+
+networks:
+  altinn-auth-admin:
+    name: altinn-auth-admin

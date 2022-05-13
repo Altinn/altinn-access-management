@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 
 import AsyncErrorBoundary from '../async-error-boundary';
-import OrganisationGrantRequests from '../organisation-grant-requests';
+import OrganisationDelegationRequests from '../organisation-delegation-requests';
 
 const App = () => {
   const { t, i18n } = useTranslation('common');
@@ -25,7 +25,7 @@ const App = () => {
     <>
       <h1>{t('greeting')}…</h1>
       <AsyncErrorBoundary>
-        <OrganisationGrantRequests />
+        <OrganisationDelegationRequests />
       </AsyncErrorBoundary>
     </>
   );

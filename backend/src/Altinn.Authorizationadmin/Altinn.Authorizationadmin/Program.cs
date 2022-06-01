@@ -1,11 +1,15 @@
+using Altinn.AuthorizationAdmin.Core.Services.Implementation;
+using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AuthorizationAdmin.Services;
+
+ILogger logger;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+ConfigureSetupLogging();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add services to the container.
+ConfigureServices(builder.Services, builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -31,3 +35,34 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+void ConfigureServices(IServiceCollection services, IConfiguration config)
+{
+    logger.LogInformation("Startup // ConfigureServices");
+    builder.Services.AddControllers();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen();
+    services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
+    services.AddTransient<IDelegationRequests, DelegationRequestService>();
+}
+
+
+void ConfigureSetupLogging()
+{
+    // Setup logging for the web host creation
+    var logFactory = LoggerFactory.Create(builder =>
+    {
+        builder
+            .AddFilter("Microsoft", LogLevel.Warning)
+            .AddFilter("System", LogLevel.Warning)
+            .AddFilter("Altinn.Platform.AuthorizationAdmin.Program", LogLevel.Debug)
+            .AddConsole();
+    });
+
+    logger = logFactory.CreateLogger<Program>();
+}

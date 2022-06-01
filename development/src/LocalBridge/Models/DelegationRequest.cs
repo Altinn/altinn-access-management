@@ -1,14 +1,13 @@
-﻿using Altinn.Authorizationadmin.Core.Models;
-using System;
-using System.Collections.Generic;
+﻿using Altinn.Bridge.Models;
+using Altinn.Brigde.Enums;
 using System.Runtime.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.Brigde.Models
 {
-        /// <summary>
-        /// This element describe a public class DelegationRequest
-        /// </summary>
-        [DataContract]
+    /// <summary>
+    /// This element describe a public class DelegationRequest
+    /// </summary>
+    [DataContract]
         public class DelegationRequest
         {
             /// <summary>

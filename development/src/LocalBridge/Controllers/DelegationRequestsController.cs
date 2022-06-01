@@ -1,5 +1,5 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Services;
+﻿using Altinn.Brigde.Models;
+using Altinn.Brigde.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.Authorizationadmin.Controllers
@@ -8,13 +8,13 @@ namespace Altinn.Authorizationadmin.Controllers
     [ApiController]
     public class DelegationRequestsController : ControllerBase
     {
-        private readonly IDelegationRequests _delegationRequests;
+        private readonly IDelegationRequestsWrapper _delegationRequests;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="delegationRequsts"></param>
-        public DelegationRequestsController(IDelegationRequests delegationRequsts)
+        public DelegationRequestsController(IDelegationRequestsWrapper delegationRequsts)
         {
             _delegationRequests = delegationRequsts;
         }
@@ -33,8 +33,6 @@ namespace Altinn.Authorizationadmin.Controllers
         public async Task<ActionResult<DelegationRequest>> Get(string id)
         {
             DelegationRequest delegationRequest = new DelegationRequest();
-            delegationRequest.RequestResources = new List<Core.Models.AuthorizationRequestResource>();
-            delegationRequest.RequestResources.Add(new Core.Models.AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 });
             return delegationRequest;
         }
     }

@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin", "Altinn.AuthorizationAdmin.csproj", "{461307C1-8D2B-4D90-AE2D-FC895BA1940B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin", "Altinn.AuthorizationAdmin.csproj", "{461307C1-8D2B-4D90-AE2D-FC895BA1940B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin.Core", "..\Altinn.AuthorizationAdmin.Core\Altinn.AuthorizationAdmin.Core.csproj", "{9D059588-4085-4AEC-8F0A-25CE74BD554B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Core", "..\Altinn.AuthorizationAdmin.Core\Altinn.AuthorizationAdmin.Core.csproj", "{9D059588-4085-4AEC-8F0A-25CE74BD554B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin.Tests", "..\Altinn.AuthorizationAdmin.Tests\Altinn.AuthorizationAdmin.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Tests", "..\Altinn.AuthorizationAdmin.Tests\Altinn.AuthorizationAdmin.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin.Integration", "..\Altinn.AuthorizationAdmin.Integration\Altinn.AuthorizationAdmin.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{240CA575-3BAA-4E8E-93CD-A9A40502B772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{240CA575-3BAA-4E8E-93CD-A9A40502B772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240CA575-3BAA-4E8E-93CD-A9A40502B772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4144EF72-F38D-4A2D-876D-77CCBFF28C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4144EF72-F38D-4A2D-876D-77CCBFF28C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4144EF72-F38D-4A2D-876D-77CCBFF28C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4144EF72-F38D-4A2D-876D-77CCBFF28C05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

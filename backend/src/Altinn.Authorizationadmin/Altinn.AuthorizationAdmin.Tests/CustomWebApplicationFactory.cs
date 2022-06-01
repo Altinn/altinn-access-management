@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Altinn.AuthorizationAdmin.Services;
+using Altinn.AuthorizationAdmin.Tests.Mocks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Altinn.AuthorizationAdmin.Tests
@@ -9,8 +12,9 @@ namespace Altinn.AuthorizationAdmin.Tests
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
+            builder.ConfigureTestServices((services) =>
             {
+                services.AddTransient<IDelegationRequestsWrapper, DelegationRequestMock>();
             });
         }
     }

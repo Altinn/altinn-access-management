@@ -8,6 +8,8 @@ import App from './components/app/app';
 import AsyncErrorBoundary from './components/async-error-boundary';
 import baseLocales from './basic-locales.json';
 
+import './main.css';
+
 const locale = 'no';
 
 /**

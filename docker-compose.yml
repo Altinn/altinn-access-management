@@ -23,7 +23,7 @@ services:
   local-bridge:
     image: mcr.microsoft.com/dotnet/sdk:6.0
     container_name: altinn-auth-admin_local-bridge
-    working_dir: /app/LocalBridge
+    working_dir: /app/src/LocalBridge
     command: ["dotnet", "watch", "run", "--no-launch-profile"]
     stop_signal: SIGKILL
     environment:
@@ -31,7 +31,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - type: bind
-        source: ./development/src
+        source: ./development
         target: /app
     networks:
       - altinn-auth-admin

@@ -41,7 +41,7 @@ namespace Altinn.Bridge.Mocks
         private static string GetDelegationRequestPaths()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationRequestLocalMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, @"..\..\..\..\..\TestData\DelegationRequests\");
+            return Path.Combine(unitTestFolder, "..", "..", "..", "..", "..", "TestData", "DelegationRequests");
         }
 
         private string GetFilterFileName(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)

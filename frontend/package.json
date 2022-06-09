@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@altinn/altinn-design-system": "^0.0.7",
+    "altinn-designsystem": "^4.1.0",
     "i18next": "^21.8.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

@@ -5,10 +5,12 @@ services:
     image: mcr.microsoft.com/dotnet/sdk:6.0
     container_name: altinn-auth-admin_backend
     working_dir: /app/Altinn.Authorizationadmin/Altinn.Authorizationadmin
-    command: "dotnet watch run --no-launch-profile"
+    command: ["dotnet", "watch", "run", "--no-launch-profile"]
+    stop_signal: SIGKILL
     environment:
       - ASPNETCORE_URLS=http://+:5117
       - ASPNETCORE_ENVIRONMENT=Development
+      - PlatformSettings:BridgeApiEndpoint=http://local-bridge:5249/
     volumes:
       - type: bind
         source: ./backend/src
@@ -18,12 +20,29 @@ services:
     ports:
       - "5117:5117"
 
+  local-bridge:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    container_name: altinn-auth-admin_local-bridge
+    working_dir: /app/src/LocalBridge
+    command: ["dotnet", "watch", "run", "--no-launch-profile"]
+    stop_signal: SIGKILL
+    environment:
+      - ASPNETCORE_URLS=http://+:5249
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - type: bind
+        source: ./development
+        target: /app
+    networks:
+      - altinn-auth-admin
+    ports:
+      - "5249:5249"
+
   frontend:
     image: node:18-alpine
     container_name: altinn-auth-admin_frontend
     working_dir: /app
-    command:
-      ["sh", "-c", "yarn -v && yarn install --immutable && yarn dev --host"]
+    command: ["sh", "-c", "yarn install --immutable && yarn dev --host"]
     environment:
       - VITE_ALTINN_APP_API=http://localhost:5117/api/
       - GITHUB_PACKAGES_PAT=${GITHUB_PACKAGES_PAT}

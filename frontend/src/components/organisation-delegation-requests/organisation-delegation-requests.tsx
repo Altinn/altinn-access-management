@@ -1,3 +1,4 @@
+import { Panel } from '@altinn/altinn-design-system';
 import { useQuery } from 'react-query';
 import { fetchApi } from '../../services/api';
 
@@ -18,6 +19,7 @@ const DelegationRequests = () => {
     <div>
       <div>Some header</div>
       <DelegationList delegations={delegationRequests} />
+      <Panel title="This is a…">Panel!</Panel>
       <div>Some footer</div>
     </div>
   );

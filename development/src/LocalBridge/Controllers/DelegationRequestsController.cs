@@ -1,4 +1,5 @@
-﻿using Altinn.Brigde.Models;
+﻿using Altinn.Brigde.Enums;
+using Altinn.Brigde.Models;
 using Altinn.Brigde.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,9 +23,9 @@ namespace Altinn.Authorizationadmin.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<DelegationRequests> Get()
+        public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
         {
-           return await _delegationRequests.GetDelegationRequestsAsync(0, 0, null);
+           return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }
 
 

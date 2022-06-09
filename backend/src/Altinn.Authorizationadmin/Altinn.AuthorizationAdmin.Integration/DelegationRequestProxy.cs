@@ -1,8 +1,10 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AuthorizationAdmin.Core.Enums;
+using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using System.Web;
 
 namespace Altinn.AuthorizationAdmin.Services
 {
@@ -25,11 +27,39 @@ namespace Altinn.AuthorizationAdmin.Services
             _client = httpClient;
         }
 
-        public async Task<DelegationRequests> GetDelegationRequestsAsync(int requestedFromParty, int requestedToParty, string direction)
+        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
-            Uri endpointUrl = new Uri($"{_generalSettings.BridgeApiEndpoint}api/DelegationRequests");
+            UriBuilder uriBuilder = new UriBuilder($"{_generalSettings.BridgeApiEndpoint}api/DelegationRequests");
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["who"] = who;
+            if (!string.IsNullOrEmpty(serviceCode))
+            {
+                query["serviceCode"] = serviceCode;
+            }
 
-            HttpResponseMessage response = await _client.GetAsync(endpointUrl);
+            if (serviceEditionCode != null)
+            {
+                query["serviceEditionCode"] = serviceEditionCode.ToString();
+            }
+
+            query["direction"] = direction.ToString();
+
+            if (status !=null)
+            {
+                foreach(var statusItem in status)
+                {
+                    query.Add("status", statusItem.ToString());
+                }
+            }
+
+            if (!string.IsNullOrEmpty(continuation))
+            {
+                query["continuation"] = continuation;
+            }
+
+            uriBuilder.Query = query.ToString();
+
+            HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

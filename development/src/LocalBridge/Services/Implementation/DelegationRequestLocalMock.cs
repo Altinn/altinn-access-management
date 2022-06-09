@@ -1,4 +1,5 @@
-﻿using Altinn.Brigde.Models;
+﻿using Altinn.Brigde.Enums;
+using Altinn.Brigde.Models;
 using Altinn.Brigde.Services;
 using System.Text.Json;
 
@@ -6,14 +7,14 @@ namespace Altinn.Bridge.Mocks
 {
     public class DelegationRequestLocalMock : IDelegationRequestsWrapper
     {
-        public Task<DelegationRequests> GetDelegationRequestsAsync(int requestedFromParty, int requestedToParty, string direction)
+        public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
 
             DelegationRequests delRequests=  new DelegationRequests();
 
             string path = GetDelegationRequestPaths();
 
-            string filterFileName = GetFilterFileName(requestedFromParty, requestedToParty, direction);
+            string filterFileName = GetFilterFileName(who, serviceCode, serviceEditionCode, direction, status, continuation);
 
             if (Directory.Exists(path))
             {
@@ -43,9 +44,25 @@ namespace Altinn.Bridge.Mocks
             return Path.Combine(unitTestFolder, @"..\..\..\..\..\TestData\DelegationRequests\");
         }
 
-        private string GetFilterFileName(int requestedFromParty, int requestedToParty, string direction)
+        private string GetFilterFileName(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
-            return "coveredby_UID1337";
+            if(string.IsNullOrEmpty(who))
+            {
+                who = "PID500700";
+            }
+
+            if (direction.Equals(RestAuthorizationRequestDirection.Outgoing))
+            {
+                return "coveredby_"+ who;
+            }
+
+            if (direction.Equals(RestAuthorizationRequestDirection.Incoming))
+            {
+                return "offeredby_" + who;
+            }
+
+
+            return "coveredby_PID500700";
         }
     }
 }

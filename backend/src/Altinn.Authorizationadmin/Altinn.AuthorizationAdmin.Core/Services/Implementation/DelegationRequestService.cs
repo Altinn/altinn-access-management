@@ -1,4 +1,5 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AuthorizationAdmin.Core.Enums;
+using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Services;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,9 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             _delegationRequestsWrapper = delegationRequestsWrapper;
         }
 
-
-        public async Task<DelegationRequests> GetDelegationRequestsAsync(int requestedFromParty, int requestedToParty, string direction)
+        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode , int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status = null, string? continuation = "")
         {
-            return await _delegationRequestsWrapper.GetDelegationRequestsAsync(requestedFromParty, requestedToParty, direction);
+            return await _delegationRequestsWrapper.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }
     }
 }

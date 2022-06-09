@@ -1,0 +1,19 @@
+{
+  "coveredBy": "950474084",
+  "coveredByName": "Oslos Vakreste Borettslag",
+  "offeredBy": "897069631",
+  "offeredByName": "EAS Health Consulting",
+  "created": "2019-07-31T09:57:23.4729995Z",
+  "lastChanged": "2019-07-31T09:57:23.4729995Z",
+  "requestMessage": "Please oh please",
+  "guid": "26133fb5-a9f2-45d4-90b1-f6d93ad40713",
+  "requestStatus": 6,
+  "requestResources": [
+    {
+      "serviceCode": "MVA",
+      "serviceEditionCode": 1337,
+      "operations": [ "item1", "adsf" ],
+      "metadata": { "fake": "nofake" }
+    }
+  ]
+}

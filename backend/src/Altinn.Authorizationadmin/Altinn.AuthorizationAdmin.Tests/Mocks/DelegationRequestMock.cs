@@ -1,6 +1,8 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AuthorizationAdmin.Core.Enums;
+using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,14 +11,14 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
     public class DelegationRequestMock : IDelegationRequestsWrapper
     {
-        public Task<DelegationRequests> GetDelegationRequestsAsync(int requestedFromParty, int requestedToParty, string direction)
+        public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
 
             DelegationRequests delRequests=  new DelegationRequests();
 
             string path = GetDelegationRequestPaths();
 
-            string filterFileName = GetFilterFileName(requestedFromParty, requestedToParty, direction);
+            string filterFileName = GetFilterFileName(who, direction);
 
             if (Directory.Exists(path))
             {
@@ -46,7 +48,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
             return Path.Combine(unitTestFolder, @"..\..\..\Data\DelegationRequests\");
         }
 
-        private string GetFilterFileName(int requestedFromParty, int requestedToParty, string direction)
+        private string GetFilterFileName(string requestedFromParty, RestAuthorizationRequestDirection direction)
         {
             return "coveredby_UID1337";
         }

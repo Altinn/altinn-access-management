@@ -40,6 +40,12 @@ namespace Altinn.AuthorizationAdmin.Core.Models
             public string? OfferedBy { get; set; }
 
             /// <summary>
+            ///  Gets or sets The name who offer the delegation
+            /// </summary>
+            [DataMember(IsRequired = true)]
+            public string? OfferedByName { get; set; }
+
+            /// <summary>
             ///  Gets or sets The RedirectUrl is a link that sends the user back to the external website after he/she made an operation in Altinn
             /// </summary>
             [DataMember]

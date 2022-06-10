@@ -31,7 +31,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 app.UseAuthorization();
-
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();
@@ -42,10 +42,11 @@ app.Run();
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     logger.LogInformation("Startup // ConfigureServices");
-    builder.Services.AddControllers();
+    services.AddControllersWithViews();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
+    services.AddMvc();
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddTransient<IDelegationRequests, DelegationRequestService>();

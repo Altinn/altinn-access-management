@@ -9,7 +9,7 @@ const DelegationRequests = () => {
   const { data: delegationRequests } = useQuery<DelegationRequest[]>(
     'DelegationRequests',
     async () => {
-      const response = await fetchApi('DelegationRequests');
+      const response = await fetchApi('PID500700/DelegationRequests');
       return await response.json();
     },
     { suspense: true, staleTime: 10000 },

@@ -8,6 +8,12 @@ The fastest way to get development going is to run `docker compose up`. Both the
 
 Alternatively:
 
-- Start the proxy bridge in `development/src/LocalBridge` with `dotnet run` or `dotnet watch`
-- Start the backend in `backend/src/Altinn.Authorizationadmin/Altinn.Authorizationadmin` with `dotnet run` or `dotnet watch`
-- Start the frontend in `frontend` with `yarn install` and `yarn dev --host`
+- Start the proxy bridge in `/development/src/LocalBridge` with `dotnet run` or `dotnet watch`
+- Start the backend in `/backend/src/Altinn.Authorizationadmin/Altinn.Authorizationadmin` with `dotnet run` or `dotnet watch`
+- Create a `.env.local` file in `/frontend` which defines where to find the backend:
+
+  ```sh
+  VITE_ALTINN_APP_API=http://localhost:5117/api/
+  ```
+
+- Start the frontend in `/frontend` with `yarn install` and `yarn dev --host`

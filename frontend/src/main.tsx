@@ -31,9 +31,15 @@ i18next.use(initReactI18next).init(
   },
 
   () => {
-    const root = document.getElementById('altinn3-root');
+    const roots = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-altinn3-auth-root]'),
+    );
 
-    if (root) {
+    if (roots.length === 0) {
+      console.warn('Cannot find root elements; not starting app');
+    }
+
+    roots.forEach((root) => {
       const queryClient = new QueryClient({
         defaultOptions: import.meta.env.DEV
           ? queryClientDevDefaults
@@ -44,13 +50,11 @@ i18next.use(initReactI18next).init(
         <React.StrictMode>
           <QueryClientProvider client={queryClient}>
             <AsyncErrorBoundary>
-              <App />
+              <App {...root.dataset} />
             </AsyncErrorBoundary>
           </QueryClientProvider>
         </React.StrictMode>,
       );
-    } else {
-      console.warn('Cannot find root element; not starting app');
-    }
+    });
   },
 );

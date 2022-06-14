@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000");
+            policy.WithOrigins("http://localhost:3000", "http://devenv.altinn.no");
         });
 });
 
@@ -45,6 +45,10 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddControllersWithViews();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
+
+
+
+
     services.AddSwaggerGen();
     services.AddMvc();
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));

@@ -31,7 +31,6 @@ if (!configEl) {
 } else {
   try {
     jsonConfig = JSON.parse(configEl.innerText);
-    console.log(jsonConfig);
   } catch (e) {
     console.error('Could not parse configuration');
   }
@@ -58,11 +57,7 @@ for (const key in envConfig) {
 // Apply configuration (env vars override JSON, which overrides fallback)
 
 const config: Config = { ...fallbackConfig, ...jsonConfig, ...envConfig };
-console.log('effective config', config, {
-  envConfig,
-  jsonConfig,
-  fallbackConfig,
-});
+
 export function getConfig(key: keyof Config) {
   return config[key];
 }

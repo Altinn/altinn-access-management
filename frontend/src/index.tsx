@@ -9,6 +9,7 @@ import FeatureAuthAdmin from './components/feature-auth-admin';
 import baseLocales from './basic-locales.json';
 
 import './index.css';
+import SuspendLoadLocale from './components/suspend-load-locale';
 
 // TODO: Implement changing/saving/loading for locales
 const locale = 'no';
@@ -54,9 +55,14 @@ i18next.use(initReactI18next).init(
     reactRoot.render(
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-          {featureRoots.authAdmin &&
-            ReactDOM.createPortal(<FeatureAuthAdmin />, featureRoots.authAdmin)}
-          {/* further feature roots should be populated here… */}
+          <SuspendLoadLocale>
+            {featureRoots.authAdmin &&
+              ReactDOM.createPortal(
+                <FeatureAuthAdmin />,
+                featureRoots.authAdmin,
+              )}
+            {/* further feature roots should be populated here… */}
+          </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,
     );

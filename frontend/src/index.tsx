@@ -26,7 +26,6 @@ const queryClientDevDefaults = {
 i18next.use(initReactI18next).init(
   {
     lng: locale,
-    debug: true,
     ns: ['common', 'basic'],
     defaultNS: 'common',
     resources: baseLocales,
@@ -57,7 +56,7 @@ i18next.use(initReactI18next).init(
         <QueryClientProvider client={queryClient}>
           {featureRoots.authAdmin &&
             ReactDOM.createPortal(<FeatureAuthAdmin />, featureRoots.authAdmin)}
-          {/* further feature roots should populated here… */}
+          {/* further feature roots should be populated here… */}
         </QueryClientProvider>
       </React.StrictMode>,
     );

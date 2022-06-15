@@ -44,7 +44,7 @@ services:
     working_dir: /app
     command: ["sh", "-c", "yarn install --immutable && yarn dev --host"]
     environment:
-      - VITE_ALTINN_APP_API=http://localhost:5117/api/
+      - VITE_BACKEND_API_URL=http://localhost:5117/api/
       - GITHUB_PACKAGES_PAT=${GITHUB_PACKAGES_PAT}
     volumes:
       - type: bind

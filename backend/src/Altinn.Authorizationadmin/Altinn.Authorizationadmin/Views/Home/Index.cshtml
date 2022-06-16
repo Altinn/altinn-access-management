@@ -5,11 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+      <script type="application/json" id="altinn3-app-config">
+    {
+      "backendApiUrl": "http:/devenv.altinn.no:5117/api/"
+    }
+  </script>
     <script type="module" crossorigin src="/AuthorizationAdmin/authorization.js"></script>
     <link rel="stylesheet" href="/AuthorizationAdmin/authorization.css">
   </head>
   <body>
-    <div data-altinn3-auth-root></div>
+  <div id="altinn3-auth-admin-feature-root"></div>
     
   </body>
 </html>

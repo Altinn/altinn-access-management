@@ -16,11 +16,5 @@ Alternatively:
   VITE_ALTINN_APP_API=http://localhost:5117/api/
   ```
 
-- Start the frontend in `/frontend` with `yarn install` and `yarn dev --host`
+- Start the frontend in `/frontend` with `yarn install` and `yarn dev`
 
-### Casing convention
-PascalCase for both components and file names
-
-### Classname naming conventions
-
-Using [BEM naming convention](http://getbem.com/naming/) gives a pretty clear view of what parts are the "root" and what parts are the "children", and is preferred. This also helps you think about when a component grows too big, and should be split into smaller isolated parts.

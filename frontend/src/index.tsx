@@ -5,12 +5,13 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import FeatureAuthAdmin from './components/feature-auth-admin';
-import baseLocales from './basic-locales.json';
+import FeatureAuthAdmin from './components/FeatureAuthAdmin';
+import SuspendLoadLocale from './components/SuspendLoadLocale';
 
-import './index.css';
-import SuspendLoadLocale from './components/suspend-load-locale';
 import { getConfig } from './services/config';
+
+import baseLocales from './basic-locales.json';
+import './index.css';
 
 /**
  * Special behaviour for react-query in dev environment

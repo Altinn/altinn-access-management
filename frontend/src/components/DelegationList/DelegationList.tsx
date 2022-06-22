@@ -6,11 +6,11 @@ export interface DelegationListProps {
 
 const DelegationList = ({ delegations }: DelegationListProps) => {
   if (!delegations || delegations.length === 0) {
-    return <>Nothing to see here…</>;
+    return <div data-testid="DelegationList">Nothing to see here…</div>;
   }
 
   return (
-    <table>
+    <table data-testid="DelegationList">
       <thead>
         <tr>
           <th>Created</th>

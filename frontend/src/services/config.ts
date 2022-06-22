@@ -27,8 +27,8 @@ const configEl = document.getElementById(configElId);
 let jsonConfig: Config = {};
 
 if (!configEl) {
-  console.error(
-    `Could not load configuration; element with ID" ${configElId}" not found`,
+  console.warn(
+    `Could not load configuration; element with ID "${configElId}" not found`,
   );
 } else {
   try {

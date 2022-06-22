@@ -3,7 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import { useQueryErrorResetBoundary } from 'react-query';
 
-import ErrorFallback from './error-fallback';
+import ErrorFallback from './ErrorFallback';
 
 type ErrorBoundaryProps = {
   children?: React.ReactNode;

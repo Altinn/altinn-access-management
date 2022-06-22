@@ -7,6 +7,7 @@
 
 type Config = {
   backendApiUrl?: string;
+  defaultLocale?: string;
   // other configurable keys here…
 };
 
@@ -14,6 +15,7 @@ type Config = {
 
 const fallbackConfig: Config = {
   backendApiUrl: new URL(window.location.href).origin + '/api/',
+  defaultLocale: 'no',
   // other configurable keys here…
 };
 
@@ -43,6 +45,7 @@ if (!configEl) {
 
 const envConfig: Config = {
   backendApiUrl: import.meta.env.VITE_BACKEND_API_URL,
+  defaultLocale: import.meta.env.VITE_DEFAULT_LOCALE,
   // other configurable keys here…
 };
 

@@ -10,9 +10,7 @@ import baseLocales from './basic-locales.json';
 
 import './index.css';
 import SuspendLoadLocale from './components/suspend-load-locale';
-
-// TODO: Implement changing/saving/loading for locales
-const locale = 'no';
+import { getConfig } from './services/config';
 
 /**
  * Special behaviour for react-query in dev environment
@@ -26,7 +24,7 @@ const queryClientDevDefaults = {
 // Initialise i18next; start application when ready
 i18next.use(initReactI18next).init(
   {
-    lng: locale,
+    lng: getConfig('defaultLocale'),
     ns: ['common', 'basic'],
     defaultNS: 'common',
     resources: baseLocales,

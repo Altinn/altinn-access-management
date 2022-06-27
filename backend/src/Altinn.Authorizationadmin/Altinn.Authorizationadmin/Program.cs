@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigureSetupLogging();
 
 // Add services to the container.
+builder.Services.AddTransient<IFrontEndEntrypoints, FrontEndEntrypointService>();
 ConfigureServices(builder.Services, builder.Configuration);
 
 builder.Services.AddCors(options =>
@@ -19,6 +20,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:3000", "http://devenv.altinn.no");
         });
 });
+
 
 var app = builder.Build();
 
@@ -45,9 +47,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddControllersWithViews();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-
-
-
 
     services.AddSwaggerGen();
     services.AddMvc();

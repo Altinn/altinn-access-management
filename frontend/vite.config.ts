@@ -8,6 +8,11 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'es2020',
+    manifest: true,
+    rollupOptions: {
+      // overwrite default .html entry
+      input: './entrypoint.js',
+    },
   },
   test: {
     globals: true,

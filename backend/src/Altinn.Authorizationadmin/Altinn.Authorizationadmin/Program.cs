@@ -1,15 +1,19 @@
 using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AuthorizationAdmin.Helpers;
+using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
 
 ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AuthorizationAdmin/");
+builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
+
 ConfigureSetupLogging();
 
 // Add services to the container.
-builder.Services.AddTransient<IFrontEndEntrypoints, FrontEndEntrypointService>();
 ConfigureServices(builder.Services, builder.Configuration);
 
 builder.Services.AddCors(options =>
@@ -53,6 +57,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
+    services.AddOptions<FrontEndEntryPointOptions>()
+        .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }
 
 

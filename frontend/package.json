@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "deploy-to-backend": "node deploy-to-backend",
+    "deploy-to-backend": "node deploy-to-backend.mjs",
     "preview": "vite preview",
     "nc": "generate-react component",
     "test": "vitest",

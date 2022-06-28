@@ -1,16 +1,15 @@
 import { useTranslation } from 'react-i18next';
 
 import AsyncErrorBoundary from '../AsyncErrorBoundary';
-import OrganisationDelegationRequests from '../OrganisationDelegationRequests';
+import CompanyRequestsAccordionContent from '../CompanyRequestsAccordionContent/CompanyRequestsAccordionContent';
 
 const App = () => {
   const { t } = useTranslation('common');
 
   return (
     <div data-testid="FeatureAuthAdmin">
-      <h1>{t('greeting')}…</h1>
       <AsyncErrorBoundary>
-        <OrganisationDelegationRequests />
+        <CompanyRequestsAccordionContent />
       </AsyncErrorBoundary>
     </div>
   );

@@ -1,0 +1,34 @@
+.company-requests-accordion-content{
+    max-width: 720px;
+    border: solid;
+    border-color: white;
+    margin:auto;
+    margin-top:20rem;
+}
+
+.company-requests-accordion-content__container{
+    margin: 3rem
+}
+
+.company-requests-accordion-content__toggle-button-group{
+    display: inline-flex;
+}
+
+.company-requests-accordion-content__button--request{
+    margin-top: 3rem;
+    width: 100%;
+    background-color:#0062BA;
+    color: white;
+    border-color: #0062BA;
+    border-style:none;
+    height: 3.8rem;
+}
+
+.company-requests-accordion-content__span--symbol{
+    font-size: 30px;
+}
+
+.company-requests-accordion-content__span--button-text{
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}

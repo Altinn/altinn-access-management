@@ -83,7 +83,13 @@ To create a distributable bundle, run `yarn build`. Environment variables set at
 
 If the bundled files are to be served from a path other than the server root, you must pass the `--base=/path/to/folder/` argument to `yarn build`. The trailing slash is important.
 
-TODO: 🙈 deployment
+For production deployment, the FE is currently placed in the BE's `wwwroot` folder and served from there. The following command will build the FE with the correct deployment path, and copy the results to the BE folder:
+
+```sh
+yarn deploy-to-backend --base=/AuthorizationAdmin/
+```
+
+In the future, deployment should be made to a CDN instead, with versioned builds.
 
 ## Migration plan 🚧
 

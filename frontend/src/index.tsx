@@ -1,16 +1,15 @@
 import React from 'react';
-import * as ReactDOM from 'react-dom';
 import ReactDOMClient from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import i18next from 'i18next';
+import * as ReactDOM from 'react-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { initReactI18next } from 'react-i18next';
 
 import FeatureAuthAdmin from './components/FeatureAuthAdmin';
 import SuspendLoadLocale from './components/SuspendLoadLocale';
 
-import { getConfig } from './services/config';
-
 import baseLocales from './basic-locales.json';
+import { getConfig } from './services/config';
 import './index.css';
 
 /**

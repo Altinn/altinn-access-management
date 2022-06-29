@@ -17,6 +17,10 @@ services:
       - type: bind
         source: ./backend/src
         target: /app
+      - type: bind
+        source: ~/.vsdbg
+        target: /remote_debugger
+        read_only: false
     networks:
       - altinn-auth-admin
     ports:
@@ -35,6 +39,10 @@ services:
       - type: bind
         source: ./development
         target: /app
+      - type: bind
+        source: ~/.vsdbg
+        target: /remote_debugger
+        read_only: false
     networks:
       - altinn-auth-admin
     ports:

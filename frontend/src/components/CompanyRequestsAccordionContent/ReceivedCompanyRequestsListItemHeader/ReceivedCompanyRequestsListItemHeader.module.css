@@ -1,0 +1,22 @@
+.received-company-requests-list-item-header{
+    align-items: center; /* <-- try "flex-start" or "flex-end" */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.received-company-requests-list-item-header__name{
+    flex: 1 1 auto;
+    margin-left: 1rem;
+    margin-top: 0.3rem;
+}
+
+.received-company-requests-list-item-header__text{
+    margin-right: 3rem;
+    font-weight: 700;
+    color: #0062BA;
+}
+
+.received-company-requests-list-item-header__icon{
+    margin-right: 1rem;
+}

@@ -1,0 +1,7 @@
+.list-item{
+    border-top-color: #BCC7CC;
+    border-top-style: solid;
+    border-top-width: 0.1rem;
+    min-height: 4.5rem;
+    display: block;
+}

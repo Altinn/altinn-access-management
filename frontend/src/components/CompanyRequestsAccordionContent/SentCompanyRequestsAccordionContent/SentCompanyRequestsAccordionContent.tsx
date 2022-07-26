@@ -1,5 +1,3 @@
-import { List } 
-
 export interface SentCompanyRequestsAccordionContent {
   company: string;
 }
@@ -19,7 +17,6 @@ export const SentCompanyRequestsAccordionContent = ({
       <span>Opprinnelig forespørsel</span>
       <span>Tilganger</span>
       <img></img>
-
     </div>
   </div>;
 };

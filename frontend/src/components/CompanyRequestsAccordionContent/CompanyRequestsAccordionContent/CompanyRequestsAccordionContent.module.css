@@ -32,3 +32,16 @@
     margin-bottom: 10px;
     padding-bottom: 10px;
 }
+
+.company-requests-list-container{
+    background-color: white;
+}
+
+.company-requests-accordion-container{
+    background-color: white;
+}
+
+.company-requests-accordion-content{
+    margin-left: 7.2rem;
+    margin-top: 0rem;
+}

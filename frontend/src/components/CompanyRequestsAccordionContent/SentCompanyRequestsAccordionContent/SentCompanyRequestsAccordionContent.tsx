@@ -4,7 +4,7 @@ export interface SentCompanyRequestsAccordionContent {
 
 export const SentCompanyRequestsAccordionContent = ({
   company,
-}: AccordionContentProps) => {
+}: SentCompanyRequestsAccordionContent) => {
   const contentText =
     'Din forespørsel om tilganger til ' +
     <span>{company}</span> +

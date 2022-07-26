@@ -1,5 +1,9 @@
 {
-"received": "Received",
-"sent": "Sent",
-"create_request": "Opprett ny forespørsel" 
+  "profile": {
+    "received": "Received",
+    "sent": "Sent",
+    "create_request": "Make new request",
+    "delete": "Delete",
+    "access-request": "Requests access"
+  }
 }

@@ -12,7 +12,7 @@ import {
 import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
 import { SentCompanyRequestsHeaderAction } from '../SentCompanyRequestsHeaderAction/SentCompanyRequestsHeaderAction';
 import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItemHeader/ReceivedCompanyRequestsListItemHeader';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
 
@@ -47,8 +47,10 @@ const CompanyRequestsAccordionContent = () => {
           }
         >
           <ToggleButtonGroup onChange={handleChange} selectedValue={selected}>
-            <ToggleButton value="received">{t('received')}</ToggleButton>
-            <ToggleButton value="sent">{t('sent')}</ToggleButton>
+            <ToggleButton value="received">
+              {t('profile.received')}
+            </ToggleButton>
+            <ToggleButton value="sent">{t('profile.sent')}</ToggleButton>
           </ToggleButtonGroup>
         </div>
       </div>
@@ -74,7 +76,7 @@ const CompanyRequestsAccordionContent = () => {
                   ]
                 }
               >
-                Opprett ny forespørsel
+                {t('profile.create_request')}
               </span>
             </Button>
           </div>
@@ -111,7 +113,7 @@ const CompanyRequestsAccordionContent = () => {
                   ]
                 }
               >
-                Opprett ny forespørsel
+                {t('profile.create_request')}
               </span>
             </Button>
           </div>
@@ -119,7 +121,9 @@ const CompanyRequestsAccordionContent = () => {
             <Accordion onClick={handleClick1} open={open1}>
               <AccordionHeader
                 actions={
-                  <SentCompanyRequestsHeaderAction text="Slette"></SentCompanyRequestsHeaderAction>
+                  <SentCompanyRequestsHeaderAction
+                    text={t('profile.delete')}
+                  ></SentCompanyRequestsHeaderAction>
                 }
               >
                 <SentCompanyRequestsHeaderTexts
@@ -137,7 +141,9 @@ const CompanyRequestsAccordionContent = () => {
             <Accordion onClick={handleClick2} open={open2}>
               <AccordionHeader
                 actions={
-                  <SentCompanyRequestsHeaderAction text="Slette"></SentCompanyRequestsHeaderAction>
+                  <SentCompanyRequestsHeaderAction
+                    text={t('profile.delete')}
+                  ></SentCompanyRequestsHeaderAction>
                 }
               >
                 <SentCompanyRequestsHeaderTexts

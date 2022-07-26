@@ -1,4 +1,4 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import classes from './ReceivedCompanyRequestsListItemHeader.module.css';
 import Warning from './Warning.svg';
 import Person from './Person.svg';
@@ -10,7 +10,8 @@ export interface ReceivedCompanyRequestsListItemHeaderProps {
 export const ReceivedCompanyRequestsListItemHeader = ({
   name,
 }: ReceivedCompanyRequestsListItemHeaderProps) => {
-  const headerText = 'Ber om tilgang';
+  const { t } = useTranslation('common');
+  const headerText = t('profile.access-request');
 
   return (
     <div className={classes['received-company-requests-list-item-header']}>

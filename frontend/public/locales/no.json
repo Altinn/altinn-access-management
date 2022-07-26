@@ -1,3 +1,9 @@
 {
-  "greeting": "hei verden"
+  "profile": {
+    "received": "Mottatte",
+    "sent": "Sendte",
+    "create_request": "Opprett ny forespørsel",
+    "delete": "Slett",
+    "access-request": "Ber om tilgang"
+  }
 }

@@ -2,8 +2,8 @@ import { Panel } from '@altinn/altinn-design-system';
 import { useQuery } from 'react-query';
 import { fetchApi } from '../../services/api';
 
-import DelegationList from '../delegation-list';
-import { DelegationRequest } from '../delegation-list/models';
+import DelegationList from '../DelegationList';
+import { DelegationRequest } from '../DelegationList/models';
 
 const DelegationRequests = () => {
   const { data: delegationRequests } = useQuery<DelegationRequest[]>(

@@ -18,3 +18,12 @@ Alternatively:
 
 - Start the frontend in `/frontend` with `yarn install` and `yarn dev`
 
+## Project organisation
+
+This is a typical "back-end/front-end" solution, with the back end written in .NET C#, while the front end is a React app using Vite.
+
+- The main back end project is in `/backend/src/Altinn.Authorizationadmin` and it has [its own README](backend/src/Altinn.Authorizationadmin/Altinn.Authorizationadmin/README.md)
+
+- There is also a "bridge" between the back end and older APIs. For local development, this is implemented in `/development/src/LocalBridge`
+
+- The front end is in `/frontend` and it also has [its own README](frontend/README.md)

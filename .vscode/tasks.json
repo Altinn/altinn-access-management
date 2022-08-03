@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker compose up",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true
+        }
+      }
+    },
+    {
+      "label": "docker compose down",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "down": {}
+      }
+    }
+  ]
+}

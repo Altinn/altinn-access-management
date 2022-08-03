@@ -1,3 +1,5 @@
 {
-  "greeting": "hello world"
+"received": "Received",
+"sent": "Sent",
+"create_request": "Create new request"
 }

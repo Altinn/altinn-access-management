@@ -1,6 +1,5 @@
 import { FallbackProps } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as Trash } from './TrashCanNormal.svg';
 
 const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   const { t } = useTranslation('basic');

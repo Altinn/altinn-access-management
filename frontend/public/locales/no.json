@@ -1,3 +1,5 @@
 {
-  "greeting": "hei verden"
+  "received": "Mottatt",
+  "sent": "Sendt",
+  "create_request": "Opprett ny forespørsel"
 }

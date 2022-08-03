@@ -9,9 +9,9 @@ import {
   List,
   ListItem,
 } from '@altinn/altinn-design-system';
-import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
-import { SentCompanyRequestsHeaderAction } from '../SentCompanyRequestsHeaderAction/SentCompanyRequestsHeaderAction';
-import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItemHeader/ReceivedCompanyRequestsListItemHeader';
+import { SentCompanyRequestsHeaderTexts } from '../../components/CompanyRequestsAccordionContent/SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
+import { SentCompanyRequestsHeaderAction } from '../../components/CompanyRequestsAccordionContent/SentCompanyRequestsHeaderAction/SentCompanyRequestsHeaderAction';
+import { ReceivedCompanyRequestsListItemHeader } from '../../components/CompanyRequestsAccordionContent/ReceivedCompanyRequestsListItemHeader/ReceivedCompanyRequestsListItemHeader';
 import React, { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import AsyncErrorBoundary from '../AsyncErrorBoundary';
-import CompanyRequestsAccordionContent from '../CompanyRequestsAccordionContent/CompanyRequestsAccordionContent';
+import CompanyRequestsAccordionContent from '../../../../containers/CompanyRequestsAccordionContent';
 
 const App = () => {
   const { t } = useTranslation('common');

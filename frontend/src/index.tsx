@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import FeatureAuthAdmin from './components/FeatureAuthAdmin';
-import SuspendLoadLocale from './components/SuspendLoadLocale';
+import FeatureAuthAdmin from './components/Poc/SuspendLoadLocale/FeatureAuthAdmin';
+import SuspendLoadLocale from './components/Poc/SuspendLoadLocale';
 
 import { getConfig } from './services/config';
 

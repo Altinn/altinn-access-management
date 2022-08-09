@@ -1,0 +1,19 @@
+name: Build and run unit tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+
+      - name: run build
+        run: yarn build
+
+      - name: run tests
+        run: yarn coverage

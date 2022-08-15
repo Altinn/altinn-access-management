@@ -35,14 +35,16 @@ const CompanyRequestsAccordionContent = () => {
   };
 
   const handleChange = ({ selectedValue }: ChangeProps) => {
-    console.log('cookien: ', getCookie('altinnPersistentContext'));
+    document.cookie = "name=oeschger; SameSite=None; Secure";
+    const allCookies = document.cookie;
+    console.log('allcookies', allCookies);
     setSelected(selectedValue);
   };
 
-  const getCookie = (key: any) => {
-    const b = document.cookie.match('(^|;)\\s*' + key + '\\s*=\\s*([^;]+)');
-    return b ? b.pop() : '';
-  };
+  function getCookie(key: any) {
+    var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
+    return b ? b.pop() : "";
+  }
 
   return (
     <div className={classes['company-requests-accordion-content']}>

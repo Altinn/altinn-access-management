@@ -35,7 +35,13 @@ const CompanyRequestsAccordionContent = () => {
   };
 
   const handleChange = ({ selectedValue }: ChangeProps) => {
+    console.log('cookien: ', getCookie('altinnPersistentContext'));
     setSelected(selectedValue);
+  };
+
+  const getCookie = (key: any) => {
+    const b = document.cookie.match('(^|;)\\s*' + key + '\\s*=\\s*([^;]+)');
+    return b ? b.pop() : '';
   };
 
   return (

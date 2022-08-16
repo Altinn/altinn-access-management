@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Configuration\" />
+    <Folder Include="wwwroot\AuthorizationAdmin\assets" />
   </ItemGroup>
 
 </Project>

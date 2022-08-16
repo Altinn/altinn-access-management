@@ -11,7 +11,7 @@ import {
 } from '@altinn/altinn-design-system';
 import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
 import { SentCompanyRequestsHeaderAction } from '../SentCompanyRequestsHeaderAction/SentCompanyRequestsHeaderAction';
-import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItemHeader/ReceivedCompanyRequestsListItemHeader';
+import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItem/ReceivedCompanyRequestsListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
@@ -35,16 +35,10 @@ const CompanyRequestsAccordionContent = () => {
   };
 
   const handleChange = ({ selectedValue }: ChangeProps) => {
-    document.cookie = "name=oeschger; SameSite=None; Secure";
     const allCookies = document.cookie;
     console.log('allcookies', allCookies);
     setSelected(selectedValue);
   };
-
-  function getCookie(key: any) {
-    var b = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)");
-    return b ? b.pop() : "";
-  }
 
   return (
     <div className={classes['company-requests-accordion-content']}>

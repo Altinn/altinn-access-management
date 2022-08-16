@@ -12,6 +12,7 @@ import { getConfig } from './services/config';
 
 import baseLocales from './basic-locales.json';
 import './index.css';
+import ClientDelegationAccordionContent from './components/ClientDelegationAccordionContent/ClientDelegationAccordionContent';
 
 /**
  * Special behaviour for react-query in dev environment
@@ -48,6 +49,9 @@ i18next.use(initReactI18next).init(
 
     const featureRoots = {
       authAdmin: document.getElementById('altinn3-auth-admin-feature-root'),
+      clientDelegation: document.getElementById(
+        'altinn3-client-delegation-accordion-content',
+      ),
       // further feature roots should go here…
     };
 
@@ -60,7 +64,15 @@ i18next.use(initReactI18next).init(
                 <FeatureAuthAdmin />,
                 featureRoots.authAdmin,
               )}
-            {/* further feature roots should be populated here… */}
+            <br></br>
+            {
+              /* further feature roots should be populated here… */
+              featureRoots.clientDelegation &&
+                ReactDOM.createPortal(
+                  <ClientDelegationAccordionContent />,
+                  featureRoots.clientDelegation,
+                )
+            }
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

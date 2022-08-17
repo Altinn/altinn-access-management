@@ -1,4 +1,6 @@
 .sent-company-requests-header-texts{
     display: grid;
     grid-template-columns: auto auto;
+    margin-top: 5px;
+    margin-bottom: 8px;
 }

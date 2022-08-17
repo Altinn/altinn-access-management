@@ -5,6 +5,7 @@
     margin:auto;
     margin-top:20rem;
     background-color: #efefef;
+
 }
 
 .company-requests-accordion-content__container{
@@ -42,7 +43,11 @@
     background-color: white;
 }
 
-.company-requests-accordion-content{
+.company-requests-accordion-content__sent-requests-accordion-content{
     margin-left: 7.2rem;
     margin-top: 0rem;
+}
+
+.company-requests-accordion-content__sent-requests-accordion{
+    background-color: white;
 }

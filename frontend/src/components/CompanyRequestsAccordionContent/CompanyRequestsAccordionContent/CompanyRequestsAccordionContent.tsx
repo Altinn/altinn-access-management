@@ -10,7 +10,6 @@ import {
   ListItem,
 } from '@altinn/altinn-design-system';
 import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
-import { SentCompanyRequestsHeaderAction } from '../SentCompanyRequestsHeaderAction/SentCompanyRequestsHeaderAction';
 import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItem/ReceivedCompanyRequestsListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
@@ -119,42 +118,48 @@ const CompanyRequestsAccordionContent = () => {
               </span>
             </Button>
           </div>
-          <div className={classes['company-requests-accordion-container']}>
+          <div
+            className={
+              classes[
+                'company-requests-accordion-content__sent-requests-accordion'
+              ]
+            }
+          >
             <Accordion onClick={handleClick1} open={open1}>
-              <AccordionHeader
-                actions={
-                  <SentCompanyRequestsHeaderAction
-                    text={t('profile.delete')}
-                  ></SentCompanyRequestsHeaderAction>
-                }
-              >
+              <AccordionHeader>
                 <SentCompanyRequestsHeaderTexts
                   title="BALLANGEN OG GARDVIK"
                   subtitle="Sendt: 16.06.2022"
                 ></SentCompanyRequestsHeaderTexts>
               </AccordionHeader>
               <AccordionContent>
-                <div className={classes['company-requests-accordion-content']}>
+                <div
+                  className={
+                    classes[
+                      'company-requests-accordion-content__sent-requests-accordion-content'
+                    ]
+                  }
+                >
                   Din forespørsel om tilganger til BALLANGEN OG GARDVIK er
                   sendt. Du vil få beskjed når de er godkjent.
                 </div>
               </AccordionContent>
             </Accordion>
             <Accordion onClick={handleClick2} open={open2}>
-              <AccordionHeader
-                actions={
-                  <SentCompanyRequestsHeaderAction
-                    text={t('profile.delete')}
-                  ></SentCompanyRequestsHeaderAction>
-                }
-              >
+              <AccordionHeader>
                 <SentCompanyRequestsHeaderTexts
                   title="BARSTADT OG LEVANGER"
                   subtitle="Sendt: 13.06.2022"
                 ></SentCompanyRequestsHeaderTexts>
               </AccordionHeader>
               <AccordionContent>
-                <div className={classes['company-requests-accordion-content']}>
+                <div
+                  className={
+                    classes[
+                      'company-requests-accordion-content__sent-requests-accordion-content'
+                    ]
+                  }
+                >
                   Din forespørsel om tilganger til BARSTADT OG LEVANGER er
                   sendt. Du vil få beskjed når de er godkjent.
                 </div>

@@ -10,7 +10,7 @@ import {
   ListItem,
 } from '@altinn/altinn-design-system';
 import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
-import { ReceivedCompanyRequestsListItemHeader } from '../ReceivedCompanyRequestsListItem/ReceivedCompanyRequestsListItem';
+import { PersonListItem } from '../../Common/PersonListItem/PersonListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
@@ -34,8 +34,6 @@ const CompanyRequestsAccordionContent = () => {
   };
 
   const handleChange = ({ selectedValue }: ChangeProps) => {
-    const allCookies = document.cookie;
-    console.log('allcookies', allCookies);
     setSelected(selectedValue);
   };
 
@@ -84,10 +82,16 @@ const CompanyRequestsAccordionContent = () => {
           <div className={classes['company-requests-list-container']}>
             <List>
               <ListItem>
-                <ReceivedCompanyRequestsListItemHeader name="Albert Ohrem Larsen"></ReceivedCompanyRequestsListItemHeader>
+                <PersonListItem
+                  name="Albert Ohrem Larsen"
+                  rightText={t('profile.access_request')}
+                ></PersonListItem>
               </ListItem>
               <ListItem>
-                <ReceivedCompanyRequestsListItemHeader name="Morten Harket"></ReceivedCompanyRequestsListItemHeader>
+                <PersonListItem
+                  name="Marion Dragland"
+                  rightText={t('profile.access_request')}
+                ></PersonListItem>
               </ListItem>
             </List>
           </div>
@@ -102,10 +106,10 @@ const CompanyRequestsAccordionContent = () => {
               className={
                 classes['company-requests-accordion-content__button--request']
               }
-              data-action=""
-              data-target=""
-              data-toggle=""
-              data-url=""
+              data-action="load"
+              data-target="#altinnModal"
+              data-toggle="altinn-modal"
+              data-url="/ui/DelegationRequest?modalOnly=true"
             >
               <span
                 className={

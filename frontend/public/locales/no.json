@@ -4,6 +4,10 @@
     "sent": "Sendte",
     "create_request": "Opprett ny forespørsel",
     "delete": "Slett",
-    "access-request": "Ber om tilgang"
+    "access_request": "Ber om tilgang",
+    "employees": "Ansatte",
+    "clients": "Klienter",
+    "add_new_employee": "Legg til ny ansatt",
+    "change_rights": "Endre rettigheter"
   }
 }

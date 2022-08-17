@@ -1,15 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import classes from './ReceivedCompanyRequestsListItemHeader.module.css';
+import classes from './PersonListItem.module.css';
 
-export interface ReceivedCompanyRequestsListItemHeaderProps {
+export interface PersonListItemProps {
   name: string;
+  rightText: string;
 }
 
-export const ReceivedCompanyRequestsListItemHeader = ({
-  name,
-}: ReceivedCompanyRequestsListItemHeaderProps) => {
+export const PersonListItem = ({ name, rightText }: PersonListItemProps) => {
   const { t } = useTranslation('common');
-  const headerText = t('profile.access-request');
 
   return (
     <div className={classes['received-company-requests-list-item-header']}>
@@ -21,7 +19,7 @@ export const ReceivedCompanyRequestsListItemHeader = ({
       <span
         className={classes['received-company-requests-list-item-header__text']}
       >
-        {headerText}
+        {rightText}
       </span>
     </div>
   );

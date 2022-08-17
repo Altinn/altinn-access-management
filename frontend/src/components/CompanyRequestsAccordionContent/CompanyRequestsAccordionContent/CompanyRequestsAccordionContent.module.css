@@ -1,13 +1,14 @@
 .company-requests-accordion-content{
-    max-width: 720px;
+    max-width: 1020px;
     border: solid;
     border-color: white;
     margin:auto;
     margin-top:20rem;
+    background-color: #efefef;
 }
 
 .company-requests-accordion-content__container{
-    margin: 3rem
+    margin: 3rem;
 }
 
 .company-requests-accordion-content__toggle-button-group{

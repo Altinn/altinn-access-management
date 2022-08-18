@@ -111,13 +111,13 @@ const ClientDelegationAccordionContent = () => {
               <ListItem>
                 <PersonListItem
                   name="Albert Ohrem Larsen"
-                  rightText={t('profile.add_new_employee')}
+                  rightText={t('profile.change_rights')}
                 ></PersonListItem>
               </ListItem>
               <ListItem>
                 <PersonListItem
                   name="Marion Dragland"
-                  rightText={t('profile.add_new_employee')}
+                  rightText={t('profile.change_rights')}
                 ></PersonListItem>
               </ListItem>
             </List>

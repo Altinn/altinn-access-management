@@ -3,9 +3,6 @@ import {
   ToggleButtonGroup,
   Button,
   ButtonVariant,
-  Accordion,
-  AccordionContent,
-  AccordionHeader,
   List,
   ListItem,
 } from '@altinn/altinn-design-system';

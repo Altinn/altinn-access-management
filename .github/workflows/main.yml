@@ -27,7 +27,7 @@ jobs:
 
       - name: run build
         working-directory: ./frontend
-        run: cd altinn-access-management/altinn-access-management yarn build
+        run: yarn build
 
       - name: run eslint
         working-directory: ./frontend

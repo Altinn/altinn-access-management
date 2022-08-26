@@ -13,11 +13,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          path: frontend
+          path: blabla
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
           
       - name: install dependencies
-        working-directory: src
+        working-directory: blabla
         run: yarn --immutable
 
       - name: install node

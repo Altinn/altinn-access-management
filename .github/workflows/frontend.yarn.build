@@ -17,7 +17,7 @@ jobs:
       - name: checkout
       uses: actions/checkout@v3
       with:
-        path: altinn-authorization-admin-frontend
+        path: frontend/altinn-authorization-admin-frontend
         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
         
       - name: install node
@@ -26,13 +26,9 @@ jobs:
         node-version: '16'
         
       - name: install dependencies
-        working-directory: altinn-authorization-admin-frontend/src
+        working-directory: frontend/altinn-authorization-admin-frontend/src
         
       - name: run eslint
-        working-directory: altinn-authorization-admin-frontend/src
+        working-directory: frontend/altinn-authorization-admin-frontend/src
         run: yarn lint
-        
-      
-        
-        
         

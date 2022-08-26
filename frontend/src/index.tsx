@@ -55,7 +55,6 @@ i18next.use(initReactI18next).init(
       clientDelegation: document.getElementById(
         'altinn3-client-delegation-accordion-content',
       ),
-      // further feature roots should go here…
     };
 
     reactRoot.render(
@@ -67,14 +66,11 @@ i18next.use(initReactI18next).init(
                 <CompanyRequestsAccordionContent />,
                 featureRoots.authAdmin,
               )}
-            {
-              /* further feature roots should be populated here… */
-              featureRoots.clientDelegation &&
-                ReactDOM.createPortal(
-                  <ClientDelegationAccordionContent />,
-                  featureRoots.clientDelegation,
-                )
-            }
+            {featureRoots.clientDelegation &&
+              ReactDOM.createPortal(
+                <ClientDelegationAccordionContent />,
+                featureRoots.clientDelegation,
+              )}
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

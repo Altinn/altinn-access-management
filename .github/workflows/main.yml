@@ -26,9 +26,9 @@ jobs:
           node-version: '16'
 
       - name: run build
-        working-directory: frontend
-        run: yarn build
+        working-directory: ./frontend
+        run: cd altinn-access-management/altinn-access-management yarn build
 
       - name: run eslint
-        working-directory: frontend
+        working-directory: ./frontend
         run: yarn lint

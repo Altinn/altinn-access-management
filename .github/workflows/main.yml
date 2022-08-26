@@ -13,11 +13,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          path: blabla
+          path: altinn-access-management-frontend
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
           
       - name: install dependencies
-        working-directory: blabla
+        working-directory: altinn-access-management-frontend
         run: yarn --immutable
 
       - name: install node
@@ -26,9 +26,9 @@ jobs:
           node-version: '16'
 
       - name: run build
-        working-directory: src
+        working-directory: altinn-access-management-frontend
         run: yarn build
 
       - name: run eslint
-        working-directory: src
+        working-directory: altinn-access-management-frontend
         run: yarn lint

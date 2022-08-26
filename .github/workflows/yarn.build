@@ -11,9 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     steps:
-
       - name: run build
         run: yarn build
-
-      - name: run tests
-        run: yarn coverage
+        
+      - name: checkout
+      uses: actions/checkout@v3
+      with:
+        path: altinn-authorization-admin-frontend
+        fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+        
+      - name: install node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        
+      - name: install dependencies
+        working-directory: altinn-authorization-admin-frontend/src
+        
+      - name: run eslint
+        working-directory: altinn-authorization-admin-frontend/src
+        run: yarn lint
+        
+      
+        
+        
+        

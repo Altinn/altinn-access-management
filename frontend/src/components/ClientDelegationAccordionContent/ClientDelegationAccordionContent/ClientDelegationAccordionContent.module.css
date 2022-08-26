@@ -1,10 +1,8 @@
 .company-requests-accordion-content{
-    max-width: 1020px;
     border: solid;
     border-color: white;
     margin:auto;
     background-color: #efefef;
-
 }
 
 .company-requests-accordion-content__container{

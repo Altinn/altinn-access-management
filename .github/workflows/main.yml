@@ -22,7 +22,7 @@ jobs:
           node-version: '16'
 
       - name: install dependencies
-        working-directory: altinn-access-management/frontend/src
+        working-directory: ../frontend/src
         run: yarn --immutable
 
       - name: run build

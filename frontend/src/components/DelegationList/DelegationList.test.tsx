@@ -10,4 +10,12 @@ describe('<DelegationList />', () => {
 
     expect(delegationList).toBeInTheDocument();
   });
+
+  test('it should mount 2', () => {
+    render(<DelegationList />);
+
+    const delegationList = screen.getByTestId('DelegationList');
+
+    expect(delegationList).toBeInTheDocument();
+  });
 });

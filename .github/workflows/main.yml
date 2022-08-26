@@ -22,13 +22,13 @@ jobs:
           node-version: '16'
 
       - name: install dependencies
-        working-directory: ../frontend/src
+        working-directory: src
         run: yarn --immutable
 
       - name: run build
-        working-directory: altinn-access-management/frontend/src
+        working-directory: src
         run: yarn build
 
       - name: run eslint
-        working-directory: altinn-access-management/frontend/src
+        working-directory: src
         run: yarn lint

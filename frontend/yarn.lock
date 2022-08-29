@@ -1464,9 +1464,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"altinn-authorization-admin-frontend@workspace:.":
+"altinn-access-management@workspace:.":
   version: 0.0.0-use.local
-  resolution: "altinn-authorization-admin-frontend@workspace:."
+  resolution: "altinn-access-management@workspace:."
   dependencies:
     "@altinn/altinn-design-system": ^0.0.7
     "@testing-library/dom": ^8.14.0

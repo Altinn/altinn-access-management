@@ -25,7 +25,7 @@ jobs:
           node-version: '16'
           
       - name: run build
-        working-directory: frontend
+        working-directory: frontend/frontend
         run: ls
         
       - name: run tests

@@ -13,11 +13,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          path: altinn-access-management
+          path: frontend
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
           
       - name: install dependencies
-        working-directory: altinn-access-management/frontend
         run: ls
 
       - name: install node

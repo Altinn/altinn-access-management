@@ -28,6 +28,10 @@ jobs:
         working-directory: frontend
         run: yarn build
         
+      - name: run eslint
+        working-directory: frontend
+        run: yarn lint
+        
       - name: see test coverage
         working-directory: frontend
         run: yarn coverage
@@ -40,6 +44,3 @@ jobs:
         working-directory: frontend
         run: yarn coverage
         
-      - name: run eslint
-        working-directory: frontend
-        run: yarn lint

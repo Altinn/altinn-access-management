@@ -18,7 +18,7 @@ jobs:
           
       - name: install dependencies
         working-directory: altinn-access-management/frontend
-        run: yarn --immutable
+        run: ls
 
       - name: install node
         uses: actions/setup-node@v2

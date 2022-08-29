@@ -26,7 +26,8 @@ jobs:
           
       - name: run build
         working-directory: frontend/frontend
-        run: yarn build
+        run: ls
         
       - name: run tests
+        working-directory: frontend/frontend
         run: yarn test

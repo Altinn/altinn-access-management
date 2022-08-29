@@ -16,6 +16,10 @@ jobs:
           path: frontend
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
           
+      - name: run ls 1
+        working-directory: frontend/frontend
+        run: ls    
+      
       - name: install dependencies
         run: yarn install
 
@@ -24,7 +28,7 @@ jobs:
         with:
           node-version: '16'
           
-      - name: run ls
+      - name: run ls 2
         working-directory: frontend/frontend
         run: ls
           

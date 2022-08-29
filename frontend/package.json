@@ -1,5 +1,5 @@
 {
-  "name": "altinn-access-management",
+  "name": "altinn-authorization-admin-frontend",
   "private": true,
   "version": "0.0.1",
   "scripts": {

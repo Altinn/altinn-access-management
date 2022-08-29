@@ -24,13 +24,13 @@ jobs:
         with:
           node-version: '16'          
           
-      - name: run build
-        working-directory: frontend
-        run: yarn build
-        
       - name: run eslint
         working-directory: frontend
         run: yarn lint
+          
+      - name: run build
+        working-directory: frontend
+        run: yarn build
         
       - name: see test coverage
         working-directory: frontend

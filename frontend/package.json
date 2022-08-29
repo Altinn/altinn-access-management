@@ -1,5 +1,5 @@
 {
-  "name": "altinn-authorization-admin-frontend",
+  "name": "altinn-access-management",
   "private": true,
   "version": "0.0.1",
   "scripts": {
@@ -12,7 +12,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@altinn/altinn-design-system": "^0.0.7",
+    "@altinn/altinn-design-system": "^0.6.0",
     "altinn-designsystem": "^4.1.0",
     "i18next": "^21.8.0",
     "react": "^18.0.0",

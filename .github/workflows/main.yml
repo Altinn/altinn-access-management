@@ -24,9 +24,13 @@ jobs:
         with:
           node-version: '16'
           
-      - name: run build
+      - name: run ls
         working-directory: frontend/frontend
         run: ls
+          
+      - name: run build
+        working-directory: frontend/frontend
+        run: yarn build
         
       - name: run tests
         working-directory: frontend/frontend

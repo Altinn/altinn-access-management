@@ -17,7 +17,6 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
           
       - name: install dependencies
-        working-directory: frontend/src
         run: yarn --immutable
 
       - name: install node
@@ -26,8 +25,7 @@ jobs:
           node-version: '16'
           
       - name: run build	
-        run: yarn bui
-
-      - name: run eslint
-        working-directory: altinn-access-management/frontend
-        run: yarn lint
+        run: yarn build
+        
+      - name: run tests
+        run: yarn test

@@ -27,7 +27,7 @@ jobs:
           
       - name: run build	
         working-directory: frontend	
-        run: yarn build
+        run: ls
 
       - name: run eslint
         working-directory: frontend

@@ -25,6 +25,7 @@ jobs:
           node-version: '16'
           
       - name: run build
+        working-directory: frontend/frontend
         run: yarn build
         
       - name: run tests

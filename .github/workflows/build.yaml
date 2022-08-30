@@ -32,10 +32,6 @@ jobs:
         working-directory: frontend
         run: yarn build
         
-      - name: run tests
-        working-directory: frontend
-        run: yarn test
-        
       - name: see test coverage
         working-directory: frontend
         run: yarn coverage

@@ -10,11 +10,17 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:5117
       - ASPNETCORE_ENVIRONMENT=Development
+      - FRONTEND_MODE=Development
+      - FRONTEND_DEV_URL=http://localhost:3000
       - PlatformSettings:BridgeApiEndpoint=http://local-bridge:5249/
     volumes:
       - type: bind
         source: ./backend/src
         target: /app
+      - type: bind
+        source: ~/.vsdbg
+        target: /remote_debugger
+        read_only: false
     networks:
       - altinn-auth-admin
     ports:
@@ -33,6 +39,10 @@ services:
       - type: bind
         source: ./development
         target: /app
+      - type: bind
+        source: ~/.vsdbg
+        target: /remote_debugger
+        read_only: false
     networks:
       - altinn-auth-admin
     ports:

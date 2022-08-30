@@ -1,10 +1,15 @@
 using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AuthorizationAdmin.Helpers;
+using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
 
 ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AuthorizationAdmin/");
+builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
 
 ConfigureSetupLogging();
 
@@ -19,6 +24,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:3000", "http://devenv.altinn.no");
         });
 });
+
 
 var app = builder.Build();
 
@@ -46,14 +52,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
-
-
-
     services.AddSwaggerGen();
     services.AddMvc();
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
+    services.AddOptions<FrontEndEntryPointOptions>()
+        .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }
 
 

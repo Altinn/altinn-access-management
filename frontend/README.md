@@ -79,11 +79,17 @@ Use `getConfig()` to retrieve configuration at runtime. Currently configurable s
 
 ## Building and deploying 🚚
 
-To create a distributable bundle, run `yarn build`. Environment variables set at build time will be baked into the bundle (e.g. `VITE_DEFAULT_LOCALE=en yarn build`). See the resulting `dist/index.html` for an example on how to load the build.
+To create a distributable bundle, run `yarn build`. Environment variables set at build time will be baked into the bundle (e.g. `VITE_DEFAULT_LOCALE=en yarn build`). See the resulting `dist/index.html` for an example on how to load the build. At the moment you have to search for "/locales/${t.language}.json" and change it to "./locales/${t.language}.json".
 
 If the bundled files are to be served from a path other than the server root, you must pass the `--base=/path/to/folder/` argument to `yarn build`. The trailing slash is important.
 
-TODO: 🙈 deployment
+For production deployment, the FE is currently placed in the BE's `wwwroot` folder and served from there. The following command will build the FE with the correct deployment path, and copy the results to the BE folder:
+
+```sh
+yarn deploy-to-backend --base=/AuthorizationAdmin/
+```
+
+In the future, deployment should be made to a CDN instead, with versioned builds.
 
 ## Migration plan 🚧
 

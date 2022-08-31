@@ -14,13 +14,16 @@
   },
   "dependencies": {
     "@altinn/altinn-design-system": "^0.6.0",
+    "@radix-ui/react-popover": "latest",
     "altinn-designsystem": "^4.1.0",
+    "classnames": "^2.3.1",
     "i18next": "^21.8.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-error-boundary": "^3.1.4",
     "react-i18next": "^11.16.9",
     "react-query": "^3.38.1",
+    "react-select-search": "^3.0.10",
     "vite-plugin-svgr": "^2.2.1"
   },
   "devDependencies": {

@@ -1,6 +1,10 @@
 import { FC, useState } from 'react';
 import classes from './ResourceRegistry.module.css';
 import { TextField, Button } from '@altinn/altinn-design-system';
+import { PopoverPanel } from '../Common/General/Panel';
+import * as RadixPopover from '@radix-ui/react-popover';
+import { ReactComponent as HelpIcon } from './HelpIcon.svg';
+import SelectSearch from 'react-select-search';
 
 export interface ResourceRegistryProps {
   id: string;
@@ -18,7 +22,12 @@ export interface ResourceRegistryProps {
 
 const ResourceRegistry: FC<ResourceRegistryProps> = () => {
   const idOptions = ['Id 1', 'Id 2', 'Id 3'];
-  const titles = ['Title 1, Title 2', 'Title 3'];
+  const titles = [
+    { name: 'Title 1', value: 'title1' },
+    { name: 'Title 2', value: 'title2' },
+    { name: 'Title 3', value: 'title3' },
+  ];
+  const [open, onOpenChange] = useState(false);
 
   const resourceFormResult = {
     identifier: '',
@@ -101,68 +110,165 @@ const ResourceRegistry: FC<ResourceRegistryProps> = () => {
     console.log(resourceFormResult);
   };
 
+  const questionMark = (
+    <span className={classes['question-icon']}>
+      <HelpIcon width={22} height={22}></HelpIcon>
+    </span>
+  );
+
   return (
-    <div className={classes['resource-registry-container']}>
+    <div className={classes['resource-registry']}>
       <div className={classes['resource-registry__form']}>
         <div className={classes['button-container']}>
           <h2 className={classes['center']}>Ressursregistrering</h2>
         </div>
         <form>
-          <div className={classes['float-container']}>
-            <label>Identifikator</label>
-            <TextField onChange={(e) => handleIdentifierChange(e)}></TextField>
-            <label>Tittel</label>
-            <TextField onChange={(e) => handleTitleChangeChange(e)}></TextField>
-          </div>
-          <div className={classes['float-container']}>
-            <label>Organisasjonsnummer</label>
-            <TextField
-              onChange={(e) => handleOrganizationNumberChange(e)}
-            ></TextField>
-            <label>Organisasjonskode</label>
-            <TextField onChange={(e) => handleOrgCodeChange(e)}></TextField>
-          </div>
-          <div className={classes['float-container']}>
-            <label>Telefonnummer</label>
-            <TextField
-              name={'phone'}
-              onChange={(e) => handlePhoneChange(e)}
-            ></TextField>
-            <label>Epost</label>
-            <TextField
-              name={'email'}
-              onChange={(e) => handleEmailChange(e)}
-            ></TextField>
-          </div>
-          <div className={classes['float-container']}>
-            <label>Beskrivelse</label>
-            <TextField
-              name={'description'}
-              onChange={(e) => handleDescrptionChange(e)}
-            ></TextField>
-            <label>Hjemmeside</label>
-            <TextField onChange={(e) => handleHomepageChange(e)}></TextField>
-          </div>
-          <div className={classes['float-container']}>
-            <label>Er del av</label>
-            <TextField onChange={(e) => handleIsPartOfChange(e)}></TextField>
-            <label>Har part</label>
-            <TextField onChange={(e) => handleHasPartChange(e)}></TextField>
-          </div>
-          <div className={classes['float-container']}>
-            <label>Type</label>
-            <TextField onChange={(e) => handleTypeChange(e)}></TextField>
-            <label>Sektor</label>
-            <TextField onChange={(e) => handleSectorChange(e)}></TextField>
+          <div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Identifikator</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi en formell identifikasjon til tjenesten.
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleIdentifierChange(e)}
+                ></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Tittel</label>
+                <SelectSearch
+                  options={titles}
+                  value={resourceFormResult.title.nb}
+                  placeholder="Select title"
+                  search={true}
+                />
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Identifikator</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi en formell identifikasjon til tjenesten.
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleIdentifierChange(e)}
+                ></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Tittel</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi det offisielle navnet på tjenesten.
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleTitleChangeChange(e)}
+                ></TextField>
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Organisasjonsnummer</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å referere til den offentlige organisasjonen som
+                  har ansvaret for tjenesten, uansett om tjenesten tilbys
+                  direkte av den aktuelle offentlige organisasjonen eller er
+                  satt bort til andre.{' '}
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleOrganizationNumberChange(e)}
+                ></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Organisasjonskode</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å referere til den offentlige organisasjonen som
+                  har ansvaret for tjenesten, uansett om tjenesten tilbys
+                  direkte av den aktuelle offentlige organisasjonen eller er
+                  satt bort til andre.{' '}
+                </PopoverPanel>
+                <TextField onChange={(e) => handleOrgCodeChange(e)}></TextField>
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Telefonnummer</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi kontaktpunkt(er) for tjenesten.{' '}
+                </PopoverPanel>
+                <TextField onChange={(e) => handlePhoneChange(e)}></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Epost</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi kontaktpunkt(er) for tjenesten.{' '}
+                </PopoverPanel>
+                <TextField onChange={(e) => handleEmailChange(e)}></TextField>
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Beskrivelse</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å oppgi en tekstlig beskrivelse av tjenesten. Denne
+                  egenskapen kan gjentas når beskrivelsen finnes i flere språk.{' '}
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleDescrptionChange(e)}
+                ></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Hjemmeside</label>
+                <PopoverPanel trigger={questionMark}>
+                  Hjemmeside til tjenesten.
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleHomepageChange(e)}
+                ></TextField>
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Er del av</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å referere til en annen tjeneste som denne
+                  tjenesten er en del av.
+                </PopoverPanel>
+                <TextField
+                  onChange={(e) => handleIsPartOfChange(e)}
+                ></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Har part</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å referere til en annen tjeneste som denne
+                  tjenesten er en del av.{' '}
+                </PopoverPanel>
+                <TextField onChange={(e) => handleHasPartChange(e)}></TextField>
+              </div>
+            </div>
+            <div className={classes['float-container']}>
+              <div className={classes['float-child']}>
+                <label>Type</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å indikere type tjeneste i henhold til et
+                  kontrollert vokabular.
+                </PopoverPanel>
+                <TextField onChange={(e) => handleTypeChange(e)}></TextField>
+              </div>
+              <div className={classes['float-child']}>
+                <label>Sektor</label>
+                <PopoverPanel trigger={questionMark}>
+                  Brukes til å referere til industri/sektor som den aktuelle
+                  offentlige tjenesten er relatert til, eller er ment for. En
+                  tjeneste kan relateres til flere industrier/sektorer.
+                </PopoverPanel>
+                <TextField onChange={(e) => handleSectorChange(e)}></TextField>
+              </div>
+            </div>
+            <div className={classes['resource-registry__submit-button']}>
+              <Button onClick={submit}>Registrer</Button>
+            </div>
           </div>
         </form>
-        <div className={classes['button-container']}>
-          <div className={classes['center']}>
-            <Button type="submit" onClick={submit}>
-              Registrer
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );

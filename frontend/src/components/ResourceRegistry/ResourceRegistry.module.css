@@ -1,6 +1,4 @@
-.resoruce-registry-container{
-    border: solid;
-    border-color: white;
+.resource-registry{
     margin:auto;
     background-color: #efefef;
 }
@@ -14,7 +12,6 @@
 }
 
 .float-container {
-    border: 3px solid #fff;
     padding: 20px;
 }
 
@@ -36,4 +33,25 @@
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+  }
+
+  .button-center {
+    width: 50%;
+    float: center;
+    padding: 20px;
+}
+
+
+  .resource-registry__sector-field{
+    padding: 20px;
+  }
+  
+  .resource-registry__submit-button{
+    margin: auto;
+    width: 116px;
+    height:450px;
+  }
+
+  .question-icon {
+    margin-left: 5px;
   }

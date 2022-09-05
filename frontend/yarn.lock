@@ -1762,6 +1762,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vitest/coverage-c8@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "@vitest/coverage-c8@npm:0.23.0"
+  dependencies:
+    c8: ^7.12.0
+    vitest: 0.23.0
+  checksum: dfe9c55876c6570ef3da2e4764c3c5168f0551f7399f3c1973c214210fc6ab4c4efadc29cd688abd6ffb2154870bf5abf5c7adbe52ce49d4388bdafedb31602e
+  languageName: node
+  linkType: hard
+
 "abab@npm:^2.0.6":
   version: 2.0.6
   resolution: "abab@npm:2.0.6"
@@ -1897,6 +1907,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.36.1
     "@typescript-eslint/parser": ^5.36.1
     "@vitejs/plugin-react": ^2.0.1
+    "@vitest/coverage-c8": ^0.23.0
     altinn-designsystem: ^4.1.0
     c8: ^7.12.0
     eslint: ^8.23.0
@@ -8180,7 +8191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^0.23.0":
+"vitest@npm:0.23.0, vitest@npm:^0.23.0":
   version: 0.23.0
   resolution: "vitest@npm:0.23.0"
   dependencies:

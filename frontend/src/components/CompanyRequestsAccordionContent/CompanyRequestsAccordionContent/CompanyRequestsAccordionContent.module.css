@@ -10,7 +10,7 @@
 }
 
 .company-requests-accordion-content__toggle-button-group{
-    display: inline-flex;
+    width: 100%;
 }
 
 .company-requests-accordion-content__button--request{

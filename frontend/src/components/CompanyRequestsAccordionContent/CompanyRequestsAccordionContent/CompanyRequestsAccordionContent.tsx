@@ -14,12 +14,15 @@ import { PersonListItem } from '../../Common/PersonListItem/PersonListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
+/*import { DelegationRequest } from '../../../shared/DelegationRequest';
+/*import { getReceivedDelegationRequests } from '../../../services/DelegationRequestApi';
+*/ //import { useQuery } from 'react-query';
 
 export interface ChangeProps {
   selectedValue: string;
 }
 
-const CompanyRequestsAccordionContent = () => {
+const CompanyRequestsAccordionContent = async () => {
   const { t } = useTranslation('common');
   const [selected, setSelected] = useState('received');
   const [open1, setOpen1] = useState(false);
@@ -36,6 +39,17 @@ const CompanyRequestsAccordionContent = () => {
   const handleChange = ({ selectedValue }: ChangeProps) => {
     setSelected(selectedValue);
   };
+
+  /*const { data } = useQuery<DelegationRequest[]>(
+    'DelegationRequests',
+    await getReceivedDelegationRequests(),
+    {
+      suspense: true,
+      staleTime: 10000,
+    },
+  );
+
+  console.log(await data);*/
 
   return (
     <div className={classes['company-requests-accordion-content']}>

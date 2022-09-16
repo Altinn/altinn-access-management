@@ -14,15 +14,16 @@ import { PersonListItem } from '../../Common/PersonListItem/PersonListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
-/*import { DelegationRequest } from '../../../shared/DelegationRequest';
-/*import { getReceivedDelegationRequests } from '../../../services/DelegationRequestApi';
-*/ //import { useQuery } from 'react-query';
+import { DelegationRequest } from '../../../shared/models/DelegationRequest';
+import { getReceivedDelegationRequests } from '../../../services/DelegationRequestApi';
+import { useQuery } from 'react-query';
+import { fetchApi } from '../../../services/api';
 
 export interface ChangeProps {
   selectedValue: string;
 }
 
-const CompanyRequestsAccordionContent = async () => {
+const CompanyRequestsAccordionContent = () => {
   const { t } = useTranslation('common');
   const [selected, setSelected] = useState('received');
   const [open1, setOpen1] = useState(false);
@@ -40,16 +41,16 @@ const CompanyRequestsAccordionContent = async () => {
     setSelected(selectedValue);
   };
 
-  /*const { data } = useQuery<DelegationRequest[]>(
+  const { data: requests } = useQuery<DelegationRequest[]>(
     'DelegationRequests',
-    await getReceivedDelegationRequests(),
+    async () => getReceivedDelegationRequests('500700'),
     {
       suspense: true,
       staleTime: 10000,
     },
   );
 
-  console.log(await data);*/
+  console.log(requests);
 
   return (
     <div className={classes['company-requests-accordion-content']}>
@@ -95,18 +96,16 @@ const CompanyRequestsAccordionContent = async () => {
           </div>
           <div className={classes['company-requests-list-container']}>
             <List>
-              <ListItem>
-                <PersonListItem
-                  name="Albert Ohrem Larsen"
-                  rightText={t('profile.access_request')}
-                ></PersonListItem>
-              </ListItem>
-              <ListItem>
-                <PersonListItem
-                  name="Marion Dragland"
-                  rightText={t('profile.access_request')}
-                ></PersonListItem>
-              </ListItem>
+              {requests?.map((request) => {
+                return (
+                  <ListItem key={request.guid}>
+                    <PersonListItem
+                      name={request.coveredByName}
+                      rightText={t('profile.access_request')}
+                    ></PersonListItem>
+                  </ListItem>
+                );
+              })}
             </List>
           </div>
         </div>
@@ -144,44 +143,30 @@ const CompanyRequestsAccordionContent = async () => {
             }
           >
             <Accordion onClick={handleClick1} open={open1}>
-              <AccordionHeader>
-                <SentCompanyRequestsHeaderTexts
-                  title="BALLANGEN OG GARDVIK"
-                  subtitle="Sendt: 16.06.2022"
-                ></SentCompanyRequestsHeaderTexts>
-              </AccordionHeader>
-              <AccordionContent>
-                <div
-                  className={
-                    classes[
-                      'company-requests-accordion-content__sent-requests-accordion-content'
-                    ]
-                  }
-                >
-                  Din forespørsel om tilganger til BALLANGEN OG GARDVIK er
-                  sendt. Du vil få beskjed når de er godkjent.
-                </div>
-              </AccordionContent>
-            </Accordion>
-            <Accordion onClick={handleClick2} open={open2}>
-              <AccordionHeader>
-                <SentCompanyRequestsHeaderTexts
-                  title="BARSTADT OG LEVANGER"
-                  subtitle="Sendt: 13.06.2022"
-                ></SentCompanyRequestsHeaderTexts>
-              </AccordionHeader>
-              <AccordionContent>
-                <div
-                  className={
-                    classes[
-                      'company-requests-accordion-content__sent-requests-accordion-content'
-                    ]
-                  }
-                >
-                  Din forespørsel om tilganger til BARSTADT OG LEVANGER er
-                  sendt. Du vil få beskjed når de er godkjent.
-                </div>
-              </AccordionContent>
+              {requests?.map((request) => {
+                return (
+                  <>
+                    <AccordionHeader>
+                      <SentCompanyRequestsHeaderTexts
+                        title={request.offeredByName}
+                        subtitle={request.created}
+                      ></SentCompanyRequestsHeaderTexts>
+                    </AccordionHeader>
+                    <AccordionContent>
+                      <div
+                        className={
+                          classes[
+                            'company-requests-accordion-content__sent-requests-accordion-content'
+                          ]
+                        }
+                      >
+                        Din forespørsel om tilganger til {request.offeredByName}
+                        er sendt. Du vil få beskjed når de er godkjent.
+                      </div>
+                    </AccordionContent>
+                  </>
+                );
+              })}
             </Accordion>
           </div>
         </>

@@ -1,7 +1,7 @@
 import classes from './SentCompanyRequestsHeaderTexts.module.css';
 
 export interface SentCompanyRequestsHeaderTexts {
-  title: string;
+  title: string | undefined;
   subtitle: string;
 }
 

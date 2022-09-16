@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './PersonListItem.module.css';
 
 export interface PersonListItemProps {
-  name: string;
+  name: string | undefined;
   rightText: string;
 }
 

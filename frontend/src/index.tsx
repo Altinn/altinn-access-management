@@ -5,13 +5,11 @@ import * as ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { initReactI18next } from 'react-i18next';
 
-import FeatureAuthAdmin from './components/FeatureAuthAdmin';
-import SuspendLoadLocale from './components/SuspendLoadLocale';
+import SuspendLoadLocale from './helpers/SuspendLoadLocale';
 
 import { getConfig } from './services/config';
 import baseLocales from './basic-locales.json';
 import './index.css';
-import ClientDelegationAccordionContent from './components/ClientDelegationAccordionContent/ClientDelegationAccordionContent';
 import CompanyRequestsAccordionContent from './components/CompanyRequestsAccordionContent/CompanyRequestsAccordionContent';
 
 /**
@@ -51,9 +49,6 @@ i18next.use(initReactI18next).init(
       authAdmin: document.getElementById(
         'altinn3-company-requests-accordion-content',
       ),
-      clientDelegation: document.getElementById(
-        'altinn3-client-delegation-accordion-content',
-      ),
       // further feature roots should go here…
     };
 
@@ -66,14 +61,6 @@ i18next.use(initReactI18next).init(
                 <CompanyRequestsAccordionContent />,
                 featureRoots.authAdmin,
               )}
-            {
-              /* further feature roots should be populated here… */
-              featureRoots.clientDelegation &&
-                ReactDOM.createPortal(
-                  <ClientDelegationAccordionContent />,
-                  featureRoots.clientDelegation,
-                )
-            }
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

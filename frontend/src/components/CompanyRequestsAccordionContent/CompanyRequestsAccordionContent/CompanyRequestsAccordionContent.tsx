@@ -10,7 +10,7 @@ import {
   ListItem,
 } from '@altinn/altinn-design-system';
 import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderTexts/SentCompanyRequestsHeaderTexts';
-import { PersonListItem } from '../../Common/PersonListItem/PersonListItem';
+import { PersonListItem } from '../../common/PersonListItem/PersonListItem';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';

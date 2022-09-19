@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Net;
 using System.Text.Json;
+using Altinn.Platform.Authorization.Helpers;
 using Altinn.Platform.Authorization.Models;
 using Altinn.Platform.Authorization.Services.Interface;
 

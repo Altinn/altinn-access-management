@@ -87,7 +87,7 @@ namespace Altinn.Platform.Authorization.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/GetRules")]
-        public async Task<ActionResult<List<Rule>>> GetRules([FromBody] RuleQuery ruleQuery, [FromQuery] bool onlyDirectDelegations = false)
+        public async Task<ActionResult<List<PolicyRule>>> GetRules([FromBody] RuleQuery ruleQuery, [FromQuery] bool onlyDirectDelegations = false)
         {
             List<int> coveredByPartyIds = new List<int>();
             List<int> coveredByUserIds = new List<int>();
@@ -140,7 +140,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
 
-            List<Rule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
+            List<PolicyRule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
             DelegationHelper.SetRuleType(rulesList, ruleQuery.OfferedByPartyId, ruleQuery.KeyRolePartyIds, ruleQuery.CoveredBy, ruleQuery.ParentPartyId);
             return Ok(rulesList);
         }
@@ -148,8 +148,8 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <summary>
         /// Endpoint for deleting delegated rules between parties
         /// </summary>
-        /// <response code="200" cref="List{Rule}">Deleted</response>
-        /// <response code="206" cref="List{Rule}">Partial Content</response>
+        /// <response code="200" cref="List{PolicyRule}">Deleted</response>
+        /// <response code="206" cref="List{PolicyRule}">Partial Content</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
@@ -162,7 +162,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete);
+            List<PolicyRule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete);
             int ruleCountToDelete = DelegationHelper.GetRulesCountToDeleteFromRequestToDelete(rulesToDelete);
             int deletionResultsCount = deletionResults.Count;
 
@@ -186,8 +186,8 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <summary>
         /// Endpoint for deleting an entire delegated policy between parties
         /// </summary>
-        /// <response code="200" cref="List{Rule}">Deleted</response>
-        /// <response code="206" cref="List{Rule}">Partial Content</response>
+        /// <response code="200" cref="List{PolicyRule}">Deleted</response>
+        /// <response code="206" cref="List{PolicyRule}">Partial Content</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
@@ -200,7 +200,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            List<PolicyRule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             int countPolicies = DelegationHelper.GetPolicyCount(deletionResults);
             int policiesToDeleteCount = policiesToDelete.Count;
 

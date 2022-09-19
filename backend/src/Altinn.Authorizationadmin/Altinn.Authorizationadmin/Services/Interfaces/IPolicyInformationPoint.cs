@@ -18,6 +18,6 @@ namespace Altinn.Platform.Authorization.Services.Interface
         /// <param name="coveredByPartyIds">the list of coveredby party ids</param>
         /// <param name="coveredByUserIds">the list of coveredby user ids</param>
         /// <returns>a list of rules that match the lists of org/apps, offeredby ids, and coveredby ids</returns>
-        Task<List<Rule>> GetRulesAsync(List<string> appIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds);
+        Task<List<PolicyRule>> GetRulesAsync(List<string> appIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds);
     }
 }

@@ -50,7 +50,7 @@ namespace Altinn.Platform.Authorization.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/AddRules")]
-        public async Task<ActionResult> Post([FromBody] List<Rule> rules)
+        public async Task<ActionResult> Post([FromBody] List<PolicyRule> rules)
         {
             if (rules == null || rules.Count < 1)
             {
@@ -62,7 +62,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest("Invalid model");
             }
 
-            List<Rule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
+            List<PolicyRule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
 
             if (delegationResults.All(r => r.CreatedSuccessfully))
             {

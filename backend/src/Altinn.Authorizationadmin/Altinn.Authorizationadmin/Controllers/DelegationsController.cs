@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Altinn.Platform.Authorization.Constants;
-using Altinn.Platform.Authorization.Helpers;
-using Altinn.Platform.Authorization.Models;
-using Altinn.Platform.Authorization.Services.Interface;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Altinn.AuthorizationAdmin.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 
 namespace Altinn.Platform.Authorization.Controllers
 {
@@ -140,7 +133,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
 
-            List<Rule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
+            List<PolicyRule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
             DelegationHelper.SetRuleType(rulesList, ruleQuery.OfferedByPartyId, ruleQuery.KeyRolePartyIds, ruleQuery.CoveredBy, ruleQuery.ParentPartyId);
             return Ok(rulesList);
         }
@@ -162,7 +155,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete);
+            List<PolicyRule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete);
             int ruleCountToDelete = DelegationHelper.GetRulesCountToDeleteFromRequestToDelete(rulesToDelete);
             int deletionResultsCount = deletionResults.Count;
 
@@ -200,7 +193,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            List<PolicyRule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             int countPolicies = DelegationHelper.GetPolicyCount(deletionResults);
             int policiesToDeleteCount = policiesToDelete.Count;
 

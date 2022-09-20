@@ -2,9 +2,9 @@
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
-using Altinn.Platform.Authorization.Models;
+using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.Platform.Authorization.Services.Interface
+namespace Altinn.AuthorizationAdmin.Services.Interface
 {
     /// <summary>
     /// Defines the interface for the Policy Administration Point
@@ -32,13 +32,13 @@ namespace Altinn.Platform.Authorization.Services.Interface
         /// </summary>
         /// <param name="rulesToDelete">Entity to define which rules to be deleted</param>
         /// <returns>The list of rules with created Id and result status</returns>
-        Task<List<Rule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete);
+        Task<List<PolicyRule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete);
 
         /// <summary>
         /// Deletes a List of policies based on input list of matches to remove
         /// </summary>
         /// <param name="policiesToDelete">entity containing match for all the policies to delete</param>
         /// <returns>A list containing all the policies that is deleted</returns>
-        Task<List<Rule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete);
+        Task<List<PolicyRule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete);
     }
 }

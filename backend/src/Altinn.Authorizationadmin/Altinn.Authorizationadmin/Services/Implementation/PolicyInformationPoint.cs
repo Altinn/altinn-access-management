@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Platform.Authorization.Configuration;
-using Altinn.Platform.Authorization.Models;
-using Altinn.Platform.Authorization.Repositories.Interface;
-using Altinn.Platform.Authorization.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Configuration;
+using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.Platform.Authorization.Services.Implementation
+namespace Altinn.AuthorizationAdmin.Services.Implementation
 {
     /// <summary>
     /// The Policy Information Point responsible for storing and modifying delegation policies

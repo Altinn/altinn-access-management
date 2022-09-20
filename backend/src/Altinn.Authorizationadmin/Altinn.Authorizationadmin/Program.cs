@@ -1,6 +1,6 @@
 using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
-using Altinn.AuthorizationAdmin.Helpers;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
 

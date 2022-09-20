@@ -1,10 +1,16 @@
 ﻿using System.Data;
 using System.Net;
 using System.Text.Json;
-using Altinn.Platform.Authorization.Models;
-using Altinn.Platform.Authorization.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Helpers;
+using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AuthorizationAdmin.Services.Interface;
+using Azure;
+using Azure.Storage.Blobs.Models;
+using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.Authorization.ABAC.Xacml;
 
-namespace Altinn.Platform.Authorization.Services.Implementation
+namespace Altinn.AuthorizationAdmin.Services.Implementation
 {
     /// <summary>
     /// The Policy Administration Point responsible for storing and modifying delegation policies
@@ -52,8 +58,8 @@ namespace Altinn.Platform.Authorization.Services.Implementation
         /// <inheritdoc/>
         public async Task<List<PolicyRule>> TryWriteDelegationPolicyRules(List<PolicyRule> rules)
         {
-            List<Rule> result = new List<Rule>();
-            Dictionary<string, List<Rule>> delegationDict = DelegationHelper.SortRulesByDelegationPolicyPath(rules, out List<Rule> unsortables);
+            List<PolicyRule> result = new List<PolicyRule>();
+            Dictionary<string, List<PolicyRule>> delegationDict = DelegationHelper.SortRulesByDelegationPolicyPath(rules, out List<PolicyRule> unsortables);
 
             foreach (string delegationPolicypath in delegationDict.Keys)
             {
@@ -68,7 +74,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
                     _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {delegationPolicypath}", delegationPolicypath);
                 }
 
-                foreach (Rule rule in delegationDict[delegationPolicypath])
+                foreach (PolicyRule rule in delegationDict[delegationPolicypath])
                 {
                     if (writePolicySuccess)
                     {
@@ -95,13 +101,13 @@ namespace Altinn.Platform.Authorization.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete)
+        public async Task<List<PolicyRule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete)
         {
-            List<Rule> result = new List<Rule>();
+            List<PolicyRule> result = new List<PolicyRule>();
 
             foreach (RequestToDelete deleteRequest in rulesToDelete)
             {
-                List<Rule> currentRules = await DeleteRulesInPolicy(deleteRequest);
+                List<PolicyRule> currentRules = await DeleteRulesInPolicy(deleteRequest);
                 if (currentRules != null)
                 {
                     result.AddRange(currentRules);
@@ -112,13 +118,13 @@ namespace Altinn.Platform.Authorization.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete)
+        public async Task<List<PolicyRule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete)
         {
-            List<Rule> result = new List<Rule>();
+            List<PolicyRule> result = new List<PolicyRule>();
 
             foreach (RequestToDelete policyToDelete in policiesToDelete)
             {
-                List<Rule> currentRules = await DeleteAllRulesInPolicy(policyToDelete);
+                List<PolicyRule> currentRules = await DeleteAllRulesInPolicy(policyToDelete);
                 if (currentRules != null)
                 {
                     result.AddRange(currentRules);
@@ -128,7 +134,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
             return result;
         }
 
-        private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
+        private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<PolicyRule> rules)
         {
             if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
             {
@@ -143,7 +149,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
                 return false;
             }
 
-            foreach (Rule rule in rules)
+            foreach (PolicyRule rule in rules)
             {
                 if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
                 {
@@ -176,7 +182,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
                     if (existingDelegationPolicy != null)
                     {
                         delegationPolicy = existingDelegationPolicy;
-                        foreach (Rule rule in rules)
+                        foreach (PolicyRule rule in rules)
                         {
                             if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                             {
@@ -243,9 +249,9 @@ namespace Altinn.Platform.Authorization.Services.Implementation
             return false;
         }
 
-        private async Task<List<Rule>> ProcessPolicyFile(string policyPath, string org, string app, RequestToDelete deleteRequest)
+        private async Task<List<PolicyRule>> ProcessPolicyFile(string policyPath, string org, string app, RequestToDelete deleteRequest)
         {
-            List<Rule> currentRules = new List<Rule>();
+            List<PolicyRule> currentRules = new List<PolicyRule>();
             string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
             if (leaseId == null)
             {
@@ -279,7 +285,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
                     }
 
                     existingDelegationPolicy.Rules.Remove(xacmlRuleToRemove);
-                    Rule currentRule = PolicyHelper.CreateRuleFromPolicyAndRuleMatch(deleteRequest, xacmlRuleToRemove);
+                    PolicyRule currentRule = PolicyHelper.CreateRuleFromPolicyAndRuleMatch(deleteRequest, xacmlRuleToRemove);
                     currentRules.Add(currentRule);
                 }
 
@@ -451,7 +457,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
             }
         }
 
-        private async Task<List<Rule>> DeleteRulesInPolicy(RequestToDelete rulesToDelete)
+        private async Task<List<PolicyRule>> DeleteRulesInPolicy(RequestToDelete rulesToDelete)
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
@@ -475,7 +481,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
                 return null;
             }
 
-            List<Rule> currentRules = await ProcessPolicyFile(policyPath, org, app, rulesToDelete);
+            List<PolicyRule> currentRules = await ProcessPolicyFile(policyPath, org, app, rulesToDelete);
 
             return currentRules;
         }

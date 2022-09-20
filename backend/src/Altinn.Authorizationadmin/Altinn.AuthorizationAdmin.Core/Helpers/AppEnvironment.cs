@@ -1,4 +1,4 @@
-namespace Altinn.AuthorizationAdmin.Helpers
+namespace Altinn.AuthorizationAdmin.Core.Helpers
 {
     public static class AppEnvironment
     {

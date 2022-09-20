@@ -1,6 +1,6 @@
 ﻿using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Services;
+using Altinn.AuthorizationAdmin.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;

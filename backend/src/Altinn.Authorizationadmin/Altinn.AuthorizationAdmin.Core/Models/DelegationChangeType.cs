@@ -1,4 +1,4 @@
-﻿namespace Altinn.Platform.Authorization.Models
+﻿namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// The type of delegation change

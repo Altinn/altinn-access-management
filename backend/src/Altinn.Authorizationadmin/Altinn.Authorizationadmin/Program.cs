@@ -22,6 +22,7 @@ string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "
 builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
 
 ConfigureSetupLogging();
+NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
 // Add services to the container.
 ConfigureServices(builder.Services, builder.Configuration);
@@ -74,6 +75,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
+    services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }
@@ -98,8 +100,6 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
-
         ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
 
         string connectionString = string.Format(

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Altinn.Authorization.ABAC.Constants;
+﻿using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Models;

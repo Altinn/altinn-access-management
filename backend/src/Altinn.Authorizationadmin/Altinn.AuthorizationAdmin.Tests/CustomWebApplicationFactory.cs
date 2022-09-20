@@ -1,4 +1,4 @@
-﻿using Altinn.AuthorizationAdmin.Services;
+﻿using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Tests.Mocks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

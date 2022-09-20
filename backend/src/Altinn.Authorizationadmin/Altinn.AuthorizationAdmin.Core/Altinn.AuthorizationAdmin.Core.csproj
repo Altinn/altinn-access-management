@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Configuration\ConsoleTraceService.cs~RFadd70d.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.5" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.13.1" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.11.1" />

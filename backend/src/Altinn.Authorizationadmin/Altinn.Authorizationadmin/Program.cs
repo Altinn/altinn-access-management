@@ -3,6 +3,7 @@ using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
+using Altinn.AuthorizationAdmin.Core.Services;
 
 ILogger logger;
 

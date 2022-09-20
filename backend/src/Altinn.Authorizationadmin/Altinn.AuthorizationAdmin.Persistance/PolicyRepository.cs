@@ -13,7 +13,7 @@ using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Core.Repositories
+namespace Altinn.AuthorizationAdmin.Persistance
 {
     /// <summary>
     /// Repository for handling policy files

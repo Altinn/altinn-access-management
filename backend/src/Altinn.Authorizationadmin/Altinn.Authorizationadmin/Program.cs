@@ -3,7 +3,16 @@ using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
+using Npgsql.Logging;
+using Altinn.Platform.Authorization.Configuration;
+using Yuniql.AspNetCore;
+using Yuniql.PostgreSql;
+using Altinn.AuthorizationAdmin.Services.Implementation;
+using Altinn.AuthorizationAdmin.Services.Interface;
+using Altinn.AuthorizationAdmin.Persistance;
+using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services;
+using Altinn.AuthorizationAdmin.Core.Services.Interface;
 
 ILogger logger;
 
@@ -28,6 +37,7 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+ConfigurePostgreSql();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -58,6 +68,12 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
+    services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
+    services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
+    services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
+    services.AddSingleton<IPolicyRepository, PolicyRepository>();
+    services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+    services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }
@@ -76,4 +92,30 @@ void ConfigureSetupLogging()
     });
 
     logger = logFactory.CreateLogger<Program>();
+}
+
+void ConfigurePostgreSql()
+{
+    if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
+    {
+        NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
+
+        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
+
+        string connectionString = string.Format(
+            builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
+            builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
+
+        app.UseYuniql(
+            new PostgreSqlDataService(traceService),
+            new PostgreSqlBulkImportService(traceService),
+            traceService,
+            new Yuniql.AspNetCore.Configuration
+            {
+                Workspace = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath")),
+                ConnectionString = connectionString,
+                IsAutoCreateDatabase = false,
+                IsDebug = true,
+            });
+    }
 }

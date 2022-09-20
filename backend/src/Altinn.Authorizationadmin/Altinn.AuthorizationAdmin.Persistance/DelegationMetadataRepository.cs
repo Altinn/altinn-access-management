@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace Altinn.AuthorizationAdmin.Core.Repositories
+namespace Altinn.AuthorizationAdmin.Persistance
 {
     /// <summary>
     /// Repository implementation for PostgreSQL operations on delegations.

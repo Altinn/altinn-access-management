@@ -1,0 +1,1 @@
+export { ReceivedCompanyRequestsAccordionContent } from './ReceivedCompanyRequestsAccordionContent';

@@ -4,10 +4,10 @@ using System.Data;
 using System.Linq;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Platform.Authorization.Constants;
-using Altinn.Platform.Authorization.Models;
+using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.Platform.Authorization.Helpers
+namespace Altinn.AuthorizationAdmin.Core.Helpers
 {
     /// <summary>
     /// Delegation helper methods

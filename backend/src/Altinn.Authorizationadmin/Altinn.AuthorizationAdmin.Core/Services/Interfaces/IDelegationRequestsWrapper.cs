@@ -1,7 +1,7 @@
 ﻿using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Services
+namespace Altinn.AuthorizationAdmin.Core.Services
 {
     public interface IDelegationRequestsWrapper
     {

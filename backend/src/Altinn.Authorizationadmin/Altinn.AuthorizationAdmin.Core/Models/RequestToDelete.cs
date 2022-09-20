@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Altinn.AuthorizationAdmin.Core.Helpers;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
-using Altinn.Platform.Authorization.Helpers;
-
-namespace Altinn.Platform.Authorization.Models
+namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// This model describes a list of rules to delete from a single policyfile

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Altinn.Platform.Authorization.Constants;
-using Altinn.Platform.Authorization.Helpers;
-using Altinn.Platform.Authorization.Models;
-using Altinn.Platform.Authorization.Services.Interface;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Altinn.AuthorizationAdmin.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 
 namespace Altinn.Platform.Authorization.Controllers
 {

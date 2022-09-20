@@ -1,4 +1,4 @@
-﻿namespace Altinn.Platform.Authorization.Models
+﻿namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// This model defines the different types of rules and why it is relevant for a given coveredby (recipient).

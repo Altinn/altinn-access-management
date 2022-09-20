@@ -2,9 +2,9 @@
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
-using Altinn.Platform.Authorization.Models;
+using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.Platform.Authorization.Services.Interface
+namespace Altinn.AuthorizationAdmin.Services.Interface
 {
     /// <summary>
     /// Defines the interface for the Policy Administration Point

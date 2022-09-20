@@ -1,5 +1,6 @@
 ﻿using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

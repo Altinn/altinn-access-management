@@ -1,4 +1,4 @@
-﻿namespace Altinn.Platform.Authorization.Constants
+namespace Altinn.AuthorizationAdmin.Core.Constants
 {
     /// <summary>
     /// Altinn specific XACML constants used for urn identifiers and attributes

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Altinn.Platform.Authorization.Models
+namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// This model describes a single rule in a delegated policy

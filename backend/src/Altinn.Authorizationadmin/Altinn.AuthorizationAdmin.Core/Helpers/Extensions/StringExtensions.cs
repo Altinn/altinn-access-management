@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 
-namespace Altinn.Platform.Authorization.Helpers.Extensions
+namespace Altinn.AuthorizationAdmin.Core.Helpers.Extensions
 {
     /// <summary>
     /// Extensions to facilitate sanitization of string values
@@ -25,7 +25,7 @@ namespace Altinn.Platform.Authorization.Helpers.Extensions
             if (throwExceptionOnInvalidCharacters)
             {
                 if (illegalFileNameCharacters.Any(ic => input.Any(i => ic == i)))
-                {
+                {                    
                     throw new ArgumentOutOfRangeException(nameof(input));
                 }
 

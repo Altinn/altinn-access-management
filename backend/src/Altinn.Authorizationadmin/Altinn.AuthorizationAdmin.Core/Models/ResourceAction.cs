@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Altinn.Platform.Authorization.Models
+namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// This model describes an action that may be used in a rule describing a right.

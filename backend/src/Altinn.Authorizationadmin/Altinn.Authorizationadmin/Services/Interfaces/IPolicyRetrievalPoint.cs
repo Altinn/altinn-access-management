@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Xacml;
 
-namespace Altinn.Platform.Authorization.Services.Interface
+namespace Altinn.AuthorizationAdmin.Services.Interface
 {
     /// <summary>
     /// Defines the interface for the Policy Retrival Point

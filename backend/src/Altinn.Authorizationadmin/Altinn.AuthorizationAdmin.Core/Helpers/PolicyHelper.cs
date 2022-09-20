@@ -1,14 +1,13 @@
-﻿using System.Data;
 using System.Text;
 using System.Xml;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Platform.Authorization.Constants;
-using Altinn.Platform.Authorization.Helpers.Extensions;
-using Altinn.Platform.Authorization.Models;
+using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Helpers.Extensions;
+using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.Platform.Authorization.Helpers
+namespace Altinn.AuthorizationAdmin.Core.Helpers
 {
     /// <summary>
     /// Policy helper methods
@@ -263,7 +262,7 @@ namespace Altinn.Platform.Authorization.Helpers
         public static XacmlRule BuildDelegationRule(string org, string app, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, PolicyRule rule)
         {
             rule.RuleId = Guid.NewGuid().ToString();
-
+            
             string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
             XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
             {
@@ -452,7 +451,7 @@ namespace Altinn.Platform.Authorization.Helpers
                     if (action != null)
                     {
                         return new AttributeMatch { Id = action.AttributeDesignator.AttributeId.OriginalString, Value = action.AttributeValue.Value };
-                    }
+                    }                    
                 }
             }
 
@@ -468,7 +467,7 @@ namespace Altinn.Platform.Authorization.Helpers
                 {
                     foreach (XacmlMatch xacmlMatch in allOf.Matches.Where(m => m.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource)))
                     {
-                        result.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                        result.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });                        
                     }
                 }
             }

@@ -1,3 +1,13 @@
 {
-  "greeting": "hei verden"
+  "profile": {
+    "received": "Mottatte",
+    "sent": "Sendte",
+    "create_request": "Opprett ny forespørsel",
+    "delete": "Slett",
+    "access_request": "Ber om tilgang",
+    "employees": "Ansatte",
+    "clients": "Klienter",
+    "add_new_employee": "Legg til ny ansatt",
+    "change_rights": "Endre rettigheter"
+  }
 }

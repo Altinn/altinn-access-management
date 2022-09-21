@@ -5,8 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { initReactI18next } from 'react-i18next';
 
-import FeatureAuthAdmin from './components/FeatureAuthAdmin';
-import SuspendLoadLocale from './components/SuspendLoadLocale';
+import SuspendLoadLocale from './helpers/SuspendLoadLocale';
 
 import { getConfig } from './services/config';
 import baseLocales from './basic-locales.json';
@@ -46,7 +45,10 @@ i18next.use(initReactI18next).init(
     // Note that there must be a <div id="xyz"> in HTML that matches the IDs below
 
     const featureRoots = {
-      authAdmin: document.getElementById('altinn3-auth-admin-feature-root'),
+      authAdmin: document.getElementById(
+        'altinn3-company-requests-accordion-content',
+      ),
+      // put following code inside {featureRoots.authAdmin && ReactDOM.createPortal()}
       // further feature roots should go here…
     };
 
@@ -55,11 +57,7 @@ i18next.use(initReactI18next).init(
         <QueryClientProvider client={queryClient}>
           <SuspendLoadLocale>
             {featureRoots.authAdmin &&
-              ReactDOM.createPortal(
-                <FeatureAuthAdmin />,
-                featureRoots.authAdmin,
-              )}
-            {/* further feature roots should be populated here… */}
+              ReactDOM.createPortal(<></>, featureRoots.authAdmin)}
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

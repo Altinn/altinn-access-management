@@ -83,7 +83,7 @@ namespace Altinn.Platform.Authorization.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/AddResource")]
-        public async Task<ActionResult> AddResource([FromBody] List<PolicyRule> rules)
+        public async Task<ActionResult> AddResourceDelegation([FromBody] List<PolicyRule> rules)
         {
             if (rules == null || rules.Count < 1)
             {

@@ -1,3 +1,3 @@
 -- Grants for authorization_accessmanagement must be executed again for new sequence (Enum) and since delegationChanges table has been drop/created
-GRANT SELECT,INSERT,UPDATE,REFERENCES,DELETE,TRUNCATE,TRIGGER ON ALL TABLES IN SCHEMA delegation TO authorization_accessmanagement;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA delegation TO authorization_accessmanagement;
+GRANT SELECT,INSERT,UPDATE,REFERENCES,DELETE,TRUNCATE,TRIGGER ON ALL TABLES IN SCHEMA delegation TO platform_authorization;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA delegation TO platform_authorization;

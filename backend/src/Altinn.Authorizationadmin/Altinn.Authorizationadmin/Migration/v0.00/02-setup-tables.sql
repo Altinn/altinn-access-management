@@ -1,5 +1,5 @@
 -- Table: delegation.delegationChanges
-CREATE TABLE IF NOT EXISTS delegation.delegationChanges
+CREATE TABLE IF NOT EXISTS delegation.delegationchanges
 (
   delegationChangeId bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   altinnAppId character varying COLLATE pg_catalog."default" NOT NULL,

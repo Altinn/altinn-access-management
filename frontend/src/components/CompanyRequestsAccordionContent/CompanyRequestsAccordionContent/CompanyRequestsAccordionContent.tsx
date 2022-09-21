@@ -1,4 +1,9 @@
-import { ToggleButton, ToggleButtonGroup } from '@altinn/altinn-design-system';
+import {
+  Button,
+  ButtonVariant,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@altinn/altinn-design-system';
 import { useState } from 'react';
 import classes from './CompanyRequestsAccordionContent.module.css';
 import { useTranslation } from 'react-i18next';
@@ -50,7 +55,31 @@ const CompanyRequestsAccordionContent = () => {
             </ToggleButtonGroup>
           </div>
         </div>
-        {toggleAccordionContent(selected)}
+        <div
+          className={classes['company-requests-accordion-content__container']}
+        >
+          <Button
+            variant={ButtonVariant.Primary}
+            className={
+              classes['company-requests-accordion-content__button--request']
+            }
+            data-action="load"
+            data-target="#altinnModal"
+            data-toggle="altinn-modal"
+            data-url="/ui/DelegationRequest?modalOnly=true"
+          >
+            <span
+              className={
+                classes['company-requests-accordion-content__span--button-text']
+              }
+            >
+              {t('profile.create_request')}
+            </span>
+          </Button>
+        </div>
+        <div className={classes['company-requests-list-container']}>
+          {toggleAccordionContent(selected)}
+        </div>
       </>
     </div>
   );

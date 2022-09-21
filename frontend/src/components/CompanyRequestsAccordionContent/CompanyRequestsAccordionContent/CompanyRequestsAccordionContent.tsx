@@ -22,34 +22,36 @@ const CompanyRequestsAccordionContent = () => {
     setSelected(selectedValue);
   };
 
+  const toggleAccordionContent = (value: string) => {
+    switch (value) {
+      case 'received':
+        return <ReceivedCompanyRequestsAccordionContent />;
+      case 'sent':
+        return <SentCompanyRequestsAccordionContent />;
+    }
+  };
+
   return (
     <div className={classes['company-requests-accordion-content']}>
-      <div className={classes['company-requests-accordion-content__container']}>
+      <>
         <div
-          className={
-            classes['company-requests-accordion-content__toggle-button-group']
-          }
+          className={classes['company-requests-accordion-content__container']}
         >
-          <ToggleButtonGroup onChange={handleChange} selectedValue={selected}>
-            <ToggleButton value={CompanyRequestToggles.Received}>
-              {t('profile.received')}
-            </ToggleButton>
-            <ToggleButton value={CompanyRequestToggles.Sent}>
-              {t('profile.sent')}
-            </ToggleButton>
-          </ToggleButtonGroup>
+          <div
+            className={
+              classes['company-requests-accordion-content__toggle-button-group']
+            }
+          >
+            <ToggleButtonGroup onChange={handleChange} selectedValue={selected}>
+              <ToggleButton value={'received'}>
+                {t('profile.received')}
+              </ToggleButton>
+              <ToggleButton value={'sent'}>{t('profile.sent')}</ToggleButton>
+            </ToggleButtonGroup>
+          </div>
         </div>
-      </div>
-      switch(selected) {
-        case CompanyRequestToggles.Received: return (
-          
-        )
-
-      } === CompanyRequestToggles.Received ? (
-        <ReceivedCompanyRequestsAccordionContent />
-      ) : (
-        <SentCompanyRequestsAccordionContent />
-      )}
+        {toggleAccordionContent(selected)}
+      </>
     </div>
   );
 };

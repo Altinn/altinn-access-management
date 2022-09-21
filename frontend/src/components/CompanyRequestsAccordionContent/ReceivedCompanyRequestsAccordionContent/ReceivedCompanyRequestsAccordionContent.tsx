@@ -1,5 +1,5 @@
 import { List, ListItem } from '@altinn/altinn-design-system';
-import { PersonListItem } from '../../common/PersonListItem/PersonListItem';
+import { PersonListItem } from '../../common/PersonListItem';
 import { useTranslation } from 'react-i18next';
 import { DelegationRequest } from '../../../shared/models/DelegationRequest';
 import { getReceivedDelegationRequests } from '../../../services/DelegationRequestApi';

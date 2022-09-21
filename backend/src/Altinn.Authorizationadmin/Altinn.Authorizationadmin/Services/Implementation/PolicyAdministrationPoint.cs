@@ -136,7 +136,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<PolicyRule> rules)
         {
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out _, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
                 return false;
@@ -355,7 +355,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<List<PolicyRule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out string org, out string app);
+            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out string org, out string app, out _);
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
             string policyPath;
@@ -461,7 +461,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out string org, out string app);
+            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out string org, out string app, out _);
 
             string policyPath;
             try

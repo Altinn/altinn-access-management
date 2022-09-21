@@ -6,7 +6,9 @@ describe('<SentCompanyRequestsAccordionContent />', () => {
   test('it should mount', () => {
     render(<SentCompanyRequestsAccordionContent />);
 
-    const sentCompanyRequestsAccordionContent = screen.getByTestId('SentCompanyRequestsAccordionContent');
+    const sentCompanyRequestsAccordionContent = screen.getByTestId(
+      'SentCompanyRequestsAccordionContent',
+    );
 
     expect(sentCompanyRequestsAccordionContent).toBeInTheDocument();
   });

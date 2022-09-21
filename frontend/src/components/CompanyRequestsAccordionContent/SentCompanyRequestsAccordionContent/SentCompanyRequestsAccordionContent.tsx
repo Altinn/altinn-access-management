@@ -1,12 +1,9 @@
 import {
-  Button,
-  ButtonVariant,
   Accordion,
   AccordionContent,
   AccordionHeader,
 } from '@altinn/altinn-design-system';
 import classes from './SentCompanyRequestsAccordionContent.module.css';
-import { useTranslation } from 'react-i18next';
 import { DelegationRequest } from '../../../shared/models/DelegationRequest';
 import { getReceivedDelegationRequests } from '../../../services/DelegationRequestApi';
 import { useQuery } from 'react-query';
@@ -14,7 +11,6 @@ import { SentCompanyRequestsHeaderTexts } from '../SentCompanyRequestsHeaderText
 import { useState } from 'react';
 
 export const SentCompanyRequestsAccordionContent = () => {
-  const { t } = useTranslation('common');
   const [open1, setOpen1] = useState(false);
 
   const handleClick1 = () => {

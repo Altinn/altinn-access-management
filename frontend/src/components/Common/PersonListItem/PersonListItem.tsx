@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import classes from './PersonListItem.module.css';
 
 export interface PersonListItemProps {
@@ -7,8 +6,6 @@ export interface PersonListItemProps {
 }
 
 export const PersonListItem = ({ name, rightText }: PersonListItemProps) => {
-  const { t } = useTranslation('common');
-
   return (
     <div className={classes['received-company-requests-list-item-header']}>
       <span

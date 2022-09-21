@@ -1,1 +1,0 @@
-export { PersonListItem } from './PersonListItem';

@@ -10,7 +10,6 @@ import SuspendLoadLocale from './helpers/SuspendLoadLocale';
 import { getConfig } from './services/config';
 import baseLocales from './basic-locales.json';
 import './index.css';
-import CompanyRequestsAccordionContent from './components/CompanyRequestsAccordionContent/CompanyRequestsAccordionContent';
 
 /**
  * Special behaviour for react-query in dev environment
@@ -49,6 +48,7 @@ i18next.use(initReactI18next).init(
       authAdmin: document.getElementById(
         'altinn3-company-requests-accordion-content',
       ),
+      // put following code inside {featureRoots.authAdmin && ReactDOM.createPortal()}
       // further feature roots should go here…
     };
 
@@ -57,10 +57,7 @@ i18next.use(initReactI18next).init(
         <QueryClientProvider client={queryClient}>
           <SuspendLoadLocale>
             {featureRoots.authAdmin &&
-              ReactDOM.createPortal(
-                <CompanyRequestsAccordionContent />,
-                featureRoots.authAdmin,
-              )}
+              ReactDOM.createPortal(<></>, featureRoots.authAdmin)}
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

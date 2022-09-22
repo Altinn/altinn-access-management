@@ -82,7 +82,7 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("authorization/api/v1/[controller]/AddResource")]
+        [Route("authorization/api/v1/[controller]/AddResourceDelegation")]
         public async Task<ActionResult> AddResourceDelegation([FromBody] List<PolicyRule> rules)
         {
             if (rules == null || rules.Count < 1)
@@ -95,7 +95,7 @@ namespace Altinn.Platform.Authorization.Controllers
                 return BadRequest("Invalid model");
             }
 
-            List<PolicyRule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
+            List<PolicyRule> delegationResults = await _pap.TryWriteResourceDelegationPolicyRules(rules);
 
             if (delegationResults.All(r => r.CreatedSuccessfully))
             {

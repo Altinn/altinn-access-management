@@ -101,6 +101,51 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         }
 
         /// <inheritdoc/>
+        public async Task<List<PolicyRule>> TryWriteResourceDelegationPolicyRules(List<PolicyRule> rules)
+        {
+            List<PolicyRule> result = new List<PolicyRule>();
+            Dictionary<string, List<PolicyRule>> delegationDict = DelegationHelper.SortRulesByDelegationPolicyPath(rules, out List<PolicyRule> unsortables);
+
+            foreach (string delegationPolicypath in delegationDict.Keys)
+            {
+                bool writePolicySuccess = false;
+
+                try
+                {
+                    writePolicySuccess = await WriteDelegationPolicyInternal(delegationPolicypath, delegationDict[delegationPolicypath]);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {delegationPolicypath}", delegationPolicypath);
+                }
+
+                foreach (PolicyRule rule in delegationDict[delegationPolicypath])
+                {
+                    if (writePolicySuccess)
+                    {
+                        rule.CreatedSuccessfully = true;
+                        rule.Type = RuleType.DirectlyDelegated;
+                    }
+                    else
+                    {
+                        rule.RuleId = string.Empty;
+                    }
+
+                    result.Add(rule);
+                }
+            }
+
+            if (unsortables.Count > 0)
+            {
+                string unsortablesJson = JsonSerializer.Serialize(unsortables);
+                _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
+                result.AddRange(unsortables);
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public async Task<List<PolicyRule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete)
         {
             List<PolicyRule> result = new List<PolicyRule>();

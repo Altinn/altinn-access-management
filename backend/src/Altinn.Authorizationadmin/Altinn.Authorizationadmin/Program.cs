@@ -13,6 +13,9 @@ using Altinn.AuthorizationAdmin.Persistance;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Integration.Clients;
+using Altinn.AuthorizationAdmin.Core.Configuration;
 
 ILogger logger;
 
@@ -67,15 +70,23 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSwaggerGen();
     services.AddMvc();
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
+    services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
+    services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
+
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
+
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
+
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
+    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }

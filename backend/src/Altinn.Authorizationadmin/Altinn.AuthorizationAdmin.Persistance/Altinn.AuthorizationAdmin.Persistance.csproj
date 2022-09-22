@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Altinn.AuthorizationAdmin.Core\Altinn.AuthorizationAdmin.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
 </Project>

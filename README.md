@@ -1,6 +1,9 @@
 # altinn-authorization-admin
 
-PoC for new auth admin UI
+This component will handle functionality related to Access Management
+- Administration of rights for apps, resources
+- Administration of access groups
+- Administration of righs for api schemes
 
 ## Getting started
 

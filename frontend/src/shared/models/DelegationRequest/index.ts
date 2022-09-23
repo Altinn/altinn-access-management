@@ -1,7 +1,9 @@
 export type DelegationRequest = {
   guid: string;
   coveredBy?: string;
+  coveredByName?: string;
   offeredBy?: string;
+  offeredByName?: string;
   requestMessage?: string;
   created: string;
   lastChanged: string;

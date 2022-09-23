@@ -26,7 +26,12 @@
     <ProjectReference Include="..\Altinn.AuthorizationAdmin.Integration\Altinn.AuthorizationAdmin.Integration.csproj" />
     <ProjectReference Include="..\Altinn.AuthorizationAdmin.Persistance\Altinn.AuthorizationAdmin.Persistance.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="wwwroot\AuthorizationAdmin\assets" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
      <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
       <PrivateAssets>all</PrivateAssets>

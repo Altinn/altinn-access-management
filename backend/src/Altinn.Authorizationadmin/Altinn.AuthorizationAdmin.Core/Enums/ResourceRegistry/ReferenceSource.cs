@@ -1,11 +1,14 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Enums.ResourceRegistry
+namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
 {
+    /// <summary>
+    /// Enum for the different reference sources for resources in the resource registry
+    /// </summary>
     public enum ReferenceSource : int
     {
         [EnumMember(Value = "Default")]    
-        Default= 0,
+        Default = 0,
 
         [EnumMember(Value = "Altinn1")]
         Altinn1 = 1,
@@ -17,6 +20,6 @@ namespace Altinn.AuthorizationAdmin.Core.Enums.ResourceRegistry
         Altinn3 = 3,
 
         [EnumMember(Value = "ExternalPlatform")]
-        ExternalPlatform = 4,
+        ExternalPlatform = 4
     }
 }

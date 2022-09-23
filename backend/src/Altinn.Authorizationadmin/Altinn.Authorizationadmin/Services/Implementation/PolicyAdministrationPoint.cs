@@ -1,14 +1,14 @@
 ﻿using System.Data;
 using System.Net;
 using System.Text.Json;
+using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AuthorizationAdmin.Core.Services.Interface;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Azure;
 using Azure.Storage.Blobs.Models;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.Authorization.ABAC.Xacml;
 
 namespace Altinn.AuthorizationAdmin.Services.Implementation
 {

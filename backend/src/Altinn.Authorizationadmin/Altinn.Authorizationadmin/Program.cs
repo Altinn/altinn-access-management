@@ -1,21 +1,21 @@
-using Altinn.AuthorizationAdmin.Core.Services.Implementation;
-using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AuthorizationAdmin.Configuration;
+using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Models;
-using Altinn.AuthorizationAdmin.Services;
-using Npgsql.Logging;
-using Altinn.Platform.Authorization.Configuration;
-using Yuniql.AspNetCore;
-using Yuniql.PostgreSql;
-using Altinn.AuthorizationAdmin.Services.Implementation;
-using Altinn.AuthorizationAdmin.Services.Interface;
-using Altinn.AuthorizationAdmin.Persistance;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services;
+using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.AuthorizationAdmin.Core;
 using Altinn.AuthorizationAdmin.Integration.Clients;
-using Altinn.AuthorizationAdmin.Core.Configuration;
+using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AuthorizationAdmin.Models;
+using Altinn.AuthorizationAdmin.Persistance;
+using Altinn.AuthorizationAdmin.Services;
+using Altinn.AuthorizationAdmin.Services.Implementation;
+using Altinn.AuthorizationAdmin.Services.Interface;
+using Npgsql.Logging;
+using Yuniql.AspNetCore;
+using Yuniql.PostgreSql;
 
 ILogger logger;
 
@@ -39,7 +39,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-
 var app = builder.Build();
 ConfigurePostgreSql();
 
@@ -57,13 +56,11 @@ app.MapControllers();
 
 app.Run();
 
-
-
-
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     logger.LogInformation("Startup // ConfigureServices");
     services.AddControllersWithViews();
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
@@ -90,7 +87,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);
 }
-
 
 void ConfigureSetupLogging()
 {

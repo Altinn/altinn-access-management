@@ -1,7 +1,10 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Enums.ResourceRegistry
+namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
 {
+    /// <summary>
+    /// Enum for reference types of resources in the resource registry
+    /// </summary>
     public enum ReferenceType : int
     {
         [EnumMember(Value = "Default")]
@@ -14,7 +17,6 @@ namespace Altinn.AuthorizationAdmin.Core.Enums.ResourceRegistry
         OrgApp = 2,
 
         [EnumMember(Value = "Uri")]
-        Uri = 3,
-
+        Uri = 3
     }
 }

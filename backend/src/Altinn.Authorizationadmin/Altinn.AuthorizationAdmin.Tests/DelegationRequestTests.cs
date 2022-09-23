@@ -1,10 +1,10 @@
-using Altinn.Authorizationadmin.Controllers;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Tests.Utils;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Altinn.Authorizationadmin.Controllers;
+using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Tests.Utils;
 using Xunit;
 
 namespace Altinn.AuthorizationAdmin.Tests
@@ -21,7 +21,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         [Fact]
         public async Task Test1()
         {
-            HttpClient client = SetupUtil.GetTestClient(_factory);
+            HttpClient client = SetupUtils.GetTestClient(_factory);
 
             string requestUri = "/api/DelegationRequests";
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri)
@@ -40,7 +40,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         [Fact]
         public async Task Test2()
         {
-            HttpClient client = SetupUtil.GetTestClient(_factory);
+            HttpClient client = SetupUtils.GetTestClient(_factory);
 
             string requestUri = "/api/DelegationRequests/23";
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri)

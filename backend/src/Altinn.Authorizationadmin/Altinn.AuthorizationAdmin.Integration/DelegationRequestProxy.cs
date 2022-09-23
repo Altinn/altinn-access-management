@@ -1,14 +1,17 @@
-﻿using Altinn.AuthorizationAdmin.Core.Enums;
+﻿using System.Text.Json;
+using System.Web;
+using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
-using System.Web;
 
 namespace Altinn.AuthorizationAdmin.Services
 {
+    /// <summary>
+    /// Proxy implementation for delegation requests
+    /// </summary>
     public class DelegationRequestProxy : IDelegationRequestsWrapper
     {
         private readonly PlatformSettings _generalSettings;
@@ -16,7 +19,7 @@ namespace Altinn.AuthorizationAdmin.Services
         private readonly HttpClient _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrganizationsWrapper"/> class
+        /// Initializes a new instance of the <see cref="DelegationRequestProxy"/> class
         /// </summary>
         /// <param name="httpClient">HttpClient from default httpclientfactory</param>
         /// <param name="generalSettings">the general settings</param>
@@ -28,6 +31,7 @@ namespace Altinn.AuthorizationAdmin.Services
             _client = httpClient;
         }
 
+        /// <inheritdoc/>
         public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
             UriBuilder uriBuilder = new UriBuilder($"{_generalSettings.BridgeApiEndpoint}api/DelegationRequests");
@@ -45,9 +49,9 @@ namespace Altinn.AuthorizationAdmin.Services
 
             query["direction"] = direction.ToString();
 
-            if (status !=null)
+            if (status != null)
             {
-                foreach(var statusItem in status)
+                foreach (var statusItem in status)
                 {
                     query.Add("status", statusItem.ToString());
                 }
@@ -64,7 +68,7 @@ namespace Altinn.AuthorizationAdmin.Services
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return await JsonSerializer.DeserializeAsync<DelegationRequests>(await response.Content.ReadAsStreamAsync(), new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                return await JsonSerializer.DeserializeAsync<DelegationRequests>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             }
             else
             {

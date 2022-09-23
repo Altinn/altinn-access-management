@@ -1,5 +1,5 @@
-﻿using Altinn.AuthorizationAdmin.Core.Helpers;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 
 namespace Altinn.AuthorizationAdmin.Core.Models
 {

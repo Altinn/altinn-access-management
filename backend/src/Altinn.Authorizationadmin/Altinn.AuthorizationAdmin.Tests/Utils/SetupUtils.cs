@@ -1,19 +1,21 @@
-﻿using Altinn.Authorizationadmin.Controllers;
+﻿using System.Net.Http;
+using Altinn.Authorizationadmin.Controllers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Altinn.AuthorizationAdmin.Tests.Utils
 {
-    public static class SetupUtil
+    /// <summary>
+    /// Utility class for usefull common operations for setup for unittests
+    /// </summary>
+    public static class SetupUtils
     {
-        public static HttpClient GetTestClient(
-            CustomWebApplicationFactory<DelegationRequestsController> customFactory)
+        /// <summary>
+        /// Gets a HttpClient for unittests testing
+        /// </summary>
+        /// <param name="customFactory">Web app factory to configure test services for</param>
+        /// <returns>HttpClient</returns>
+        public static HttpClient GetTestClient(CustomWebApplicationFactory<DelegationRequestsController> customFactory)
         {
             WebApplicationFactory<DelegationRequestsController> factory = customFactory.WithWebHostBuilder(builder =>
             {
@@ -24,6 +26,5 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             factory.Server.AllowSynchronousIO = true;
             return factory.CreateClient();
         }
-
     }
 }

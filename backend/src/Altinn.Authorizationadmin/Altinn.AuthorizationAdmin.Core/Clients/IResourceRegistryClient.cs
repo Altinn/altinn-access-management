@@ -1,9 +1,9 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
 namespace Altinn.AuthorizationAdmin.Core
 {

@@ -1,11 +1,11 @@
 ﻿using System.Data;
 using System.Text.Json;
 using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Altinn.AuthorizationAdmin.Services.Interface;
-using Altinn.AuthorizationAdmin.Core.Helpers;
 
 namespace Altinn.Platform.Authorization.Controllers
 {

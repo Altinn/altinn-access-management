@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Yuniql.Extensibility;
 
-namespace Altinn.Platform.Authorization.Configuration
+namespace Altinn.AuthorizationAdmin.Configuration
 {
     /// <summary>
     /// Copied from sample project.
@@ -15,20 +15,22 @@ namespace Altinn.Platform.Authorization.Configuration
         /// </summary>
         public bool IsDebugEnabled { get; set; } = false;
 
-        /// <inheritdoc/>>
+        /// <inheritdoc/>
         public bool IsTraceSensitiveData { get; set; } = false;
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// TraceToDirectory
+        /// </summary>
         public string TraceToDirectory { get; set; }
 
-        /// <inheritdoc/>>
+        /// <inheritdoc/>
         public bool IsTraceToFile { get; set; } = false;
 
+        /// <inheritdoc/>
         public bool IsTraceToDirectory { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        /// <inheritdoc/>
         public string TraceDirectory { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-
 
         /// <summary>
         /// Info

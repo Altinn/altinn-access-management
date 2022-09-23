@@ -1,11 +1,11 @@
-﻿using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Altinn.AuthorizationAdmin.Core.Enums;
+using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Services;
 
 namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
@@ -13,8 +13,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
     {
         public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
-
-            DelegationRequests delRequests=  new DelegationRequests();
+            DelegationRequests delRequests = new DelegationRequests();
 
             string path = GetDelegationRequestPaths();
 
@@ -29,7 +28,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                     if (file.Contains(filterFileName))
                     {
                         string content = File.ReadAllText(Path.Combine(path, file));
-                        DelegationRequest? delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(content, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                        DelegationRequest? delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(content, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
                         if (delegationRequest != null)
                         {

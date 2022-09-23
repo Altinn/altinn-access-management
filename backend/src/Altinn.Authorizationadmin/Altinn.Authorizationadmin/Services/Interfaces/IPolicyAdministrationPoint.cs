@@ -30,7 +30,7 @@ namespace Altinn.AuthorizationAdmin.Services.Interface
         /// <summary>
         /// Trys to sort and store the set of rules as delegation policy files in blob storage.
         /// </summary>
-        /// <param name="rules"></param>
+        /// <param name="rules">The set of rules to be delegated</param>
         /// <returns>The list of rules with created Id and result status</returns>
         Task<List<PolicyRule>> TryWriteResourceDelegationPolicyRules(List<PolicyRule> rules);
 

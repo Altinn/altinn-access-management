@@ -2,6 +2,9 @@
 
 namespace Altinn.Authorizationadmin.Core.Models
 {
+    /// <summary>
+    /// Model definition for a resource on an authorization request
+    /// </summary>
     public class AuthorizationRequestResource
     {
         /// <summary>
@@ -12,7 +15,6 @@ namespace Altinn.Authorizationadmin.Core.Models
         /// <summary>
         ///  Gets or sets The ServiceEditionCode that request need 
         /// </summary>
-
         public int ServiceEditionCode { get; set; }
 
         /// <summary>

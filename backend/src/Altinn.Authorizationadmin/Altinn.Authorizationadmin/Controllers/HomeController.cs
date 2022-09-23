@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Altinn.AuthorizationAdmin.Core.Helpers;
+﻿using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Models;
 using Altinn.AuthorizationAdmin.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Altinn.AuthorizationAdmin
 {
+    /// <summary>
+    /// HomeController
+    /// </summary>
     public class HomeController : Controller
     {
+        /// <summary>
+        /// Gets the index vew for AuthorizationAdmin
+        /// </summary>
+        /// <returns>View result</returns>
         [HttpGet]
         [Route("AuthorizationAdmin/")]
         public IActionResult Index()
@@ -26,7 +33,13 @@ namespace Altinn.AuthorizationAdmin
 
             return View();
         }
+
         private FrontEndEntryPointOptions _frontEndEntrypoints;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="frontEndEntrypoints">Configuration of frontend entry points</param>
         public HomeController(IOptions<FrontEndEntryPointOptions> frontEndEntrypoints)
         {
             _frontEndEntrypoints = frontEndEntrypoints.Value;

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Altinn.AuthorizationAdmin.Core.Models
 {
+    /// <summary>
+    /// Enum definition of the AltinnII external operation types
+    /// </summary>
      public enum OperationTypeExternal
     {
         /// <summary>

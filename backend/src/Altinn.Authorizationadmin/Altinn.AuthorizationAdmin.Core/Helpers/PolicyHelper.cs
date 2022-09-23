@@ -97,6 +97,21 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         }
 
         /// <summary>
+        /// Builds the policy path based on resourceRegistryId
+        /// </summary>
+        /// <param name="resourceRegistryId">The organization name/identifier</param>
+        /// <returns></returns>
+        public static string GetAltinnAppsPolicyPath(string resourceRegistryId)
+        {
+            if (string.IsNullOrWhiteSpace(resourceRegistryId))
+            {
+                throw new ArgumentException("ResourceRegistryId was not defined");
+            }
+
+            return $"{resourceRegistryId.AsFileName()}/policy.xml";
+        }
+
+        /// <summary>
         /// Creates a Rule representation based on a search and a xacmlRule found in a XacmlPolicyFile based on the search
         /// </summary>
         /// <param name="search">The search used to find the correct rule</param>
@@ -127,16 +142,25 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy or null if party id</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy or null if user id</param>
         /// <returns>policypath matching input data</returns>
-        public static string GetAltinnAppDelegationPolicyPath(string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId)
+        public static string GetAltinnAppDelegationPolicyPath(string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId, string resourceRegistryId)
         {
-            if (string.IsNullOrWhiteSpace(org))
-            {
-                throw new ArgumentException("Org was not defined");
-            }
+            bool resourceIdExists = false;
 
-            if (string.IsNullOrWhiteSpace(app))
+            if (string.IsNullOrWhiteSpace(resourceRegistryId))
             {
-                throw new ArgumentException("App was not defined");
+                if (string.IsNullOrWhiteSpace(org))
+                {
+                    throw new ArgumentException("Org was not defined");
+                }
+
+                if (string.IsNullOrWhiteSpace(app))
+                {
+                    throw new ArgumentException("App was not defined");
+                }
+            }
+            else
+            {
+                resourceIdExists = true;
             }
 
             if (string.IsNullOrWhiteSpace(offeredBy))
@@ -172,7 +196,14 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
                 coveredBy = coveredByUserId.ToString();
             }
 
-            return $"{org.AsFileName()}/{app.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix}{coveredBy.AsFileName()}/delegationpolicy.xml";
+            if (!resourceIdExists)
+            {
+                return $"{org.AsFileName()}/{app.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix}{coveredBy.AsFileName()}/delegationpolicy.xml";
+            }
+            else
+            {
+                return $"resourceregistry /{resourceRegistryId}/{offeredBy}/{coveredBy}/ delegationpolicy.xacml";
+            }
         }
 
         /// <summary>
@@ -185,7 +216,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             DelegationHelper.TryGetResourceFromAttributeMatch(policyMatch.Resource, out string org, out string app, out string resourceId);
             DelegationHelper.GetCoveredByFromMatch(policyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            return PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, policyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+            return GetAltinnAppDelegationPolicyPath(org, app, policyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
         }
 
         /// <summary>

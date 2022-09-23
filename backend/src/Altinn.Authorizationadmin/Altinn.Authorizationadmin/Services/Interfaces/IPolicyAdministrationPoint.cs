@@ -28,13 +28,6 @@ namespace Altinn.AuthorizationAdmin.Services.Interface
         Task<List<PolicyRule>> TryWriteDelegationPolicyRules(List<PolicyRule> rules);
 
         /// <summary>
-        /// Trys to sort and store the set of rules as delegation policy files in blob storage.
-        /// </summary>
-        /// <param name="rules">The set of rules to be delegated</param>
-        /// <returns>The list of rules with created Id and result status</returns>
-        Task<List<PolicyRule>> TryWriteResourceDelegationPolicyRules(List<PolicyRule> rules);
-
-        /// <summary>
         /// Trys to sort and delete the set of rules matching the list of ruleMatches to delete from delegation policy files in blob storage.
         /// </summary>
         /// <param name="rulesToDelete">Entity to define which rules to be deleted</param>

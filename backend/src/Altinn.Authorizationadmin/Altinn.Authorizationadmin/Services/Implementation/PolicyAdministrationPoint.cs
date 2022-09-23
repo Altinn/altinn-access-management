@@ -101,51 +101,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<PolicyRule>> TryWriteResourceDelegationPolicyRules(List<PolicyRule> rules)
-        {
-            List<PolicyRule> result = new List<PolicyRule>();
-            Dictionary<string, List<PolicyRule>> delegationDict = DelegationHelper.SortRulesByDelegationPolicyPath(rules, out List<PolicyRule> unsortables);
-
-            foreach (string delegationPolicypath in delegationDict.Keys)
-            {
-                bool writePolicySuccess = false;
-
-                try
-                {
-                    writePolicySuccess = await WriteDelegationPolicyInternal(delegationPolicypath, delegationDict[delegationPolicypath]);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {delegationPolicypath}", delegationPolicypath);
-                }
-
-                foreach (PolicyRule rule in delegationDict[delegationPolicypath])
-                {
-                    if (writePolicySuccess)
-                    {
-                        rule.CreatedSuccessfully = true;
-                        rule.Type = RuleType.DirectlyDelegated;
-                    }
-                    else
-                    {
-                        rule.RuleId = string.Empty;
-                    }
-
-                    result.Add(rule);
-                }
-            }
-
-            if (unsortables.Count > 0)
-            {
-                string unsortablesJson = JsonSerializer.Serialize(unsortables);
-                _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
-                result.AddRange(unsortables);
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public async Task<List<PolicyRule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete)
         {
             List<PolicyRule> result = new List<PolicyRule>();
@@ -181,27 +136,67 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<PolicyRule> rules)
         {
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out _, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out string resourceRegistryId, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
                 return false;
             }
 
-            XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app);
-            if (appPolicy == null)
+            if (!string.IsNullOrWhiteSpace(resourceRegistryId))
             {
-                _logger.LogWarning("No valid App policy found for delegation policy path: {policyPath}", policyPath);
-                return false;
-            }
-
-            foreach (PolicyRule rule in rules)
-            {
-                if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
+                XacmlPolicy appPolicy = await _prp.GetPolicyAsync(resourceRegistryId);
+                if (appPolicy == null)
                 {
-                    _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                    _logger.LogWarning("No valid App policy found for delegation policy path: {policyPath}", policyPath);
                     return false;
                 }
+
+                //if (!DelegationHelper.CheckIfPolicyContainsMatchingRule(appPolicy, rules, out PolicyRule rule))
+                //{
+                //    _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                //    return false;
+                //}
+                foreach (PolicyRule rule in rules)
+                {
+                    if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
+                    {
+                        _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                        return false;
+                    }
+                }
             }
+            else
+            {
+                XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app);
+                if (appPolicy == null)
+                {
+                    _logger.LogWarning("No valid App policy found for delegation policy path: {policyPath}", policyPath);
+                    return false;
+                }
+
+                //if (!DelegationHelper.CheckIfPolicyContainsMatchingRule(appPolicy, rules, out PolicyRule rule))
+                //{
+                //    _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                //    return false;
+                //}
+                foreach (PolicyRule rule in rules)
+                {
+                    if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
+                    {
+                        _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                        return false;
+                    }
+                }
+            }
+
+            //foreach (PolicyRule rule in rules)
+            //{
+            //    if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
+            //    {
+            //        _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+            //        return false;
+            //    }
+            //}
 
             if (!await _policyRepository.PolicyExistsAsync(policyPath))
             {
@@ -400,13 +395,13 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<List<PolicyRule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out string org, out string app, out _);
+            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out string org, out string app, out string resourceId);
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
             }
             catch (Exception ex)
             {
@@ -506,12 +501,12 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out string org, out string app, out _);
+            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out string org, out string app, out string resourceId);
 
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
             }
             catch (Exception ex)
             {

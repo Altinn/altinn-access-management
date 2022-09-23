@@ -24,6 +24,13 @@ namespace Altinn.AuthorizationAdmin.Services.Interface
         Task<XacmlPolicy> GetPolicyAsync(string org, string app);
 
         /// <summary>
+        /// Returns a policy based the resourceRegistryId
+        /// </summary>
+        /// <param name="resourceRegistry">The Resource Registry Id</param>
+        /// <returns>XacmlPolicy</returns>
+        Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry);
+
+        /// <summary>
         /// Returns a specific version of a policy if it exits on the provided path
         /// </summary>
         /// <param name="policyPath">The blobstorage path to the policy file</param>

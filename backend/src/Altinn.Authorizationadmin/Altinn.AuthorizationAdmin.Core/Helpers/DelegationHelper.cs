@@ -176,9 +176,9 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         public static bool TryGetDelegationPolicyPathFromRule(PolicyRule rule, out string delegationPolicyPath)
         {
             delegationPolicyPath = null;
-            if (TryGetDelegationParamsFromRule(rule, out string org, out string app, out _, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
+            if (TryGetDelegationParamsFromRule(rule, out string org, out string app, out string resourceRegistryId, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
             {
-                delegationPolicyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId);
+                delegationPolicyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId, resourceRegistryId);
                 return true;
             }
 
@@ -195,7 +195,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             List<string> policyPaths = new List<string>();
             foreach (PolicyRule rule in rules)
             {
-                bool pathOk = DelegationHelper.TryGetDelegationPolicyPathFromRule(rule, out string delegationPolicyPath);
+                bool pathOk = TryGetDelegationPolicyPathFromRule(rule, out string delegationPolicyPath);
                 if (pathOk && !policyPaths.Contains(delegationPolicyPath))
                 {
                     policyPaths.Add(delegationPolicyPath);
@@ -220,6 +220,25 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
 
             return result;
         }
+
+        //public static bool CheckIfPolicyContainsMatchingRule(XacmlPolicy appPolicy, List<PolicyRule> rules, out PolicyRule ruleNotMatched)
+        //{
+        //    foreach (PolicyRule rule in rules)
+        //    {
+        //        if (!PolicyContainsMatchingRule(appPolicy, rule))
+        //        {
+        //            ruleNotMatched = rule;
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            ruleNotMatched = null;
+        //            return true;
+        //        }
+        //    }
+
+        //    ruleNotMatched = null;
+        //}
 
         /// <summary>
         /// Checks whether the provided XacmlPolicy contains a rule having an identical Resource signature and contains the Action from the rule,

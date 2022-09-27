@@ -108,7 +108,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
                 throw new ArgumentException("ResourceRegistryId was not defined");
             }
 
-            return $"{resourceRegistryId.AsFileName()}/policy.xml";
+            return $"{resourceRegistryId.AsFileName()}/resourcepolicy.xml";
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             }
             else
             {
-                return $"resourceregistry /{resourceRegistryId}/{offeredBy}/{coveredBy}/ delegationpolicy.xacml";
+                return $"resourceregistry/{resourceRegistryId}/{offeredBy}/{coveredBy}/resourcepolicy.xml";
             }
         }
 

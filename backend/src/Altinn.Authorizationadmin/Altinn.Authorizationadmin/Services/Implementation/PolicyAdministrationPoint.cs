@@ -151,11 +151,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     return false;
                 }
 
-                //if (!DelegationHelper.CheckIfPolicyContainsMatchingRule(appPolicy, rules, out PolicyRule rule))
-                //{
-                //    _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
-                //    return false;
-                //}
                 foreach (PolicyRule rule in rules)
                 {
                     if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
@@ -254,14 +249,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         return false;
                     }
 
-                    try
-                    {
-                        await _eventQueue.Push(change);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogCritical(new EventId(delegationChangeEventQueueErrorId, "DelegationChangeEventQueue.Push.Error"), ex, "AddRules could not push DelegationChangeEvent to DelegationChangeEventQueue. DelegationChangeEvent must be retried for successful sync with SBL Authorization. DelegationChange: {change}", change);
-                    }
+                    //try
+                    //{
+                    //    await _eventQueue.Push(change);
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    _logger.LogCritical(new EventId(delegationChangeEventQueueErrorId, "DelegationChangeEventQueue.Push.Error"), ex, "AddRules could not push DelegationChangeEvent to DelegationChangeEventQueue. DelegationChangeEvent must be retried for successful sync with SBL Authorization. DelegationChange: {change}", change);
+                    //}
 
                     return true;
                 }

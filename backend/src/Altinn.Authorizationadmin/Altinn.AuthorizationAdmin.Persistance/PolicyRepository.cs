@@ -25,6 +25,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly AzureStorageConfiguration _storageConfig;
         private readonly BlobContainerClient _metadataContainerClient;
         private readonly BlobContainerClient _delegationsContainerClient;
+        private readonly BlobContainerClient _resourceRegisterContainerClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyRepository"/> class
@@ -44,7 +45,11 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
             StorageSharedKeyCredential delegationsCredentials = new StorageSharedKeyCredential(_storageConfig.DelegationsAccountName, _storageConfig.DelegationsAccountKey);
             BlobServiceClient delegationsServiceClient = new BlobServiceClient(new Uri(_storageConfig.DelegationsBlobEndpoint), delegationsCredentials);
-            _delegationsContainerClient = delegationsServiceClient.GetBlobContainerClient(_storageConfig.DelegationsContainer);           
+            _delegationsContainerClient = delegationsServiceClient.GetBlobContainerClient(_storageConfig.DelegationsContainer);
+
+            StorageSharedKeyCredential resourceRegisterCredentials = new StorageSharedKeyCredential(_storageConfig.ResourceRegistryAccountName, _storageConfig.ResourceRegistryAccountKey);
+            BlobServiceClient resourceRegisterServiceClient = new BlobServiceClient(new Uri(_storageConfig.ResourceRegistryBlobEndpoint), resourceRegisterCredentials);
+            _resourceRegisterContainerClient = resourceRegisterServiceClient.GetBlobContainerClient(_storageConfig.ResourceRegistryContainer);
         }
 
         /// <inheritdoc/>
@@ -168,6 +173,11 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 return _delegationsContainerClient.GetBlobClient(blobName);
             }
 
+            if (blobName.Contains("resourcepolicy.xml"))
+            {
+                return _resourceRegisterContainerClient.GetBlobClient(blobName);
+            }
+            
             return _metadataContainerClient.GetBlobClient(blobName);
         }
 

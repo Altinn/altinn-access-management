@@ -83,6 +83,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+    services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
+
+    GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
 
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);

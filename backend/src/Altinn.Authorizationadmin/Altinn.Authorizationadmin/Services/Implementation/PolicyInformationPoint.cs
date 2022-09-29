@@ -29,9 +29,9 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<PolicyRule>> GetRulesAsync(List<string> appIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds)
+        public async Task<List<Rule>> GetRulesAsync(List<string> appIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds)
         {
-            List<PolicyRule> rules = new List<PolicyRule>();
+            List<Rule> rules = new List<Rule>();
             List<DelegationChange> delegationChanges = await _delegationRepository.GetAllCurrentDelegationChanges(offeredByPartyIds, appIds, coveredByPartyIds, coveredByUserIds);
             foreach (DelegationChange delegationChange in delegationChanges)
             {
@@ -45,14 +45,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             return rules;
         }
 
-        private static List<PolicyRule> GetRulesFromPolicyAndDelegationChange(ICollection<XacmlRule> xacmlRules, DelegationChange delegationChange)
+        private static List<Rule> GetRulesFromPolicyAndDelegationChange(ICollection<XacmlRule> xacmlRules, DelegationChange delegationChange)
         {
-            List<PolicyRule> rules = new List<PolicyRule>();
+            List<Rule> rules = new List<Rule>();
             foreach (XacmlRule xacmlRule in xacmlRules)
             {
                 if (xacmlRule.Effect.Equals(XacmlEffectType.Permit) && xacmlRule.Target != null)
                 {
-                    PolicyRule rule = new PolicyRule
+                    Rule rule = new Rule
                     {
                         RuleId = xacmlRule.RuleId,
                         OfferedByPartyId = delegationChange.OfferedByPartyId,
@@ -68,7 +68,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             return rules;
         }
 
-        private static void AddAttributeMatchesToRule(XacmlTarget xacmlTarget, PolicyRule rule)
+        private static void AddAttributeMatchesToRule(XacmlTarget xacmlTarget, Rule rule)
         {
             foreach (XacmlAnyOf anyOf in xacmlTarget.AnyOf)
             {
@@ -82,7 +82,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             }
         }
 
-        private static void AddAttributeMatchToRule(XacmlMatch xacmlMatch, PolicyRule rule)
+        private static void AddAttributeMatchToRule(XacmlMatch xacmlMatch, Rule rule)
         {
             if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action))
             {

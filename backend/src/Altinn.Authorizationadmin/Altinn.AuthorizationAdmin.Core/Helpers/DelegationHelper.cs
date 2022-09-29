@@ -17,12 +17,12 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="rules">The list of rules to be sorted</param>
         /// <param name="unsortableRules">The list of rules not able to sort by org/app/offeredBy/CoveredBy</param>
         /// <returns>A dictionary with key being the filepath for the delegation policy file, and value being the list of rules to be written to the delegation policy</returns>
-        public static Dictionary<string, List<PolicyRule>> SortRulesByDelegationPolicyPath(List<PolicyRule> rules, out List<PolicyRule> unsortableRules)
+        public static Dictionary<string, List<Models.Rule>> SortRulesByDelegationPolicyPath(List<Models.Rule> rules, out List<Models.Rule> unsortableRules)
         {
-            Dictionary<string, List<PolicyRule>> result = new Dictionary<string, List<PolicyRule>>();
-            unsortableRules = new List<PolicyRule>();
+            Dictionary<string, List<Models.Rule>> result = new Dictionary<string, List<Models.Rule>>();
+            unsortableRules = new List<Models.Rule>();
 
-            foreach (PolicyRule rule in rules)
+            foreach (Models.Rule rule in rules)
             {
                 if (!TryGetDelegationPolicyPathFromRule(rule, out string path))
                 {
@@ -36,7 +36,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
                 }
                 else
                 {
-                    result.Add(path, new List<PolicyRule> { rule });
+                    result.Add(path, new List<Models.Rule> { rule });
                 }
             }
 
@@ -131,7 +131,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// Gets Org, App, ResourceRegistryId, OfferedBy and CoveredBy as out params from a single Rule
         /// </summary>
         /// <returns>A bool indicating whether params where found</returns>
-        public static bool TryGetDelegationParamsFromRule(PolicyRule rule, out string org, out string app, out string resourceRegistryId, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
+        public static bool TryGetDelegationParamsFromRule(Models.Rule rule, out string org, out string app, out string resourceRegistryId, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
         {
             org = null;
             app = null;
@@ -170,7 +170,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// Gets the delegation policy path for a single Rule
         /// </summary>
         /// <returns>A bool indicating whether necessary params to build the path where found</returns>
-        public static bool TryGetDelegationPolicyPathFromRule(PolicyRule rule, out string delegationPolicyPath)
+        public static bool TryGetDelegationPolicyPathFromRule(Models.Rule rule, out string delegationPolicyPath)
         {
             delegationPolicyPath = null;
             if (TryGetDelegationParamsFromRule(rule, out string org, out string app, out string resourceRegistryId, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
@@ -187,10 +187,10 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// </summary>
         /// <param name="rules">List of rules to check how many individual policies exist</param>
         /// <returns>count of policies</returns>
-        public static int GetPolicyCount(List<PolicyRule> rules)
+        public static int GetPolicyCount(List<Models.Rule> rules)
         {
             List<string> policyPaths = new List<string>();
-            foreach (PolicyRule rule in rules)
+            foreach (Models.Rule rule in rules)
             {
                 bool pathOk = TryGetDelegationPolicyPathFromRule(rule, out string delegationPolicyPath);
                 if (pathOk && !policyPaths.Contains(delegationPolicyPath))
@@ -223,7 +223,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// to be used for checking for duplicate rules in delegation, or that the rule exists in the Apps Xacml policy.
         /// </summary>
         /// <returns>A bool</returns>
-        public static bool PolicyContainsMatchingRule(XacmlPolicy policy, PolicyRule rule)
+        public static bool PolicyContainsMatchingRule(XacmlPolicy policy, Models.Rule rule)
         {
             string ruleResourceKey = GetAttributeMatchKey(rule.Resource);
 
@@ -284,9 +284,9 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <summary>
         /// Sets the RuleType on each rule in the given list
         /// </summary>
-        public static void SetRuleType(List<PolicyRule> rulesList, int offeredByPartyId, List<int> keyRolePartyIds, List<AttributeMatch> coveredBy, int parentPartyId = 0)
+        public static void SetRuleType(List<Models.Rule> rulesList, int offeredByPartyId, List<int> keyRolePartyIds, List<AttributeMatch> coveredBy, int parentPartyId = 0)
         {
-            foreach (PolicyRule rule in rulesList)
+            foreach (Models.Rule rule in rulesList)
             {
                 if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _)
                     && rule.Type == RuleType.None)
@@ -296,7 +296,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             }
         }
 
-        private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, PolicyRule rule, int? coveredByPartyId, int? coveredByUserId)
+        private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Models.Rule rule, int? coveredByPartyId, int? coveredByUserId)
         {
             bool isUserId = TryGetCoveredByUserIdFromMatch(coveredBy, out int coveredByUserIdFromRequest);
             bool isPartyId = TryGetCoveredByPartyIdFromMatch(coveredBy, out int coveredByPartyIdFromRequest);

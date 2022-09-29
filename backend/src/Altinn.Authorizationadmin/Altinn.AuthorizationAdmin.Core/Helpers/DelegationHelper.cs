@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Constants;
@@ -220,25 +217,6 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
 
             return result;
         }
-
-        //public static bool CheckIfPolicyContainsMatchingRule(XacmlPolicy appPolicy, List<PolicyRule> rules, out PolicyRule ruleNotMatched)
-        //{
-        //    foreach (PolicyRule rule in rules)
-        //    {
-        //        if (!PolicyContainsMatchingRule(appPolicy, rule))
-        //        {
-        //            ruleNotMatched = rule;
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            ruleNotMatched = null;
-        //            return true;
-        //        }
-        //    }
-
-        //    ruleNotMatched = null;
-        //}
 
         /// <summary>
         /// Checks whether the provided XacmlPolicy contains a rule having an identical Resource signature and contains the Action from the rule,

@@ -1,8 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Azure;

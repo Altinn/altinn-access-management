@@ -1,4 +1,3 @@
-using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Xml;
 using Altinn.Authorization.ABAC.Constants;

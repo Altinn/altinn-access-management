@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Altinn.Authorizationadmin": {
+    "Altinn.AuthorizationAdmin": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

@@ -9,8 +9,12 @@ using Altinn.AuthorizationAdmin.Core.Services;
 
 namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
+    /// <summary>
+    /// Mock class for <see cref="IDelegationRequestsWrapper"></see> interface
+    /// </summary>
     public class DelegationRequestMock : IDelegationRequestsWrapper
     {
+        /// <inheritdoc/>
         public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
             DelegationRequests delRequests = new DelegationRequests();

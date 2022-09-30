@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Enums;
+﻿using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services;
 
 namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 {

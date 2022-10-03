@@ -536,19 +536,9 @@ namespace Altinn.AuthorizationAdmin.Tests
 
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            List<Rule> actual = null;
-            try
-            {
-                actual = (List<Rule>)JsonConvert.DeserializeObject(responseContent, typeof(List<Rule>));
-            }
-            catch
-            {
-                // Do nothing expected
-            }
-
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Null(actual);
+            Assert.Equal("\"Unable to complete deletion\"", responseContent);
         }
 
         /// <summary>

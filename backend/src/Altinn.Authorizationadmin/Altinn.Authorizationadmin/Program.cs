@@ -172,7 +172,7 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
         try
         {
             //// TODO: microsoft.extensions.configuration.azurekeyvault is depricated
-            ////config.AddAzureKeyVault(keyVaultSettings.SecretUri, keyVaultSettings.ClientId, keyVaultSettings.ClientSecret);
+            config.AddAzureKeyVault(keyVaultSettings.SecretUri, keyVaultSettings.ClientId, keyVaultSettings.ClientSecret);
         }
         catch (Exception vaultException)
         {

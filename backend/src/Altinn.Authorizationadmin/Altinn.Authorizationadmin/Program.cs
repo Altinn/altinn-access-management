@@ -281,7 +281,7 @@ void Configure()
     }
     else
     {
-        app.UseExceptionHandler("/authorization/api/v1/error");
+        app.UseExceptionHandler("/access-management/api/v1/error");
     }
 
     app.UseRouting();

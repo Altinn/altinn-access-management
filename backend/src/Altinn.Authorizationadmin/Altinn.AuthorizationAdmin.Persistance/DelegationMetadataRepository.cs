@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,9 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly ILogger _logger;
         private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
+        private readonly string getResourcesSql = "select * from delegation.get_resources(@_offeredByPartyId)";
+        private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
+        private readonly string getReceivedDelegationsSql = "select * from delegation.get_receivedDelegations(@_coveredByPartyId)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
         private readonly string getAllCurrentDelegationChangesUserIdsSql = "select * from delegation.get_all_current_changes_coveredbyuserids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByUserIds)";
@@ -161,6 +165,88 @@ namespace Altinn.AuthorizationAdmin.Persistance
             return delegationChanges;
         }
 
+        /// <inheritdoc/>
+        public async Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getDelegatedResourcesSql, conn);
+                pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
+
+                List<Delegation> delegatedResources = new List<Delegation>();
+                List<ResourceDelegation> receivedDelegation = new List<ResourceDelegation>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    delegatedResources.Add(GetDelegation(reader));
+                }
+
+                return delegatedResources;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetDelegations(int offeredByPartyId)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getResourcesSql, conn);
+                pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
+
+                List<ServiceResource> resource = new List<ServiceResource>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    resource.Add(GetResources(reader));
+                }
+
+                return resource;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
+                pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId);
+
+                List<Delegation> delegatedResources = new List<Delegation>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    delegatedResources.Add(GetDelegation(reader));
+                }
+
+                return delegatedResources;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
         private static void CheckIfOfferedbyPartyIdsHasValue(List<int> offeredByPartyIds)
         {
             if (offeredByPartyIds == null)
@@ -188,6 +274,59 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
                 Created = reader.GetFieldValue<DateTime>("created")
             };
+        }
+
+        private static Delegation GetDelegation(NpgsqlDataReader reader)
+        {
+            ServiceResource? resource = null;
+            if (reader["serviceresourcejson"] != DBNull.Value)
+            {
+                var jsonb = reader.GetString("serviceresourcejson");
+                resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
+            }
+
+            return new Delegation
+            {
+                DelegatedById = reader.GetFieldValue<int>("performedbyuserid"),
+                ResourceId = reader.GetFieldValue<string>("resourceid"),
+                ResourceName = (resource!= null) ? resource.Title : null,
+                DelegatedToId = reader.GetFieldValue<int>("coveredbypartyid")
+            };
+        }
+
+        //private static ReceivedDelegation GetReceivedDelegation(NpgsqlDataReader reader)
+        //{
+        //    ServiceResource? resource = null;
+        //    if (reader["serviceresourcejson"] != DBNull.Value)
+        //    {
+        //        var jsonb = reader.GetString("serviceresourcejson");
+        //        resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
+        //    }
+
+        //    ReceivedDelegation delegation = new ReceivedDelegation
+        //    {
+        //        DelegatedById = reader.GetFieldValue<int>("performedbyuserid"),
+        //        ResourceName = (resource != null) ? resource.Title : null,
+        //        DelegatedToId = reader.GetFieldValue<int>("coveredbypartyid")
+        //    };
+
+        //}
+
+        private static ServiceResource GetResources(NpgsqlDataReader reader)
+        {
+            ServiceResource? resource = null;
+            if (reader["serviceresourcejson"] != DBNull.Value)
+            {
+                var jsonb = reader.GetString("serviceresourcejson");
+                resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
+            }
+
+            ServiceResource delegatedResource = new ServiceResource
+            {
+                Identifier = reader.GetFieldValue<string>("resourceid"),
+                Title = (resource != null) ? resource.Title : null
+            };
+            return delegatedResource;
         }
 
         private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByPartyIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByPartyIds = null)

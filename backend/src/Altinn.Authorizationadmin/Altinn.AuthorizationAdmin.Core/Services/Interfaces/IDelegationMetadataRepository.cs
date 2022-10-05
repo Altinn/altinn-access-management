@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
 namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
 {
@@ -43,5 +44,23 @@ namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
         /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserIds">The list of user id of the entity having received the delegated policy, if the entity is a user</param>
         Task<List<DelegationChange>> GetAllCurrentDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null);
+
+        /// <summary>
+        /// Gets the delegated resources for a given reportee
+        /// </summary>
+        /// <param name="offeredByPartyId">The party id of the entity offering the delegation</param>
+        Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId);
+
+        /// <summary>
+        /// Gets the delegated resources for a given reportee
+        /// </summary>
+        /// <param name="coveredByPartyId">The party id of the entity receiving the delegation</param>
+        Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId);
+
+        /// <summary>
+        /// Gets the delegated resources for a given reportee
+        /// </summary>
+        /// <param name="offeredByPartyId">The party id of the entity offering the delegation</param>
+        Task<List<ServiceResource>> GetDelegations(int offeredByPartyId);
     }
 }

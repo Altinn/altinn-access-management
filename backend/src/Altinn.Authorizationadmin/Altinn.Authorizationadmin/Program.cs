@@ -6,6 +6,7 @@ using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Integration.Clients;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Altinn.AuthorizationAdmin.Models;
@@ -21,11 +22,12 @@ ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
+
 string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AuthorizationAdmin/");
 builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
 
 ConfigureSetupLogging();
-NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
 // Add services to the container.
 ConfigureServices(builder.Services, builder.Configuration);
@@ -83,6 +85,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+    services.AddSingleton<IDelegationsService, DelegationsService>();
 
     services.AddOptions<FrontEndEntryPointOptions>()
         .BindConfiguration(FrontEndEntryPointOptions.SectionName);

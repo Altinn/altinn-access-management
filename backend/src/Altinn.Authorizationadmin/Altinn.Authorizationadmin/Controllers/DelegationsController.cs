@@ -3,6 +3,7 @@ using System.Text.Json;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace Altinn.Platform.Authorization.Controllers
         private readonly IPolicyAdministrationPoint _pap;
         private readonly IPolicyInformationPoint _pip;
         private readonly ILogger _logger;
+        private readonly IDelegationsService _delegation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -25,11 +27,12 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <param name="policyAdministrationPoint">The policy administration point</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="logger">the logger.</param>
-        public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger)
+        public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger, IDelegationsService delegationsService)
         {
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
             _logger = logger;
+            _delegation = delegationsService;
         }
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
+        ////[Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/AddRules")]
         public async Task<ActionResult> Post([FromBody] List<PolicyRule> rules)
         {
@@ -117,7 +120,7 @@ namespace Altinn.Platform.Authorization.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
+        ////[Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/GetRules")]
         public async Task<ActionResult<List<PolicyRule>>> GetRules([FromBody] RuleQuery ruleQuery, [FromQuery] bool onlyDirectDelegations = false)
         {
@@ -251,6 +254,42 @@ namespace Altinn.Platform.Authorization.Controllers
 
             _logger.LogInformation("Deletion could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{policiesToDeleteSerialized}", policiesToDeleteSerialized);
             return StatusCode(400, $"Unable to complete deletion");
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("authorization/api/v1/[controller]/GetDelegatedResources")]
+        public async Task<ActionResult<List<ResourceDelegation>>> GetDelegatedResources([FromQuery] int offeredbyPartyId)
+        {
+            if (offeredbyPartyId == null || offeredbyPartyId == 0)
+            {
+                return BadRequest("Missing query parameter offeredbypartyid");
+            }
+
+            List<ResourceDelegation> delegations = await _delegation.GetDelegatedResourcesAsync(offeredbyPartyId);
+            return delegations;
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("authorization/api/v1/[controller]/GetReceivedDelegations")]
+        public async Task<ActionResult<List<Delegation>>> GetReceivedDelegations([FromQuery] int coveredByPartyId)
+        {
+            if (coveredByPartyId == null || coveredByPartyId == 0)
+            {
+                return BadRequest("Missing query parameter coveredByPartyId");
+            }
+
+            List<Delegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredByPartyId);
+            return delegations;
         }
 
         /// <summary>

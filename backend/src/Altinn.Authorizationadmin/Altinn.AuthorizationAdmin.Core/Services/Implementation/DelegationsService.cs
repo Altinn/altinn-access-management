@@ -2,7 +2,8 @@
 using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
-using Npgsql;
+using Altinn.Platform.Register.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 {
@@ -10,21 +11,28 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
     public class DelegationsService : IDelegationsService
     {
         private readonly IDelegationMetadataRepository _delegationRepository;
+        private readonly ILogger<IDelegationsService> _logger;
+        private readonly IPartiesWrapper _partyProxy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
         /// </summary>
         /// <param name="delegationRepository">delgation change handler</param>
-        public DelegationsService(IDelegationMetadataRepository delegationRepository)
+        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesWrapper partyProxy)
         {
             _delegationRepository = delegationRepository;
+            _logger = logger;
+            _partyProxy = partyProxy;
         }
 
         /// <inheritdoc/>
         public async Task<List<ResourceDelegation>> GetDelegatedResourcesAsync(int offeredbyPartyId)
         {
-            List<ServiceResource> serviceResources = await _delegationRepository.GetDelegations(offeredbyPartyId);
+            List<ServiceResource> serviceResources = await _delegationRepository.GetResources(offeredbyPartyId);
             List<Delegation> delegations = await _delegationRepository.GetDelegatedResources(offeredbyPartyId);
+            List<int> parties = new List<int>();
+            parties = delegations.Select(d => d.DelegatedToId).ToList();
+            List<Party> partyDetails = await _partyProxy.GetPartiesAsync(parties);
             List<ResourceDelegation> resourceDelegations = new List<ResourceDelegation>();
             foreach (ServiceResource resource in serviceResources)
             {
@@ -35,6 +43,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                     resourceDelegation.ResourceName = resource.Title.FirstOrDefault().Value;
                     List<Delegation> query = delegations.FindAll(d => d.ResourceId.Equals(resource.Identifier));
                     resourceDelegation.Delegations = new List<Delegation>();
+
                     foreach (Delegation delegation in query)
                     {
                         resourceDelegation.Delegations.Add(delegation);

@@ -74,6 +74,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
+    services.AddHttpClient<IPartiesWrapper, PartiesProxy>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 

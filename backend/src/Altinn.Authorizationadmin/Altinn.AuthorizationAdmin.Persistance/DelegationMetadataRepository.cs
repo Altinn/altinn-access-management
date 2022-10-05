@@ -194,7 +194,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetDelegations(int offeredByPartyId)
+        public async Task<List<ServiceResource>> GetResources(int offeredByPartyId)
         {
             try
             {
@@ -293,24 +293,6 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 DelegatedToId = reader.GetFieldValue<int>("coveredbypartyid")
             };
         }
-
-        //private static ReceivedDelegation GetReceivedDelegation(NpgsqlDataReader reader)
-        //{
-        //    ServiceResource? resource = null;
-        //    if (reader["serviceresourcejson"] != DBNull.Value)
-        //    {
-        //        var jsonb = reader.GetString("serviceresourcejson");
-        //        resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
-        //    }
-
-        //    ReceivedDelegation delegation = new ReceivedDelegation
-        //    {
-        //        DelegatedById = reader.GetFieldValue<int>("performedbyuserid"),
-        //        ResourceName = (resource != null) ? resource.Title : null,
-        //        DelegatedToId = reader.GetFieldValue<int>("coveredbypartyid")
-        //    };
-
-        //}
 
         private static ServiceResource GetResources(NpgsqlDataReader reader)
         {

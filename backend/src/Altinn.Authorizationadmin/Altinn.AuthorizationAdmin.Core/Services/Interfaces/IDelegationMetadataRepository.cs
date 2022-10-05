@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AuthorizationAdmin.Core.Models;
 
 namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
 {

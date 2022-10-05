@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AuthorizationAdmin.Core.Models;
 
 namespace Altinn.AuthorizationAdmin.Services.Interface
 {
@@ -25,20 +21,20 @@ namespace Altinn.AuthorizationAdmin.Services.Interface
         /// </summary>
         /// <param name="rules">The set of rules to be delegated</param>
         /// <returns>The list of rules with created Id and result status</returns>
-        Task<List<PolicyRule>> TryWriteDelegationPolicyRules(List<PolicyRule> rules);
+        Task<List<Rule>> TryWriteDelegationPolicyRules(List<Rule> rules);
 
         /// <summary>
         /// Trys to sort and delete the set of rules matching the list of ruleMatches to delete from delegation policy files in blob storage.
         /// </summary>
         /// <param name="rulesToDelete">Entity to define which rules to be deleted</param>
         /// <returns>The list of rules with created Id and result status</returns>
-        Task<List<PolicyRule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete);
+        Task<List<Rule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete);
 
         /// <summary>
         /// Deletes a List of policies based on input list of matches to remove
         /// </summary>
         /// <param name="policiesToDelete">entity containing match for all the policies to delete</param>
         /// <returns>A list containing all the policies that is deleted</returns>
-        Task<List<PolicyRule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete);
+        Task<List<Rule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete);
     }
 }

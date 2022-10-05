@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Altinn.AuthorizationAdmin.Core.Models
+﻿namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// Enum for determining the status of an Authorization Request 

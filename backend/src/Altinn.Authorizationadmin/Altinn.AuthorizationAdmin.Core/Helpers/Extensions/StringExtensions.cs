@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace Altinn.AuthorizationAdmin.Core.Helpers.Extensions
 {
     /// <summary>

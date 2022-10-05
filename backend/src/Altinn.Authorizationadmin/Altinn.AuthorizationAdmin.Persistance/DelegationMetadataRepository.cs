@@ -89,7 +89,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
                     pgcom = new NpgsqlCommand(getCurrentDelegationChangeBasedOnResourceRegistryIdSql, conn);
                     pgcom.Parameters.AddWithValue("_resourceregistryid", resourceRegistryId);
                 }
-                else if (!string.IsNullOrWhiteSpace(altinnAppId) || altinnAppId != "/")
+                else if (!string.IsNullOrWhiteSpace(altinnAppId))
                 {
                     pgcom = new NpgsqlCommand(getCurrentDelegationChangeSql, conn);
                     pgcom.Parameters.AddWithValue("_altinnAppId", altinnAppId);

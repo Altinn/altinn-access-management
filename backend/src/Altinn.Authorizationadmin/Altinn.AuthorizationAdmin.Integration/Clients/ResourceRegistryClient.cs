@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core;
 using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
@@ -37,13 +32,17 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
         public async Task<ServiceResource> GetResource(string resourceId)
         {
             ServiceResource? result = null;
-            string endpointUrl = $"ResourceRegistry/api/Resource/{resourceId}";
+            string endpointUrl = $"resourceregistry/api/v1/resource/{resourceId}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
                 string content = await response.Content.ReadAsStringAsync();
-                result = JsonSerializer.Deserialize<ServiceResource>(content);
+                result = JsonSerializer.Deserialize<ServiceResource>(content, options);
             }
 
             return await Task.FromResult(result);

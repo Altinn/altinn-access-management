@@ -42,9 +42,6 @@ INSERT INTO delegation.delegationChanges(
   ) RETURNING *;
 $BODY$;
 
-ALTER FUNCTION delegation.insert_delegationchange(delegation.delegationchangetype, character varying, integer, integer, integer, integer, character varying, character varying, character varying, character varying)
-    OWNER TO platform_authorization_admin;
-
 --Procedure: delegation.get_current_change_based_on_resourceregistryid
 CREATE OR REPLACE FUNCTION delegation.get_current_change_based_on_resourceregistryid(
 	_resourceregistryid character varying,

@@ -1,11 +1,13 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.AuthorizationAdmin.Core;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AuthorizationAdmin.Integration.Clients;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Azure;
 using Azure.Storage.Blobs.Models;
@@ -23,22 +25,25 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly int delegationChangeEventQueueErrorId = 911;
+        private readonly IResourceRegistryClient _resourceRegistryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyAdministrationPoint"/> class.
         /// </summary>
-        /// <param name="policyRetrievalPoint">The policy retrieval point</param>
-        /// <param name="policyRepository">The policy repository (blob storage)</param>
-        /// <param name="delegationRepository">The delegation change repository (postgresql)</param>
-        /// <param name="eventQueue">The delegation change event queue service to post events for any delegation change</param>
-        /// <param name="logger">Logger instance</param>
-        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyRepository policyRepository, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger)
+        /// <param name="policyRetrievalPoint">The policy retrieval point.</param>
+        /// <param name="policyRepository">The policy repository (blob storage).</param>
+        /// <param name="delegationRepository">The delegation change repository (postgresql).</param>
+        /// <param name="eventQueue">The delegation change event queue service to post events for any delegation change.</param>
+        /// <param name="logger">Logger instance.</param>
+        /// <param name="resourceRegistryClient">Client for accessing the resourceregistry.</param>
+        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyRepository policyRepository, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger, IResourceRegistryClient resourceRegistryClient)
         {
             _prp = policyRetrievalPoint;
             _policyRepository = policyRepository;
             _delegationRepository = delegationRepository;
             _eventQueue = eventQueue;
             _logger = logger;
+            _resourceRegistryClient = resourceRegistryClient;
         }
 
         /// <inheritdoc/>
@@ -73,6 +78,8 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                 {
                     _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {delegationPolicypath}", delegationPolicypath);
                 }
+
+                ServiceResource resource = new ServiceResource();
 
                 foreach (Rule rule in delegationDict[delegationPolicypath])
                 {
@@ -144,19 +151,30 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
             if (!string.IsNullOrWhiteSpace(resourceRegistryId))
             {
-                XacmlPolicy appPolicy = await _prp.GetPolicyAsync(resourceRegistryId);
-                if (appPolicy == null)
+                XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceRegistryId);
+                if (resourcePolicy == null)
                 {
-                    _logger.LogWarning("No valid App policy found for delegation policy path: {policyPath}", policyPath);
+                    _logger.LogWarning("No valid resource policy found for delegation policy path: {policyPath}", policyPath);
                     return false;
                 }
 
                 foreach (Rule rule in rules)
                 {
-                    if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))
+                    if (!DelegationHelper.PolicyContainsMatchingRule(resourcePolicy, rule))
                     {
-                        _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
+                        _logger.LogWarning("Matching rule not found in resource policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
                         return false;
+                    }
+
+                    ServiceResource resource = new ServiceResource();
+                    foreach (AttributeMatch res in rule.Resource)
+                    {
+                        resource = await _resourceRegistryClient.GetResource(res.Value);
+                        if (resource == null)
+                        {
+                            _logger.LogWarning("The specified resource {res.Value} does not exist.", res.Value);
+                            return false;
+                        }
                     }
                 }
             }
@@ -192,7 +210,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                 {
                     // Check for a current delegation change from postgresql
                     DelegationChange currentChange = new DelegationChange();
-                    currentChange = await _delegationRepository.GetCurrentDelegationChange($"{org}/{app}", resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+
+                    string altinnAppId = string.Empty;
+                    if (!string.IsNullOrWhiteSpace(org) || !string.IsNullOrWhiteSpace(app))
+                    {
+                        altinnAppId = $"{org}/{app}";
+                    }
+
+                    currentChange = await _delegationRepository.GetCurrentDelegationChange(altinnAppId, resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
 
                     XacmlPolicy existingDelegationPolicy = null;
                     if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
@@ -228,11 +253,13 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         return false;
                     }
 
+                    ServiceResource resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                    
                     // Write delegation change to postgresql
                     DelegationChange change = new DelegationChange
                     {
                         DelegationChangeType = DelegationChangeType.Grant,
-                        AltinnAppId = !string.IsNullOrWhiteSpace(org) ? $"{org}/{app}" : string.Empty,
+                        AltinnAppId = altinnAppId,
                         OfferedByPartyId = offeredByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
@@ -240,7 +267,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,
                         ResourceId = resourceRegistryId,
-                        ResourceType = !string.IsNullOrWhiteSpace(resourceRegistryId) ? ResourceType.Systemresource.ToString() : null
+                        ResourceType = resource != null ? resource.ResourceType.ToString() : null
                     };
 
                     change = await _delegationRepository.InsertDelegation(change);

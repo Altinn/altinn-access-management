@@ -3,6 +3,7 @@ using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Rule = Altinn.AuthorizationAdmin.Core.Models.Rule;
 
 namespace Altinn.AuthorizationAdmin.Core.Helpers
 {
@@ -17,12 +18,12 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="rules">The list of rules to be sorted</param>
         /// <param name="unsortableRules">The list of rules not able to sort by org/app/offeredBy/CoveredBy</param>
         /// <returns>A dictionary with key being the filepath for the delegation policy file, and value being the list of rules to be written to the delegation policy</returns>
-        public static Dictionary<string, List<Models.Rule>> SortRulesByDelegationPolicyPath(List<Models.Rule> rules, out List<Models.Rule> unsortableRules)
+        public static Dictionary<string, List<Rule>> SortRulesByDelegationPolicyPath(List<Rule> rules, out List<Rule> unsortableRules)
         {
-            Dictionary<string, List<Models.Rule>> result = new Dictionary<string, List<Models.Rule>>();
-            unsortableRules = new List<Models.Rule>();
+            Dictionary<string, List<Rule>> result = new Dictionary<string, List<Rule>>();
+            unsortableRules = new List<Rule>();
 
-            foreach (Models.Rule rule in rules)
+            foreach (Rule rule in rules)
             {
                 if (!TryGetDelegationPolicyPathFromRule(rule, out string path))
                 {
@@ -36,7 +37,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
                 }
                 else
                 {
-                    result.Add(path, new List<Models.Rule> { rule });
+                    result.Add(path, new List<Rule> { rule });
                 }
             }
 

@@ -141,6 +141,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="offeredBy">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy or null if party id</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy or null if user id</param>
+        /// <param name="resourceRegistryId">The id of the resource in the resourceregistry.</param>
         /// <returns>policypath matching input data</returns>
         public static string GetAltinnAppDelegationPolicyPath(string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId, string resourceRegistryId)
         {
@@ -202,7 +203,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             }
             else
             {
-                return $"resourceregistry/{resourceRegistryId}/{offeredBy}/{coveredBy}/resourcepolicy.xml";
+                return $"resourceregistry/{resourceRegistryId}/{offeredBy}/{coveredByPrefix}/delegationpolicy.xml";
             }
         }
 

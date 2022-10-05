@@ -44,7 +44,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationRequests? delegationRequest = JsonSerializer.Deserialize<DelegationRequests>(responseContent, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) as DelegationRequests;
+            DelegationRequests delegationRequest = JsonSerializer.Deserialize<DelegationRequests>(responseContent, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) as DelegationRequests;
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(delegationRequest);
@@ -65,22 +65,10 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationRequest? delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(responseContent, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) as DelegationRequest;
+            DelegationRequest delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(responseContent, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }) as DelegationRequest;
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(delegationRequest);
-        }
-
-        private HttpClient GetTestClient()
-        {
-            HttpClient client = factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                });
-            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-
-            return client;
         }
     }
 }

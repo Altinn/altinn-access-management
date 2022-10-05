@@ -11,7 +11,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         /// <summary>
         /// Gets or sets a list of unique identifier for specific rules within a policy.
         /// </summary>
-        public List<string>? RuleIds { get; set; }
+        public List<string> RuleIds { get; set; }
 
         /// <summary>
         /// Gets or sets the user id of the user who performed the deletion.

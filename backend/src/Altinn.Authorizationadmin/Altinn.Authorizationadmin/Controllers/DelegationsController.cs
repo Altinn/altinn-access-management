@@ -73,45 +73,6 @@ namespace Altinn.Platform.Authorization.Controllers
         }
 
         /// <summary>
-        /// Endpoint for adding one or more rules for the given app/offeredby/coveredby. This updates or creates a new delegated policy of type "DirectlyDelegated". DelegatedByUserId is included to store history information in 3.0.
-        /// </summary>
-        /// <param name="rules">All rules to be delegated</param>
-        /// <response code="201" cref="List{PolicyRule}">Created</response>
-        /// <response code="206" cref="List{PolicyRule}">Partial Content</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpPost]
-        [Route("authorization/api/v1/[controller]/AddResourceDelegation")]
-        public async Task<ActionResult> AddResourceDelegation([FromBody] List<Rule> rules)
-        {
-            if (rules == null || rules.Count < 1)
-            {
-                return BadRequest("Missing rules in body");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid model");
-            }
-
-            List<Rule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
-
-            if (delegationResults.All(r => r.CreatedSuccessfully))
-            {
-                return Created("Created", delegationResults);
-            }
-
-            if (delegationResults.Any(r => r.CreatedSuccessfully))
-            {
-                return StatusCode(206, delegationResults);
-            }
-
-            string rulesJson = JsonSerializer.Serialize(rules);
-            _logger.LogInformation("Delegation could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{rulesJson}", rulesJson);
-            return BadRequest("Delegation could not be completed");
-        }
-
-        /// <summary>
         /// Endpoint for retrieving delegated rules between parties
         /// </summary>
         /// <response code="400">Bad Request</response>

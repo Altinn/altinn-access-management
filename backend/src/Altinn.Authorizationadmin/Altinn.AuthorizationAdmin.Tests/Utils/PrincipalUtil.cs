@@ -11,9 +11,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Util
     /// </summary>
     public static class PrincipalUtil
     {
-        private static readonly string AltinnCoreClaimTypesOrg = "urn:altinn:org";
-        private static readonly string AltinnCoreClaimTypesOrgNumber = "urn:altinn:orgNumber";
-
         /// <summary>
         /// Gets a user token
         /// </summary>

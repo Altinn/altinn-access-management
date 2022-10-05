@@ -78,7 +78,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
 
             if (expected.Response.Count > 0)
             {
-                for (int i = 0; i < expected.Response.Count(); i++)
+                for (int i = 0; i < expected.Response.Count; i++)
                 {
                     AssertEqual(expected.Response[i], actual.Response[i]);
                 }

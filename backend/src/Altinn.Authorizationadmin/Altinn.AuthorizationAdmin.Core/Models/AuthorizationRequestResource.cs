@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Altinn.Authorizationadmin.Core.Models
+﻿namespace Altinn.Authorizationadmin.Core.Models
 {
     /// <summary>
     /// Model definition for a resource on an authorization request

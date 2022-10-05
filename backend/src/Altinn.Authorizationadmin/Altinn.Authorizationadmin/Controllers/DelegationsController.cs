@@ -7,7 +7,7 @@ using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Altinn.Platform.Authorization.Controllers
+namespace Altinn.AuthorizationAdmin.Controllers
 {
     /// <summary>
     /// Controller responsible for all operations for managing delegations of Altinn Apps

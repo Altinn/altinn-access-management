@@ -117,9 +117,9 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="search">The search used to find the correct rule</param>
         /// <param name="xacmlRule">XacmlRule found by the search param to enrich the result with Action and Resource</param>
         /// <returns>The created Rule</returns>
-        public static PolicyRule CreateRuleFromPolicyAndRuleMatch(RequestToDelete search, XacmlRule xacmlRule)
+        public static Rule CreateRuleFromPolicyAndRuleMatch(RequestToDelete search, XacmlRule xacmlRule)
         {
-            PolicyRule rule = new PolicyRule
+            Rule rule = new Rule
             {
                 RuleId = xacmlRule.RuleId,
                 CreatedSuccessfully = true,
@@ -262,7 +262,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
         /// <param name="rules">The set of rules to be delegated</param>
-        public static XacmlPolicy BuildDelegationPolicy(string org, string app, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, IList<PolicyRule> rules)
+        public static XacmlPolicy BuildDelegationPolicy(string org, string app, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, IList<Rule> rules)
         {
             XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
             delegationPolicy.Version = "1.0";
@@ -270,7 +270,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
             delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {offeredByPartyId} to {coveredBy}, for resources on the app; {org}/{app}";
 
-            foreach (PolicyRule rule in rules)
+            foreach (Rule rule in rules)
             {
                 if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                 {
@@ -290,7 +290,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlRule BuildDelegationRule(string org, string app, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, PolicyRule rule)
+        public static XacmlRule BuildDelegationRule(string org, string app, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Rule rule)
         {
             rule.RuleId = Guid.NewGuid().ToString();
             
@@ -310,7 +310,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlTarget BuildDelegationRuleTarget(int? coveredByPartyId, int? coveredByUserId, PolicyRule rule)
+        public static XacmlTarget BuildDelegationRuleTarget(int? coveredByPartyId, int? coveredByUserId, Rule rule)
         {
             List<XacmlAnyOf> targetList = new List<XacmlAnyOf>();
 

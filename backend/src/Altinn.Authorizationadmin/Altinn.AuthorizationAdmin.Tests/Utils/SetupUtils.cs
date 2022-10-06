@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.IO;
+using System.Net.Http;
 using Altinn.Authorizationadmin.Controllers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -25,6 +27,27 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             });
             factory.Server.AllowSynchronousIO = true;
             return factory.CreateClient();
+        }
+
+        /// <summary>
+        /// Deletes a app blob stored locally
+        /// </summary>
+        /// <param name="org">Org</param>
+        /// <param name="app">App</param>
+        public static void DeleteAppBlobData(string org, string app)
+        {
+            string blobPath = Path.Combine(GetDataBlobPath(), $"{org}/{app}");
+
+            if (Directory.Exists(blobPath))
+            {
+                Directory.Delete(blobPath, true);
+            }
+        }
+
+        private static string GetDataBlobPath()
+        {
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "data", "blobs");
         }
     }
 }

@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Altinn.AuthorizationAdmin.Core.Models
 {
     /// <summary>
     /// This model describes a single rule in a delegated policy
     /// </summary>
-    public class PolicyRule
+    public class Rule
     {
         /// <summary>
         /// Gets or sets the unique identifier for a specific rule within a policy (Output only).
         /// </summary>
-        public string? RuleId { get; set; }
+        public string RuleId { get; set; }
 
         /// <summary>
         /// Gets or sets the type of rule this is and why it is relevant for a given coveredby (recipient). Only part of output model when querying rules.

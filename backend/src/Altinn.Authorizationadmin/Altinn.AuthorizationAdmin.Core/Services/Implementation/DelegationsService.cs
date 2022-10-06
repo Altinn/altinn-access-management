@@ -46,6 +46,8 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 
                     foreach (Delegation delegation in query)
                     {
+                        Party partyInfo = partyDetails.Find(p => p.PartyId == delegation.DelegatedToId);
+                        delegation.DelegatedToName = partyInfo?.Name;
                         resourceDelegation.Delegations.Add(delegation);
                     }
 

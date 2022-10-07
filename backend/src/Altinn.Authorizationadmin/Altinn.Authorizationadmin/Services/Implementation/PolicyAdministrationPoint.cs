@@ -253,7 +253,11 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         return false;
                     }
 
-                    ServiceResource resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                    ServiceResource resource = null;
+                    if (!string.IsNullOrWhiteSpace(resourceRegistryId))
+                    {
+                        resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                    }
                     
                     // Write delegation change to postgresql
                     DelegationChange change = new DelegationChange

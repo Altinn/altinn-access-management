@@ -79,11 +79,13 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
 
         /// <summary>
         /// ResourceReference
+        /// </summary>
         [JsonProperty]
         public ResourceReference? ResourceReference { get; set;  }
 
         /// <summary>
         /// IsComplete
+        /// </summary>
         [JsonProperty]
         public bool? IsComplete { get; set; }
 

@@ -1,0 +1,42 @@
+[
+  {
+    "delegatedByUserId": 20001337,
+    "offeredByPartyId": 50001337,
+    "coveredBy": [
+      {
+        "id": "urn:altinn:userid",
+        "value": "20001336"
+      }
+    ],
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "resource1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "read"
+    }
+  },
+  {
+    "delegatedByUserId": 20001337,
+    "offeredByPartyId": 50001337,
+    "coveredBy": [
+      {
+        "id": "urn:altinn:userid",
+        "value": "20001336"
+      }
+    ],
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "resource1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "write"
+    }
+  }
+]

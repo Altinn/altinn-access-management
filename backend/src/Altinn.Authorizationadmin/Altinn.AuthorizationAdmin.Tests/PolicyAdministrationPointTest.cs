@@ -32,6 +32,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly Mock<ILogger<IPolicyAdministrationPoint>> _logger;
         private DelegationMetadataRepositoryMock _delegationMetadataRepositoryMock;
+        private readonly ResourceRegistryClientMock _resourceRegistryClient;
 
         /// <summary>
         /// Constructor setting up dependencies
@@ -53,7 +54,8 @@ namespace Altinn.AuthorizationAdmin.Tests
                 _prp,
                 _delegationMetadataRepositoryMock,
                 _eventQueue,
-                _logger.Object);
+                _logger.Object,
+                _resourceRegistryClient);
         }
 
         /// <summary>

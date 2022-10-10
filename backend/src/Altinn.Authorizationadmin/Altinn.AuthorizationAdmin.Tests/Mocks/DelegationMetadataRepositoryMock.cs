@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Tests.Utils;
 
@@ -166,6 +167,35 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 result.Add(TestDataUtil.GetDelegationChange("skd/taxreport", 50001335, coveredByPartyId: 50001337, performedByUserId: 20001339, changeType: DelegationChangeType.Grant));
             }
 
+            return Task.FromResult(result);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId)
+        {  
+            List<Delegation> result = new List<Delegation>();
+
+            result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
+            result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "skd_1", "SKD 1"));
+            return Task.FromResult(result);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<ServiceResource>> GetResources(int offeredByPartyId)
+        {
+            List<ServiceResource> result = new List<ServiceResource>();
+
+            result.AddRange(TestDataUtil.GetResources(offeredByPartyId));
+            return Task.FromResult(result);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId)
+        {
+            List<Delegation> result = new List<Delegation>();
+
+            result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
+            result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "skd_1", "SKD 1"));
             return Task.FromResult(result);
         }
     }

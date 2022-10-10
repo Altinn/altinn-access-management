@@ -264,7 +264,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         [Route("authorization/api/v1/[controller]/GetDelegatedResources")]
         public async Task<ActionResult<List<ResourceDelegation>>> GetDelegatedResources([FromQuery] int offeredbyPartyId)
         {
-            if (offeredbyPartyId == null || offeredbyPartyId == 0)
+            if (offeredbyPartyId == 0)
             {
                 return BadRequest("Missing query parameter offeredbypartyid");
             }
@@ -282,7 +282,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         [Route("authorization/api/v1/[controller]/GetReceivedDelegations")]
         public async Task<ActionResult<List<Delegation>>> GetReceivedDelegations([FromQuery] int coveredByPartyId)
         {
-            if (coveredByPartyId == null || coveredByPartyId == 0)
+            if (coveredByPartyId == 0)
             {
                 return BadRequest("Missing query parameter coveredByPartyId");
             }

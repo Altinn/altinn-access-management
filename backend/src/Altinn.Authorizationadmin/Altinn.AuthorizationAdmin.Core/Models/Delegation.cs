@@ -14,27 +14,33 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         public string ResourceId { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the resource in a delegation
+        /// Gets or sets the title of the resource in a delegation
         /// </summary>
-        [JsonPropertyName("resourcename")]
-        public Dictionary<string, string> ResourceName { get; set; }
+        [JsonPropertyName("resourcetitle")]
+        public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the delegation receiver
         /// </summary>
-        [JsonPropertyName("delegatedToName")]
-        public string DelegatedToName { get; set; }
+        [JsonPropertyName("coveredbyname")]
+        public string CoveredByName { get; set; }
 
         /// <summary>
         /// Gets or sets the userid id for the delegation
         /// </summary>
-        [JsonPropertyName("delegatedbyid")]
-        public int DelegatedById { get; set; }
+        [JsonPropertyName("offeredbypartyid")]
+        public int OfferedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets the reportee that received the delegation
         /// </summary>
-        [JsonPropertyName("delegatedtoid")]
-        public int DelegatedToId { get; set; }
+        [JsonPropertyName("coveredbypartyid")]
+        public int CoveredByPartyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the userid that performed the delegation
+        /// </summary>
+        [JsonPropertyName("performedbyuserid")]
+        public int PerformedByUserId { get; set; }
     }
 }

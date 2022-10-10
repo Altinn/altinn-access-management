@@ -10,6 +10,7 @@ using Altinn.AuthorizationAdmin.Controllers;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Altinn.AuthorizationAdmin.Tests.Mocks;
@@ -1109,6 +1110,26 @@ namespace Altinn.AuthorizationAdmin.Tests
             AssertionUtil.AssertCollections(expectedRules, actualRules, AssertionUtil.AssertRuleEqual);
         }
 
+        /// <summary>
+        /// Test case: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// Expected: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetDelegatedResources_Valid_OfferedBy()
+        {
+            // Arrange
+            List<ResourceDelegation> expectedDelegations = GetExpectedDelegationsForParty();
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002110}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<ResourceDelegation> actualDelegations = JsonConvert.DeserializeObject<List<ResourceDelegation>>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1124,6 +1145,14 @@ namespace Altinn.AuthorizationAdmin.Tests
             return list;
         }
 
+        private static List<ResourceDelegation> GetExpectedDelegationsForParty()
+        {
+            List<ResourceDelegation> resourceDelegations = new List<ResourceDelegation>();
+            resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "nav_aa_distribution", "NAV aa distribution"));
+            resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "skd_1", "SKD 1"));
+            return resourceDelegations;
+        }
+
         private HttpClient GetTestClient()
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
@@ -1135,6 +1164,7 @@ namespace Altinn.AuthorizationAdmin.Tests
                     services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPartiesWrapper, PartiesWrapperMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

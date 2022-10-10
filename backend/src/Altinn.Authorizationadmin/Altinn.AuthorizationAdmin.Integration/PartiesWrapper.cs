@@ -14,19 +14,19 @@ namespace Altinn.AuthorizationAdmin.Services
     /// <summary>
     /// Proxy implementation for parties
     /// </summary>
-    public class PartiesProxy : IPartiesWrapper
+    public class PartiesWrapper : IPartiesWrapper
     {
         private readonly PlatformSettings _platformSettings;
         private readonly ILogger _logger;
         private readonly HttpClient _client;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PartiesProxy"/> class
+        /// Initializes a new instance of the <see cref="PartiesWrapper"/> class
         /// </summary>
         /// <param name="httpClient">HttpClient from default httpclientfactory</param>
         /// <param name="platformSettings">the general settings</param>
         /// <param name="logger">the logger</param>
-        public PartiesProxy(HttpClient httpClient, IOptions<PlatformSettings> platformSettings, ILogger<PartiesProxy> logger)
+        public PartiesWrapper(HttpClient httpClient, IOptions<PlatformSettings> platformSettings, ILogger<PartiesWrapper> logger)
         {
             _platformSettings = platformSettings.Value;
             _logger = logger;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
 namespace Altinn.AuthorizationAdmin.Tests.Utils
 {
@@ -119,6 +120,131 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now
             };
+        }
+
+        /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <returns></returns>
+        public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName)
+        {
+            List<Delegation> delegations = new List<Delegation>();
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByName = "THOMAS TØNDER",
+                CoveredByPartyId = 50002111,
+                ResourceId = resourceId,
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", resourceName },
+                    { "nb_no", resourceName },
+                    { "nn_no", resourceName}
+                }
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByName = "HANNAH TUFT",
+                CoveredByPartyId = 50002112,
+                ResourceId = resourceId,
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", resourceName },
+                    { "nb_no", resourceName },
+                    { "nn_no", resourceName }
+                }
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByName = "KLEVEN ALMA",
+                CoveredByPartyId = 50002113,
+                ResourceId = resourceId,
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", resourceName },
+                    { "nb_no", resourceName },
+                    { "nn_no", resourceName }
+                }
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByName = "ELENA FJÆR",
+                CoveredByPartyId = 50002114,
+                ResourceId = resourceId,
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", resourceName },
+                    { "nb_no", resourceName },
+                    { "nn_no", resourceName }
+                }
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByName = "MARGRETHE THORUD",
+                CoveredByPartyId = 50002115,
+                ResourceId = resourceId,
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", resourceName },
+                    { "nb_no", resourceName},
+                    { "nn_no", resourceName }
+                }
+            });
+            return delegations;
+        }
+
+        /// <summary>
+        /// Sets mock data for service resource
+        /// </summary>
+        /// <returns></returns>
+        public static List<ServiceResource> GetResources(int offeredByPartyId)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            resources.Add(new ServiceResource
+            {
+                Identifier = "nav_aa_distribution",
+                Title = new Dictionary<string, string>
+                {
+                    { "en", "NAV aa distribution" },
+                    { "nb_no", "NAV aa distribution" },
+                    { "nn_no", "NAV aa distribution" }
+                }
+            });
+            resources.Add(new ServiceResource
+            {
+                Identifier = "skd_1",
+                Title = new Dictionary<string, string>
+                {
+                    { "en", "SKD 1" },
+                    { "nb_no", "SKD 1" },
+                    { "nn_no", "SKD 1" }
+                }
+            });
+            return resources;
+        }
+
+        /// <summary>
+        /// Gets resourcedelegation model for the given input
+        /// </summary>
+        /// <param name="offeredByPartyId">party that delegated the resources</param>
+        /// <param name="resourceId">the resource that was delegated</param>
+        /// <param name="resourceName">the resource name that was delegated</param>
+        /// <returns></returns>
+        public static ResourceDelegation GetResourceDelegationModel(int offeredByPartyId, string resourceId, string resourceName)
+        {
+            ResourceDelegation resourceDelegation = new ResourceDelegation
+            {
+                ResourceId = resourceId,
+                ResourceName = resourceName
+            };
+            resourceDelegation.Delegations = new List<Delegation>();
+            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName));
+            return resourceDelegation;
         }
     }
 }

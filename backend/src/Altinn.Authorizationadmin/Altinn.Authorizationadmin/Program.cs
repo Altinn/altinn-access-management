@@ -32,7 +32,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-
+using Npgsql.Logging;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
 
@@ -204,7 +204,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
-    services.AddHttpClient<IPartiesWrapper, PartiesProxy>();
+    services.AddHttpClient<IPartiesWrapper, PartiesWrapper>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 

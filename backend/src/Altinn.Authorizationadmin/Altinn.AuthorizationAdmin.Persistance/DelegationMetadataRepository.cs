@@ -285,10 +285,11 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
             return new Delegation
             {
-                DelegatedById = reader.GetFieldValue<int>("performedbyuserid"),
+                PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 ResourceId = reader.GetFieldValue<string>("resourceid"),
-                ResourceName = (resource!= null) ? resource.Title : null,
-                DelegatedToId = reader.GetFieldValue<int>("coveredbypartyid")
+                ResourceTitle = (resource!= null) ? resource.Title : null,
+                CoveredByPartyId = reader.GetFieldValue<int>("coveredbypartyid"),
+                OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid")
             };
         }
 

@@ -185,8 +185,28 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 },
                 ValidFrom = DateTime.Now,
                 ValidTo = DateTime.Now.AddDays(1),
-
             };
+        }
+
+        /// <summary>
+        /// Creates a list of roles.
+        /// </summary>
+        /// <returns>The newly created list of roles.</returns>
+        public static List<string> GetRolesWithAccess()
+        {
+            List<string> roles = new List<string>();
+            roles.Add("BEST");
+            roles.Add("BOBE");
+            roles.Add("DAGL");
+            roles.Add("DTPR");
+            roles.Add("DTSO");
+            roles.Add("INNH");
+            roles.Add("KEMN");
+            roles.Add("KOMP");
+            roles.Add("LEDE");
+            roles.Add("REPR");
+
+            return roles;
         }
     }
 }

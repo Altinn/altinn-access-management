@@ -41,7 +41,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> InsertDelegation(DelegationChange delegationChange)
+        public async Task<DelegationChange?> InsertDelegation(DelegationChange delegationChange)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> GetCurrentDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+        public async Task<DelegationChange?> GetCurrentDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllCurrentDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null)
+        public async Task<List<DelegationChange>> GetAllCurrentDelegationChanges(List<int> offeredByPartyIds, List<string>? altinnAppIds = null, List<int>? coveredByPartyIds = null, List<int>? coveredByUserIds = null)
         {
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
             CheckIfOfferedbyPartyIdsHasValue(offeredByPartyIds);
@@ -188,7 +188,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             };
         }
 
-        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByPartyIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByPartyIds = null)
+        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByPartyIds(List<string>? altinnAppIds = null, List<int>? offeredByPartyIds = null, List<int>? coveredByPartyIds = null)
         {
             try
             {
@@ -197,8 +197,8 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getAllCurrentDelegationChangesPartyIdsSql, conn);
                 pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
-                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyIds);
-                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, coveredByPartyIds);
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (offeredByPartyIds != null) ? offeredByPartyIds : DBNull.Value);
+                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (coveredByPartyIds != null) ? coveredByPartyIds : DBNull.Value);
 
                 List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
@@ -217,7 +217,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
         }
 
-        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByUserIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByUserIds = null)
+        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByUserIds(List<string>? altinnAppIds = null, List<int>? offeredByPartyIds = null, List<int>? coveredByUserIds = null)
         {
             try
             {
@@ -226,8 +226,8 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getAllCurrentDelegationChangesUserIdsSql, conn);
                 pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
-                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyIds);
-                pgcom.Parameters.AddWithValue("_coveredByUserIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, coveredByUserIds);
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (offeredByPartyIds != null) ? offeredByPartyIds : DBNull.Value);
+                pgcom.Parameters.AddWithValue("_coveredByUserIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (coveredByUserIds != null) ? coveredByUserIds : DBNull.Value);
 
                 List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
@@ -246,7 +246,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
         }
 
-        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesOfferedByPartyIdOnly(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null)
+        private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesOfferedByPartyIdOnly(List<string>? altinnAppIds = null, List<int>? offeredByPartyIds = null)
         {
             try
             {
@@ -255,7 +255,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getAllCurrentDelegationChangesOfferedByPartyIdOnlysSql, conn);
                 pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
-                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyIds);
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (offeredByPartyIds != null) ? offeredByPartyIds : DBNull.Value);
 
                 List<DelegationChange> delegationChanges = new List<DelegationChange>();
 

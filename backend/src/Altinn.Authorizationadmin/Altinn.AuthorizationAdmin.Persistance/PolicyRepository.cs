@@ -85,7 +85,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<string> TryAcquireBlobLease(string filepath)
+        public async Task<string?> TryAcquireBlobLease(string filepath)
         {
             BlobClient blobClient = CreateBlobClient(filepath);
             BlobLeaseClient blobLeaseClient = blobClient.GetBlobLeaseClient();
@@ -191,7 +191,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
         }
 
-        private async Task<Response<BlobContentInfo>> WriteBlobStreamInternal(BlobClient blobClient, Stream fileStream, BlobUploadOptions blobUploadOptions = null)
+        private async Task<Response<BlobContentInfo>> WriteBlobStreamInternal(BlobClient blobClient, Stream fileStream, BlobUploadOptions? blobUploadOptions = null)
         {
             try
             {

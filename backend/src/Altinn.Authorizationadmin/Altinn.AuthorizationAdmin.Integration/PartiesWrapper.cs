@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using System.Web;
 using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
@@ -7,7 +8,6 @@ using Altinn.AuthorizationAdmin.Integration.Configuration;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Altinn.AuthorizationAdmin.Services
 {
@@ -38,13 +38,13 @@ namespace Altinn.AuthorizationAdmin.Services
         {
             UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.BridgeApiEndpoint}register/api/parties");
 
-            StringContent requestBody = new StringContent(JsonConvert.SerializeObject(parties), Encoding.UTF8, "application/json");
+            StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
-                List<Party> partiesInfo = (List<Party>)JsonConvert.DeserializeObject(responseContent, typeof(List<Party>));
+                List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent);
                 return partiesInfo;
             }
             else

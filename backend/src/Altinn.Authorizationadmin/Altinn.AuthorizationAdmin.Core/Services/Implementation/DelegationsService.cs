@@ -28,13 +28,14 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         /// <inheritdoc/>
         public async Task<List<ResourceDelegation>> GetDelegatedResourcesAsync(int offeredbyPartyId)
         {
-            List<ServiceResource> serviceResources = await _delegationRepository.GetResources(offeredbyPartyId);
             List<Delegation> delegations = await _delegationRepository.GetDelegatedResources(offeredbyPartyId);
             List<int> parties = new List<int>();
             parties = delegations.Select(d => d.CoveredByPartyId).ToList();
-            List<Party> partyDetails = await _partyProxy.GetPartiesAsync(parties);
+            List<ServiceResource> resources = new List<ServiceResource>();
+            resources = delegations.Select(d => new ServiceResource() { Identifier = d.ResourceId, Title = d.ResourceTitle }).ToList();
+            List<Party> partyList = await _partyProxy.GetPartiesAsync(parties);
             List<ResourceDelegation> resourceDelegations = new List<ResourceDelegation>();
-            foreach (ServiceResource resource in serviceResources)
+            foreach (ServiceResource resource in resources)
             {
                 if (resourceDelegations.FindAll(rd => rd.ResourceId.Equals(resource.Identifier)).Count <= 0)
                 {
@@ -46,7 +47,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 
                     foreach (Delegation delegation in query)
                     {
-                        Party partyInfo = partyDetails.Find(p => p.PartyId == delegation.CoveredByPartyId);
+                        Party partyInfo = partyList.Find(p => p.PartyId == delegation.CoveredByPartyId);
                         delegation.CoveredByName = partyInfo?.Name;
                         resourceDelegation.Delegations.Add(delegation);
                     }

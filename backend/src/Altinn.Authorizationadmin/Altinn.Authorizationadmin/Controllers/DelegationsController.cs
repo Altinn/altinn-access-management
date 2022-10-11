@@ -270,6 +270,11 @@ namespace Altinn.AuthorizationAdmin.Controllers
             }
 
             List<ResourceDelegation> delegations = await _delegation.GetDelegatedResourcesAsync(offeredbyPartyId);
+            if (delegations == null || delegations.Count == 0)
+            {
+                return Ok("No delegations found");
+            }
+
             return delegations;
         }
 

@@ -1130,6 +1130,40 @@ namespace Altinn.AuthorizationAdmin.Tests
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
+        /// <summary>
+        /// Test case: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// Expected: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetDelegatedResources_BadRequest_MissingOfferedBy()
+        {            
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetDelegatedResources returns 200 with response message "No delegations found" when there are no delegations for the reportee
+        /// Expected: GetDelegatedResources returns 200 with response message "No delegations found" when there are no delegations for the reportee
+        /// </summary>
+        [Fact]
+        public async Task GetDelegatedResources_OfferedBy_NoDelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002111}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();

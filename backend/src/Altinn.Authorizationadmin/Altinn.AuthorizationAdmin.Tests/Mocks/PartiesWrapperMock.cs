@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.Platform.Register.Models;
-using Newtonsoft.Json;
 
 namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
@@ -31,8 +31,8 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 {
                     if (file.Contains("offeredby50002110"))
                     {
-                        string content = File.ReadAllText(Path.Combine(path, file));
-                        partyList = (List<Party>)JsonConvert.DeserializeObject(content, typeof(List<Party>));
+                        string content = File.ReadAllText(Path.Combine(path, file));                        
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
             }

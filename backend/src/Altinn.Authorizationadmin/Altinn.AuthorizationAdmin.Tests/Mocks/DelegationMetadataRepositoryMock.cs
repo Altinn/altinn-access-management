@@ -172,11 +172,14 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
 
         /// <inheritdoc/>
         public Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId)
-        {  
+        {
             List<Delegation> result = new List<Delegation>();
+            if (offeredByPartyId == 50002110)
+            {
+                result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
+                result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "skd_1", "SKD 1"));
+            }
 
-            result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
-            result.AddRange(TestDataUtil.GetDelegations(offeredByPartyId, "skd_1", "SKD 1"));
             return Task.FromResult(result);
         }
 
@@ -184,8 +187,11 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         public Task<List<ServiceResource>> GetResources(int offeredByPartyId)
         {
             List<ServiceResource> result = new List<ServiceResource>();
+            if (offeredByPartyId == 50002110)
+            {
+                result.AddRange(TestDataUtil.GetResources(offeredByPartyId));
+            }
 
-            result.AddRange(TestDataUtil.GetResources(offeredByPartyId));
             return Task.FromResult(result);
         }
 

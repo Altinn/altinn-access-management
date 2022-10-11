@@ -58,11 +58,5 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 
             return resourceDelegations;
         }
-
-        /// <inheritdoc/>
-        public async Task<List<Delegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
-        {
-            return await _delegationRepository.GetReceivedDelegations(coveredByPartyId);
-        }
     }
 }

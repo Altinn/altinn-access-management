@@ -17,7 +17,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// </summary>
         /// <param name="delegatedByUserId">delegatedByUserId</param>
         /// <param name="offeredByPartyId">offeredByPartyId</param>
-        /// <param name="coveredBy">coveredBy/param>
+        /// <param name="coveredBy">coveredBy</param>
         /// <param name="coveredByAttributeType">coveredByAttributeType</param>
         /// <param name="action">action</param>
         /// <param name="org">org</param>
@@ -126,6 +126,8 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// Sets up mock data for delegation list 
         /// </summary>
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="resourceId">resource identifier</param>
+        /// <param name="resourceName">Resource name</param>
         /// <returns></returns>
         public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName)
         {
@@ -191,7 +193,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 ResourceTitle = new Dictionary<string, string>
                 {
                     { "en", resourceName },
-                    { "nb_no", resourceName},
+                    { "nb_no", resourceName },
                     { "nn_no", resourceName }
                 }
             });

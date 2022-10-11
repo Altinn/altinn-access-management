@@ -266,7 +266,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             
             //// Assert.Equal(expected.Delegations, actual.Delegations);
 
-            for (int i=0; i<expected.Delegations.Count; i++)
+            for (int i = 0; i < expected.Delegations.Count; i++)
             {
                 AssertEqual(expected.Delegations[i], actual.Delegations[i]);
             }

@@ -150,11 +150,11 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     return false;
                 }
 
-                //if (!DelegationHelper.CheckIfPolicyContainsMatchingRule(appPolicy, rules, out PolicyRule rule))
-                //{
+                // if (!DelegationHelper.CheckIfPolicyContainsMatchingRule(appPolicy, rules, out PolicyRule rule))
+                // {
                 //    _logger.LogWarning("Matching rule not found in app policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
                 //    return false;
-                //}
+                // }
                 foreach (Rule rule in rules)
                 {
                     if (!DelegationHelper.PolicyContainsMatchingRule(appPolicy, rule))

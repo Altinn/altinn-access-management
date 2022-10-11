@@ -182,27 +182,5 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
 
             return Task.FromResult(result);
         }
-
-        /// <inheritdoc/>
-        public Task<List<ServiceResource>> GetResources(int offeredByPartyId)
-        {
-            List<ServiceResource> result = new List<ServiceResource>();
-            if (offeredByPartyId == 50002110)
-            {
-                result.AddRange(TestDataUtil.GetResources(offeredByPartyId));
-            }
-
-            return Task.FromResult(result);
-        }
-
-        /// <inheritdoc/>
-        public Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId)
-        {
-            List<Delegation> result = new List<Delegation>();
-
-            result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
-            result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "skd_1", "SKD 1"));
-            return Task.FromResult(result);
-        }
     }
 }

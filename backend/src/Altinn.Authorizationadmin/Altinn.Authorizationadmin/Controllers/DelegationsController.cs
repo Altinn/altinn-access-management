@@ -26,6 +26,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <param name="policyAdministrationPoint">The policy administration point</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="logger">the logger.</param>
+        /// <param name="delegationsService">Handler for the delegation service</param>
         public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger, IDelegationsService delegationsService)
         {
             _pap = policyAdministrationPoint;
@@ -275,24 +276,6 @@ namespace Altinn.AuthorizationAdmin.Controllers
                 return Ok("No delegations found");
             }
 
-            return delegations;
-        }
-
-        /// <summary>
-        /// Endpoint for retrieving delegated resources between parties
-        /// </summary>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Route("authorization/api/v1/[controller]/GetReceivedDelegations")]
-        public async Task<ActionResult<List<Delegation>>> GetReceivedDelegations([FromQuery] int coveredByPartyId)
-        {
-            if (coveredByPartyId == 0)
-            {
-                return BadRequest("Missing query parameter coveredByPartyId");
-            }
-
-            List<Delegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredByPartyId);
             return delegations;
         }
 

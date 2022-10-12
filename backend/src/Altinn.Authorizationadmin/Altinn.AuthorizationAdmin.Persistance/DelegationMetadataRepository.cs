@@ -21,6 +21,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
+        private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
         private readonly string getAllCurrentDelegationChangesUserIdsSql = "select * from delegation.get_all_current_changes_coveredbyuserids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByUserIds)";
@@ -181,6 +182,33 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 }
 
                 return delegatedResources;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<Delegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
+                pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId);
+
+                List<Delegation> receivedDelegations = new List<Delegation>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    receivedDelegations.Add(GetDelegation(reader));
+                }
+
+                return receivedDelegations;
             }
             catch (Exception e)
             {

@@ -26,6 +26,12 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         public string CoveredByName { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the delegator
+        /// </summary>
+        [JsonPropertyName("offeredbyname")]
+        public string OfferedByName { get; set; }
+
+        /// <summary>
         /// Gets or sets the userid id for the delegation
         /// </summary>
         [JsonPropertyName("offeredbypartyid")]

@@ -201,6 +201,44 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="coveredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <returns></returns>
+        public static List<Delegation> GetRecievedDelegations(int coveredByPartyId)
+        {
+            List<Delegation> delegations = new List<Delegation>();
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = 50002116,
+                OfferedByName = "THOMAS TØNDER",
+                CoveredByPartyId = coveredByPartyId,
+                ResourceId = "nav_aa_distribution",
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", "Nav aa distribution" },
+                    { "nb_no", "Nav aa distribution" },
+                    { "nn_no", "Nav aa distribution" }
+                }
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = 50002116,
+                OfferedByName = "THOMAS TØNDER",
+                CoveredByPartyId = coveredByPartyId,
+                ResourceId = "skd_1",
+                ResourceTitle = new Dictionary<string, string>
+                {
+                    { "en", "Statistisk Informasjon" },
+                    { "nb_no", "Statistisk Informasjon" },
+                    { "nn_no", "Statistisk Informasjon" }
+                }
+            });
+
+            return delegations;
+        }
+
+        /// <summary>
         /// Sets mock data for service resource
         /// </summary>
         /// <returns></returns>

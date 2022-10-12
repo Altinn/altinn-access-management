@@ -58,5 +58,38 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
 
             return resourceDelegations;
         }
+
+        /// <inheritdoc/>
+        public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        {
+            List<Delegation> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId);
+            List<int> parties = new List<int>();
+            parties = delegations.Select(d => d.OfferedByPartyId).ToList();
+            List<ServiceResource> resources = new List<ServiceResource>();
+            resources = delegations.Select(d => new ServiceResource() { Identifier = d.ResourceId, Title = d.ResourceTitle }).ToList();
+            List<Party> partyList = await _partyProxy.GetPartiesAsync(parties);
+            List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+            foreach (Party party in partyList)
+            {
+                if (receivedDelegations.FindAll(rd => rd.OfferedByPartyId.Equals(party.PartyId)).Count <= 0)
+                {
+                    ReceivedDelegation receivedDelegation = new ReceivedDelegation();
+                    receivedDelegation.OfferedByPartyId = party.PartyId;
+                    receivedDelegation.ReporteeName = party.Name;
+                    List<Delegation> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
+                    receivedDelegation.Resources = new List<ServiceResource>();
+
+                    foreach (Delegation delegation in query)
+                    {
+                        receivedDelegation.Resources.Add(new ServiceResource { Identifier = delegation.ResourceId, Title = delegation.ResourceTitle });
+                    }
+
+                    receivedDelegations.Add(receivedDelegation);
+                }
+            }
+
+            return receivedDelegations;
+        }
+
     }
 }

@@ -1164,6 +1164,26 @@ namespace Altinn.AuthorizationAdmin.Tests
             Assert.Contains(expected, responseContent);
         }
 
+        /// <summary>
+        /// Test case: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// Expected: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetReceivedDelegations_Valid_CoveredBy()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty();
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002110}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<ReceivedDelegation> actualDelegations = JsonConvert.DeserializeObject<List<ReceivedDelegation>>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1185,6 +1205,15 @@ namespace Altinn.AuthorizationAdmin.Tests
             resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "nav_aa_distribution", "NAV aa distribution"));
             resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "skd_1", "SKD 1"));
             return resourceDelegations;
+        }
+
+        private static List<ReceivedDelegation> GetExpectedReceivedDelegationsForParty()
+        {
+            List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+            
+            //receivedDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "nav_aa_distribution", "NAV aa distribution"));
+            //receivedDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "skd_1", "SKD 1"));
+            return receivedDelegations;
         }
 
         private HttpClient GetTestClient()

@@ -280,6 +280,29 @@ namespace Altinn.AuthorizationAdmin.Controllers
         }
 
         /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("authorization/api/v1/[controller]/GetReceivedDelegations")]
+        public async Task<ActionResult<List<ReceivedDelegation>>> GetReceivedDelegations([FromQuery] int coveredbyPartyId)
+        {
+            if (coveredbyPartyId == 0)
+            {
+                return BadRequest("Missing query parameter coveredbyPartyId");
+            }
+
+            List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId);
+            if (delegations == null || delegations.Count == 0)
+            {
+                return Ok("No delegations found");
+            }
+
+            return delegations;
+        }
+
+        /// <summary>
         /// Test method. Should be deleted?
         /// </summary>
         /// <returns>test string</returns>

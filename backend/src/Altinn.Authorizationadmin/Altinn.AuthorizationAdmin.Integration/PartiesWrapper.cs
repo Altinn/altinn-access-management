@@ -49,7 +49,7 @@ namespace Altinn.AuthorizationAdmin.Services
             }
             else
             {
-                _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode);
+                _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
             }
 
             return null;

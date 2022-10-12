@@ -70,7 +70,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     policy = (policyBlob.Length > 0) ? PolicyHelper.ParsePolicy(policyBlob) : null;
                 }
 
-                ////PutXacmlPolicyInCache(policyPath, policy);
+                PutXacmlPolicyInCache(policyPath, policy);
             }
 
             return policy;

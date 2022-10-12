@@ -77,5 +77,40 @@ SELECT
   ORDER BY delegationChangeId DESC LIMIT 1
 $BODY$;
 
-ALTER FUNCTION delegation.get_current_change_based_on_resourceregistryid(character varying, integer, integer, integer)
+--Procedure: delegation.get_current_change
+CREATE OR REPLACE FUNCTION delegation.get_current_change(
+	_altinnappid character varying,
+	_offeredbypartyid integer,
+	_coveredbyuserid integer,
+	_coveredbypartyid integer)
+    RETURNS SETOF delegation.delegationchanges 
+    LANGUAGE 'sql'
+    COST 100
+    STABLE PARALLEL SAFE 
+    ROWS 1
+
+AS $BODY$
+SELECT
+    delegationChangeId,
+    delegationChangeType,
+    altinnAppId, 
+    offeredByPartyId,
+    coveredByUserId,
+    coveredByPartyId,
+    performedByUserId,
+    blobStoragePolicyPath,
+    blobStorageVersionId,
+    created,
+	resourceid,
+	resourcetype
+  FROM delegation.delegationChanges
+  WHERE
+    altinnAppId = _altinnAppId
+    AND offeredByPartyId = _offeredByPartyId
+    AND (_coveredByUserId IS NULL OR coveredByUserId = _coveredByUserId)
+    AND (_coveredByPartyId IS NULL OR coveredByPartyId = _coveredByPartyId)
+  ORDER BY delegationChangeId DESC LIMIT 1
+$BODY$;
+
+ALTER FUNCTION delegation.get_current_change(character varying, integer, integer, integer)
     OWNER TO platform_authorization_admin;

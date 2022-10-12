@@ -17,6 +17,12 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
         OrgApp = 2,
 
         [EnumMember(Value = "Uri")]
-        Uri = 3
+        Uri = 3,
+
+        [EnumMember(Value = "DelegationSchemeId")]
+        DelegationSchemeId = 4,
+
+        [EnumMember(Value = "DelegationScope")]
+        DelegationScope = 5,
     }
 }

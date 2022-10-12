@@ -2,6 +2,7 @@
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Npgsql;
 
 namespace Altinn.AuthorizationAdmin.Core.Helpers
 {
@@ -174,7 +175,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             delegationPolicyPath = null;
             if (TryGetDelegationParamsFromRule(rule, out string org, out string app, out string resourceRegistryId, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
             {
-                delegationPolicyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId, resourceRegistryId);
+                delegationPolicyPath = PolicyHelper.GetDelegationPolicyPath(org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId, resourceRegistryId);
                 return true;
             }
 

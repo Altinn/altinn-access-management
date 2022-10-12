@@ -1,6 +1,7 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using Altinn.AuthorizationAdmin.Core.Configuration;
+using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Microsoft.Extensions.Logging;
@@ -197,7 +198,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
                 ResourceId = reader.GetFieldValue<string?>("resourceid"),
-                ResourceType = reader.GetFieldValue<string?>("resourcetype"),
+                ResourceType = string.IsNullOrWhiteSpace(reader.GetFieldValue<string?>("resourcetype")) ? string.Empty : reader.GetFieldValue<string?>("resourcetype"),
                 Created = reader.GetFieldValue<DateTime>("created")
             };
         }

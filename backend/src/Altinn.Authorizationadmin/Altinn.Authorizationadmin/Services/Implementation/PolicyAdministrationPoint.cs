@@ -79,8 +79,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {delegationPolicypath}", delegationPolicypath);
                 }
 
-                ServiceResource resource = new ServiceResource();
-
                 foreach (Rule rule in delegationDict[delegationPolicypath])
                 {
                     if (writePolicySuccess)
@@ -270,8 +268,8 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         PerformedByUserId = delegatedByUserId,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,
-                        ResourceId = resourceRegistryId,
-                        ResourceType = resource != null ? resource.ResourceType.ToString() : null
+                        ResourceId = resourceRegistryId != null ? resourceRegistryId : string.Empty,
+                        ResourceType = resource != null ? resource.ResourceType.ToString() : string.Empty
                     };
 
                     change = await _delegationRepository.InsertDelegation(change);
@@ -420,7 +418,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
             }
             catch (Exception ex)
             {
@@ -525,7 +523,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
             }
             catch (Exception ex)
             {

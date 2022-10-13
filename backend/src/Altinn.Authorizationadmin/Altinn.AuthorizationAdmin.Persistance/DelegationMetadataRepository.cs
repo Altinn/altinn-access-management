@@ -191,7 +191,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        public async Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId)
         {
             try
             {
@@ -201,11 +201,11 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
                 pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId);
 
-                List<Delegation> receivedDelegations = new List<Delegation>();
+                List<DelegationChange> receivedDelegations = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();
                 while (reader.Read())
                 {
-                    receivedDelegations.Add(GetDelegation(reader));
+                    receivedDelegations.Add(GetDelegationChange(reader));
                 }
 
                 return receivedDelegations;

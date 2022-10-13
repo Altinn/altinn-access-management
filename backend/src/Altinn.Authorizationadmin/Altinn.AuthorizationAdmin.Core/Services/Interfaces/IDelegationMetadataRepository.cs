@@ -52,6 +52,6 @@ namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
         /// Gets the received resource delgations for a given reportee
         /// </summary>
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
-        Task<List<Delegation>> GetReceivedDelegationsAsync(int coveredByPartyId);
+        Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId);
     }
 }

@@ -285,8 +285,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             Assert.Equal(expected.ReporteeName, actual.ReporteeName);
 
-            //// Assert.Equal(expected.Delegations, actual.Delegations);
-
             for (int i = 0; i < expected.Resources.Count; i++)
             {
                 AssertEqual(expected.Resources[i], actual.Resources[i]);

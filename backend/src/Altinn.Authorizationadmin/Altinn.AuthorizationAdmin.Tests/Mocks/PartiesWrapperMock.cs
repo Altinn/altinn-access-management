@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Services;
@@ -18,9 +19,10 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         /// </summary>
         /// <param name="parties"> list of party numbers</param>
         /// <returns>party information list</returns>
-        public Task<List<Party>> GetPartiesAsync(List<int?> parties)
+        public Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
             List<Party> partyList = new List<Party>();
+            List<Party> filteredList = new List<Party>();
 
             string path = GetPartiesPaths();
             if (Directory.Exists(path))
@@ -29,15 +31,20 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
 
                 foreach (string file in files)
                 {
-                    if (file.Contains("offeredby50002110"))
+                    if (file.Contains("parties"))
                     {
                         string content = File.ReadAllText(Path.Combine(path, file));                        
                         partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
+                
+                foreach (int partyId in parties)
+                {
+                    filteredList.Add(partyList.Find(p => p.PartyId == partyId));
+                }                
             }
 
-            return Task.FromResult(partyList);
+            return Task.FromResult(filteredList);
         }
 
         private static string GetPartiesPaths()

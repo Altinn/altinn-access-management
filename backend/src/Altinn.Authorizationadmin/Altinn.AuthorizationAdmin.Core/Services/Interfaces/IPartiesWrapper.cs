@@ -13,6 +13,6 @@ namespace Altinn.AuthorizationAdmin.Core.Services
         /// Returns a list of parties
         /// </summary>
         /// <returns>List of parties</returns>
-        Task<List<Party>> GetPartiesAsync(List<int?> parties);
+        Task<List<Party>> GetPartiesAsync(List<int> parties);
     }
 }

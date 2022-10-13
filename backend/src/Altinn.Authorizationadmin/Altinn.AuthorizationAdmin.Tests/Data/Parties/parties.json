@@ -153,5 +153,36 @@
         "IsDeleted": false,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null
+    },
+	    {
+        "PartyTypeName": 1,
+        "SSN": "01025102092",
+        "OrgNumber": "",
+        "Person": {
+            "SSN": "01025102092",
+            "Name": "WESSEL OTHILIE",
+            "FirstName": "OTHILIE",
+            "MiddleName": null,
+            "LastName": "WESSEL",
+            "TelephoneNumber": null,
+            "MobileNumber": null,
+            "MailingAddress": "",
+            "MailingPostalCode": null,
+            "MailingPostalCity": null,
+            "AddressMunicipalNumber": null,
+            "AddressMunicipalName": null,
+            "AddressStreetName": null,
+            "AddressHouseNumber": null,
+            "AddressHouseLetter": null,
+            "AddressPostalCode": null,
+            "AddressCity": null
+        },
+        "Organization": null,
+        "PartyId": 50002116,
+        "UnitType": null,
+        "Name": "WESSEL OTHILIE",
+        "IsDeleted": false,
+        "OnlyHierarchyElementWithNoAccess": false,
+        "ChildParties": null
     }
 ]

@@ -1176,13 +1176,47 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty();
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002110}");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getreceiveddelegations?coveredbypartyid={50002111}");
             string responseContent = await response.Content.ReadAsStringAsync();
             List<ReceivedDelegation> actualDelegations = JsonConvert.DeserializeObject<List<ReceivedDelegation>>(responseContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetReceivedDelegations returns badrequest status code when the parameter coveredby is missing
+        /// Expected: GetReceivedDelegations returns badrequest status code when the parameter coveredby is missing
+        /// </summary>
+        [Fact]
+        public async Task GetReceivedDelegations_BadRequest_MissingCoveredBy()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getreceiveddelegations?coveredbypartyid=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received by the reportee
+        /// Expected: GetReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received by the reportee
+        /// </summary>
+        [Fact]
+        public async Task GetReceivedDelegations_NoDelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getreceiveddelegations?coveredbypartyid={50002112}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
         }
 
         private static List<Rule> GetExpectedRulesForUser()
@@ -1211,9 +1245,9 @@ namespace Altinn.AuthorizationAdmin.Tests
         private static List<ReceivedDelegation> GetExpectedReceivedDelegationsForParty()
         {
             List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-            
-            //receivedDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "nav_aa_distribution", "NAV aa distribution"));
-            //receivedDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "skd_1", "SKD 1"));
+            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("WESSEL OTHILIE", 50002116));
+            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("MARGRETHE THORUD", 50002115));
+            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("ELENA FJÆR", 50002114));
             return receivedDelegations;
         }
 

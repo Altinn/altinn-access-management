@@ -189,13 +189,17 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<Delegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        public Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId)
         {
-            List<Delegation> result = new List<Delegation>();
-            if (coveredByPartyId == 50002110)
+            List<DelegationChange> result = new List<DelegationChange>();
+            if (coveredByPartyId == 50002111)
             {
-                result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "nav_aa_distribution", "NAV aa distribution"));
-                result.AddRange(TestDataUtil.GetDelegations(coveredByPartyId, "skd_1", "SKD 1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002116, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002116, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "skd_1", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002115, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002115, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234, "skd_1", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002114, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("1", 50002114, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "1"));
             }
 
             return Task.FromResult(result);

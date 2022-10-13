@@ -162,39 +162,20 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <summary>
         /// Sets up mock data for delegation list 
         /// </summary>
-        /// <param name="coveredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="offeredByName">name of the party that delegated the resource</param>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
         /// <returns></returns>
-        public static List<Delegation> GetRecievedDelegations(int coveredByPartyId)
+        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId)
         {
-            List<Delegation> delegations = new List<Delegation>();
-            delegations.Add(new Delegation
-            {
-                OfferedByPartyId = 50002116,
-                OfferedByName = "THOMAS TØNDER",
-                CoveredByPartyId = coveredByPartyId,
-                ResourceId = "nav_aa_distribution",
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", "Nav aa distribution" },
-                    { "nb_no", "Nav aa distribution" },
-                    { "nn_no", "Nav aa distribution" }
-                }
-            });
-            delegations.Add(new Delegation
-            {
-                OfferedByPartyId = 50002116,
-                OfferedByName = "THOMAS TØNDER",
-                CoveredByPartyId = coveredByPartyId,
-                ResourceId = "skd_1",
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", "Statistisk Informasjon" },
-                    { "nb_no", "Statistisk Informasjon" },
-                    { "nn_no", "Statistisk Informasjon" }
-                }
-            });
+            List<ServiceResource> resources = new List<ServiceResource>();
 
-            return delegations;
+            ReceivedDelegation receivedDelegation = new ReceivedDelegation();
+            receivedDelegation.OfferedByPartyId = offeredByPartyId;
+            receivedDelegation.ReporteeName = offeredByName;
+            receivedDelegation.Resources = new List<ServiceResource>();
+            receivedDelegation.Resources.Add(GetResource("nav_aa_distribution", "NAV aa distribution"));
+            receivedDelegation.Resources.Add(GetResource("skd_1", "SKD 1"));
+            return receivedDelegation;
         }
 
         /// <summary>

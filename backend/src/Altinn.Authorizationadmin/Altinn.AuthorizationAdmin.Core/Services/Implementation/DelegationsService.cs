@@ -31,8 +31,8 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         public async Task<List<DelegatedResources>> GetApiDelegationsByOfferedbyAsync(int offeredbyPartyId)
         {
             List<DelegationChange> delegations = await _delegationRepository.GetAllApiDelegationsByOfferedby(offeredbyPartyId);
-            List<int?> parties = new List<int?>();
-            parties = delegations.Select(d => d.CoveredByPartyId).ToList();
+            List<int> parties = new List<int>();
+            parties = delegations.Select(d => d.CoveredByPartyId ?? 0).ToList();
             List<ServiceResource> resources = new List<ServiceResource>();
             List<string> resourceIds;
             resourceIds = delegations.Select(d => d.ResourceId).ToList();
@@ -76,11 +76,19 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         /// <inheritdoc/>
         public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
         {
-            List<Delegation> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId);
+            List<DelegationChange> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId);
             List<int> parties = new List<int>();
             parties = delegations.Select(d => d.OfferedByPartyId).ToList();
+
             List<ServiceResource> resources = new List<ServiceResource>();
-            resources = delegations.Select(d => new ServiceResource() { Identifier = d.ResourceId, Title = d.ResourceTitle }).ToList();
+            List<string> resourceIds;
+            resourceIds = delegations.Select(d => d.ResourceId).ToList();
+
+            foreach (string id in resourceIds)
+            {
+                resources.Add(await _resourceRegistryClient.GetResource(id));
+            }
+
             List<Party> partyList = await _partyProxy.GetPartiesAsync(parties);
             List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
             foreach (Party party in partyList)
@@ -90,12 +98,13 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                     ReceivedDelegation receivedDelegation = new ReceivedDelegation();
                     receivedDelegation.OfferedByPartyId = party.PartyId;
                     receivedDelegation.ReporteeName = party.Name;
-                    List<Delegation> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
+                    List<DelegationChange> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
                     receivedDelegation.Resources = new List<ServiceResource>();
 
-                    foreach (Delegation delegation in query)
+                    foreach (DelegationChange delegation in query)
                     {
-                        receivedDelegation.Resources.Add(new ServiceResource { Identifier = delegation.ResourceId, Title = delegation.ResourceTitle });
+                        ServiceResource resource = resources.Find(d => d.Identifier == delegation.ResourceId);
+                        receivedDelegation.Resources.Add(resource);
                     }
 
                     receivedDelegations.Add(receivedDelegation);

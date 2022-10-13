@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Tests.Mocks;
 using Altinn.AuthorizationAdmin.Tests.Utils;
@@ -90,7 +91,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(null, "app", "50001337", 20001337, null, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, null, "app", "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {
@@ -121,7 +122,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath("org", string.Empty, "50001337", 20001337, null, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, "org", string.Empty, "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {
@@ -152,7 +153,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(null, null, "50001337", 20001337, null, string.Empty);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.ResourceRegistry, string.Empty, null, null, "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {

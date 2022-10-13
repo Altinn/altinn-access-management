@@ -2,12 +2,12 @@
 using System.Text.Json;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.AuthorizationAdmin.Integration.Clients;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Azure;
 using Azure.Storage.Blobs.Models;
@@ -141,13 +141,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out string org, out string app, out string resourceRegistryId, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId))
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
+                || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(resourceRegistryId))
+            if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
                 XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceRegistryId);
                 if (resourcePolicy == null)
@@ -172,7 +173,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     }
                 }
             }
-            else
+            else if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
             {
                 XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app);
                 if (appPolicy == null)
@@ -408,13 +409,18 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out string org, out string app, out string resourceId);
+            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+
+            if (resourceMatchType != ResourceAttributeMatchType.AltinnApp)
+            {
+                throw new NotImplementedException("Deletion of rules for this resource type is not implemented");
+            }
 
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceRegistryId, org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
             }
             catch (Exception ex)
             {
@@ -514,12 +520,17 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out string org, out string app, out string resourceId);
+            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
+
+            if (resourceMatchType != ResourceAttributeMatchType.AltinnApp)
+            {
+                throw new NotImplementedException("Deletion of rules for this resource type is not implemented");
+            }
 
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, resourceId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceRegistryId, org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
             }
             catch (Exception ex)
             {

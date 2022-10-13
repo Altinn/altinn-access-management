@@ -34,7 +34,7 @@ namespace Altinn.AuthorizationAdmin.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Party>> GetPartiesAsync(List<int> parties)
+        public async Task<List<Party>> GetPartiesAsync(List<int?> parties)
         {
             UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.BridgeApiEndpoint}register/api/parties");
 

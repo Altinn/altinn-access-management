@@ -44,7 +44,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        ////[Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
+        [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/AddRules")]
         public async Task<ActionResult> Post([FromBody] List<Rule> rules)
         {
@@ -262,15 +262,15 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("authorization/api/v1/[controller]/GetDelegatedResources")]
-        public async Task<ActionResult<List<ResourceDelegation>>> GetDelegatedResources([FromQuery] int offeredbyPartyId)
+        [Route("authorization/api/v1/[controller]/GetApiDelegationsByOfferedbyAsync")]
+        public async Task<ActionResult<List<DelegatedResources>>> GetApiDelegationsByOfferedbyAsync([FromQuery] int offeredbyPartyId)
         {
             if (offeredbyPartyId == 0)
             {
                 return BadRequest("Missing query parameter offeredbypartyid");
             }
 
-            List<ResourceDelegation> delegations = await _delegation.GetDelegatedResourcesAsync(offeredbyPartyId);
+            List<DelegatedResources> delegations = await _delegation.GetApiDelegationsByOfferedbyAsync(offeredbyPartyId);
             if (delegations == null || delegations.Count == 0)
             {
                 return Ok("No delegations found");

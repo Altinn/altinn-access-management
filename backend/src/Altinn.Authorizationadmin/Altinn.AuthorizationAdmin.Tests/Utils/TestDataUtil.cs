@@ -104,7 +104,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="changeType">changeType</param>
         /// <param name="changeId">changeId</param>
         /// <returns></returns>
-        public static DelegationChange GetDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        public static DelegationChange GetDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337, string? resourceId = null, string? resourceType = null)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
             return new DelegationChange
@@ -118,7 +118,9 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"{altinnAppId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                ResourceId = resourceId,
+                ResourceType = resourceType
             };
         }
 
@@ -129,73 +131,30 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="resourceId">resource identifier</param>
         /// <param name="resourceName">Resource name</param>
         /// <returns></returns>
-        public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName)
+        public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {
             List<Delegation> delegations = new List<Delegation>();
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
                 CoveredByName = "THOMAS TØNDER",
                 CoveredByPartyId = 50002111,
-                ResourceId = resourceId,
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", resourceName },
-                    { "nb_no", resourceName },
-                    { "nn_no", resourceName}
-                }
+                
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
                 CoveredByName = "HANNAH TUFT",
                 CoveredByPartyId = 50002112,
-                ResourceId = resourceId,
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", resourceName },
-                    { "nb_no", resourceName },
-                    { "nn_no", resourceName }
-                }
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
                 CoveredByName = "KLEVEN ALMA",
                 CoveredByPartyId = 50002113,
-                ResourceId = resourceId,
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", resourceName },
-                    { "nb_no", resourceName },
-                    { "nn_no", resourceName }
-                }
-            });
-            delegations.Add(new Delegation
-            {
-                OfferedByPartyId = offeredByPartyId,
-                CoveredByName = "ELENA FJÆR",
-                CoveredByPartyId = 50002114,
-                ResourceId = resourceId,
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", resourceName },
-                    { "nb_no", resourceName },
-                    { "nn_no", resourceName }
-                }
-            });
-            delegations.Add(new Delegation
-            {
-                OfferedByPartyId = offeredByPartyId,
-                CoveredByName = "MARGRETHE THORUD",
-                CoveredByPartyId = 50002115,
-                ResourceId = resourceId,
-                ResourceTitle = new Dictionary<string, string>
-                {
-                    { "en", resourceName },
-                    { "nb_no", resourceName },
-                    { "nn_no", resourceName }
-                }
             });
             return delegations;
         }
@@ -231,21 +190,48 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
+        /// Creates a ServiceResource model.
+        /// </summary>
+        /// <param name="resourceId">ResourceId.</param>
+        /// <param name="resourceTitle">title of the resource</param>
+        /// <returns>Returns the newly created ServiceResource.</returns>
+        public static ServiceResource GetResource(string resourceId, string resourceTitle)
+        {
+            return new ServiceResource
+            {
+                Identifier = resourceId,
+                Title = new Dictionary<string, string>
+                {
+                    { "en", resourceTitle },
+                    { "nb-no", resourceTitle },
+                    { "nn-no", resourceTitle },
+                },
+                Description = new Dictionary<string, string>
+                {
+                    { "Description", resourceTitle }
+                },
+                ValidFrom = DateTime.Now,
+                ValidTo = DateTime.Now.AddDays(1),
+            };
+        }
+
+        /// <summary>
         /// Gets resourcedelegation model for the given input
         /// </summary>
         /// <param name="offeredByPartyId">party that delegated the resources</param>
         /// <param name="resourceId">the resource that was delegated</param>
         /// <param name="resourceName">the resource name that was delegated</param>
+        /// <param name="performedByUserId">id of the user who perfoemed the delegation</param>
         /// <returns></returns>
-        public static ResourceDelegation GetResourceDelegationModel(int offeredByPartyId, string resourceId, string resourceName)
+        public static DelegatedResources GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {
-            ResourceDelegation resourceDelegation = new ResourceDelegation
+            DelegatedResources resourceDelegation = new DelegatedResources
             {
                 ResourceId = resourceId,
-                ResourceName = resourceName
+                ResourceTitle = resourceName
             };
             resourceDelegation.Delegations = new List<Delegation>();
-            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName));
+            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName, performedByUserId));
             return resourceDelegation;
         }
     }

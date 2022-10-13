@@ -18,7 +18,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         /// </summary>
         /// <param name="parties"> list of party numbers</param>
         /// <returns>party information list</returns>
-        public Task<List<Party>> GetPartiesAsync(List<int> parties)
+        public Task<List<Party>> GetPartiesAsync(List<int?> parties)
         {
             List<Party> partyList = new List<Party>();
 

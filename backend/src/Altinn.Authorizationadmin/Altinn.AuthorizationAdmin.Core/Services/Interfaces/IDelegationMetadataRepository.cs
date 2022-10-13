@@ -46,6 +46,6 @@ namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
         /// Gets the delegated resources for a given reportee
         /// </summary>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegation</param>
-        Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId);
+        Task<List<DelegationChange>> GetAllApiDelegationsByOfferedby(int offeredByPartyId);
     }
 }

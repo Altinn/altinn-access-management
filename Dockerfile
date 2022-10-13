@@ -17,7 +17,7 @@ COPY backend/src/Altinn.Authorizationadmin/Altinn.AuthorizationAdmin.Persistance
 RUN dotnet publish -c Release -o out ./src/Altinn.Authorizationadmin/Altinn.AuthorizationAdmin.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.9-alpine3.16 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.10-alpine3.16 AS final
 EXPOSE 5100
 WORKDIR /app
 COPY --from=build /app/out .

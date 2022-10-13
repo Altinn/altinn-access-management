@@ -1,9 +1,7 @@
-import { FC } from 'react';
-
-export interface ApiDelegationAccordionProps {}
-
-const ApiDelegationAccordion: FC<ApiDelegationAccordionProps> = () => (
-  <div data-testid="ApiDelegationAccordion">ApiDelegationAccordion Component</div>
-);
-
-export default ApiDelegationAccordion;
+export const ApiDelegationAccordion = ({}) => {
+  return (
+    <div>
+      <h1>Starting point</h1>
+    </div>
+  );
+};

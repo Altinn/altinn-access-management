@@ -1,2 +1,1 @@
-export * from './ApiDelegationAccordion';
-export { default } from './ApiDelegationAccordion';
+export { ApiDelegationAccordion } from './ApiDelegationAccordion';

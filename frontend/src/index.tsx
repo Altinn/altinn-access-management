@@ -10,6 +10,7 @@ import SuspendLoadLocale from './helpers/SuspendLoadLocale';
 import { getConfig } from './services/config';
 import baseLocales from './basic-locales.json';
 import './index.css';
+import ApiDelegationAccordion from './components/ApiDelegationAccordion';
 
 /**
  * Special behaviour for react-query in dev environment
@@ -57,7 +58,10 @@ i18next.use(initReactI18next).init(
         <QueryClientProvider client={queryClient}>
           <SuspendLoadLocale>
             {featureRoots.authAdmin &&
-              ReactDOM.createPortal(<></>, featureRoots.authAdmin)}
+              ReactDOM.createPortal(
+                <ApiDelegationAccordion></ApiDelegationAccordion>,
+                featureRoots.authAdmin,
+              )}
           </SuspendLoadLocale>
         </QueryClientProvider>
       </React.StrictMode>,

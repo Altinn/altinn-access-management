@@ -12,7 +12,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
         /// </summary>
         /// <param name="offeredbyPartyId">reportee id that delegated resources</param>
         /// <returns>list o delgations</returns>
-        public Task<List<ResourceDelegation>> GetDelegatedResourcesAsync(int offeredbyPartyId);
+        public Task<List<DelegatedResources>> GetApiDelegationsByOfferedbyAsync(int offeredbyPartyId);
 
         /// <summary>
         /// Gets all the rceived delegations for a reportee

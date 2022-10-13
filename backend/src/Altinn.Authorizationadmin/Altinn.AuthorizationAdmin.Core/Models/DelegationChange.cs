@@ -66,5 +66,17 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         /// </summary>
         [JsonPropertyName("created")]
         public DateTime Created { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource id.
+        /// </summary>
+        [JsonPropertyName("resourceid")]
+        public string? ResourceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resourcetype.
+        /// </summary>
+        [JsonPropertyName("resourcetype")]
+        public string? ResourceType { get; set; }
     }
 }

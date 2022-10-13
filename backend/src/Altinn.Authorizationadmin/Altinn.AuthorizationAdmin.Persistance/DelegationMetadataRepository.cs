@@ -21,6 +21,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
+        private readonly string getAllApiDelegationsOfferedBySql = "select * from delegation.get_all_api_delegations_offeredby(@_offeredByPartyId)";
         private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
@@ -163,22 +164,21 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetDelegatedResources(int offeredByPartyId)
+        public async Task<List<DelegationChange>> GetAllApiDelegationsByOfferedby(int offeredByPartyId)
         {
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
-                NpgsqlCommand pgcom = new NpgsqlCommand(getDelegatedResourcesSql, conn);
+                NpgsqlCommand pgcom = new NpgsqlCommand(getAllApiDelegationsOfferedBySql, conn);
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
 
-                List<Delegation> delegatedResources = new List<Delegation>();
-                List<ResourceDelegation> receivedDelegation = new List<ResourceDelegation>();
+                List<DelegationChange> delegatedResources = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();
                 while (reader.Read())
                 {
-                    delegatedResources.Add(GetDelegation(reader));
+                    delegatedResources.Add(GetDelegationChange(reader));
                 }
 
                 return delegatedResources;
@@ -238,30 +238,12 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 AltinnAppId = reader.GetFieldValue<string>("altinnappid"),
                 OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid"),
                 CoveredByPartyId = reader.GetFieldValue<int>("coveredbypartyid"),
-                CoveredByUserId = reader.GetFieldValue<int>("coveredbyuserid"),
                 PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                Created = reader.GetFieldValue<DateTime>("created")
-            };
-        }
-
-        private static Delegation GetDelegation(NpgsqlDataReader reader)
-        {
-            ServiceResource? resource = null;
-            if (reader["serviceresourcejson"] != DBNull.Value)
-            {
-                var jsonb = reader.GetString("serviceresourcejson");
-                resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
-            }
-
-            return new Delegation
-            {
-                PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
+                Created = reader.GetFieldValue<DateTime>("created"),
                 ResourceId = reader.GetFieldValue<string>("resourceid"),
-                ResourceTitle = (resource != null) ? resource.Title : null,
-                CoveredByPartyId = reader.GetFieldValue<int>("coveredbypartyid"),
-                OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid")
+                ResourceType = reader.GetFieldValue<string>("resourcetype")
             };
         }
 

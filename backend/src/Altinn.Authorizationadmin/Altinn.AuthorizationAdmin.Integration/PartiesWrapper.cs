@@ -34,7 +34,7 @@ namespace Altinn.AuthorizationAdmin.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Party>> GetPartiesAsync(List<int> parties)
+        public async Task<List<Party>> GetPartiesAsync(List<int?> parties)
         {
             UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.BridgeApiEndpoint}register/api/parties");
 
@@ -49,7 +49,7 @@ namespace Altinn.AuthorizationAdmin.Services
             }
             else
             {
-                _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode);
+                _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
             }
 
             return null;

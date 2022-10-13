@@ -22,7 +22,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly AzureStorageConfiguration _storageConfig;
         private readonly BlobContainerClient _metadataContainerClient;
         private readonly BlobContainerClient _delegationsContainerClient;
-        private readonly BlobContainerClient _delegationsResourcesContainerClient;
+        private readonly BlobContainerClient _resourcesContainerClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyRepository"/> class
@@ -44,9 +44,9 @@ namespace Altinn.AuthorizationAdmin.Persistance
             BlobServiceClient delegationsServiceClient = new BlobServiceClient(new Uri(_storageConfig.DelegationsBlobEndpoint), delegationsCredentials);
             _delegationsContainerClient = delegationsServiceClient.GetBlobContainerClient(_storageConfig.DelegationsContainer);
 
-            StorageSharedKeyCredential delegationsResourcesCredentials = new StorageSharedKeyCredential(_storageConfig.ResourceRegistryAccountName, _storageConfig.ResourceRegistryAccountKey);
-            BlobServiceClient delegationsResourcesServiceClient = new BlobServiceClient(new Uri(_storageConfig.ResourceRegistryBlobEndpoint), delegationsCredentials);
-            _delegationsResourcesContainerClient = delegationsServiceClient.GetBlobContainerClient(_storageConfig.ResourceRegistryContainer);
+            StorageSharedKeyCredential resourcesCredentials = new StorageSharedKeyCredential(_storageConfig.ResourceRegistryAccountName, _storageConfig.ResourceRegistryAccountKey);
+            BlobServiceClient resourcesServiceClient = new BlobServiceClient(new Uri(_storageConfig.ResourceRegistryBlobEndpoint), resourcesCredentials);
+            _resourcesContainerClient = resourcesServiceClient.GetBlobContainerClient(_storageConfig.ResourceRegistryContainer);
         }
 
         /// <inheritdoc/>
@@ -171,7 +171,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
             else if (blobName.Contains("policy.xml"))
             {
-                return _delegationsResourcesContainerClient.GetBlobClient(blobName);
+                return _resourcesContainerClient.GetBlobClient(blobName);
             }
             else
             {

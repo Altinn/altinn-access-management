@@ -13,42 +13,56 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly ILogger<IDelegationsService> _logger;
         private readonly IPartiesWrapper _partyProxy;
+        private readonly IResourceRegistryClient _resourceRegistryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
         /// </summary>
         /// <param name="delegationRepository">delgation change handler</param>
-        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesWrapper partyProxy)
+        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesWrapper partyProxy, IResourceRegistryClient resourceRegistryClient)
         {
             _delegationRepository = delegationRepository;
             _logger = logger;
             _partyProxy = partyProxy;
+            _resourceRegistryClient = resourceRegistryClient;
         }
 
         /// <inheritdoc/>
-        public async Task<List<ResourceDelegation>> GetDelegatedResourcesAsync(int offeredbyPartyId)
+        public async Task<List<DelegatedResources>> GetApiDelegationsByOfferedbyAsync(int offeredbyPartyId)
         {
-            List<Delegation> delegations = await _delegationRepository.GetDelegatedResources(offeredbyPartyId);
-            List<int> parties = new List<int>();
+            List<DelegationChange> delegations = await _delegationRepository.GetAllApiDelegationsByOfferedby(offeredbyPartyId);
+            List<int?> parties = new List<int?>();
             parties = delegations.Select(d => d.CoveredByPartyId).ToList();
             List<ServiceResource> resources = new List<ServiceResource>();
-            resources = delegations.Select(d => new ServiceResource() { Identifier = d.ResourceId, Title = d.ResourceTitle }).ToList();
+            List<string> resourceIds;
+            resourceIds = delegations.Select(d => d.ResourceId).ToList();
+
+            foreach (string id in resourceIds)
+            {
+                resources.Add(await _resourceRegistryClient.GetResource(id));
+            }
+
             List<Party> partyList = await _partyProxy.GetPartiesAsync(parties);
-            List<ResourceDelegation> resourceDelegations = new List<ResourceDelegation>();
+            List<DelegatedResources> resourceDelegations = new List<DelegatedResources>();
             foreach (ServiceResource resource in resources)
             {
                 if (resourceDelegations.FindAll(rd => rd.ResourceId.Equals(resource.Identifier)).Count <= 0)
                 {
-                    ResourceDelegation resourceDelegation = new ResourceDelegation();
+                    DelegatedResources resourceDelegation = new DelegatedResources();
                     resourceDelegation.ResourceId = resource.Identifier;
-                    resourceDelegation.ResourceName = resource.Title.FirstOrDefault().Value;
-                    List<Delegation> query = delegations.FindAll(d => d.ResourceId.Equals(resource.Identifier));
+                    resourceDelegation.ResourceTitle = resource.Title.FirstOrDefault().Value;
+                    List<DelegationChange> query = delegations.FindAll(d => d.ResourceId.Equals(resource.Identifier));
                     resourceDelegation.Delegations = new List<Delegation>();
 
-                    foreach (Delegation delegation in query)
+                    foreach (DelegationChange delegationChange in query)
                     {
-                        Party partyInfo = partyList.Find(p => p.PartyId == delegation.CoveredByPartyId);
+                        Delegation delegation = new Delegation();
+                        Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
                         delegation.CoveredByName = partyInfo?.Name;
+                        delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
+                        delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
+                        delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                        delegation.Created = delegationChange.Created;
                         resourceDelegation.Delegations.Add(delegation);
                     }
 

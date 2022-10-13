@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Controllers;
+using Altinn.AuthorizationAdmin.Core;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
@@ -1118,12 +1119,12 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetDelegatedResources_Valid_OfferedBy()
         {
             // Arrange
-            List<ResourceDelegation> expectedDelegations = GetExpectedDelegationsForParty();
+            List<DelegatedResources> expectedDelegations = GetExpectedDelegationsForParty();
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002110}");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetApiDelegationsByOfferedbyAsync?offeredbypartyid={50002110}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<ResourceDelegation> actualDelegations = JsonConvert.DeserializeObject<List<ResourceDelegation>>(responseContent);
+            List<DelegatedResources> actualDelegations = JsonConvert.DeserializeObject<List<DelegatedResources>>(responseContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -1138,7 +1139,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetDelegatedResources_BadRequest_MissingOfferedBy()
         {            
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid=");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetApiDelegationsByOfferedbyAsync?offeredbypartyid=");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1156,7 +1157,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/getdelegatedresources?offeredbypartyid={50002111}");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetApiDelegationsByOfferedbyAsync?offeredbypartyid={50002111}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1199,11 +1200,11 @@ namespace Altinn.AuthorizationAdmin.Tests
             return list;
         }
 
-        private static List<ResourceDelegation> GetExpectedDelegationsForParty()
+        private static List<DelegatedResources> GetExpectedDelegationsForParty()
         {
-            List<ResourceDelegation> resourceDelegations = new List<ResourceDelegation>();
-            resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "nav_aa_distribution", "NAV aa distribution"));
-            resourceDelegations.Add(TestDataUtil.GetResourceDelegationModel(50002110, "skd_1", "SKD 1"));
+            List<DelegatedResources> resourceDelegations = new List<DelegatedResources>();
+            resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(50002110, "nav_aa_distribution", "NAV aa distribution", 20000002));
+            resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(50002110, "skd_1", "SKD 1", 20000002));
             return resourceDelegations;
         }
 
@@ -1228,6 +1229,7 @@ namespace Altinn.AuthorizationAdmin.Tests
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesWrapper, PartiesWrapperMock>();
+                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

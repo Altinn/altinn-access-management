@@ -65,7 +65,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
         /// <summary>
         /// ResourceReference
         /// </summary>
-        public List<ResourceReference> ResourceReference { get; set;  }
+        public List<ResourceReference> ResourceReferences { get; set;  }
 
         /// <summary>
         /// IsComplete

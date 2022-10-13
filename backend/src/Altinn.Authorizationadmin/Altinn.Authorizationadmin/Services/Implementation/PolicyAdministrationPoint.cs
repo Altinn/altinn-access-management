@@ -156,23 +156,19 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     return false;
                 }
 
+                ServiceResource resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                if (resource == null)
+                {
+                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
+                    return false;
+                }
+
                 foreach (Rule rule in rules)
                 {
                     if (!DelegationHelper.PolicyContainsMatchingRule(resourcePolicy, rule))
                     {
                         _logger.LogWarning("Matching rule not found in resource policy. Action might not exist for Resource, or Resource itself might not exist. Delegation policy path: {policyPath}. Rule: {rule}", policyPath, rule);
                         return false;
-                    }
-
-                    ServiceResource resource = new ServiceResource();
-                    foreach (AttributeMatch res in rule.Resource)
-                    {
-                        resource = await _resourceRegistryClient.GetResource(res.Value);
-                        if (resource == null)
-                        {
-                            _logger.LogWarning("The specified resource {res.Value} does not exist.", res.Value);
-                            return false;
-                        }
                     }
                 }
             }

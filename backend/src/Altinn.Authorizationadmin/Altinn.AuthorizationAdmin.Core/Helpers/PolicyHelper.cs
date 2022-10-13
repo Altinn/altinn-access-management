@@ -208,7 +208,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
             }
             else
             {
-                return $"resourceregistry/{resourceRegistryId.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix.AsFileName()}/delegationpolicy.xml";
+                return $"resourceregistry/{resourceRegistryId.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix}{coveredBy.AsFileName()}/delegationpolicy.xml";
             }
         }
 

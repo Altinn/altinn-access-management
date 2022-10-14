@@ -190,15 +190,15 @@ namespace Altinn.AuthorizationAdmin.Persistance
             {
                 DelegationChangeId = reader.GetFieldValue<int>("delegationchangeid"),
                 DelegationChangeType = reader.GetFieldValue<DelegationChangeType>("delegationchangetype"),
-                AltinnAppId = DataReaderExtensions.GetValue(reader, "altinnappid").ToString(),
+                AltinnAppId = reader.IsDBNull("altinnappid") ? null : reader.GetFieldValue<string>("altinnappid"),
                 OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid"),
                 CoveredByPartyId = reader.GetFieldValue<int?>("coveredbypartyid"),
                 CoveredByUserId = reader.GetFieldValue<int?>("coveredbyuserid"),
                 PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                ResourceId = DataReaderExtensions.GetValue(reader, "resourceid").ToString(),
-                ResourceType = DataReaderExtensions.GetValue(reader, "resourcetype").ToString(),
+                ResourceId = reader.IsDBNull("resourceid") ? null : reader.GetFieldValue<string>("resourceid"),
+                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype"),
                 Created = reader.GetFieldValue<DateTime>("created")
             };
         }

@@ -141,6 +141,9 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
+            string altinnAppId = null;
+            ServiceResource resource = null;
+
             if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
@@ -157,7 +160,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     return false;
                 }
 
-                ServiceResource resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
                 if (resource == null)
                 {
                     _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
@@ -206,7 +209,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     // Check for a current delegation change from postgresql
                     DelegationChange currentChange = new DelegationChange();
 
-                    string altinnAppId = string.Empty;
                     if (!string.IsNullOrWhiteSpace(org) || !string.IsNullOrWhiteSpace(app))
                     {
                         altinnAppId = $"{org}/{app}";
@@ -248,12 +250,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         return false;
                     }
 
-                    ServiceResource resource = null;
-                    if (!string.IsNullOrWhiteSpace(resourceRegistryId))
-                    {
-                        resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
-                    }
-                    
                     // Write delegation change to postgresql
                     DelegationChange change = new DelegationChange
                     {
@@ -265,8 +261,8 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                         PerformedByUserId = delegatedByUserId,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,
-                        ResourceId = resourceRegistryId != null ? resourceRegistryId : string.Empty,
-                        ResourceType = resource != null ? resource.ResourceType.ToString() : string.Empty
+                        ResourceId = resourceRegistryId,
+                        ResourceType = resource != null ? resource.ResourceType.ToString() : null
                     };
 
                     change = await _delegationRepository.InsertDelegation(change);

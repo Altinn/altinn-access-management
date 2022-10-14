@@ -52,15 +52,15 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(insertDelegationChangeFunc, conn);
                 pgcom.Parameters.AddWithValue("_delegationChangeType", delegationChange.DelegationChangeType);
-                pgcom.Parameters.AddWithValue("_altinnAppId", delegationChange.AltinnAppId);
+                pgcom.Parameters.AddWithValue("_altinnAppId", delegationChange.AltinnAppId == null ? DBNull.Value : delegationChange.AltinnAppId);
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", delegationChange.OfferedByPartyId);
                 pgcom.Parameters.AddWithValue("_coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_performedByUserId", delegationChange.PerformedByUserId);
                 pgcom.Parameters.AddWithValue("_blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath);
                 pgcom.Parameters.AddWithValue("_blobStorageVersionId", delegationChange.BlobStorageVersionId);
-                pgcom.Parameters.AddWithValue("_resourceid", delegationChange.ResourceId);
-                pgcom.Parameters.AddWithValue("_resourcetype", delegationChange.ResourceType);
+                pgcom.Parameters.AddWithValue("_resourceid", delegationChange.ResourceId == null ? DBNull.Value : delegationChange.ResourceId);
+                pgcom.Parameters.AddWithValue("_resourcetype", delegationChange.ResourceType == null ? DBNull.Value : delegationChange.ResourceType);
 
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())
@@ -190,15 +190,15 @@ namespace Altinn.AuthorizationAdmin.Persistance
             {
                 DelegationChangeId = reader.GetFieldValue<int>("delegationchangeid"),
                 DelegationChangeType = reader.GetFieldValue<DelegationChangeType>("delegationchangetype"),
-                AltinnAppId = reader.GetFieldValue<string?>("altinnappid"),
+                AltinnAppId = DataReaderExtensions.GetValue(reader, "altinnappid").ToString(),
                 OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid"),
                 CoveredByPartyId = reader.GetFieldValue<int?>("coveredbypartyid"),
                 CoveredByUserId = reader.GetFieldValue<int?>("coveredbyuserid"),
                 PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                ResourceId = reader.GetFieldValue<string?>("resourceid"),
-                ResourceType = string.IsNullOrWhiteSpace(reader.GetFieldValue<string?>("resourcetype")) ? string.Empty : reader.GetFieldValue<string?>("resourcetype"),
+                ResourceId = DataReaderExtensions.GetValue(reader, "resourceid").ToString(),
+                ResourceType = DataReaderExtensions.GetValue(reader, "resourcetype").ToString(),
                 Created = reader.GetFieldValue<DateTime>("created")
             };
         }

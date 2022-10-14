@@ -823,6 +823,46 @@ namespace Altinn.AuthorizationAdmin.Tests
         /// Scenario:
         /// Calling the POST operation for AddRules to perform a valid delegation
         /// Input:
+        /// List of two rules for delegation of the resource for a single offeredby/coveredby combination resulting in a single delegation policy.
+        /// Expected Result:
+        /// Rules are created and returned with the CreatedSuccessfully flag set and rule ids but since the delegation is already existing the RuleId is known before delegating as they are already existing in the Xacml file
+        /// Success Criteria:
+        /// AddRules returns status code 201 and list of rules created match expected
+        /// </summary>
+        [Fact]
+        public async Task Post_AddRules_With_RegistryResource_DuplicateSuccess()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/AddRules/ReadWriteResourceregistryId_50001337_20001337.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            Rule rule1 = TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", null, null, createdSuccessfully: true, resourceRegistryId: "resource1");
+            rule1.RuleId = "57b3ee85-f932-42c6-9ab0-941eb6c96eb0";
+            rule1.Type = RuleType.DirectlyDelegated;
+            Rule rule2 = TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", null, null, createdSuccessfully: true, resourceRegistryId: "resource1");
+            rule2.RuleId = "99e5cced-3bcb-42b6-9089-63c834f89e77";
+            rule2.Type = RuleType.DirectlyDelegated;
+
+            List<Rule> expected = new List<Rule> { rule1, rule2 };
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
+            Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
+            AssertionUtil.AssertEqual(expected, actual, true);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Calling the POST operation for AddRules to perform a valid delegation
+        /// Input:
         /// List of 4 rules for delegation of from 4 different offeredBys to 4 different coveredBys for 4 different apps. Resulting in 4 different delegation policy files
         /// Expected Result:
         /// Rules are created and returned with the CreatedSuccessfully flag set and rule ids

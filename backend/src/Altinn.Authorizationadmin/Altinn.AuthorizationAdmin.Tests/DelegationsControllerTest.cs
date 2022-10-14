@@ -37,6 +37,11 @@ namespace Altinn.AuthorizationAdmin.Tests
         private readonly CustomWebApplicationFactory<DelegationsController> _factory;
         private readonly HttpClient _client;
 
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
+
         /// <summary>
         /// Constructor setting up factory, test client and dependencies
         /// </summary>
@@ -442,10 +447,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeletePolicy", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -517,10 +518,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeletePolicy", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -728,10 +725,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -773,10 +766,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -821,10 +810,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -864,10 +849,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -908,10 +889,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -956,10 +933,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -997,10 +970,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/addrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1030,10 +999,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1058,10 +1023,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1087,10 +1048,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1115,10 +1072,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1182,10 +1135,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -1210,10 +1159,6 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.PostAsync($"authorization/api/v1/delegations/getrules", content);
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actualRules = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert

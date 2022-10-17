@@ -13,7 +13,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId)
         {
-            return await Task.FromResult(TestDataUtil.GetResource(resourceId));
+            //return await Task.FromResult(TestDataUtil.GetResource(resourceId));
             string resourceTitle = string.Empty;
             if (resourceId == "nav_aa_distribution")
             {

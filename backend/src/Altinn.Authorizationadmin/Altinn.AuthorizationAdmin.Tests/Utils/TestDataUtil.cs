@@ -250,6 +250,9 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 ResourceId = resourceId,
                 ResourceTitle = resourceName
             };
+            resourceDelegation.Delegations = new List<Delegation>();
+            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName, performedByUserId));
+            return resourceDelegation;
         }
 
         /// <summary>

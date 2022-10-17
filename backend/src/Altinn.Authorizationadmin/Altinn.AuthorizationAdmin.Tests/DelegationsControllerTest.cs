@@ -1220,7 +1220,11 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetApiDelegationsByOfferedbyAsync?offeredbypartyid={50002110}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<DelegatedResources> actualDelegations = JsonConvert.DeserializeObject<List<DelegatedResources>>(responseContent);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<DelegatedResources> actualDelegations = JsonSerializer.Deserialize<List<DelegatedResources>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

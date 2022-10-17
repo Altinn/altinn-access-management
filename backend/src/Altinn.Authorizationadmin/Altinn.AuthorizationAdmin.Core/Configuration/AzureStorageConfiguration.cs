@@ -84,25 +84,5 @@ namespace Altinn.AuthorizationAdmin.Core.Configuration
         /// The account key for the storage account for delegation event queue
         /// </summary>
         public string DelegationEventQueueAccountKey { get; set; }
-
-        /// <summary>
-        /// The name of the storage container in the resource registry storage account
-        /// </summary>
-        public string ResourceRegistryContainer { get; set; }
-
-        /// <summary>
-        /// The url for the blob end point for Metadata
-        /// </summary>
-        public string ResourceRegistryBlobEndpoint { get; set; }
-
-        /// <summary>
-        /// The storage account name for delegation event queue
-        /// </summary>
-        public string ResourceRegistryAccountName { get; set; }
-
-        /// <summary>
-        /// The account key for the storage account for delegation event queue
-        /// </summary>
-        public string ResourceRegistryAccountKey { get; set; }
     }
 }

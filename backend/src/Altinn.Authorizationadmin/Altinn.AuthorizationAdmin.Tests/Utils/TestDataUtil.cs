@@ -158,55 +158,25 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "THOMAS TØNDER",
-                CoveredByPartyId = 50002111,
+                CoveredByName = "KOLSÅS OG FLÅM",
+                CoveredByPartyId = 50004219,
                 
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "HANNAH TUFT",
-                CoveredByPartyId = 50002112,
+                CoveredByName = "NORDRE FROGN OG MORTENHALS",
+                CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "KLEVEN ALMA",
-                CoveredByPartyId = 50002113,
+                CoveredByName = "LUNDAMO OG FLEINVÆR",
+                CoveredByPartyId = 50004221,
             });
             return delegations;
-        }
-
-        /// <summary>
-        /// Sets mock data for service resource
-        /// </summary>
-        /// <returns></returns>
-        public static List<ServiceResource> GetResources(int offeredByPartyId)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            resources.Add(new ServiceResource
-            {
-                Identifier = "nav_aa_distribution",
-                Title = new Dictionary<string, string>
-                {
-                    { "en", "NAV aa distribution" },
-                    { "nb_no", "NAV aa distribution" },
-                    { "nn_no", "NAV aa distribution" }
-                }
-            });
-            resources.Add(new ServiceResource
-            {
-                Identifier = "skd_1",
-                Title = new Dictionary<string, string>
-                {
-                    { "en", "SKD 1" },
-                    { "nb_no", "SKD 1" },
-                    { "nn_no", "SKD 1" }
-                }
-            });
-            return resources;
         }
 
         /// <summary>
@@ -236,23 +206,23 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
-        /// Gets resourcedelegation model for the given input
+        /// Gets offered delegation model for the given input
         /// </summary>
         /// <param name="offeredByPartyId">party that delegated the resources</param>
         /// <param name="resourceId">the resource that was delegated</param>
         /// <param name="resourceName">the resource name that was delegated</param>
         /// <param name="performedByUserId">id of the user who perfoemed the delegation</param>
         /// <returns></returns>
-        public static DelegatedResources GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
+        public static OfferedDelegations GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {
-            DelegatedResources resourceDelegation = new DelegatedResources
+            OfferedDelegations offeredDelegation = new OfferedDelegations
             {
                 ResourceId = resourceId,
                 ResourceTitle = resourceName
             };
-            resourceDelegation.Delegations = new List<Delegation>();
-            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName, performedByUserId));
-            return resourceDelegation;
+            offeredDelegation.Delegations = new List<Delegation>();
+            offeredDelegation.Delegations.AddRange(GetDelegations(offeredByPartyId, resourceId, resourceName, performedByUserId));
+            return offeredDelegation;
         }
 
         /// <summary>
@@ -275,29 +245,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now,
                 ResourceId = resourceRegistryId,
-            };
-        }
-
-        /// <summary>
-        /// Creates a ServiceResource model.
-        /// </summary>
-        /// <param name="resourceId">ResourceId.</param>
-        /// <returns>Returns the newly created ServiceResource.</returns>
-        public static ServiceResource GetResource(string resourceId)
-        {
-            return new ServiceResource
-            {
-                Identifier = resourceId,
-                Title = new Dictionary<string, string> 
-                { 
-                    { "Title", "resource1" } 
-                },
-                Description = new Dictionary<string, string> 
-                { 
-                    { "Description", "resource1" } 
-                },
-                ValidFrom = DateTime.Now,
-                ValidTo = DateTime.Now.AddDays(1),
             };
         }
 

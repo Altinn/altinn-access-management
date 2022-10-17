@@ -23,7 +23,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
-        private readonly string getAllApiDelegationsOfferedBySql = "select * from delegation.get_all_api_delegations_offeredby(@_offeredByPartyId)";
+        private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
         private readonly string getAllCurrentDelegationChangesUserIdsSql = "select * from delegation.get_all_current_changes_coveredbyuserids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByUserIds)";
@@ -176,15 +176,16 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllApiDelegationsByOfferedby(int offeredByPartyId)
+        public async Task<List<DelegationChange>> GetAllOfferedDelegations(int offeredByPartyId, ResourceType resourceType)
         {
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
-                NpgsqlCommand pgcom = new NpgsqlCommand(getAllApiDelegationsOfferedBySql, conn);
+                NpgsqlCommand pgcom = new NpgsqlCommand(getAllOfferedDelegations, conn);
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
+                pgcom.Parameters.AddWithValue("_resourcetype", resourceType.ToString());
 
                 List<DelegationChange> delegatedResources = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();

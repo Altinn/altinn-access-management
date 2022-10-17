@@ -2,6 +2,7 @@
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -223,21 +224,31 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("authorization/api/v1/[controller]/GetApiDelegationsByOfferedbyAsync")]
-        public async Task<ActionResult<List<DelegatedResources>>> GetApiDelegationsByOfferedbyAsync([FromQuery] int offeredbyPartyId)
+        [Route("authorization/api/v1/[controller]/GetAllOfferedDelegations")]
+        public async Task<ActionResult<List<OfferedDelegations>>> GetAllOfferedDelegations([FromQuery] int offeredbyPartyId, string resourceType)
         {
             if (offeredbyPartyId == 0)
             {
                 return BadRequest("Missing query parameter offeredbypartyid");
             }
 
-            List<DelegatedResources> delegations = await _delegation.GetApiDelegationsByOfferedbyAsync(offeredbyPartyId);
-            if (delegations == null || delegations.Count == 0)
-            {
-                return Ok("No delegations found");
-            }
+            Enum.TryParse(resourceType, out ResourceType resource);
 
-            return delegations;
+            try
+            {
+                List<OfferedDelegations> delegations = await _delegation.GetAllOfferedDelegations(offeredbyPartyId, resource);
+                if (delegations == null || delegations.Count == 0)
+                {
+                    return Ok("No delegations found");
+                }
+
+                return delegations;
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500);
+            }
         }
 
         /// <summary>

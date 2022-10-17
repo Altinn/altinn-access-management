@@ -23,7 +23,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         /// Gets or sets the altinnappid. E.g. skd/skattemelding
         /// </summary>
         [JsonPropertyName("altinnappid")]
-        public string AltinnAppId { get; set; }
+        public string? AltinnAppId { get; set; }
 
         /// <summary>
         /// Gets or sets the offeredbypartyid, refering to the party id of the user or organization offering the delegation.
@@ -60,6 +60,18 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         /// </summary>
         [JsonPropertyName("blobstorageversionid")]
         public string BlobStorageVersionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource id.
+        /// </summary>
+        [JsonPropertyName("resourceid")]
+        public string? ResourceId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resourcetype.
+        /// </summary>
+        [JsonPropertyName("resourcetype")]
+        public string? ResourceType { get; set; }
 
         /// <summary>
         /// Gets or sets the created date and timestamp for the delegation change

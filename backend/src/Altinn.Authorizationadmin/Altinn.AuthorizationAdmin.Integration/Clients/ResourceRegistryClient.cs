@@ -32,7 +32,7 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
         public async Task<ServiceResource> GetResource(string resourceId)
         {
             ServiceResource? result = null;
-            string endpointUrl = $"ResourceRegistry/api/v1/resource/{resourceId}";
+            string endpointUrl = $"resourceregistry/api/v1/resource/{resourceId}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)

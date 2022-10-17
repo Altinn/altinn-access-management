@@ -3,7 +3,7 @@
 namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
 {
     /// <summary>
-    /// Model describing a complete resource from the resrouce registry
+    /// Model describing a complete resource from the resource registry.
     /// </summary>
     public class ServiceResource
     {
@@ -30,7 +30,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
         /// <summary>
         /// The homepage
         /// </summary>
-        public string Homepage { get; set; }    
+        public string Homepage { get; set; }
 
         /// <summary>
         /// The status
@@ -40,7 +40,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
         /// <summary>
         /// When the resource is available from
         /// </summary>
-        public DateTime ValidFrom { get; set; } 
+        public DateTime ValidFrom { get; set; }
 
         /// <summary>
         /// When the resource is available to
@@ -65,7 +65,7 @@ namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
         /// <summary>
         /// ResourceReference
         /// </summary>
-        public ResourceReference? ResourceReference { get; set;  }
+        public List<ResourceReference> ResourceReferences { get; set;  }
 
         /// <summary>
         /// IsComplete

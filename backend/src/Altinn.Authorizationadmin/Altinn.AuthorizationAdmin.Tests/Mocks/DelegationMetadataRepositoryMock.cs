@@ -211,6 +211,15 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenScheme"));
                 result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenScheme"));
             }
+            else if (offeredByPartyId == 50004226 && resourceType == ResourceType.MaskinportenScheme)
+            {
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "nav1_aa_distribution", "MaskinportenScheme"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1235, "nav1_aa_distribution", "MaskinportenScheme"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1236, "nav1_aa_distribution", "MaskinportenScheme"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenScheme"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenScheme"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenScheme"));
+            }
 
             return Task.FromResult(result);
         }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
 namespace Altinn.AuthorizationAdmin.Tests.Utils
 {
@@ -25,19 +27,38 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="appresource">appresource</param>
         /// <param name="createdSuccessfully">createdSuccessfully</param>
         /// <param name="ruleType">ruleType</param>
+        /// <param name="resourceRegistryId">resourceregistry id.</param>
         /// <returns>Rule model</returns>
-        public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None)
+        public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null)
         {
-            Rule rule = new Rule
+            Rule rule;
+
+            if (!string.IsNullOrEmpty(resourceRegistryId))
             {
-                DelegatedByUserId = delegatedByUserId,
-                OfferedByPartyId = offeredByPartyId,
-                CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
-                Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } },
-                Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
-                CreatedSuccessfully = createdSuccessfully,
-                Type = ruleType
-            };
+                rule = new Rule
+                {
+                    DelegatedByUserId = delegatedByUserId,
+                    OfferedByPartyId = offeredByPartyId,
+                    CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId } },
+                    Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
+                    CreatedSuccessfully = createdSuccessfully,
+                    Type = ruleType
+                };
+            }
+            else
+            {
+                rule = new Rule
+                {
+                    DelegatedByUserId = delegatedByUserId,
+                    OfferedByPartyId = offeredByPartyId,
+                    CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } },
+                    Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
+                    CreatedSuccessfully = createdSuccessfully,
+                    Type = ruleType
+                };
+            }
 
             if (task != null)
             {
@@ -119,6 +140,73 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now
             };
+        }
+
+        /// <summary>
+        /// Creates a DelegationChange model from the input.
+        /// </summary>
+        /// <returns>DelegationChange.</returns>
+        public static DelegationChange GetResourceDelegationChange(string resourceRegistryId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        {
+            string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
+            return new DelegationChange
+            {
+                DelegationChangeId = changeId,
+                DelegationChangeType = changeType,
+                AltinnAppId = null,
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByPartyId = coveredByPartyId,
+                CoveredByUserId = coveredByUserId,
+                PerformedByUserId = performedByUserId,
+                BlobStoragePolicyPath = $"{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
+                BlobStorageVersionId = "CorrectLeaseId",
+                Created = DateTime.Now,
+                ResourceId = resourceRegistryId,
+            };
+        }
+
+        /// <summary>
+        /// Creates a ServiceResource model.
+        /// </summary>
+        /// <param name="resourceId">ResourceId.</param>
+        /// <returns>Returns the newly created ServiceResource.</returns>
+        public static ServiceResource GetResource(string resourceId)
+        {
+            return new ServiceResource
+            {
+                Identifier = resourceId,
+                Title = new Dictionary<string, string> 
+                { 
+                    { "Title", "resource1" } 
+                },
+                Description = new Dictionary<string, string> 
+                { 
+                    { "Description", "resource1" } 
+                },
+                ValidFrom = DateTime.Now,
+                ValidTo = DateTime.Now.AddDays(1),
+            };
+        }
+
+        /// <summary>
+        /// Creates a list of roles.
+        /// </summary>
+        /// <returns>The newly created list of roles.</returns>
+        public static List<string> GetRolesWithAccess()
+        {
+            List<string> roles = new List<string>();
+            roles.Add("BEST");
+            roles.Add("BOBE");
+            roles.Add("DAGL");
+            roles.Add("DTPR");
+            roles.Add("DTSO");
+            roles.Add("INNH");
+            roles.Add("KEMN");
+            roles.Add("KOMP");
+            roles.Add("LEDE");
+            roles.Add("REPR");
+
+            return roles;
         }
     }
 }

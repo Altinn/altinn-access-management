@@ -31,14 +31,18 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId)
         {
-            ServiceResource? result = null;
-            string endpointUrl = $"ResourceRegistry/api/Resource/{resourceId}";
+            ServiceResource result = null;
+            string endpointUrl = $"resourceregistry/api/v1/resource/{resourceId}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
                 string content = await response.Content.ReadAsStringAsync();
-                result = JsonSerializer.Deserialize<ServiceResource>(content);
+                result = JsonSerializer.Deserialize<ServiceResource>(content, options);
             }
 
             return await Task.FromResult(result);

@@ -1,6 +1,7 @@
 ﻿using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.AuthorizationAdmin.Core.Constants;
+using Altinn.AuthorizationAdmin.Core.Enums;
 using Altinn.AuthorizationAdmin.Core.Models;
 
 namespace Altinn.AuthorizationAdmin.Core.Helpers
@@ -107,34 +108,50 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         /// Gets the resource attributes as out params from a single Resource
         /// </summary>
         /// <param name="input">The resource to fetch org and app from</param>
+        /// <param name="resourceMatchType">the resource match type</param>
+        /// <param name="resourceRegistryId">the resource registry id part of the resource</param>
         /// <param name="org">the org part of the resource</param>
         /// <param name="app">the app part of the resource</param>
-        /// <param name="resourceRegistryId">the resource registry id part of the resource</param>
         /// <returns>A bool indicating whether params where found</returns>
-        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out string org, out string app, out string resourceRegistryId)
+        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app)
         {
-            org = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)?.Value;
-            app = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)?.Value;
-            resourceRegistryId = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)?.Value;
+            resourceMatchType = ResourceAttributeMatchType.None;
+            resourceRegistryId = null;
+            org = null;
+            app = null;
 
-            if ((!string.IsNullOrWhiteSpace(org) && !string.IsNullOrWhiteSpace(app)) ||
-                (!string.IsNullOrWhiteSpace(resourceRegistryId)))
+            AttributeMatch resourceRegistryMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
+            AttributeMatch orgMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            AttributeMatch appMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+
+            if (resourceRegistryMatch != null)
             {
+                resourceMatchType = ResourceAttributeMatchType.ResourceRegistry;
+                resourceRegistryId = resourceRegistryMatch.Value;
                 return true;
             }
+
+            if (orgMatch != null && appMatch != null)
+            {
+                resourceMatchType = ResourceAttributeMatchType.AltinnApp;
+                org = orgMatch.Value;
+                app = appMatch.Value;
+                return true;
+            }            
 
             return false;
         }
 
         /// <summary>
-        /// Gets Org, App, ResourceRegistryId, OfferedBy and CoveredBy as out params from a single Rule
+        /// Gets ResourceType, ResourceRegistryId, Org, App, OfferedBy and CoveredBy as out params from a single Rule
         /// </summary>
-        /// <returns>A bool indicating whether params where found</returns>
-        public static bool TryGetDelegationParamsFromRule(Rule rule, out string org, out string app, out string resourceRegistryId, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
+        /// <returns>A bool indicating whether sufficent params where found</returns>
+        public static bool TryGetDelegationParamsFromRule(Rule rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
         {
+            resourceMatchType = ResourceAttributeMatchType.None;
+            resourceRegistryId = null;
             org = null;
             app = null;
-            resourceRegistryId = null;
             offeredByPartyId = 0;
             coveredByPartyId = null;
             coveredByUserId = null;
@@ -142,15 +159,13 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
 
             try
             {
-                org = rule.Resource.FirstOrDefault(rm => rm.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)?.Value;
-                app = rule.Resource.FirstOrDefault(rm => rm.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)?.Value;
-                resourceRegistryId = rule.Resource.FirstOrDefault(rm => rm.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)?.Value;
+                TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceRegistryId, out org, out app);
                 offeredByPartyId = rule.OfferedByPartyId;
                 coveredByPartyId = TryGetCoveredByPartyIdFromMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
                 coveredByUserId = TryGetCoveredByUserIdFromMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
                 delegatedByUserId = rule.DelegatedByUserId;
 
-                if (((!string.IsNullOrWhiteSpace(org) && !string.IsNullOrWhiteSpace(app)) || !string.IsNullOrWhiteSpace(resourceRegistryId))
+                if (resourceMatchType != ResourceAttributeMatchType.None
                     && offeredByPartyId != 0
                     && (coveredByPartyId.HasValue || coveredByUserId.HasValue))
                 {
@@ -172,10 +187,17 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         public static bool TryGetDelegationPolicyPathFromRule(Rule rule, out string delegationPolicyPath)
         {
             delegationPolicyPath = null;
-            if (TryGetDelegationParamsFromRule(rule, out string org, out string app, out string resourceRegistryId, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
+            if (TryGetDelegationParamsFromRule(rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
             {
-                delegationPolicyPath = PolicyHelper.GetAltinnAppDelegationPolicyPath(org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId, resourceRegistryId);
-                return true;
+                try
+                {
+                    delegationPolicyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceRegistryId, org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }                
             }
 
             return false;
@@ -216,25 +238,6 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
 
             return result;
         }
-
-        //public static bool CheckIfPolicyContainsMatchingRule(XacmlPolicy appPolicy, List<PolicyRule> rules, out PolicyRule ruleNotMatched)
-        //{
-        //    foreach (PolicyRule rule in rules)
-        //    {
-        //        if (!PolicyContainsMatchingRule(appPolicy, rule))
-        //        {
-        //            ruleNotMatched = rule;
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            ruleNotMatched = null;
-        //            return true;
-        //        }
-        //    }
-
-        //    ruleNotMatched = null;
-        //}
 
         /// <summary>
         /// Checks whether the provided XacmlPolicy contains a rule having an identical Resource signature and contains the Action from the rule,
@@ -306,7 +309,7 @@ namespace Altinn.AuthorizationAdmin.Core.Helpers
         {
             foreach (Rule rule in rulesList)
             {
-                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _)
+                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _)
                     && rule.Type == RuleType.None)
                 {
                     SetTypeForSingleRule(keyRolePartyIds, offeredByPartyId, coveredBy, parentPartyId, rule, coveredByPartyId, coveredByUserId);

@@ -18,10 +18,11 @@ namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
         /// Gets the latest delegation change matching the filter values
         /// </summary>
         /// <param name="altinnAppId">The AltinnApp identifier iin the format org/appname</param>
+        /// <param name="resourceRegistryId">The Id of the resource in resourceRegistry.</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the entity is a user</param>
-        Task<DelegationChange> GetCurrentDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
+        Task<DelegationChange> GetCurrentDelegationChange(string? altinnAppId, string? resourceRegistryId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
 
         /// <summary>
         /// Gets all the delegation change records matching the filter values for a complete changelog

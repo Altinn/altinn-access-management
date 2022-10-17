@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
-
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
@@ -36,6 +35,13 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
             _logger = logger;
         }
 
+        /// <summary>
+        /// Empty constructor.
+        /// </summary>
+        public PolicyRetrievalPointMock()
+        {
+        }
+
         /// <inheritdoc/>
         public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request)
         {
@@ -67,9 +73,14 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry)
+        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry)
         {
-            throw new NotImplementedException();
+            if (File.Exists(Path.Combine(GetAltinnResourcePolicyPath(resourceRegistry), "policy.xml")))
+            {
+                return await Task.FromResult(ParsePolicy("policy.xml", GetAltinnResourcePolicyPath(resourceRegistry)));
+            }
+
+            return null;
         }
 
         /// <inheritdoc/>
@@ -81,7 +92,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 return await Task.FromResult(ParsePolicy(string.Empty, path));
             }
 
-            _logger.LogWarning("Polcy Version did not found policy " + path);
+            _logger.LogWarning("Policy Version did not found policy " + path);
 
             return null;
         }
@@ -138,6 +149,12 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "AltinnApps", org, app);
+        }
+
+        private string GetAltinnResourcePolicyPath(string resourceRegistryId)
+        {
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", resourceRegistryId);
         }
 
         private static string GetAltinnAppsDelegationPolicyPath(string policyPath)

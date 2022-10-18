@@ -201,8 +201,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             return receivedDelegation;
         }
 
-
-
         /// <summary>
         /// Creates a ServiceResource model.
         /// </summary>

@@ -1304,6 +1304,47 @@ namespace Altinn.AuthorizationAdmin.Tests
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns a list of delegations received by coveredby
+        /// Expected: GetAllReceivedDelegations returns a list of delegations received by coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Valid_CoveredBy()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004219);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004219}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<ReceivedDelegation> actualDelegations = JsonSerializer.Deserialize<List<ReceivedDelegation>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Missing_CoveredBy()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004219);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=&resourcetype=MaskinportenSchema");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1338,13 +1379,18 @@ namespace Altinn.AuthorizationAdmin.Tests
             return null;
         }
 
-        private static List<ReceivedDelegation> GetExpectedReceivedDelegationsForParty()
+        private static List<ReceivedDelegation> GetExpectedReceivedDelegationsForParty(int coveredByPartyId)
         {
-            List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("WESSEL OTHILIE", 50002116));
-            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("MARGRETHE THORUD", 50002115));
-            receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("ELENA FJÆR", 50002114));
-            return receivedDelegations;
+            if (coveredByPartyId == 50004219)
+            {
+                List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULØYBUKT", 50004222));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("NORDRE FROGN OG MORTENHALS", 50004220));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVÆR", 50004221));
+                return receivedDelegations;
+            }
+
+            return null;
         }
 
         private HttpClient GetTestClient()

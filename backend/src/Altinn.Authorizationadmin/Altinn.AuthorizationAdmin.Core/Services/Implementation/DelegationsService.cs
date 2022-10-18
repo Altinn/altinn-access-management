@@ -105,9 +105,9 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId);
+            List<DelegationChange> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
             List<int> parties = new List<int>();
             parties = delegations.Select(d => d.OfferedByPartyId).ToList();
 

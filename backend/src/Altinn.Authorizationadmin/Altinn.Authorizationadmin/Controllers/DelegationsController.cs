@@ -261,15 +261,20 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("authorization/api/v1/[controller]/GetReceivedDelegations")]
-        public async Task<ActionResult<List<ReceivedDelegation>>> GetReceivedDelegations([FromQuery] int coveredbyPartyId)
+        [Route("authorization/api/v1/[controller]/GetAllReceivedDelegations")]
+        public async Task<ActionResult<List<ReceivedDelegation>>> GetAllReceivedDelegations([FromQuery] int coveredbyPartyId, string resourceType)
         {
             if (coveredbyPartyId == 0)
             {
                 return BadRequest("Missing query parameter coveredbyPartyId");
             }
 
-            List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId);
+            if (!Enum.TryParse(resourceType, out ResourceType resource))
+            {
+                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
+            }
+
+            List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId, resource);
             if (delegations == null || delegations.Count == 0)
             {
                 return Ok("No delegations found");

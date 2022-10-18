@@ -1,7 +1,7 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
 namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
 {
@@ -51,10 +51,12 @@ namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
         /// <param name="offeredByPartyId">The party id of the entity offering the delegation</param>
         /// <param name="resourceType">the type of the resource that was delegated</param>
         Task<List<DelegationChange>> GetAllOfferedDelegations(int offeredByPartyId, ResourceType resourceType);
+
         /// <summary>
         /// Gets the received resource delgations for a given reportee
         /// </summary>
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
-        Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId);
+        /// <param name="resourceType">the type of resource</param>
+        Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType);
     }
 }

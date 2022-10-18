@@ -22,7 +22,6 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId, @_resourceid, @_resourcetype)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
-        private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
         private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
         private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
@@ -205,7 +204,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId)
+        public async Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType)
         {
             try
             {
@@ -213,7 +212,8 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 await conn.OpenAsync();
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
-                pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId);
+                pgcom.Parameters.AddWithValue("_coveredbypartyid", coveredByPartyId);
+                pgcom.Parameters.AddWithValue("_resourcetype", resourceType);
 
                 List<DelegationChange> receivedDelegations = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();

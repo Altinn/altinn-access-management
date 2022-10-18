@@ -1218,7 +1218,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004223);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004223}&resourcetype=MaskinportenScope");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004223}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1232,14 +1232,29 @@ namespace Altinn.AuthorizationAdmin.Tests
         }
 
         /// <summary>
-        /// Test case: GetDelegatedResources returns a list of delegations offeredby has given coveredby
-        /// Expected: GetDelegatedResources returns a list of delegations offeredby has given coveredby
+        /// Test case: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllOfferedDelegations returns badrequest when the query parameter is missing
         /// </summary>
         [Fact]
         public async Task GetAllOfferedDelegations_BadRequest_MissingOfferedBy()
         {            
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_BadRequest_MissingResourceType()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1257,7 +1272,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50002111}");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50002111}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1276,7 +1291,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004226);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004226}&resourcetype=MaskinportenScope");
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004226}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {

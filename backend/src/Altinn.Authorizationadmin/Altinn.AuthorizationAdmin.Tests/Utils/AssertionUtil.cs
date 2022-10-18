@@ -547,6 +547,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         private static void AssertEqual(Delegation expected, Delegation actual) 
         {
             Assert.Equal(expected.CoveredByName, actual.CoveredByName);
+            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
             Assert.Equal(expected.PerformedByUserId, actual.PerformedByUserId);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);

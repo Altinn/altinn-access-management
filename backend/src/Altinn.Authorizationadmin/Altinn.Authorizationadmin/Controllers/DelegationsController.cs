@@ -232,7 +232,10 @@ namespace Altinn.AuthorizationAdmin.Controllers
                 return BadRequest("Missing query parameter offeredbypartyid");
             }
 
-            Enum.TryParse(resourceType, out ResourceType resource);
+            if (!Enum.TryParse(resourceType, out ResourceType resource))
+            {
+                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
+            }
 
             try
             {
@@ -246,7 +249,8 @@ namespace Altinn.AuthorizationAdmin.Controllers
             }
             catch (Exception ex) 
             {
-                _logger.LogError(ex.Message);
+                string errorMessage = ex.Message;
+                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
                 return StatusCode(500);
             }
         }

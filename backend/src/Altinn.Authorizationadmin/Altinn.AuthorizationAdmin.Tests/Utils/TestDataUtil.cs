@@ -159,6 +159,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "KOLSÅS OG FLÅM",
+                CoveredByOrganizationNumber = 810418192,
                 CoveredByPartyId = 50004219,
                 
             });
@@ -167,6 +168,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "NORDRE FROGN OG MORTENHALS",
+                CoveredByOrganizationNumber = 810418362,
                 CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
@@ -174,6 +176,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "LUNDAMO OG FLEINVÆR",
+                CoveredByOrganizationNumber = 810418532,
                 CoveredByPartyId = 50004221,
             });
             return delegations;

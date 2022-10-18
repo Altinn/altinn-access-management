@@ -33,12 +33,9 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
         {
             List<DelegationChange> delegations = await _delegationRepository.GetAllOfferedDelegations(offeredbyPartyId, resourceType);
             List<int> parties = new List<int>();
-            foreach (DelegationChange delegationChange in delegations)
+            foreach (int party in delegations.Select(d => d.CoveredByPartyId).Where(c => c != null))
             {
-                if (delegationChange.CoveredByPartyId != null)
-                {
-                    parties.Add(delegationChange.CoveredByPartyId ?? 0);
-                }
+                parties.Add(party);
             }
 
             List<ServiceResource> resources = new List<ServiceResource>();

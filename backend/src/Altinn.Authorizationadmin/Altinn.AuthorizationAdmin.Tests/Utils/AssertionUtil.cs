@@ -253,11 +253,11 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="DelegatedResources"/> have the same property in the same positions.
+        /// Assert that two <see cref="OfferedDelegations"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(DelegatedResources expected, DelegatedResources actual)
+        public static void AssertDelegationEqual(OfferedDelegations expected, OfferedDelegations actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -567,6 +567,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         private static void AssertEqual(Delegation expected, Delegation actual) 
         {
             Assert.Equal(expected.CoveredByName, actual.CoveredByName);
+            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
             Assert.Equal(expected.PerformedByUserId, actual.PerformedByUserId);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);

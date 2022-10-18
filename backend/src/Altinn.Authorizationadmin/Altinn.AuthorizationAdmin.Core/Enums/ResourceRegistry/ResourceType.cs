@@ -13,7 +13,7 @@
         
         Altinn3 = 3,
         
-        Apischema = 4,
+        MaskinportenSchema = 4,
 
         Api = 5
     }

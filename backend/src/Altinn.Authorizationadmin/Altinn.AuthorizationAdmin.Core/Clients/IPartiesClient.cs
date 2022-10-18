@@ -2,12 +2,12 @@
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.Platform.Register.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Services
+namespace Altinn.AuthorizationAdmin.Core.Clients
 {
     /// <summary>
     /// Interface for a client wrapper for integration with SBL bridge delegation request API
     /// </summary>
-    public interface IPartiesWrapper
+    public interface IPartiesClient
     {
         /// <summary>
         /// Returns a list of parties

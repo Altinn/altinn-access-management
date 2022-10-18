@@ -1,4 +1,7 @@
 ﻿using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
 {
@@ -11,8 +14,9 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
         /// Gets all delegated resources for a reportee
         /// </summary>
         /// <param name="offeredbyPartyId">reportee id that delegated resources</param>
+        /// <param name="resourceType">the type of resource that was delegated</param>
         /// <returns>list o delgations</returns>
-        public Task<List<DelegatedResources>> GetApiDelegationsByOfferedbyAsync(int offeredbyPartyId);
+        public Task<List<OfferedDelegations>> GetAllOfferedDelegations(int offeredbyPartyId, ResourceType resourceType);
 
         /// <summary>
         /// Gets all the rceived delegations for a reportee
@@ -20,5 +24,6 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
         /// <param name="coveredByPartyId">reportee id that delegated resources</param>
         /// <returns>list o delgations</returns>
         public Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId);
+
     }
 }

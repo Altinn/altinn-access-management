@@ -4,15 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Services;
+using Altinn.AuthorizationAdmin.Core.Clients;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
     /// <summary>
-    /// Mock class for <see cref="IPartiesWrapper"></see> interface
+    /// Mock class for <see cref="IPartiesClient"></see> interface
     /// </summary>
-    public class PartiesWrapperMock : IPartiesWrapper
+    public class PartiesClientMock : IPartiesClient
     {
         /// <summary>
         /// Party information for a list of party numbers
@@ -37,11 +37,11 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                         partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
-                
+
                 foreach (int partyId in parties)
                 {
                     filteredList.Add(partyList.Find(p => p.PartyId == partyId));
-                }                
+                }
             }
 
             return Task.FromResult(filteredList);
@@ -49,13 +49,13 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
 
         private static string GetPartiesPaths()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesWrapperMock).Assembly.Location).LocalPath);
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, @"..\..\..\Data\Parties\");
         }
 
         private string GetFilterFileName(int offeredByPartyId)
         {
-            return "offeredBy_50002110";
+            return "parties";
         }
     }
 }

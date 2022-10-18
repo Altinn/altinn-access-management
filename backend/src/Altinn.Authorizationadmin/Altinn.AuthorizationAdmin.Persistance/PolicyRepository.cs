@@ -22,7 +22,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly AzureStorageConfiguration _storageConfig;
         private readonly BlobContainerClient _metadataContainerClient;
         private readonly BlobContainerClient _delegationsContainerClient;
-        private readonly BlobContainerClient _resourcesContainerClient;
+        private readonly BlobContainerClient _resourceRegisterContainerClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyRepository"/> class
@@ -44,9 +44,9 @@ namespace Altinn.AuthorizationAdmin.Persistance
             BlobServiceClient delegationsServiceClient = new BlobServiceClient(new Uri(_storageConfig.DelegationsBlobEndpoint), delegationsCredentials);
             _delegationsContainerClient = delegationsServiceClient.GetBlobContainerClient(_storageConfig.DelegationsContainer);
 
-            StorageSharedKeyCredential resourcesCredentials = new StorageSharedKeyCredential(_storageConfig.ResourceRegistryAccountName, _storageConfig.ResourceRegistryAccountKey);
-            BlobServiceClient resourcesServiceClient = new BlobServiceClient(new Uri(_storageConfig.ResourceRegistryBlobEndpoint), resourcesCredentials);
-            _resourcesContainerClient = resourcesServiceClient.GetBlobContainerClient(_storageConfig.ResourceRegistryContainer);
+            StorageSharedKeyCredential resourceRegisterCredentials = new StorageSharedKeyCredential(_storageConfig.ResourceRegistryAccountName, _storageConfig.ResourceRegistryAccountKey);
+            BlobServiceClient resourceRegisterServiceClient = new BlobServiceClient(new Uri(_storageConfig.ResourceRegistryBlobEndpoint), resourceRegisterCredentials);
+            _resourceRegisterContainerClient = resourceRegisterServiceClient.GetBlobContainerClient(_storageConfig.ResourceRegistryContainer);
         }
 
         /// <inheritdoc/>
@@ -169,14 +169,13 @@ namespace Altinn.AuthorizationAdmin.Persistance
             {
                 return _delegationsContainerClient.GetBlobClient(blobName);
             }
-            else if (blobName.Contains("policy.xml"))
+
+            if (blobName.Contains("resourcepolicy.xml"))
             {
-                return _resourcesContainerClient.GetBlobClient(blobName);
+                return _resourceRegisterContainerClient.GetBlobClient(blobName);
             }
-            else
-            {
-                return _metadataContainerClient.GetBlobClient(blobName);
-            }
+            
+            return _metadataContainerClient.GetBlobClient(blobName);
         }
 
         private async Task<Stream> GetBlobStreamInternal(BlobClient blobClient)

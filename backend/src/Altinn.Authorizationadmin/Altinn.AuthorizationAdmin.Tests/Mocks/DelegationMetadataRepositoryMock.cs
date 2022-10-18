@@ -32,7 +32,16 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         {
             List<DelegationChange> current;
             string coveredBy = delegationChange.CoveredByPartyId != null ? $"p{delegationChange.CoveredByPartyId}" : $"u{delegationChange.CoveredByUserId}";
-            string key = $"{delegationChange.AltinnAppId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
+            string key = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(delegationChange.AltinnAppId))
+            {
+                key = $"{delegationChange.AltinnAppId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
+            }
+            else
+            {
+                key = $"{delegationChange.ResourceId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
+            }
 
             if (MetadataChanges.ContainsKey(key))
             {
@@ -55,12 +64,14 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 PerformedByUserId = delegationChange.PerformedByUserId,
                 BlobStoragePolicyPath = delegationChange.BlobStoragePolicyPath,
                 BlobStorageVersionId = delegationChange.BlobStorageVersionId,
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                ResourceId = delegationChange.ResourceId,
+                ResourceType = delegationChange.ResourceType
             };
     
             current.Add(currentDelegationChange);
 
-            if (string.IsNullOrEmpty(delegationChange.AltinnAppId) || delegationChange.AltinnAppId == "error/postgrewritechangefail")
+            if ((string.IsNullOrEmpty(delegationChange.AltinnAppId) || delegationChange.AltinnAppId == "error/postgrewritechangefail") && string.IsNullOrEmpty(delegationChange.ResourceId))
             {
                 currentDelegationChange.DelegationChangeId = 0;
                 return Task.FromResult(currentDelegationChange);
@@ -70,30 +81,46 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<DelegationChange> GetCurrentDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+        public Task<DelegationChange> GetCurrentDelegationChange(string altinnAppId, string resourceRegistryId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
         {
-            DelegationChange result;
-            switch (altinnAppId)
+            DelegationChange result = null;
+
+            if (!string.IsNullOrWhiteSpace(resourceRegistryId))
             {
-                case "org1/app1":
-                case "org1/app3":
-                case "org2/app3":
-                case "org1/app4":
-                case "error/blobstorageleaselockwritefail":
-                case "error/postgrewritechangefail":
-                    result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId);
-                    break;
-                case "org1/app5":
-                    result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.RevokeLast);
-                    break;
-                case "error/postgregetcurrentfail":
-                    throw new Exception("Some exception happened");
-                case "error/delegationeventfail":
-                    result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.Grant);
-                    break;
-                default:
-                    result = null;
-                    break;
+                switch (resourceRegistryId)
+                {
+                    case "resource1":
+                        result = TestDataUtil.GetResourceDelegationChange(resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+                        break;
+                    default:
+                        result = null;
+                        break;
+                }
+            }
+            else
+            {
+                switch (altinnAppId)
+                {
+                    case "org1/app1":
+                    case "org1/app3":
+                    case "org2/app3":
+                    case "org1/app4":
+                    case "error/blobstorageleaselockwritefail":
+                    case "error/postgrewritechangefail":
+                        result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId);
+                        break;
+                    case "org1/app5":
+                        result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.RevokeLast);
+                        break;
+                    case "error/postgregetcurrentfail":
+                        throw new Exception("Some exception happened");
+                    case "error/delegationeventfail":
+                        result = TestDataUtil.GetDelegationChange(altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.Grant);
+                        break;
+                    default:
+                        result = null;
+                        break;
+                }
             }
 
             return Task.FromResult(result);
@@ -171,18 +198,27 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<DelegationChange>> GetAllApiDelegationsByOfferedby(int offeredByPartyId)
+        public Task<List<DelegationChange>> GetAllOfferedDelegations(int offeredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> result = new List<DelegationChange>();
 
-            if (offeredByPartyId == 50002110)
+            if (offeredByPartyId == 50004223 && resourceType == ResourceType.MaskinportenSchema)
             {
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002111, 20000002, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "1"));
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002112, 20000002, DelegationChangeType.Grant, 1235, "nav_aa_distribution", "1"));
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002113, 20000002, DelegationChangeType.Grant, 1236, "nav_aa_distribution", "1"));
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002111, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "1"));
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002112, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "1"));
-                result.Add(TestDataUtil.GetDelegationChange("1", offeredByPartyId, null, 50002113, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "1"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1235, "nav_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1236, "nav_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+            }
+            else if (offeredByPartyId == 50004226 && resourceType == ResourceType.MaskinportenSchema)
+            {
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "nav1_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1235, "nav1_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1236, "nav1_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
             }
 
             return Task.FromResult(result);

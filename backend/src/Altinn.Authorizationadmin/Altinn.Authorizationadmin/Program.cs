@@ -1,5 +1,6 @@
 using Altinn.AuthorizationAdmin.Configuration;
 using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Core.Clients;
 using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
@@ -204,7 +205,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
-    services.AddHttpClient<IPartiesWrapper, PartiesWrapper>();
+    services.AddHttpClient<IPartiesClient, PartiesClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 

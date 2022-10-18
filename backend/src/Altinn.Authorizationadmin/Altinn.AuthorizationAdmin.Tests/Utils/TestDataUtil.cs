@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
@@ -26,19 +27,38 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="appresource">appresource</param>
         /// <param name="createdSuccessfully">createdSuccessfully</param>
         /// <param name="ruleType">ruleType</param>
+        /// <param name="resourceRegistryId">resourceregistry id.</param>
         /// <returns>Rule model</returns>
-        public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None)
+        public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null)
         {
-            Rule rule = new Rule
+            Rule rule;
+
+            if (!string.IsNullOrEmpty(resourceRegistryId))
             {
-                DelegatedByUserId = delegatedByUserId,
-                OfferedByPartyId = offeredByPartyId,
-                CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
-                Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } },
-                Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
-                CreatedSuccessfully = createdSuccessfully,
-                Type = ruleType
-            };
+                rule = new Rule
+                {
+                    DelegatedByUserId = delegatedByUserId,
+                    OfferedByPartyId = offeredByPartyId,
+                    CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId } },
+                    Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
+                    CreatedSuccessfully = createdSuccessfully,
+                    Type = ruleType
+                };
+            }
+            else
+            {
+                rule = new Rule
+                {
+                    DelegatedByUserId = delegatedByUserId,
+                    OfferedByPartyId = offeredByPartyId,
+                    CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } },
+                    Action = new AttributeMatch { Id = XacmlConstants.MatchAttributeIdentifiers.ActionId, Value = action },
+                    CreatedSuccessfully = createdSuccessfully,
+                    Type = ruleType
+                };
+            }
 
             if (task != null)
             {
@@ -138,23 +158,26 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "THOMAS TØNDER",
-                CoveredByPartyId = 50002111,
+                CoveredByName = "KOLSÅS OG FLÅM",
+                CoveredByOrganizationNumber = 810418192,
+                CoveredByPartyId = 50004219,
                 
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "HANNAH TUFT",
-                CoveredByPartyId = 50002112,
+                CoveredByName = "NORDRE FROGN OG MORTENHALS",
+                CoveredByOrganizationNumber = 810418362,
+                CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "KLEVEN ALMA",
-                CoveredByPartyId = 50002113,
+                CoveredByName = "LUNDAMO OG FLEINVÆR",
+                CoveredByOrganizationNumber = 810418532,
+                CoveredByPartyId = 50004221,
             });
             return delegations;
         }
@@ -178,35 +201,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             return receivedDelegation;
         }
 
-        /// <summary>
-        /// Sets mock data for service resource
-        /// </summary>
-        /// <returns></returns>
-        public static List<ServiceResource> GetResources(int offeredByPartyId)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            resources.Add(new ServiceResource
-            {
-                Identifier = "nav_aa_distribution",
-                Title = new Dictionary<string, string>
-                {
-                    { "en", "NAV aa distribution" },
-                    { "nb_no", "NAV aa distribution" },
-                    { "nn_no", "NAV aa distribution" }
-                }
-            });
-            resources.Add(new ServiceResource
-            {
-                Identifier = "skd_1",
-                Title = new Dictionary<string, string>
-                {
-                    { "en", "SKD 1" },
-                    { "nb_no", "SKD 1" },
-                    { "nn_no", "SKD 1" }
-                }
-            });
-            return resources;
-        }
+
 
         /// <summary>
         /// Creates a ServiceResource model.
@@ -235,23 +230,67 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
-        /// Gets resourcedelegation model for the given input
+        /// Gets offered delegation model for the given input
         /// </summary>
         /// <param name="offeredByPartyId">party that delegated the resources</param>
         /// <param name="resourceId">the resource that was delegated</param>
         /// <param name="resourceName">the resource name that was delegated</param>
         /// <param name="performedByUserId">id of the user who perfoemed the delegation</param>
         /// <returns></returns>
-        public static DelegatedResources GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
+        public static OfferedDelegations GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {
-            DelegatedResources resourceDelegation = new DelegatedResources
+            OfferedDelegations offeredDelegation = new OfferedDelegations
             {
                 ResourceId = resourceId,
                 ResourceTitle = resourceName
             };
-            resourceDelegation.Delegations = new List<Delegation>();
-            resourceDelegation.Delegations.AddRange(GetDelegations(50002110, resourceId, resourceName, performedByUserId));
-            return resourceDelegation;
+            offeredDelegation.Delegations = new List<Delegation>();
+            offeredDelegation.Delegations.AddRange(GetDelegations(offeredByPartyId, resourceId, resourceName, performedByUserId));
+            return offeredDelegation;
+        }
+
+        /// <summary>
+        /// Creates a DelegationChange model from the input.
+        /// </summary>
+        /// <returns>DelegationChange.</returns>
+        public static DelegationChange GetResourceDelegationChange(string resourceRegistryId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        {
+            string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
+            return new DelegationChange
+            {
+                DelegationChangeId = changeId,
+                DelegationChangeType = changeType,
+                AltinnAppId = null,
+                OfferedByPartyId = offeredByPartyId,
+                CoveredByPartyId = coveredByPartyId,
+                CoveredByUserId = coveredByUserId,
+                PerformedByUserId = performedByUserId,
+                BlobStoragePolicyPath = $"{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
+                BlobStorageVersionId = "CorrectLeaseId",
+                Created = DateTime.Now,
+                ResourceId = resourceRegistryId,
+            };
+        }
+
+        /// <summary>
+        /// Creates a list of roles.
+        /// </summary>
+        /// <returns>The newly created list of roles.</returns>
+        public static List<string> GetRolesWithAccess()
+        {
+            List<string> roles = new List<string>();
+            roles.Add("BEST");
+            roles.Add("BOBE");
+            roles.Add("DAGL");
+            roles.Add("DTPR");
+            roles.Add("DTSO");
+            roles.Add("INNH");
+            roles.Add("KEMN");
+            roles.Add("KOMP");
+            roles.Add("LEDE");
+            roles.Add("REPR");
+
+            return roles;
         }
     }
 }

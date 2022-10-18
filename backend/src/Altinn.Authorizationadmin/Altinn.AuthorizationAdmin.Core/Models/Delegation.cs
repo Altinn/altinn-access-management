@@ -42,5 +42,17 @@ namespace Altinn.AuthorizationAdmin.Core.Models
         /// </summary>
         [JsonPropertyName("created")]
         public DateTime Created { get; set; }
+
+        /// <summary>
+        /// Gets or sets the organization number that offered the delegation
+        /// </summary>
+        [JsonPropertyName("offeredbyorgnummer")]
+        public int OfferedByOrganizationNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the organization number that received the delegation
+        /// </summary>
+        [JsonPropertyName("coveredbyorgnummer")]
+        public int CoveredByOrganizationNumber { get; set; }
     }
 }

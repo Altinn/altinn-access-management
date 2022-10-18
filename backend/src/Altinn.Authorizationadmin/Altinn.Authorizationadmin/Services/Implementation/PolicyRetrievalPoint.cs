@@ -48,7 +48,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         /// <inheritdoc/>
         public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistryId)
         {
-            string policyPath = PolicyHelper.GetAltinnAppsPolicyPath(resourceRegistryId);
+            string policyPath = PolicyHelper.GetResourceRegistryPolicyPath(resourceRegistryId);
             return await GetPolicyInternalAsync(policyPath);
         }
 

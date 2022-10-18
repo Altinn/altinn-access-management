@@ -2,6 +2,7 @@
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -47,45 +48,6 @@ namespace Altinn.AuthorizationAdmin.Controllers
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("authorization/api/v1/[controller]/AddRules")]
         public async Task<ActionResult> Post([FromBody] List<Rule> rules)
-        {
-            if (rules == null || rules.Count < 1)
-            {
-                return BadRequest("Missing rules in body");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid model");
-            }
-
-            List<Rule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
-
-            if (delegationResults.All(r => r.CreatedSuccessfully))
-            {
-                return Created("Created", delegationResults);
-            }
-
-            if (delegationResults.Any(r => r.CreatedSuccessfully))
-            {
-                return StatusCode(206, delegationResults);
-            }
-
-            string rulesJson = JsonSerializer.Serialize(rules);
-            _logger.LogInformation("Delegation could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{rulesJson}", rulesJson);
-            return BadRequest("Delegation could not be completed");
-        }
-
-        /// <summary>
-        /// Endpoint for adding one or more rules for the given app/offeredby/coveredby. This updates or creates a new delegated policy of type "DirectlyDelegated". DelegatedByUserId is included to store history information in 3.0.
-        /// </summary>
-        /// <param name="rules">All rules to be delegated</param>
-        /// <response code="201" cref="List{PolicyRule}">Created</response>
-        /// <response code="206" cref="List{PolicyRule}">Partial Content</response>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpPost]
-        [Route("authorization/api/v1/[controller]/AddResourceDelegation")]
-        public async Task<ActionResult> AddResourceDelegation([FromBody] List<Rule> rules)
         {
             if (rules == null || rules.Count < 1)
             {
@@ -262,21 +224,35 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("authorization/api/v1/[controller]/GetApiDelegationsByOfferedbyAsync")]
-        public async Task<ActionResult<List<DelegatedResources>>> GetApiDelegationsByOfferedbyAsync([FromQuery] int offeredbyPartyId)
+        [Route("authorization/api/v1/[controller]/GetAllOfferedDelegations")]
+        public async Task<ActionResult<List<OfferedDelegations>>> GetAllOfferedDelegations([FromQuery] int offeredbyPartyId, string resourceType)
         {
             if (offeredbyPartyId == 0)
             {
                 return BadRequest("Missing query parameter offeredbypartyid");
             }
 
-            List<DelegatedResources> delegations = await _delegation.GetApiDelegationsByOfferedbyAsync(offeredbyPartyId);
-            if (delegations == null || delegations.Count == 0)
+            if (!Enum.TryParse(resourceType, out ResourceType resource))
             {
-                return Ok("No delegations found");
+                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
             }
 
-            return delegations;
+            try
+            {
+                List<OfferedDelegations> delegations = await _delegation.GetAllOfferedDelegations(offeredbyPartyId, resource);
+                if (delegations == null || delegations.Count == 0)
+                {
+                    return Ok("No delegations found");
+                }
+
+                return delegations;
+            }
+            catch (Exception ex) 
+            {
+                string errorMessage = ex.Message;
+                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
+                return StatusCode(500);
+            }
         }
 
         /// <summary>

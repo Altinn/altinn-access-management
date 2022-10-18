@@ -13,7 +13,7 @@
         
         Altinn3 = 3,
         
-        MaskinportenScheme = 4,
+        MaskinportenScope = 4,
 
         Api = 5
     }

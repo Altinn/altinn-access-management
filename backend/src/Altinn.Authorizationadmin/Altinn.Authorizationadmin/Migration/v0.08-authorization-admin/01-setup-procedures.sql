@@ -33,6 +33,6 @@ AS $BODY$
 		GROUP BY resourceid, offeredByPartyId, coveredByPartyId, coveredByUserId
 	  )AS selectMaxChange
 	 ON delegationChangeId = selectMaxChange.maxChange
-	 WHERE delegationchangetype='grant'
+	 WHERE delegationchangetype!='revoke_last'
 $BODY$;
 

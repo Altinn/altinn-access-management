@@ -22,7 +22,6 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId, @_resourceid, @_resourcetype)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
-        private readonly string getDelegatedResourcesSql = "select * from delegation.get_delegatedresources(@_offeredByPartyId)";
         private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
@@ -232,23 +231,6 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 ResourceId = reader.GetFieldValue<string>("resourceid"),
                 ResourceType = reader.GetFieldValue<string>("resourcetype")
             };
-        }
-
-        private static ServiceResource GetResources(NpgsqlDataReader reader)
-        {
-            ServiceResource? resource = null;
-            if (reader["serviceresourcejson"] != DBNull.Value)
-            {
-                var jsonb = reader.GetString("serviceresourcejson");
-                resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
-            }
-
-            ServiceResource delegatedResource = new ServiceResource
-            {
-                Identifier = reader.GetFieldValue<string>("resourceid"),
-                Title = (resource != null) ? resource.Title : null
-            };
-            return delegatedResource;
         }
 
         private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByPartyIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByPartyIds = null)

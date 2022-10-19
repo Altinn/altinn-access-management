@@ -52,7 +52,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
             return Path.Combine(unitTestFolder, @"..\..\..\Data\Parties\");
         }
 
-        private string GetFilterFileName(int offeredByPartyId)
+        private static string GetFilterFileName(int offeredByPartyId)
         {
             return "parties";
         }

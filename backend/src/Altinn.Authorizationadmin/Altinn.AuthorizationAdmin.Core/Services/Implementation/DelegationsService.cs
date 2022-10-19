@@ -54,7 +54,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex, "AccessManagement // DelegationsService // GetAllOfferedDelegations // Exception");
                     throw;
                 }
                 

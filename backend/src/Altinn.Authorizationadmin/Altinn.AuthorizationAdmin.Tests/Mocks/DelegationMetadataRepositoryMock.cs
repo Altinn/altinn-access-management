@@ -94,6 +94,9 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                     default:
                         result = null;
                         break;
+                    case "resource2":
+                        result = TestDataUtil.GetResourceDelegationChange(resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+                        break;
                 }
             }
             else

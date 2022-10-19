@@ -116,6 +116,49 @@ namespace Altinn.AuthorizationAdmin.Tests
         }
 
         /// <summary>
+        /// Test case: Calling the POST operation for DeleteRules to perform a valid deletion of resourceRegistryId
+        /// Expected: DeleteRules returns status code 201 and list of rules created match expected
+        /// 
+        /// Scenario:
+        /// Calling the POST operation for DeleteRules to perform a valid deletion
+        /// Input:
+        /// List of two one rule in one policy for deletion of the resource between for a single offeredby/coveredby combination resulting in a single policyfile beeing updated.
+        /// Expected Result:
+        /// Rules are deleted and returned with the CreatedSuccessfully flag set and rule ids
+        /// Success Criteria:
+        /// DeleteRules returns status code 201 and list of rules deleted to match expected
+        /// </summary>
+        [Fact]
+        public async Task Post_DeleteResourceRegistryRules_Success()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/DeleteRules/ReadResource2_50001337_20001337.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            List<Rule> expected = new List<Rule>
+            {
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
+            };
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeleteRules", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
+            Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
+            AssertionUtil.AssertEqual(expected, actual);
+        }
+
+        /// <summary>
         /// Test case: Calling the POST operation for DeleteRules to perform a valid deletion of org1/app3
         /// Expected: DeleteRules returns status code 206 and list of rules created match expected one of the rules does not exist
         /// 

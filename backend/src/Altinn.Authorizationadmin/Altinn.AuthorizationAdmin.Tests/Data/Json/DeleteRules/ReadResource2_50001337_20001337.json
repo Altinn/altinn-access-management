@@ -1,0 +1,23 @@
+[
+  {
+    "ruleIds": [
+      "99e5cced-3bcb-42b6-9089-63c834f89e77"
+    ],
+    "deletedByUserId": 20001336,
+    "policyMatch": {
+      "offeredByPartyId": 50001337,
+      "resource": [
+        {
+          "id": "urn:altinn:resourceregistry",
+          "value": "resource2"
+        }
+    ],
+      "coveredBy": [
+        {
+          "id": "urn:altinn:userid",
+          "value": "20001337"
+        }
+      ]
+    }
+  }
+]

@@ -52,7 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\blobs\input\resource2\50001337\p20001337\delegationpolicy.xml" />
+    <None Remove="Data\blobs\input\resourceregistry\resource2\50001337\u20001337\delegationpolicy.xml" />
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+    <None Remove="Data\Json\DeleteRules\ReadResource2_50001337_20001337.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +68,16 @@
     <None Update="selfSignedTestCertificatePublic.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Xacml\3.0\ResourceRegistry\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Data\blobs\input\resourceregistry\resource2\50001337\u20001337\delegationpolicy.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   
 </Project>

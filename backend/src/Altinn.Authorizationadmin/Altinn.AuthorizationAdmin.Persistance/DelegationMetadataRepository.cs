@@ -23,7 +23,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
-        private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId)";
+        private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId, @_resourcetype)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
         private readonly string getAllCurrentDelegationChangesUserIdsSql = "select * from delegation.get_all_current_changes_coveredbyuserids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByUserIds)";
@@ -213,7 +213,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
                 pgcom.Parameters.AddWithValue("_coveredbypartyid", coveredByPartyId);
-                pgcom.Parameters.AddWithValue("_resourcetype", resourceType);
+                pgcom.Parameters.AddWithValue("_resourcetype", resourceType.ToString());
 
                 List<DelegationChange> receivedDelegations = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();

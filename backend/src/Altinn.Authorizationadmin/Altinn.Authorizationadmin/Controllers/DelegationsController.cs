@@ -249,8 +249,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
             }
             catch (Exception ex) 
             {
-                string errorMessage = ex.Message;
-                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
+                _logger.LogError(ex, "GetAllOfferedDelegations failed to fetch delegations");
                 return StatusCode(500);
             }
         }
@@ -274,13 +273,21 @@ namespace Altinn.AuthorizationAdmin.Controllers
                 return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
             }
 
-            List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId, resource);
-            if (delegations == null || delegations.Count == 0)
+            try
             {
-                return Ok("No delegations found");
-            }
+                List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId, resource);
+                if (delegations == null || delegations.Count == 0)
+                {
+                    return Ok("No delegations found");
+                }
 
-            return delegations;
+                return delegations;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllReceivedDelegations failed to fetch delegations");
+                return StatusCode(500);
+            }
         }
 
         /// <summary>

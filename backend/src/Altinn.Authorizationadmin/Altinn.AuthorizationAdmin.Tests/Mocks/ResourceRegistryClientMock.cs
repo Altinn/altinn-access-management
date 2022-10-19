@@ -33,7 +33,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
             {
                 return null;
             }
-            
         }
     }
 }

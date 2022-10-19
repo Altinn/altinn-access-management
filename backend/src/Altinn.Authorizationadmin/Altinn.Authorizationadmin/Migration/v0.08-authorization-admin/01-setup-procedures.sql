@@ -9,6 +9,7 @@ CREATE OR REPLACE FUNCTION delegation.get_all_offereddelegations(
     ROWS 1000
 
 AS $BODY$
+
 	  SELECT
 	 delegationchangeid,
     delegationChangeType,
@@ -23,8 +24,15 @@ AS $BODY$
 	resourceid,
 	resourcetype
 	  FROM delegation.delegationChanges
-	  WHERE
+	  INNER JOIN (
+	  SELECT MAX(delegationChangeId) AS maxChange
+	 	FROM delegation.delegationchanges
+		WHERE
 		offeredByPartyId = _offeredByPartyId
-		and resourcetype = _resourcetype
+		AND resourcetype = _resourcetype
+		GROUP BY resourceid, offeredByPartyId, coveredByPartyId, coveredByUserId
+	  )AS selectMaxChange
+	 ON delegationChangeId = selectMaxChange.maxChange
+	 WHERE delegationchangetype!='revoke_last'
 $BODY$;
 

@@ -198,7 +198,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                _logger.LogError(e, "AccessManagement // DelegationMetadataRepository // GetAllOfferedDelegations // Exception");
                 throw;
             }
         }
@@ -260,23 +260,6 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 ResourceId = reader.GetFieldValue<string>("resourceid"),
                 ResourceType = reader.GetFieldValue<string>("resourcetype")
             };
-        }
-
-        private static ServiceResource GetResources(NpgsqlDataReader reader)
-        {
-            ServiceResource? resource = null;
-            if (reader["serviceresourcejson"] != DBNull.Value)
-            {
-                var jsonb = reader.GetString("serviceresourcejson");
-                resource = System.Text.Json.JsonSerializer.Deserialize<ServiceResource>(jsonb, new System.Text.Json.JsonSerializerOptions() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }) as ServiceResource;
-            }
-
-            ServiceResource delegatedResource = new ServiceResource
-            {
-                Identifier = reader.GetFieldValue<string>("resourceid"),
-                Title = (resource != null) ? resource.Title : null
-            };
-            return delegatedResource;
         }
 
         private async Task<List<DelegationChange>> GetAllCurrentDelegationChangesCoveredByPartyIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByPartyIds = null)

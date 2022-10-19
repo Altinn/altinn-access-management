@@ -56,7 +56,7 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
                 throw;
             }
 

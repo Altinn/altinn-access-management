@@ -33,7 +33,7 @@ namespace Altinn.Authorizationadmin.Controllers
         /// <param name="status">Optional filter parameter for status. (created, unopened, approved, rejected, deleted)</param>
         /// <param name="continuation">Optional filter parameter for continuationToken</param>
         /// <returns>List of delegation requests</returns>
-        [HttpGet("authorization/api/v1/[controller]/")]
+        [HttpGet("accessmanagement/api/v1/delegationrequests/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
         {
@@ -45,7 +45,7 @@ namespace Altinn.Authorizationadmin.Controllers
         /// </summary>
         /// <param name="id">The delegation request id</param>
         /// <returns>The delegation request</returns>
-        [HttpGet("authorization/api/v1/[controller]/{id}")]
+        [HttpGet("accessmanagement/api/v1/delegationrequests/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<DelegationRequest>> Get(string id)
         {

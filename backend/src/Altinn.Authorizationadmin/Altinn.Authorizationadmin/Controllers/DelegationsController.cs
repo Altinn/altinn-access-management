@@ -41,7 +41,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("authorization/api/v1/[controller]/AddRules")]
+        [Route("accessmanagement/api/v1/delegations/AddRules")]
         public async Task<ActionResult> Post([FromBody] List<Rule> rules)
         {
             if (rules == null || rules.Count < 1)
@@ -78,7 +78,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("authorization/api/v1/[controller]/GetRules")]
+        [Route("accessmanagement/api/v1/delegations/GetRules")]
         public async Task<ActionResult<List<Rule>>> GetRules([FromBody] RuleQuery ruleQuery, [FromQuery] bool onlyDirectDelegations = false)
         {
             List<int> coveredByPartyIds = new List<int>();
@@ -146,7 +146,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("authorization/api/v1/[controller]/DeleteRules")]
+        [Route("accessmanagement/api/v1/delegations/DeleteRules")]
         public async Task<ActionResult> DeleteRule([FromBody] RequestToDeleteRuleList rulesToDelete)
         {
             if (!ModelState.IsValid)
@@ -184,7 +184,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("authorization/api/v1/[controller]/DeletePolicy")]
+        [Route("accessmanagement/api/v1/delegations/DeletePolicy")]
         public async Task<ActionResult> DeletePolicy([FromBody] RequestToDeletePolicyList policiesToDelete)
         {
             if (!ModelState.IsValid)
@@ -218,7 +218,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// </summary>
         /// <returns>test string</returns>
         [HttpGet]
-        [Route("authorization/api/v1/[controller]")]
+        [Route("accessmanagement/api/v1/[controller]")]
         public string Get()
         {
             return "Hello world!";

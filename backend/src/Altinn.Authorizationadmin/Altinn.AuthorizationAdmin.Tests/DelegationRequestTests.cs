@@ -36,7 +36,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         [Fact(Skip = "Incomplete implementation")]
         public async Task Test1()
         {
-            string requestUri = "/authorization/api/v1/DelegationRequests";
+            string requestUri = "/accessmanagement/api/v1/delegationrequests";
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri)
             {
             };
@@ -57,7 +57,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         [Fact(Skip = "Incomplete implementation")]
         public async Task Test2()
         {
-            string requestUri = "/authorization/api/v1/DelegationRequests/23";
+            string requestUri = "/accessmanagement/api/v1/delegationrequests/23";
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri)
             {
             };

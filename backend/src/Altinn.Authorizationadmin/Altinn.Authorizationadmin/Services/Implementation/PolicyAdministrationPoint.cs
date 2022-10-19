@@ -425,8 +425,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         {
             string altinnAppId = null;
             ServiceResource resource = null;
-            DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
+            bool resourceSuccessfullyRetrieved = DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+
+            if (!resourceSuccessfullyRetrieved)
+            {
+                _logger.LogError("The resource cannot be identified.");
+                return null;
+            }
 
             string policyPath;
             try
@@ -435,7 +441,15 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Not possible to build policy path App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", org, app, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
+                if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
+                {
+                    _logger.LogError(ex, "Not possible to build policy path App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", org, app, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
+                }
+                else
+                {
+                    _logger.LogError(ex, "Not possible to build policy path Resource: {resourceRegistryId} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", resourceRegistryId, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
+                }
+                
                 return null;
             }
 
@@ -452,7 +466,7 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                 return null;
             }
 
-            if (!string.IsNullOrWhiteSpace(org) || !string.IsNullOrWhiteSpace(app))
+            if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
             {
                 altinnAppId = $"{org}/{app}";
             }
@@ -461,11 +475,12 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
             if (resource == null)
             {
                 _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
+                return null;
             }
 
             try
             {
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange($"{org}/{app}", null, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(altinnAppId, resourceRegistryId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
 
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
@@ -518,13 +533,16 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                     return null;
                 }
 
-                try
+                if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
                 {
-                    await _eventQueue.Push(change);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogCritical(new EventId(delegationChangeEventQueueErrorId, "DelegationChangeEventQueue.Push.Error"), ex, "DeletePolicy could not push DelegationChangeEvent to DelegationChangeEventQueue. DelegationChangeEvent must be retried for successful sync with SBL Authorization. DelegationChange: {change}", change);
+                    try
+                    {
+                        await _eventQueue.Push(change);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogCritical(new EventId(delegationChangeEventQueueErrorId, "DelegationChangeEventQueue.Push.Error"), ex, "DeletePolicy could not push DelegationChangeEvent to DelegationChangeEventQueue. DelegationChangeEvent must be retried for successful sync with SBL Authorization. DelegationChange: {change}", change);
+                    }
                 }
 
                 return currentPolicyRules;
@@ -544,7 +562,13 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
+            bool resourceSuccessfullyRetrieved = DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
+
+            if (!resourceSuccessfullyRetrieved)
+            {
+                _logger.LogError("The resource cannot be identified.");
+                return null;
+            }
 
             string policyPath;
             try

@@ -71,10 +71,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Xacml\3.0\ResourceRegistry\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="Data\blobs\input\resourceregistry\resource2\50001337\u20001337\delegationpolicy.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

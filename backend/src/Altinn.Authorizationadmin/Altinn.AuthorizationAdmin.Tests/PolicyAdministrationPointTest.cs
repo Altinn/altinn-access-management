@@ -110,6 +110,17 @@ namespace Altinn.AuthorizationAdmin.Tests
         }
 
         /// <summary>
+        /// Test case: Write to storage a file that is null.
+        /// Expected: WritePolicyAsync throws ArgumentException.
+        /// </summary>
+        [Fact]
+        public async Task WritePolicy_TC05()
+        {
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _pap.WritePolicyAsync("org", "app", null));
+        }
+
+        /// <summary>
         /// Scenario:
         /// Tests the TryWriteDelegationPolicyRules function, where all rules are deleted the db is updated with RevokeLast status
         /// Input:

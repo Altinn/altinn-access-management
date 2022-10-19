@@ -27,7 +27,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="appresource">appresource</param>
         /// <param name="createdSuccessfully">createdSuccessfully</param>
         /// <param name="ruleType">ruleType</param>
-        /// <param name="resourceRegistryId">resourceregistry id.</param>
+        /// <param name="resourceRegistryId">resourceregistry id.</param></param>
         /// <returns>Rule model</returns>
         public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null)
         {

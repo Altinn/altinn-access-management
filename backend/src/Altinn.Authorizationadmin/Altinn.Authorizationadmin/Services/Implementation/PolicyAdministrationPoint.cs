@@ -546,11 +546,6 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
 
             DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
 
-            //if (resourceMatchType != ResourceAttributeMatchType.AltinnApp)
-            //{
-            //    throw new NotImplementedException("Deletion of rules for this resource type is not implemented");
-            //}
-
             string policyPath;
             try
             {

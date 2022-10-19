@@ -13,18 +13,21 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
     {
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly ILogger<IDelegationsService> _logger;
-        private readonly IPartiesClient _partyProxy;
+        private readonly IPartiesClient _partyClient;
         private readonly IResourceRegistryClient _resourceRegistryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
         /// </summary>
         /// <param name="delegationRepository">delgation change handler</param>
-        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesClient partyProxy, IResourceRegistryClient resourceRegistryClient)
+        /// <param name="logger">handler for logger</param>
+        /// <param name="partyClient">handler for party</param>
+        /// <param name="resourceRegistryClient">handler for resoruce registry</param>
+        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesClient partyClient, IResourceRegistryClient resourceRegistryClient)
         {
             _delegationRepository = delegationRepository;
             _logger = logger;
-            _partyProxy = partyProxy;
+            _partyClient = partyClient;
             _resourceRegistryClient = resourceRegistryClient;
         }
 
@@ -75,7 +78,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                 }
             }
 
-            List<Party> partyList = await _partyProxy.GetPartiesAsync(parties);
+            List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<OfferedDelegations> resourceDelegations = new List<OfferedDelegations>();
             foreach (ServiceResource resource in resources)
             {

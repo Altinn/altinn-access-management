@@ -198,7 +198,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                _logger.LogError(e, "AccessManagement // DelegationMetadataRepository // GetAllOfferedDelegations // Exception");
                 throw;
             }
         }

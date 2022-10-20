@@ -160,7 +160,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = enc.GetString(enc.GetBytes("KOLSÅS OG FLÅM")),
+                CoveredByName = "KOLSAAS OG FLAAM",
                 CoveredByOrganizationNumber = 810418192,
                 CoveredByPartyId = 50004219,
 
@@ -169,7 +169,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = enc.GetString(enc.GetBytes("NORDRE FROGN OG MORTENHALS")),
+                CoveredByName = "NORDRE FROGN OG MORTENHALS",
                 CoveredByOrganizationNumber = 810418362,
                 CoveredByPartyId = 50004220,
             });
@@ -177,7 +177,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = enc.GetString(enc.GetBytes("LUNDAMO OG FLEINVÆR")),
+                CoveredByName = "LUNDAMO OG FLEINVAR",
                 CoveredByOrganizationNumber = 810418532,
                 CoveredByPartyId = 50004221,
             });

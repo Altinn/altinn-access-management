@@ -322,6 +322,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 receivedDelegation.Resources.Add(GetResource("skd_1", "SKD 1"));
                 return receivedDelegation;
             }
+
             return null;
         }
     }

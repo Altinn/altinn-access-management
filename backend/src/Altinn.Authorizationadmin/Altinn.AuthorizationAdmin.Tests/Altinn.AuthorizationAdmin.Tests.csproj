@@ -56,6 +56,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Data\Parties\parties.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

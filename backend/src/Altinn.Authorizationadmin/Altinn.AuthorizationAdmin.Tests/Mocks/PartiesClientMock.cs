@@ -49,7 +49,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         private static string GetPartiesPaths()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, @"..\..\..\Data\Parties\");
+            return Path.Combine(unitTestFolder, "..", "..", "..", @"Data\Parties\");
         }
 
         private static string GetFilterFileName(int offeredByPartyId)

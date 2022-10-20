@@ -227,9 +227,9 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                Created = reader.GetFieldValue<DateTime>("created"),
-                ResourceId = reader.GetFieldValue<string>("resourceid"),
-                ResourceType = reader.GetFieldValue<string>("resourcetype")
+                ResourceId = reader.IsDBNull("resourceid") ? null : reader.GetFieldValue<string>("resourceid"),
+                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype"),
+                Created = reader.GetFieldValue<DateTime>("created")
             };
         }
 

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Core.Clients;
-using Altinn.AuthorizationAdmin.Integration.Clients;
 using Altinn.Platform.Register.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Altinn.AuthorizationAdmin.Tests.Mocks
 {
@@ -16,18 +13,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
     /// </summary>
     public class PartiesClientMock : IPartiesClient
     {
-        private readonly ILogger _logger;
-        private readonly HttpClient _client;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PartiesClientMock"/> class
-        /// </summary>
-        /// <param name="logger">the logger</param>
-        public PartiesClientMock(ILogger<PartiesClientMock> logger)
-        {
-            _logger = logger;
-        }
-
         /// <summary>
         /// Party information for a list of party numbers
         /// </summary>
@@ -38,32 +23,24 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
             List<Party> partyList = new List<Party>();
             List<Party> filteredList = new List<Party>();
 
-            try
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
             {
-                string path = GetPartiesPaths();
-                if (Directory.Exists(path))
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
                 {
-                    string[] files = Directory.GetFiles(path);
-
-                    foreach (string file in files)
+                    if (file.Contains("parties"))
                     {
-                        if (file.Contains("parties"))
-                        {
-                            string content = File.ReadAllText(Path.Combine(path, file));
-                            partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                        }
-                    }
-
-                    foreach (int partyId in parties)
-                    {
-                        filteredList.Add(partyList.Find(p => p.PartyId == partyId));
+                        string content = File.ReadAllText(Path.Combine(path, file));                        
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "AccessManagement // PartiesClientMock // GetPartiesAsync // Exception");
-                throw;
+
+                foreach (int partyId in parties)
+                {
+                    filteredList.Add(partyList.Find(p => p.PartyId == partyId));
+                }
             }
 
             return Task.FromResult(filteredList);
@@ -72,7 +49,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
         private static string GetPartiesPaths()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, @"Data\Parties\");
+            return Path.Combine(unitTestFolder, "Data", "Parties");
         }
 
         private static string GetFilterFileName(int offeredByPartyId)

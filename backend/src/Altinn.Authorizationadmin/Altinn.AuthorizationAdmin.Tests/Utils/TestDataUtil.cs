@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
@@ -154,20 +155,21 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {
             List<Delegation> delegations = new List<Delegation>();
+            Encoding enc = new UTF8Encoding(true, true);
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "KOLSÅS OG FLÅM",
+                CoveredByName = enc.GetString(enc.GetBytes("KOLSÅS OG FLÅM")),
                 CoveredByOrganizationNumber = 810418192,
                 CoveredByPartyId = 50004219,
-                
+
             });
             delegations.Add(new Delegation
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "NORDRE FROGN OG MORTENHALS",
+                CoveredByName = enc.GetString(enc.GetBytes("NORDRE FROGN OG MORTENHALS")),
                 CoveredByOrganizationNumber = 810418362,
                 CoveredByPartyId = 50004220,
             });
@@ -175,7 +177,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "LUNDAMO OG FLEINVÆR",
+                CoveredByName = enc.GetString(enc.GetBytes("LUNDAMO OG FLEINVÆR")),
                 CoveredByOrganizationNumber = 810418532,
                 CoveredByPartyId = 50004221,
             });

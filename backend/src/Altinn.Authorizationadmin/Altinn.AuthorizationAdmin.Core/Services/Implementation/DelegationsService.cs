@@ -129,7 +129,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                     _logger.LogError(ex, "AccessManagement // DelegationsService // GetResources // Exception");
                     throw;
                 }
-
+                
                 if (resource == null)
                 {
                     ServiceResource unavailableResource = new ServiceResource

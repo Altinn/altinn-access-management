@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
@@ -158,10 +159,10 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "KOLSÅS OG FLÅM",
+                CoveredByName = "KOLSAAS OG FLAAM",
                 CoveredByOrganizationNumber = 810418192,
                 CoveredByPartyId = 50004219,
-                
+
             });
             delegations.Add(new Delegation
             {
@@ -175,30 +176,11 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             {
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
-                CoveredByName = "LUNDAMO OG FLEINVÆR",
+                CoveredByName = "LUNDAMO OG FLEINVAR",
                 CoveredByOrganizationNumber = 810418532,
                 CoveredByPartyId = 50004221,
             });
             return delegations;
-        }
-
-        /// <summary>
-        /// Sets up mock data for delegation list 
-        /// </summary>
-        /// <param name="offeredByName">name of the party that delegated the resource</param>
-        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
-        /// <returns></returns>
-        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-
-            ReceivedDelegation receivedDelegation = new ReceivedDelegation();
-            receivedDelegation.OfferedByPartyId = offeredByPartyId;
-            receivedDelegation.ReporteeName = offeredByName;
-            receivedDelegation.Resources = new List<ServiceResource>();
-            receivedDelegation.Resources.Add(GetResource("nav_aa_distribution", "NAV aa distribution"));
-            receivedDelegation.Resources.Add(GetResource("skd_1", "SKD 1"));
-            return receivedDelegation;
         }
 
         /// <summary>
@@ -209,22 +191,44 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <returns>Returns the newly created ServiceResource.</returns>
         public static ServiceResource GetResource(string resourceId, string resourceTitle)
         {
-            return new ServiceResource
+            if (resourceId == "nav1_aa_distribution")
             {
-                Identifier = resourceId,
-                Title = new Dictionary<string, string>
+                return new ServiceResource
+                {
+                    Identifier = resourceId,
+                    Title = new Dictionary<string, string>
+                {
+                    { "en", "Not Available" },
+                    { "nb-no", "ikke tilgjengelig" },
+                    { "nn-no", "ikkje tilgjengelig" },
+                },
+                    Description = new Dictionary<string, string>
+                {
+                    { "Description", resourceTitle }
+                },
+                    ValidFrom = DateTime.Now,
+                    ValidTo = DateTime.Now.AddDays(1),
+                };
+            }
+            else
+            {
+                return new ServiceResource
+                {
+                    Identifier = resourceId,
+                    Title = new Dictionary<string, string>
                 {
                     { "en", resourceTitle },
                     { "nb-no", resourceTitle },
                     { "nn-no", resourceTitle },
                 },
-                Description = new Dictionary<string, string>
+                    Description = new Dictionary<string, string>
                 {
                     { "Description", resourceTitle }
                 },
-                ValidFrom = DateTime.Now,
-                ValidTo = DateTime.Now.AddDays(1),
-            };
+                    ValidFrom = DateTime.Now,
+                    ValidTo = DateTime.Now.AddDays(1),
+                };
+            }
         }
 
         /// <summary>
@@ -289,6 +293,36 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             roles.Add("REPR");
 
             return roles;
+        }
+
+        /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="offeredByName">name of the party that delegated the resource</param>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <returns></returns>
+        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+
+            ReceivedDelegation receivedDelegation = new ReceivedDelegation();
+            receivedDelegation.OfferedByPartyId = offeredByPartyId;
+            receivedDelegation.ReporteeName = offeredByName;
+            receivedDelegation.Resources = new List<ServiceResource>();
+
+            if (offeredByPartyId == 50004222 || offeredByPartyId == 50004220 || offeredByPartyId == 50004221)
+            {
+                receivedDelegation.Resources.Add(GetResource("nav_aa_distribution", "NAV aa distribution"));
+                receivedDelegation.Resources.Add(GetResource("skd_1", "SKD 1"));
+                return receivedDelegation;
+            }
+            else if (offeredByPartyId == 50004226)
+            {
+                receivedDelegation.Resources.Add(GetResource("nav1_aa_distribution", "Not Available"));
+                receivedDelegation.Resources.Add(GetResource("skd_1", "SKD 1"));
+                return receivedDelegation;
+            }
+            return null;
         }
     }
 }

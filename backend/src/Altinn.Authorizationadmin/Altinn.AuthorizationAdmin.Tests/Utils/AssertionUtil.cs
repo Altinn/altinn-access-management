@@ -253,6 +253,25 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
+        /// Assert that two <see cref="ReceivedDelegation"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(ReceivedDelegation expected, ReceivedDelegation actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            Assert.Equal(expected.ReporteeName, actual.ReporteeName);
+
+            for (int i = 0; i < expected.Resources.Count; i++)
+            {
+                AssertEqual(expected.Resources[i], actual.Resources[i]);
+            }
+        }
+
+        /// <summary>
         /// Assert that two <see cref="OfferedDelegations"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
@@ -269,25 +288,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             for (int i = 0; i < expected.Delegations.Count; i++)
             {
                 AssertEqual(expected.Delegations[i], actual.Delegations[i]);
-            }
-        }
-
-        /// <summary>
-        /// Assert that two <see cref="ReceivedDelegation"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(ReceivedDelegation expected, ReceivedDelegation actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
-            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            Assert.Equal(expected.ReporteeName, actual.ReporteeName);
-
-            for (int i = 0; i < expected.Resources.Count; i++)
-            {
-                AssertEqual(expected.Resources[i], actual.Resources[i]);
             }
         }
 
@@ -566,11 +566,11 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
 
         private static void AssertEqual(Delegation expected, Delegation actual) 
         {
-            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
-            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
             Assert.Equal(expected.PerformedByUserId, actual.PerformedByUserId);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
+            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
         }
 
         private static void AssertEqual(ServiceResource expected, ServiceResource actual)

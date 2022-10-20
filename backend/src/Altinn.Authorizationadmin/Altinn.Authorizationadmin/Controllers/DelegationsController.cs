@@ -249,7 +249,8 @@ namespace Altinn.AuthorizationAdmin.Controllers
             }
             catch (Exception ex) 
             {
-                _logger.LogError(ex, "GetAllOfferedDelegations failed to fetch delegations");
+                string errorMessage = ex.Message;
+                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
                 return StatusCode(500);
             }
         }

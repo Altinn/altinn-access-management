@@ -6,7 +6,7 @@
         "Person": null,
         "Organization": {
             "OrgNumber": "810418192",
-            "Name": "KOLSÅS OG FLÅM",
+            "Name": "KOLSAAS OG FLAAM",
             "UnitType": "AS",
             "TelephoneNumber": null,
             "MobileNumber": null,
@@ -22,7 +22,7 @@
         },
         "PartyId": 50004219,
         "UnitType": "AS",
-        "Name": "KOLSÅS OG FLÅM",
+        "Name": "KOLSAAS OG FLAAM",
         "IsDeleted": true,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null
@@ -62,7 +62,7 @@
         "Person": null,
         "Organization": {
             "OrgNumber": "810418532",
-            "Name": "LUNDAMO OG FLEINVÆR",
+            "Name": "LUNDAMO OG FLEINVAR",
             "UnitType": "AS",
             "TelephoneNumber": null,
             "MobileNumber": null,
@@ -78,7 +78,7 @@
         },
         "PartyId": 50004221,
         "UnitType": "AS",
-        "Name": "LUNDAMO OG FLEINVÆR",
+        "Name": "LUNDAMO OG FLEINVAR",
         "IsDeleted": true,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null
@@ -90,7 +90,7 @@
         "Person": null,
         "Organization": {
             "OrgNumber": "810418672",
-            "Name": "KARLSTAD OG ULØYBUKT",
+            "Name": "KARLSTAD OG ULOYBUKT",
             "UnitType": "AS",
             "TelephoneNumber": null,
             "MobileNumber": null,
@@ -106,7 +106,7 @@
         },
         "PartyId": 50004222,
         "UnitType": "AS",
-        "Name": "KARLSTAD OG ULØYBUKT",
+        "Name": "KARLSTAD OG ULOYBUKT",
         "IsDeleted": false,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null
@@ -118,7 +118,7 @@
         "Person": null,
         "Organization": {
             "OrgNumber": "810419172",
-            "Name": "STJØRDAL OG HOMBORSUND",
+            "Name": "STJORDAL OG HOMBORSUND",
             "UnitType": "AS",
             "TelephoneNumber": null,
             "MobileNumber": null,
@@ -134,7 +134,7 @@
         },
         "PartyId": 50004224,
         "UnitType": "AS",
-        "Name": "STJØRDAL OG HOMBORSUND",
+        "Name": "STJORDAL OG HOMBORSUND",
         "IsDeleted": false,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null
@@ -174,7 +174,7 @@
         "Person": null,
         "Organization": {
             "OrgNumber": "810419342",
-            "Name": "KOLBJØRNSVIK OG ROAN",
+            "Name": "KOLBJORNSVIK OG ROAN",
             "UnitType": "AS",
             "TelephoneNumber": null,
             "MobileNumber": null,
@@ -190,7 +190,7 @@
         },
         "PartyId": 50004226,
         "UnitType": "AS",
-        "Name": "KOLBJØRNSVIK OG ROAN",
+        "Name": "KOLBJORNSVIK OG ROAN",
         "IsDeleted": false,
         "OnlyHierarchyElementWithNoAccess": false,
         "ChildParties": null

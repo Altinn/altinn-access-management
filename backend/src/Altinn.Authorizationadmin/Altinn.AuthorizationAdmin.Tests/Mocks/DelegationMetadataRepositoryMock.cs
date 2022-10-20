@@ -237,6 +237,13 @@ namespace Altinn.AuthorizationAdmin.Tests.Mocks
                 result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", 50004221, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "MaskinportenSchema"));
                 result.Add(TestDataUtil.GetDelegationChange("skd/1", 50004221, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
             }
+            else if (coveredByPartyId == 50004216 && resourceType == ResourceType.MaskinportenSchema)
+            {
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "nav_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("nav/aadist1", 50004226, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "nav1_aa_distribution", "MaskinportenSchema"));
+                result.Add(TestDataUtil.GetDelegationChange("skd/1", 50004226, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234, "skd_1", "MaskinportenSchema"));
+            }
 
             return Task.FromResult(result);
         }

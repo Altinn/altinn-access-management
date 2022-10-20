@@ -1335,14 +1335,54 @@ namespace Altinn.AuthorizationAdmin.Tests
         [Fact]
         public async Task GetAllReceivedDelegations_Missing_CoveredBy()
         {
-            // Arrange
-            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004219);
-
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=&resourcetype=MaskinportenSchema");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
+        /// Expected: GetAllReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_CoveredBy_NoDelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50002111}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Expected: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_ResourceMetadataNotFound()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004216);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004216}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<ReceivedDelegation> actualDelegations = JsonSerializer.Deserialize<List<ReceivedDelegation>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
         private static List<Rule> GetExpectedRulesForUser()
@@ -1384,9 +1424,16 @@ namespace Altinn.AuthorizationAdmin.Tests
             if (coveredByPartyId == 50004219)
             {
                 List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULØYBUKT", 50004222));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222));
                 receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("NORDRE FROGN OG MORTENHALS", 50004220));
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVÆR", 50004221));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVAR", 50004221));
+                return receivedDelegations;
+            }
+            else if (coveredByPartyId == 50004216)
+            {
+                List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222));                
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KOLBJORNSVIK OG ROAN", 50004226));
                 return receivedDelegations;
             }
 

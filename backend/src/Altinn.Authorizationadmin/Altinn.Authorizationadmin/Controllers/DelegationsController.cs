@@ -2,6 +2,8 @@
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         private readonly IPolicyAdministrationPoint _pap;
         private readonly IPolicyInformationPoint _pip;
         private readonly ILogger _logger;
+        private readonly IDelegationsService _delegation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -24,11 +27,13 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <param name="policyAdministrationPoint">The policy administration point</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="logger">the logger.</param>
-        public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger)
+        /// <param name="delegationsService">Handler for the delegation service</param>
+        public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger, IDelegationsService delegationsService)
         {
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
             _logger = logger;
+            _delegation = delegationsService;
         }
 
         /// <summary>
@@ -211,6 +216,43 @@ namespace Altinn.AuthorizationAdmin.Controllers
 
             _logger.LogInformation("Deletion could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{policiesToDeleteSerialized}", policiesToDeleteSerialized);
             return StatusCode(400, $"Unable to complete deletion");
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("authorization/api/v1/[controller]/GetAllOfferedDelegations")]
+        public async Task<ActionResult<List<OfferedDelegations>>> GetAllOfferedDelegations([FromQuery] int offeredbyPartyId, string resourceType)
+        {
+            if (offeredbyPartyId == 0)
+            {
+                return BadRequest("Missing query parameter offeredbypartyid");
+            }
+
+            if (!Enum.TryParse(resourceType, out ResourceType resource))
+            {
+                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
+            }
+
+            try
+            {
+                List<OfferedDelegations> delegations = await _delegation.GetAllOfferedDelegations(offeredbyPartyId, resource);
+                if (delegations == null || delegations.Count == 0)
+                {
+                    return Ok("No delegations found");
+                }
+
+                return delegations;
+            }
+            catch (Exception ex) 
+            {
+                string errorMessage = ex.Message;
+                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
+                return StatusCode(500);
+            }
         }
 
         /// <summary>

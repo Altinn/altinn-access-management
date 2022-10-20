@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AuthorizationAdmin.Controllers;
 using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Core.Clients;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
 using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
@@ -1206,6 +1207,103 @@ namespace Altinn.AuthorizationAdmin.Tests
             AssertionUtil.AssertCollections(expectedRules, actualRules, AssertionUtil.AssertRuleEqual);
         }
 
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns a list of delegations offeredby has given coveredby
+        /// Expected: GetAllOfferedDelegations returns a list of delegations offeredby has given coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_Valid_OfferedBy()
+        {
+            // Arrange
+            List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004223);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004223}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<OfferedDelegations> actualDelegations = JsonSerializer.Deserialize<List<OfferedDelegations>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_BadRequest_MissingOfferedBy()
+        {            
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllOfferedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_BadRequest_MissingResourceType()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
+        /// Expected: GetAllOfferedDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_OfferedBy_NoDelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50002111}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Expected: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// </summary>
+        [Fact]
+        public async Task GetAllOfferedDelegations_ResourceMetadataNotFound()
+        {
+            // Arrange
+            List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004226);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004226}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<OfferedDelegations> actualDelegations = JsonSerializer.Deserialize<List<OfferedDelegations>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1221,6 +1319,25 @@ namespace Altinn.AuthorizationAdmin.Tests
             return list;
         }
 
+        private static List<OfferedDelegations> GetExpectedDelegationsForParty(int offeredByPartyId)
+        {
+            List<OfferedDelegations> resourceDelegations = new List<OfferedDelegations>();
+            if (offeredByPartyId == 50004223)
+            {
+                resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(50004223, "nav_aa_distribution", "NAV aa distribution", 20000002));
+                resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(50004223, "skd_1", "SKD 1", 20000002));
+                return resourceDelegations;
+            }
+            else if (offeredByPartyId == 50004226)
+            {
+                resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(offeredByPartyId, "nav1_aa_distribution", "Not Available", 20000002));
+                resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(offeredByPartyId, "skd_1", "SKD 1", 20000002));
+                return resourceDelegations;
+            }
+
+            return null;
+        }
+
         private HttpClient GetTestClient()
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
@@ -1232,6 +1349,7 @@ namespace Altinn.AuthorizationAdmin.Tests
                     services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });

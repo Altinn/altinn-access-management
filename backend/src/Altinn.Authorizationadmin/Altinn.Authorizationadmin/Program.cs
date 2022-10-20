@@ -1,5 +1,6 @@
 using Altinn.AuthorizationAdmin.Configuration;
 using Altinn.AuthorizationAdmin.Core;
+using Altinn.AuthorizationAdmin.Core.Clients;
 using Altinn.AuthorizationAdmin.Core.Configuration;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Helpers;
@@ -7,6 +8,7 @@ using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
 using Altinn.AuthorizationAdmin.Core.Services;
 using Altinn.AuthorizationAdmin.Core.Services.Implementation;
 using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Filters;
 using Altinn.AuthorizationAdmin.Health;
 using Altinn.AuthorizationAdmin.Integration.Clients;
@@ -31,13 +33,15 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-
+using Npgsql.Logging;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
 
 ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
+
+NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
 string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AuthorizationAdmin/");
 builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
@@ -201,6 +205,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
+    services.AddHttpClient<IPartiesClient, PartiesClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
@@ -215,7 +220,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
-        
+    services.AddSingleton<IDelegationsService, DelegationsService>();
+
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {

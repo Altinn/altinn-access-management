@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
@@ -18,7 +19,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// </summary>
         /// <param name="delegatedByUserId">delegatedByUserId</param>
         /// <param name="offeredByPartyId">offeredByPartyId</param>
-        /// <param name="coveredBy">coveredBy/param>
+        /// <param name="coveredBy">coveredBy</param>
         /// <param name="coveredByAttributeType">coveredByAttributeType</param>
         /// <param name="action">action</param>
         /// <param name="org">org</param>
@@ -124,7 +125,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="changeType">changeType</param>
         /// <param name="changeId">changeId</param>
         /// <returns></returns>
-        public static DelegationChange GetDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        public static DelegationChange GetDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337, string? resourceId = null, string? resourceType = null)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
             return new DelegationChange
@@ -138,8 +139,95 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"{altinnAppId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                ResourceId = resourceId,
+                ResourceType = resourceType
             };
+        }
+
+        /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="resourceId">resource identifier</param>
+        /// <param name="resourceName">Resource name</param>
+        /// <returns></returns>
+        public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
+        {
+            List<Delegation> delegations = new List<Delegation>();
+            Encoding enc = new UTF8Encoding(true, true);
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
+                CoveredByName = "KOLSAAS OG FLAAM",
+                CoveredByOrganizationNumber = 810418192,
+                CoveredByPartyId = 50004219,
+
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
+                CoveredByName = "NORDRE FROGN OG MORTENHALS",
+                CoveredByOrganizationNumber = 810418362,
+                CoveredByPartyId = 50004220,
+            });
+            delegations.Add(new Delegation
+            {
+                OfferedByPartyId = offeredByPartyId,
+                PerformedByUserId = performedByUserId,
+                CoveredByName = "LUNDAMO OG FLEINVAR",
+                CoveredByOrganizationNumber = 810418532,
+                CoveredByPartyId = 50004221,
+            });
+            return delegations;
+        }
+
+        /// <summary>
+        /// Creates a ServiceResource model.
+        /// </summary>
+        /// <param name="resourceId">ResourceId.</param>
+        /// <param name="resourceTitle">title of the resource</param>
+        /// <returns>Returns the newly created ServiceResource.</returns>
+        public static ServiceResource GetResource(string resourceId, string resourceTitle)
+        {
+            return new ServiceResource
+            {
+                Identifier = resourceId,
+                Title = new Dictionary<string, string>
+                {
+                    { "en", resourceTitle },
+                    { "nb-no", resourceTitle },
+                    { "nn-no", resourceTitle },
+                },
+                Description = new Dictionary<string, string>
+                {
+                    { "Description", resourceTitle }
+                },
+                ValidFrom = DateTime.Now,
+                ValidTo = DateTime.Now.AddDays(1),
+            };
+        }
+
+        /// <summary>
+        /// Gets offered delegation model for the given input
+        /// </summary>
+        /// <param name="offeredByPartyId">party that delegated the resources</param>
+        /// <param name="resourceId">the resource that was delegated</param>
+        /// <param name="resourceName">the resource name that was delegated</param>
+        /// <param name="performedByUserId">id of the user who perfoemed the delegation</param>
+        /// <returns></returns>
+        public static OfferedDelegations GetDelegatedResourcesModel(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
+        {
+            OfferedDelegations offeredDelegation = new OfferedDelegations
+            {
+                ResourceId = resourceId,
+                ResourceTitle = resourceName
+            };
+            offeredDelegation.Delegations = new List<Delegation>();
+            offeredDelegation.Delegations.AddRange(GetDelegations(offeredByPartyId, resourceId, resourceName, performedByUserId));
+            return offeredDelegation;
         }
 
         /// <summary>
@@ -162,29 +250,6 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now,
                 ResourceId = resourceRegistryId,
-            };
-        }
-
-        /// <summary>
-        /// Creates a ServiceResource model.
-        /// </summary>
-        /// <param name="resourceId">ResourceId.</param>
-        /// <returns>Returns the newly created ServiceResource.</returns>
-        public static ServiceResource GetResource(string resourceId)
-        {
-            return new ServiceResource
-            {
-                Identifier = resourceId,
-                Title = new Dictionary<string, string> 
-                { 
-                    { "Title", "resource1" } 
-                },
-                Description = new Dictionary<string, string> 
-                { 
-                    { "Description", "resource1" } 
-                },
-                ValidFrom = DateTime.Now,
-                ValidTo = DateTime.Now.AddDays(1),
             };
         }
 

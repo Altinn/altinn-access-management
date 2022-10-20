@@ -252,6 +252,26 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         }
 
         /// <summary>
+        /// Assert that two <see cref="OfferedDelegations"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(OfferedDelegations expected, OfferedDelegations actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.ResourceId, actual.ResourceId);
+            Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
+
+            Assert.Equal(expected.Delegations.Count, actual.Delegations.Count);
+            for (int i = 0; i < expected.Delegations.Count; i++)
+            {
+                AssertEqual(expected.Delegations[i], actual.Delegations[i]);
+            }
+        }
+
+        /// <summary>
         /// Assert that two <see cref="Rule"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
@@ -522,6 +542,15 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         {
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Value, actual.Value);
+        }
+
+        private static void AssertEqual(Delegation expected, Delegation actual) 
+        {
+            Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
+            Assert.Equal(expected.PerformedByUserId, actual.PerformedByUserId);
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
+            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
         }
     }
 }

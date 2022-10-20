@@ -47,18 +47,12 @@
 
   <ItemGroup>
     <Content Include="Data\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Data\Parties\parties.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

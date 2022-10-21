@@ -1424,16 +1424,16 @@ namespace Altinn.AuthorizationAdmin.Tests
             if (coveredByPartyId == 50004219)
             {
                 List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222));
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("NORDRE FROGN OG MORTENHALS", 50004220));
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVAR", 50004221));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("NORDRE FROGN OG MORTENHALS", 50004220, 810418362));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVAR", 50004221, 810418532));
                 return receivedDelegations;
             }
             else if (coveredByPartyId == 50004216)
             {
                 List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222));                
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KOLBJORNSVIK OG ROAN", 50004226));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));                
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KOLBJORNSVIK OG ROAN", 50004226, 810419342));
                 return receivedDelegations;
             }
 

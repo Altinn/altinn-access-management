@@ -3,7 +3,9 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Altinn.AuthorizationAdmin.Core;
 using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
 using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AuthorizationAdmin.Integration.Clients
@@ -14,18 +16,20 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
     public class ResourceRegistryClient : IResourceRegistryClient
     {
         private readonly HttpClient _httpClient = new();
+        private readonly ILogger<IDelegationsService> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
         /// </summary>
         /// <param name="settings">The resource registry config settings</param>
-        public ResourceRegistryClient(IOptions<ResourceRegistrySettings> settings)
+        public ResourceRegistryClient(IOptions<ResourceRegistrySettings> settings, ILogger<IDelegationsService> logger)
         {
             ResourceRegistrySettings resourceRegistrySettings = settings.Value;
             _httpClient.BaseAddress = new Uri(resourceRegistrySettings.BaseApiUrl);
             _httpClient.Timeout = new TimeSpan(0, 0, 30);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -46,6 +50,51 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
             }
 
             return await Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Get resource information for the the given list of resourceids
+        /// </summary>
+        /// <param name="resourceIds"> the list of resource ids</param>
+        /// <returns></returns>
+        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            foreach (string id in resourceIds)
+            {
+                ServiceResource resource = null;
+
+                try
+                {
+                    resource = await GetResource(id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
+                    throw;
+                }
+
+                if (resource == null)
+                {
+                    ServiceResource unavailableResource = new ServiceResource
+                    {
+                        Identifier = id,
+                        Title = new Dictionary<string, string>
+                        {
+                            { "en", "Not Available" },
+                            { "nb-no", "ikke tilgjengelig" },
+                            { "nn-no", "ikkje tilgjengelig" }
+                        }
+                    };
+                    resources.Add(unavailableResource);
+                }
+                else
+                {
+                    resources.Add(resource);
+                }
+            }
+
+            return resources;
         }
     }
 }

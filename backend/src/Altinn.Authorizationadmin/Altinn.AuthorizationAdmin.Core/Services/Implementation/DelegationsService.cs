@@ -45,7 +45,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             List<string> resourceIds;
             resourceIds = delegations.Select(d => d.ResourceId).Distinct().ToList();
 
-            resources = await GetResources(resourceIds);
+            resources = await _resourceRegistryClient.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<OfferedDelegations> resourceDelegations = new List<OfferedDelegations>();
@@ -86,7 +86,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             List<ServiceResource> resources = new List<ServiceResource>();
             List<string> resourceIds;
             resourceIds = delegations.Select(d => d.ResourceId).ToList();
-            resources = await GetResources(resourceIds);
+            resources = await _resourceRegistryClient.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
@@ -96,7 +96,8 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
                 {
                     ReceivedDelegation receivedDelegation = new ReceivedDelegation();
                     receivedDelegation.OfferedByPartyId = party.PartyId;
-                    receivedDelegation.ReporteeName = party.Name;
+                    receivedDelegation.OfferedByName = party.Name;
+                    receivedDelegation.OfferedByOrgNumber = Convert.ToInt32(party.OrgNumber);
                     List<DelegationChange> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
                     receivedDelegation.Resources = new List<ServiceResource>();
 
@@ -111,46 +112,6 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             }
 
             return receivedDelegations;
-        }
-
-        private async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
-                
-                try
-                {
-                    resource = await _resourceRegistryClient.GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // DelegationsService // GetResources // Exception");
-                    throw;
-                }
-                
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
-            }
-
-            return resources;
         }
     }
 }

@@ -263,7 +263,8 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             Assert.NotNull(expected);
 
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            Assert.Equal(expected.ReporteeName, actual.ReporteeName);
+            Assert.Equal(expected.OfferedByName, actual.OfferedByName);
+            Assert.Equal(expected.OfferedByOrgNumber, actual.OfferedByOrgNumber);
 
             for (int i = 0; i < expected.Resources.Count; i++)
             {

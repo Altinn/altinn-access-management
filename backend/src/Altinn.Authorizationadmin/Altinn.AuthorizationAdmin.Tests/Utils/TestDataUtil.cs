@@ -301,13 +301,14 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <param name="offeredByName">name of the party that delegated the resource</param>
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
         /// <returns></returns>
-        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId)
+        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId, int OfferedByOrgNumber)
         {
             List<ServiceResource> resources = new List<ServiceResource>();
 
             ReceivedDelegation receivedDelegation = new ReceivedDelegation();
             receivedDelegation.OfferedByPartyId = offeredByPartyId;
-            receivedDelegation.ReporteeName = offeredByName;
+            receivedDelegation.OfferedByName = offeredByName;
+            receivedDelegation.OfferedByOrgNumber = OfferedByOrgNumber;
             receivedDelegation.Resources = new List<ServiceResource>();
 
             if (offeredByPartyId == 50004222 || offeredByPartyId == 50004220 || offeredByPartyId == 50004221)

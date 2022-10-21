@@ -9,16 +9,22 @@ namespace Altinn.AuthorizationAdmin.Core.Models
     public class ReceivedDelegation
     {
         /// <summary>
-        /// Gets or sets the identifier of the resource in a delegation
+        /// Gets or sets the name of the organisation that delegated the resource
         /// </summary>
-        [JsonPropertyName("reporteename")]
-        public string ReporteeName { get; set; }
+        [JsonPropertyName("offeredbyname")]
+        public string OfferedByName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the resource in a delegation
+        /// Gets or sets the identifier of the resource in a delegation
         /// </summary>
         [JsonPropertyName("offeredbypartyid")]
         public int OfferedByPartyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the organisation number that delegated the resource
+        /// </summary>
+        [JsonPropertyName("offeredbyorgnumber")]
+        public int OfferedByOrgNumber { get; set; }
 
         /// <summary>
         /// Resources that were received

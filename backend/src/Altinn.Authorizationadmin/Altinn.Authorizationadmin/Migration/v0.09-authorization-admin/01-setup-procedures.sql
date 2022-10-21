@@ -1,6 +1,5 @@
---Procedure: delegation.get_all_offereddelegations
-CREATE OR REPLACE FUNCTION delegation.get_all_offereddelegations(
-	_offeredbypartyid integer,
+CREATE OR REPLACE FUNCTION delegation.get_receiveddelegations(
+	_coveredbypartyid integer,
 	_resourcetype character varying)
     RETURNS SETOF delegation.delegationchanges 
     LANGUAGE 'sql'
@@ -9,8 +8,7 @@ CREATE OR REPLACE FUNCTION delegation.get_all_offereddelegations(
     ROWS 1000
 
 AS $BODY$
-
-	  SELECT
+SELECT
 	 delegationchangeid,
     delegationChangeType,
     altinnappid,
@@ -23,16 +21,15 @@ AS $BODY$
     created,
 	resourceid,
 	resourcetype
-	  FROM delegation.delegationChanges
-	  INNER JOIN (
+	FROM delegation.delegationChanges 
+	INNER JOIN (
 	  SELECT MAX(delegationChangeId) AS maxChange
 	 	FROM delegation.delegationchanges
 		WHERE
-		offeredByPartyId = _offeredByPartyId
+		coveredByPartyID = _coveredByPartyId
 		AND resourcetype = _resourcetype
-		GROUP BY resourceid, offeredByPartyId, coveredByPartyId, coveredByUserId
+		GROUP BY resourceid, coveredByPartyId, offeredByPartyId, coveredByUserId
 	  )AS selectMaxChange
 	 ON delegationChangeId = selectMaxChange.maxChange
 	 WHERE delegationchangetype!='revoke_last'
 $BODY$;
-

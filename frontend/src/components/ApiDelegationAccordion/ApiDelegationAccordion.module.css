@@ -1,0 +1,12 @@
+.save-section{
+    margin-top: 3rem;
+    margin-right: 0.5rem;
+    display: flex;
+    float: right;
+    justify-content: space-around;
+}
+
+.page-content{
+    margin: 2rem;
+    overflow: hidden;
+}

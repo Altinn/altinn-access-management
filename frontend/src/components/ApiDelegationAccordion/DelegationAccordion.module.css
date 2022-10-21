@@ -1,0 +1,9 @@
+.accordion-content{
+    padding-left: 8rem;
+    padding-right: 0.3rem;
+}
+
+.accordion-header--soft-delete{
+    text-decoration: line-through;
+    opacity: 70%;
+}

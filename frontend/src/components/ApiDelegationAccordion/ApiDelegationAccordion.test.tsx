@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import ApiDelegationAccordion from './ApiDelegationAccordion';
+import { ApiDelegationAccordion } from './ApiDelegationAccordion';
 
 describe('<ApiDelegationAccordion />', () => {
   test('it should mount', () => {

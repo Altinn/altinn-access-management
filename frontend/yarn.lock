@@ -12,11 +12,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@altinn/altinn-design-system@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@altinn/altinn-design-system@npm:0.7.1"
+"@altinn/altinn-design-system@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@altinn/altinn-design-system@npm:0.13.0"
   dependencies:
-    "@altinn/figma-design-tokens": ^2.0.2
+    "@altinn/figma-design-tokens": ^3.1.0
     "@radix-ui/react-popover": ^1.0.0
     "@react-hookz/web": ^15.0.1
     leaflet: ^1.8.0
@@ -25,14 +25,14 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 90f4a8a7d353e1ea5cb0d2cacf1c636000342c64bf694120e62dadfb9767461efe2bbd8b0c048fd9f961fcd3244f081d8029e399e9d4a8b13101e0e97b431407
+  checksum: 7fa7428b7245026d1fbf6f41552c56c02a3f86886e2a89152438ee2d626111dafb0665fb577482a535843d278a77801b0823ffb94224aa9fe176ff3aa0613336
   languageName: node
   linkType: hard
 
-"@altinn/figma-design-tokens@npm:^2.0.2":
-  version: 2.2.0
-  resolution: "@altinn/figma-design-tokens@npm:2.2.0"
-  checksum: 7921959d3c1065d18600190f1a715da0a45df553cbf33ad57501c0701bd277f4771e2ef96d04eda2b3ca430036058b2eeacabe84c8191a795169c96c7602a9be
+"@altinn/figma-design-tokens@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@altinn/figma-design-tokens@npm:3.1.0"
+  checksum: d7e74b0007e92037873f2b3706140e827c6a302b754d31981c4f07cbd5770508266e2b9b40c20f1ac4d67c2b22053ac8e331b369de819abdc8040cceb24f1f73
   languageName: node
   linkType: hard
 
@@ -1895,7 +1895,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "altinn-access-management@workspace:."
   dependencies:
-    "@altinn/altinn-design-system": ^0.7.1
+    "@altinn/altinn-design-system": ^0.13.0
     "@testing-library/dom": ^8.17.0
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
@@ -1910,6 +1910,7 @@ __metadata:
     "@vitest/coverage-c8": ^0.23.0
     altinn-designsystem: ^4.1.0
     c8: ^7.12.0
+    classnames: ^2.3.2
     eslint: ^8.23.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
@@ -2561,6 +2562,13 @@ __metadata:
   version: 3.3.2
   resolution: "ci-info@npm:3.3.2"
   checksum: fd81f1edd2d3b0f6cb077b2e84365136d87b9db8c055928c1ad69da8a76c2c2f19cba8ea51b90238302157ca927f91f92b653e933f2398dde4867500f08d6e62
+  languageName: node
+  linkType: hard
+
+"classnames@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "classnames@npm:2.3.2"
+  checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
   languageName: node
   linkType: hard
 

@@ -15,7 +15,7 @@ namespace Altinn.AuthorizationAdmin
         /// </summary>
         /// <returns>View result</returns>
         [HttpGet]
-        [Route("AuthorizationAdmin/")]
+        [Route("accessmanagement/")]
         public IActionResult Index()
         {
             bool frontendInDevMode = AppEnvironment.GetVariable("FRONTEND_MODE") == "Development";

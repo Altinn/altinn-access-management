@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.cjs"
   },
   "dependencies": {
-    "@altinn/altinn-design-system": "^0.7.1",
+    "@altinn/altinn-design-system": "0.15.0",
     "altinn-designsystem": "^4.1.0",
     "i18next": "^21.9.1",
     "react": "^18.2.0",

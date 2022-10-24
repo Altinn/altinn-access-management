@@ -1218,7 +1218,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004223);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004223}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004223}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1239,7 +1239,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetAllOfferedDelegations_BadRequest_MissingOfferedBy()
         {            
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
             
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1253,7 +1253,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetAllOfferedDelegations_BadRequest_MissingResourceType()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1277,7 +1277,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50002111}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50002111}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1296,7 +1296,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<OfferedDelegations> expectedDelegations = GetExpectedDelegationsForParty(50004226);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004226}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid={50004226}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1320,7 +1320,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004219);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004219}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004219}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1341,7 +1341,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetAllReceivedDelegations_Missing_CoveredBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=&resourcetype=MaskinportenSchema");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1355,7 +1355,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         public async Task GetAllReceivedDelegations_Missing_ResourceType()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=50004222&resourcetype=");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=50004222&resourcetype=");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1379,7 +1379,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50002111}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50002111}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1398,7 +1398,7 @@ namespace Altinn.AuthorizationAdmin.Tests
             List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004216);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004216}&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004216}&resourcetype=MaskinportenSchema");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {

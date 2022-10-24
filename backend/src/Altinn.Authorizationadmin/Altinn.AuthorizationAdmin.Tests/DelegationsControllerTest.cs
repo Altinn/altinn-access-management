@@ -1240,8 +1240,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         {            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
-            string responseContent = await response.Content.ReadAsStringAsync();
-
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -1256,9 +1255,15 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
             string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            string message = JsonSerializer.Deserialize<string>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Missing query parameter resourcetype or invalid value for resourcetype", message);
         }
 
         /// <summary>
@@ -1340,6 +1345,27 @@ namespace Altinn.AuthorizationAdmin.Tests
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Missing_ResourceType()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=50004222&resourcetype=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            string message = JsonSerializer.Deserialize<string>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Missing query parameter resourcetype or invalid value for resourcetype", message);
         }
 
         /// <summary>

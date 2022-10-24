@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Altinn.AuthorizationAdmin.Core;
@@ -13,6 +14,7 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
     /// <summary>
     /// Client implementation for integration with the Resource Registry
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ResourceRegistryClient : IResourceRegistryClient
     {
         private readonly HttpClient _httpClient = new();

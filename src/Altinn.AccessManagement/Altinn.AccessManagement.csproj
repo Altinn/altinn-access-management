@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Altinn.AuthorizationAdmin.Core\Altinn.AuthorizationAdmin.Core.csproj" />
-    <ProjectReference Include="..\Altinn.AuthorizationAdmin.Integration\Altinn.AuthorizationAdmin.Integration.csproj" />
-    <ProjectReference Include="..\Altinn.AuthorizationAdmin.Persistance\Altinn.AuthorizationAdmin.Persistance.csproj" />
+    <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
+    <ProjectReference Include="..\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj" />
+    <ProjectReference Include="..\Altinn.AccessManagement.Persistance\Altinn.AccessManagement.Persistance.csproj" />
   </ItemGroup>
   
   <ItemGroup>
@@ -36,13 +36,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <AdditionalFiles Include="..\..\..\..\stylecop.json">
+    <AdditionalFiles Include="..\..\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <CodeAnalysisRuleSet>..\..\..\..\Altinn3.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Altinn3.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>

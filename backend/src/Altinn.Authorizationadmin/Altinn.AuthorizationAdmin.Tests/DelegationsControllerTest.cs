@@ -1240,8 +1240,7 @@ namespace Altinn.AuthorizationAdmin.Tests
         {            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
-            string responseContent = await response.Content.ReadAsStringAsync();
-
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -1256,9 +1255,15 @@ namespace Altinn.AuthorizationAdmin.Tests
             // Act
             HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=");
             string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            string message = JsonSerializer.Deserialize<string>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Missing query parameter resourcetype or invalid value for resourcetype", message);
         }
 
         /// <summary>
@@ -1304,6 +1309,108 @@ namespace Altinn.AuthorizationAdmin.Tests
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns a list of delegations received by coveredby
+        /// Expected: GetAllReceivedDelegations returns a list of delegations received by coveredby
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Valid_CoveredBy()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004219);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004219}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<ReceivedDelegation> actualDelegations = JsonSerializer.Deserialize<List<ReceivedDelegation>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Missing_CoveredBy()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=&resourcetype=MaskinportenSchema");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// Expected: GetAllReceivedDelegations returns badrequest when the query parameter is missing
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_Missing_ResourceType()
+        {
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid=50004222&resourcetype=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            string message = JsonSerializer.Deserialize<string>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Missing query parameter resourcetype or invalid value for resourcetype", message);
+        }
+
+        /// <summary>
+        /// Test case: GetAllReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
+        /// Expected: GetAllReceivedDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_CoveredBy_NoDelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50002111}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Expected: GetAllOfferedDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// </summary>
+        [Fact]
+        public async Task GetAllReceivedDelegations_ResourceMetadataNotFound()
+        {
+            // Arrange
+            List<ReceivedDelegation> expectedDelegations = GetExpectedReceivedDelegationsForParty(50004216);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"authorization/api/v1/delegations/GetAllReceivedDelegations?coveredbypartyid={50004216}&resourcetype=MaskinportenSchema");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<ReceivedDelegation> actualDelegations = JsonSerializer.Deserialize<List<ReceivedDelegation>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1333,6 +1440,27 @@ namespace Altinn.AuthorizationAdmin.Tests
                 resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(offeredByPartyId, "nav1_aa_distribution", "Not Available", 20000002));
                 resourceDelegations.Add(TestDataUtil.GetDelegatedResourcesModel(offeredByPartyId, "skd_1", "SKD 1", 20000002));
                 return resourceDelegations;
+            }
+
+            return null;
+        }
+
+        private static List<ReceivedDelegation> GetExpectedReceivedDelegationsForParty(int coveredByPartyId)
+        {
+            if (coveredByPartyId == 50004219)
+            {
+                List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("NORDRE FROGN OG MORTENHALS", 50004220, 810418362));
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("LUNDAMO OG FLEINVAR", 50004221, 810418532));
+                return receivedDelegations;
+            }
+            else if (coveredByPartyId == 50004216)
+            {
+                List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));                
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KOLBJORNSVIK OG ROAN", 50004226, 810419342));
+                return receivedDelegations;
             }
 
             return null;

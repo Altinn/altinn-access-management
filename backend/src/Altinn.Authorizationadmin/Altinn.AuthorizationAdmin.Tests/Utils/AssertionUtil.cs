@@ -5,6 +5,7 @@ using System.Linq;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Altinn.AuthorizationAdmin.Core.Models;
+using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Xunit;
 
 namespace Altinn.AuthorizationAdmin.Tests.Utils
@@ -249,6 +250,26 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             AssertEqual(expected.CoveredBy, actual.CoveredBy);
             AssertEqual(expected.Resource, actual.Resource);
             AssertEqual(expected.Action, actual.Action);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ReceivedDelegation"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(ReceivedDelegation expected, ReceivedDelegation actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            Assert.Equal(expected.OfferedByName, actual.OfferedByName);
+            Assert.Equal(expected.OfferedByOrgNumber, actual.OfferedByOrgNumber);
+
+            for (int i = 0; i < expected.Resources.Count; i++)
+            {
+                AssertEqual(expected.Resources[i], actual.Resources[i]);
+            }
         }
 
         /// <summary>
@@ -551,6 +572,12 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             Assert.Equal(expected.CoveredByName, actual.CoveredByName);
             Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
+        }
+
+        private static void AssertEqual(ServiceResource expected, ServiceResource actual)
+        {
+            Assert.Equal(expected.Identifier, actual.Identifier);
+            Assert.Equal(expected.Title, actual.Title);
         }
     }
 }

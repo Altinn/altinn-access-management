@@ -45,38 +45,7 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             List<string> resourceIds;
             resourceIds = delegations.Select(d => d.ResourceId).Distinct().ToList();
 
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
-                try
-                {
-                    resource = await _resourceRegistryClient.GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // DelegationsService // GetAllOfferedDelegations // Exception");
-                    throw;
-                }
-                
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
-            }
+            resources = await _resourceRegistryClient.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<OfferedDelegations> resourceDelegations = new List<OfferedDelegations>();
@@ -105,6 +74,44 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
             }
 
             return resourceDelegations;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType)
+        {
+            List<DelegationChange> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
+            List<int> parties = new List<int>();
+            parties = delegations.Select(d => d.OfferedByPartyId).ToList();
+
+            List<ServiceResource> resources = new List<ServiceResource>();
+            List<string> resourceIds;
+            resourceIds = delegations.Select(d => d.ResourceId).ToList();
+            resources = await _resourceRegistryClient.GetResources(resourceIds);
+
+            List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
+            List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
+            foreach (Party party in partyList)
+            {
+                if (receivedDelegations.FindAll(rd => rd.OfferedByPartyId.Equals(party.PartyId)).Count <= 0)
+                {
+                    ReceivedDelegation receivedDelegation = new ReceivedDelegation();
+                    receivedDelegation.OfferedByPartyId = party.PartyId;
+                    receivedDelegation.OfferedByName = party.Name;
+                    receivedDelegation.OfferedByOrgNumber = Convert.ToInt32(party.OrgNumber);
+                    List<DelegationChange> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
+                    receivedDelegation.Resources = new List<ServiceResource>();
+
+                    foreach (DelegationChange delegation in query)
+                    {
+                        ServiceResource resource = resources.Find(d => d.Identifier == delegation.ResourceId);
+                        receivedDelegation.Resources.Add(resource);
+                    }
+
+                    receivedDelegations.Add(receivedDelegation);
+                }
+            }
+
+            return receivedDelegations;
         }
     }
 }

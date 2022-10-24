@@ -23,6 +23,7 @@ namespace Altinn.AuthorizationAdmin.Persistance
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
+        private readonly string getReceivedDelegationsSql = "select * from delegation.get_receiveddelegations(@_coveredByPartyId, @_resourcetype)";
         private readonly string getAllDelegationChangesSql = "select * from delegation.get_all_changes(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllCurrentDelegationChangesPartyIdsSql = "select * from delegation.get_all_current_changes_coveredbypartyids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByPartyIds)";
         private readonly string getAllCurrentDelegationChangesUserIdsSql = "select * from delegation.get_all_current_changes_coveredbyuserids(@_altinnAppIds, @_offeredByPartyIds, @_coveredByUserIds)";
@@ -202,6 +203,34 @@ namespace Altinn.AuthorizationAdmin.Persistance
             }
         }
 
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getReceivedDelegationsSql, conn);
+                pgcom.Parameters.AddWithValue("_coveredbypartyid", coveredByPartyId);
+                pgcom.Parameters.AddWithValue("_resourcetype", resourceType.ToString());
+
+                List<DelegationChange> receivedDelegations = new List<DelegationChange>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    receivedDelegations.Add(GetDelegationChange(reader));
+                }
+
+                return receivedDelegations;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
         private static void CheckIfOfferedbyPartyIdsHasValue(List<int> offeredByPartyIds)
         {
             if (offeredByPartyIds == null)
@@ -227,9 +256,9 @@ namespace Altinn.AuthorizationAdmin.Persistance
                 PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
+                Created = reader.IsDBNull("created") ? DateTime.MinValue : reader.GetFieldValue<DateTime>("created"),
                 ResourceId = reader.IsDBNull("resourceid") ? null : reader.GetFieldValue<string>("resourceid"),
-                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype"),
-                Created = reader.GetFieldValue<DateTime>("created")
+                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype")
             };
         }
 

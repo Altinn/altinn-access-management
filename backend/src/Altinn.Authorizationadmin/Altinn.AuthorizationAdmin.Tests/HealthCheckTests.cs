@@ -1,12 +1,12 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Health;
+using Altinn.AccessManagement.Health;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests.Health
+namespace Altinn.AccessManagement.Tests.Health
 {
     /// <summary>
     /// Health check 

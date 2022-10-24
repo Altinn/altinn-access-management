@@ -1,7 +1,6 @@
 ﻿using System.Runtime.Serialization;
-using Altinn.Authorizationadmin.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This element describe a public class DelegationRequest

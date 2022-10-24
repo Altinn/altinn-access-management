@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Yuniql.Extensibility;
 
-namespace Altinn.AuthorizationAdmin.Configuration
+namespace Altinn.AccessManagement.Configuration
 {
     /// <summary>
     /// Copied from sample project.

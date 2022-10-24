@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a single rule in a delegated policy

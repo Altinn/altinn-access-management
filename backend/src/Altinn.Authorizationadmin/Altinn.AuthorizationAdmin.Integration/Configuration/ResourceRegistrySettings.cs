@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Integration.Configuration
+﻿namespace Altinn.AccessManagement.Integration.Configuration
 {
     /// <summary>
     /// Configuration settings for integration with Resource Registry

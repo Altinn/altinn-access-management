@@ -1,10 +1,10 @@
-﻿using Altinn.Authorization.ABAC.Constants;
+﻿using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Helpers
+namespace Altinn.AccessManagement.Core.Helpers
 {
     /// <summary>
     /// Delegation helper methods

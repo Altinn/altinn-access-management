@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
-using Altinn.AuthorizationAdmin.Services.Interface;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Altinn.AuthorizationAdmin.Controllers
+namespace Altinn.AccessManagement.Controllers
 {
     /// <summary>
     /// Controller responsible for all operations for managing delegations of Altinn Apps
@@ -16,23 +16,23 @@ namespace Altinn.AuthorizationAdmin.Controllers
     [ApiController]
     public class DelegationsController : ControllerBase
     {
-        private readonly IPolicyAdministrationPoint _pap;
-        private readonly IPolicyInformationPoint _pip;
         private readonly ILogger _logger;
+        private readonly IPolicyInformationPoint _pip;
+        private readonly IPolicyAdministrationPoint _pap;
         private readonly IDelegationsService _delegation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
         /// </summary>
-        /// <param name="policyAdministrationPoint">The policy administration point</param>
-        /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="logger">the logger.</param>
+        /// <param name="policyInformationPoint">The policy information point</param>
+        /// <param name="policyAdministrationPoint">The policy administration point</param>
         /// <param name="delegationsService">Handler for the delegation service</param>
-        public DelegationsController(IPolicyAdministrationPoint policyAdministrationPoint, IPolicyInformationPoint policyInformationPoint, ILogger<DelegationsController> logger, IDelegationsService delegationsService)
+        public DelegationsController(ILogger<DelegationsController> logger, IPolicyInformationPoint policyInformationPoint, IPolicyAdministrationPoint policyAdministrationPoint, IDelegationsService delegationsService)
         {
+            _logger = logger;
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
-            _logger = logger;
             _delegation = delegationsService;
         }
 
@@ -289,17 +289,6 @@ namespace Altinn.AuthorizationAdmin.Controllers
                 _logger.LogError(ex, "GetAllReceivedDelegations failed to fetch delegations");
                 return StatusCode(500);
             }
-        }
-
-        /// <summary>
-        /// Test method. Should be deleted?
-        /// </summary>
-        /// <returns>test string</returns>
-        [HttpGet]
-        [Route("accessmanagement/api/v1/delegations")]
-        public string Get()
-        {
-            return "Hello world!";
         }
     }
 }

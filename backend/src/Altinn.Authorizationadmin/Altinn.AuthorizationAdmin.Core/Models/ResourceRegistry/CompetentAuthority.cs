@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
+﻿namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
     /// <summary>
     /// Model representation of Competent Authority part of the ServiceResource model

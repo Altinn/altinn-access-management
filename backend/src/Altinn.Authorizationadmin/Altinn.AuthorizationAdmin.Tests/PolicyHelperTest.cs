@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Tests.Mocks;
-using Altinn.AuthorizationAdmin.Tests.Utils;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// Test class for <see cref="PolicyHelper"></see>

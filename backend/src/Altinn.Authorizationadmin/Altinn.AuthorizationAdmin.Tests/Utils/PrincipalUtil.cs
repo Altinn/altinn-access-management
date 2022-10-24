@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Altinn.AuthorizationAdmin.Tests.Utils;
+using Altinn.AccessManagement.Tests.Utils;
 using AltinnCore.Authentication.Constants;
 
-namespace Altinn.AuthorizationAdmin.Tests.Util
+namespace Altinn.AccessManagement.Tests.Util
 {
     /// <summary>
     /// Utility class for usefull common operations for setup of authentication tokens for integration tests

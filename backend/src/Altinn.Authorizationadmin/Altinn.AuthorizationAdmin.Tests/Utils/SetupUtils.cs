@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
-using Altinn.Authorizationadmin.Controllers;
+using Altinn.AccessManagement.Controllers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 
-namespace Altinn.AuthorizationAdmin.Tests.Utils
+namespace Altinn.AccessManagement.Tests.Utils
 {
     /// <summary>
     /// Utility class for usefull common operations for setup for unittests

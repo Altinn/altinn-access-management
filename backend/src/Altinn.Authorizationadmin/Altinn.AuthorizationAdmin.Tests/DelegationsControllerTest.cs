@@ -5,20 +5,19 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Controllers;
-using Altinn.AuthorizationAdmin.Core;
-using Altinn.AuthorizationAdmin.Core.Clients;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.AuthorizationAdmin.Services.Interface;
-using Altinn.AuthorizationAdmin.Tests.Mocks;
-using Altinn.AuthorizationAdmin.Tests.Util;
-using Altinn.AuthorizationAdmin.Tests.Utils;
+using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Util;
+using Altinn.AccessManagement.Tests.Utils;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -27,7 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// Test class for <see cref="DelegationsController"></see>
@@ -55,22 +54,6 @@ namespace Altinn.AuthorizationAdmin.Tests
 
             string token = PrincipalUtil.GetAccessToken("sbl.authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-
-        /// <summary>
-        /// Test case: Calling the "Hello world" GET endpoint on the DelegationsController
-        /// Expected: returns 200 OK with content: "Hello world!"
-        /// </summary>
-        [Fact]
-        public async Task Get_HelloWorld()
-        {
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations");
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("\"Hello world!\"", responseContent);
         }
 
         /// <summary>

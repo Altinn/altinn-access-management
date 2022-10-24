@@ -1,6 +1,6 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AuthorizationAdmin.Core
+namespace Altinn.AccessManagement.Core
 {
     /// <summary>
     /// Interface for client integration with the Resource Registry

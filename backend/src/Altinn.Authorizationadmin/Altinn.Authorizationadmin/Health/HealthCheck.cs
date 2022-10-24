@@ -1,8 +1,6 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Altinn.AuthorizationAdmin.Health
+namespace Altinn.AccessManagement.Health
 {
     /// <summary>
     /// Health check service configured in startup. See https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks

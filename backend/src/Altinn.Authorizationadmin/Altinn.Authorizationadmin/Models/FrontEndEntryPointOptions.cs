@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Models
+﻿namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// Configuration of front end entry points

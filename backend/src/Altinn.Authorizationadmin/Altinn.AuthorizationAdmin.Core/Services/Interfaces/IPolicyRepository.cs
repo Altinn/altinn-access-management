@@ -1,7 +1,7 @@
 using Azure;
 using Azure.Storage.Blobs.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
+namespace Altinn.AccessManagement.Core.Repositories.Interface
 {
     /// <summary>
     /// Interface for operations on policy files.

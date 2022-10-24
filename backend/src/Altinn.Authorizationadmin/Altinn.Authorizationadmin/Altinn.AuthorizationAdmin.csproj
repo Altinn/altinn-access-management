@@ -3,14 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Models\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.5" />
@@ -36,7 +29,6 @@
   
   <ItemGroup>
     <Folder Include="Configuration\" />
-    <Folder Include="wwwroot\AuthorizationAdmin\assets" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

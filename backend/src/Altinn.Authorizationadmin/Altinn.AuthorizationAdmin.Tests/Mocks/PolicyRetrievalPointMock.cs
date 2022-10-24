@@ -2,14 +2,14 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
+using Altinn.AccessManagement.Services.Interface;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.AuthorizationAdmin.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IPolicyRetrievalPoint"></see> interface

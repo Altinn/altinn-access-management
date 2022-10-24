@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Tests.Utils;
+using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Tests.Utils;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IResourceRegistryClient"></see> interface

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
-using Altinn.AuthorizationAdmin.Tests.Utils;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Tests.Utils;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IDelegationMetadataRepository"></see> interface

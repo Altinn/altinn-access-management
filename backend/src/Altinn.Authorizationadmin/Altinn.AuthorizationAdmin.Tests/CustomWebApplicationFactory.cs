@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// CustomWebApplicationFactory for integration tests

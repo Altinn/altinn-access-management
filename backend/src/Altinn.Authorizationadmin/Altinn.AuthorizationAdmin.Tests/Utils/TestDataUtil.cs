@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Constants;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 
-namespace Altinn.AuthorizationAdmin.Tests.Utils
+namespace Altinn.AccessManagement.Tests.Utils
 {
     /// <summary>
     /// Mock class for helping setup test data
@@ -300,15 +298,16 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// </summary>
         /// <param name="offeredByName">name of the party that delegated the resource</param>
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
-        /// <returns></returns>
-        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId, int OfferedByOrgNumber)
+        /// <param name="offeredByOrgNumber">organization number for the offeredby organization</param>
+        /// <returns>Received delegations</returns>
+        public static ReceivedDelegation GetRecievedDelegation(string offeredByName, int offeredByPartyId, int offeredByOrgNumber)
         {
             List<ServiceResource> resources = new List<ServiceResource>();
 
             ReceivedDelegation receivedDelegation = new ReceivedDelegation();
             receivedDelegation.OfferedByPartyId = offeredByPartyId;
             receivedDelegation.OfferedByName = offeredByName;
-            receivedDelegation.OfferedByOrgNumber = OfferedByOrgNumber;
+            receivedDelegation.OfferedByOrgNumber = offeredByOrgNumber;
             receivedDelegation.Resources = new List<ServiceResource>();
 
             if (offeredByPartyId == 50004222 || offeredByPartyId == 50004220 || offeredByPartyId == 50004221)

@@ -1,16 +1,16 @@
 using System.Collections.Generic;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Tests.Mocks;
-using Altinn.AuthorizationAdmin.Tests.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// Test class for <see cref="DelegationHelper"></see>

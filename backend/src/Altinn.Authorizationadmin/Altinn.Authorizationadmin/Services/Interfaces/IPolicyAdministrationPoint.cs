@@ -1,6 +1,6 @@
-﻿using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AccessManagement.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Services.Interface
+namespace Altinn.AccessManagement.Services.Interface
 {
     /// <summary>
     /// Defines the interface for the Policy Administration Point

@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
+﻿namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
     /// <summary>
     /// Enum representation of the different types of resources supported by the resource registry

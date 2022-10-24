@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Enum definition of the AltinnII external operation types

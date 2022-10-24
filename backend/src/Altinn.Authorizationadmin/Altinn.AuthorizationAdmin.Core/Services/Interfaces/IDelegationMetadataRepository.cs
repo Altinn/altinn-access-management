@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AuthorizationAdmin.Core.Repositories.Interface
+namespace Altinn.AccessManagement.Core.Repositories.Interface
 {
     /// <summary>
     /// Interface for PostgreSQL operations on delegations.

@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Integration.Configuration
+﻿namespace Altinn.AccessManagement.Integration.Configuration
 {
     /// <summary>
     /// General configuration settings

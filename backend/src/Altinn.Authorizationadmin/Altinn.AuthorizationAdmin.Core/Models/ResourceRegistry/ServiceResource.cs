@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
+namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
     /// <summary>
     /// Model describing a complete resource from the resource registry.

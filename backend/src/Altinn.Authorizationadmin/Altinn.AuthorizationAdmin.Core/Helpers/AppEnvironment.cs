@@ -1,4 +1,4 @@
-namespace Altinn.AuthorizationAdmin.Core.Helpers
+namespace Altinn.AccessManagement.Core.Helpers
 {
     /// <summary>
     /// AppEnvironment helper

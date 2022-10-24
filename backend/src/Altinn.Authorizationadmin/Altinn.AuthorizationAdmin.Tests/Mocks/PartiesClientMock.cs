@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Clients;
+using Altinn.AccessManagement.Core.Clients;
 using Altinn.Platform.Register.Models;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IPartiesClient"></see> interface

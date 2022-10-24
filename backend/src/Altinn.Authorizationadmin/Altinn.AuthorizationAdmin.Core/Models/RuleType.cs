@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model defines the different types of rules and why it is relevant for a given coveredby (recipient).

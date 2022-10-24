@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
+namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
     /// <summary>
     /// Service for delegations
@@ -25,6 +23,5 @@ namespace Altinn.AuthorizationAdmin.Core.Services.Interfaces
         /// <param name="resourceType">the type of resource</param>
         /// <returns>list o delgations</returns>
         public Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType);
-
     }
 }

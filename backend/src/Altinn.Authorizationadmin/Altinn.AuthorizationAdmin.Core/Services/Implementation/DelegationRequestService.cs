@@ -1,7 +1,7 @@
-﻿using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services.Implementation
 {
     /// <summary>
     /// The servcie implementation for operations related to working with delegation requests

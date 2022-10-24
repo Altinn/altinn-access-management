@@ -1,5 +1,5 @@
-﻿using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Models;
+﻿using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

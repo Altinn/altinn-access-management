@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Integration", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Integration\Altinn.AuthorizationAdmin.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin.Persistance", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Persistance\Altinn.AuthorizationAdmin.Persistance.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Persistance", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Persistance\Altinn.AuthorizationAdmin.Persistance.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes an action that may be used in a rule describing a right.

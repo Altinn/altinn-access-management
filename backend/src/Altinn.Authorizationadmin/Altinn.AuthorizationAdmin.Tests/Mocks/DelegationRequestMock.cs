@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IDelegationRequestsWrapper"></see> interface

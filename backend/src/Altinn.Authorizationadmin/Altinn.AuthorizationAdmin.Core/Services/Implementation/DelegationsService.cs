@@ -1,12 +1,12 @@
-﻿using Altinn.AuthorizationAdmin.Core.Clients;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
-using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
+﻿using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services.Implementation
 {
     /// <inheritdoc/>
     public class DelegationsService : IDelegationsService

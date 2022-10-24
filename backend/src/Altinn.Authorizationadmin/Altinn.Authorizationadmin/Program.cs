@@ -1,24 +1,24 @@
-using Altinn.AuthorizationAdmin.Configuration;
-using Altinn.AuthorizationAdmin.Core;
-using Altinn.AuthorizationAdmin.Core.Clients;
-using Altinn.AuthorizationAdmin.Core.Configuration;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
-using Altinn.AuthorizationAdmin.Core.Services;
-using Altinn.AuthorizationAdmin.Core.Services.Implementation;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
-using Altinn.AuthorizationAdmin.Filters;
-using Altinn.AuthorizationAdmin.Health;
-using Altinn.AuthorizationAdmin.Integration.Clients;
-using Altinn.AuthorizationAdmin.Integration.Configuration;
-using Altinn.AuthorizationAdmin.Persistance;
-using Altinn.AuthorizationAdmin.Services;
-using Altinn.AuthorizationAdmin.Services.Implementation;
-using Altinn.AuthorizationAdmin.Services.Interface;
+using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Configuration.Telemetry;
+using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Implementation;
+using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Filters;
+using Altinn.AccessManagement.Health;
+using Altinn.AccessManagement.Integration.Clients;
+using Altinn.AccessManagement.Integration.Configuration;
+using Altinn.AccessManagement.Persistance;
+using Altinn.AccessManagement.Services;
+using Altinn.AccessManagement.Services.Implementation;
+using Altinn.AccessManagement.Services.Interface;
 using Altinn.Common.PEP.Authorization;
-using Altinn.Platform.Telemetry;
 using AltinnCore.Authentication.Constants;
 using AltinnCore.Authentication.JwtCookie;
 
@@ -43,7 +43,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
-string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AuthorizationAdmin/");
+string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AccessManagement/");
 builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
 
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
@@ -81,7 +81,7 @@ void ConfigureSetupLogging()
         builder
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
-            .AddFilter("Altinn.AuthorizationAdmin.Program", LogLevel.Debug)
+            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug)
             .AddConsole();
     });
 

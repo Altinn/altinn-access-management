@@ -1,8 +1,6 @@
-﻿using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.Platform.Register.Models;
+﻿using Altinn.Platform.Register.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Clients
+namespace Altinn.AccessManagement.Core.Clients
 {
     /// <summary>
     /// Interface for a client wrapper for integration with SBL bridge delegation request API

@@ -6,9 +6,8 @@ using AltinnCore.Authentication.Constants;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Http;
 
-namespace Altinn.AuthorizationAdmin.Filters
+namespace Altinn.AccessManagement.Filters
 {
     /// <summary>
     /// Filter to enrich request telemetry with identity information

@@ -3,7 +3,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace Altinn.AuthorizationAdmin.Health
+namespace Altinn.AccessManagement.Health
 {
     /// <summary>
     /// Filter to exclude health check request from Application Insights

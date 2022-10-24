@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Constants
+﻿namespace Altinn.AccessManagement.Core.Constants
 {
     /// <summary>
     /// Constants related to authorization.

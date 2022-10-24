@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Queries for a list of already delegated rules from the supplied offeredby for the supplied app. If coveredby

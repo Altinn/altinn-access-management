@@ -2,14 +2,12 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.Authorizationadmin.Controllers;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Tests.Utils;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
+using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Tests.Utils;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// Test class for <see cref="DelegationRequestsController"></see>

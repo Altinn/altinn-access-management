@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Internal model for a delegation change event used between Altinn.Platform.Authorization and this function app

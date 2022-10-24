@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry
+﻿namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
     /// <summary>
     /// Model for performing search for resources in the resource registry

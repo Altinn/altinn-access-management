@@ -1,14 +1,14 @@
 using System.Text;
 using System.Xml;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Helpers.Extensions;
-using Altinn.AuthorizationAdmin.Core.Models;
 
-namespace Altinn.AuthorizationAdmin.Core.Helpers
+namespace Altinn.AccessManagement.Core.Helpers
 {
     /// <summary>
     /// Policy helper methods

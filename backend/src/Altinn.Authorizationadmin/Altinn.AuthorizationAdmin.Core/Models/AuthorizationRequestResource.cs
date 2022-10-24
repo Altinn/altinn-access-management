@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorizationadmin.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Model definition for a resource on an authorization request

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// The internal wrapper model for expressing a list of delegation change events sent from Altinn.Platform.Authorization

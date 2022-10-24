@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Enum for determining the status of an Authorization Request 

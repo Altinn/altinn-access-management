@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services.Interface;
 using Azure.Storage.Queues.Models;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <inheritdoc />
     public class DelegationChangeEventQueueMock : IDelegationChangeEventQueue

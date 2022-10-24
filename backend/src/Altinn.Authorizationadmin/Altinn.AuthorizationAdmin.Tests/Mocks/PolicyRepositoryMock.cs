@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interface;
 using Azure;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Altinn.AuthorizationAdmin.Tests.Mocks
+namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
     /// Mock class for <see cref="IPolicyRepository"></see> interface

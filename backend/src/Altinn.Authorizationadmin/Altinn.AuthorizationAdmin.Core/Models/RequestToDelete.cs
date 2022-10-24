@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Altinn.AuthorizationAdmin.Core.Helpers;
+using Altinn.AccessManagement.Core.Helpers;
 
-namespace Altinn.AuthorizationAdmin.Core.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a list of rules to delete from a single policyfile

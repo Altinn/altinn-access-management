@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
 using System.Web;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services;
-using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Services
+namespace Altinn.AccessManagement.Services
 {
     /// <summary>
     /// Proxy implementation for delegation requests

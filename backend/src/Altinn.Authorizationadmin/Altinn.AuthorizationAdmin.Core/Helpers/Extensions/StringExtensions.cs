@@ -1,4 +1,4 @@
-namespace Altinn.AuthorizationAdmin.Core.Helpers.Extensions
+namespace Altinn.AccessManagement.Core.Helpers.Extensions
 {
     /// <summary>
     /// Extensions to facilitate sanitization of string values

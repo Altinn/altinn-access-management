@@ -6,16 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Altinn.Authorizationadmin.csproj", "."]
-RUN dotnet restore "./Altinn.Authorizationadmin.csproj"
+COPY ["Altinn.AccessManagement.csproj", "."]
+RUN dotnet restore "./Altinn.AccessManagement.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "Altinn.Authorizationadmin.csproj" -c Release -o /app/build
+RUN dotnet build "Altinn.AccessManagement.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Altinn.Authorizationadmin.csproj" -c Release -o /app/publish
+RUN dotnet publish "Altinn.AccessManagement.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Altinn.Authorizationadmin.dll"]
+ENTRYPOINT ["dotnet", "Altinn.AccessManagement.dll"]

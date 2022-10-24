@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests.Utils
+namespace Altinn.AccessManagement.Tests.Utils
 {
     /// <summary>
     /// Class with methods that can help with assertions of larger objects.

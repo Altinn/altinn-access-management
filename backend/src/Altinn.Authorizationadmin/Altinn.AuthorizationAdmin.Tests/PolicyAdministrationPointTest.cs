@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Altinn.AuthorizationAdmin.Core.Configuration;
-using Altinn.AuthorizationAdmin.Core.Constants;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
-using Altinn.AuthorizationAdmin.Services.Implementation;
-using Altinn.AuthorizationAdmin.Services.Interface;
-using Altinn.AuthorizationAdmin.Tests.Mocks;
-using Altinn.AuthorizationAdmin.Tests.Utils;
+using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Services.Implementation;
+using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Utils;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,7 +19,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Altinn.AuthorizationAdmin.Tests
+namespace Altinn.AccessManagement.Tests
 {
     /// <summary>
     /// Test class for <see cref="PolicyAdministrationPoint"></see>

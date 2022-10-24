@@ -1,14 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Altinn.AuthorizationAdmin.Core.Configuration;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services.Interface;
 using Azure.Storage;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Core.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services.Implementation
 {
     /// <inheritdoc />
     [ExcludeFromCodeCoverage]

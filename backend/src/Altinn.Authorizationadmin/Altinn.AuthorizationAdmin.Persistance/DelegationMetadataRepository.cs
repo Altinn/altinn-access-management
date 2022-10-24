@@ -1,15 +1,14 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using Altinn.AuthorizationAdmin.Core.Configuration;
-using Altinn.AuthorizationAdmin.Core.Helpers;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Repositories.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace Altinn.AuthorizationAdmin.Persistance
+namespace Altinn.AccessManagement.Persistance
 {
     /// <summary>
     /// Repository implementation for PostgreSQL operations on delegations.

@@ -2,14 +2,13 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Altinn.AuthorizationAdmin.Core;
-using Altinn.AuthorizationAdmin.Core.Models.ResourceRegistry;
-using Altinn.AuthorizationAdmin.Core.Services.Interfaces;
-using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Integration.Clients
+namespace Altinn.AccessManagement.Integration.Clients
 {
     /// <summary>
     /// Client implementation for integration with the Resource Registry
@@ -18,13 +17,14 @@ namespace Altinn.AuthorizationAdmin.Integration.Clients
     public class ResourceRegistryClient : IResourceRegistryClient
     {
         private readonly HttpClient _httpClient = new();
-        private readonly ILogger<IDelegationsService> _logger;
+        private readonly ILogger<IResourceRegistryClient> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
         /// </summary>
         /// <param name="settings">The resource registry config settings</param>
-        public ResourceRegistryClient(IOptions<ResourceRegistrySettings> settings, ILogger<IDelegationsService> logger)
+        /// <param name="logger">Logger instance for this ResourceRegistryClient</param>
+        public ResourceRegistryClient(IOptions<ResourceRegistrySettings> settings, ILogger<IResourceRegistryClient> logger)
         {
             ResourceRegistrySettings resourceRegistrySettings = settings.Value;
             _httpClient.BaseAddress = new Uri(resourceRegistrySettings.BaseApiUrl);

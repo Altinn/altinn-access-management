@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using Altinn.AuthorizationAdmin.Core.Configuration;
-using Altinn.AuthorizationAdmin.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Core.Repositories.Interface;
 using Azure;
 using Azure.Storage;
 using Azure.Storage.Blobs;
@@ -10,7 +10,7 @@ using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Persistance
+namespace Altinn.AccessManagement.Persistance
 {
     /// <summary>
     /// Repository for handling policy files

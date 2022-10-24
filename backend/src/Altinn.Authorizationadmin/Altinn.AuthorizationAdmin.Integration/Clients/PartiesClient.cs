@@ -1,15 +1,12 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Web;
-using Altinn.AuthorizationAdmin.Core.Clients;
-using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Integration.Configuration;
+using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin.Integration.Clients
+namespace Altinn.AccessManagement.Integration.Clients
 {
     /// <summary>
     /// Proxy implementation for parties

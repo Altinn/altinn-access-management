@@ -1,4 +1,4 @@
-﻿namespace Altinn.AuthorizationAdmin.Core.Enums
+﻿namespace Altinn.AccessManagement.Core.Enums
 {
     /// <summary>
     /// Enum for deciding which authRequests to get

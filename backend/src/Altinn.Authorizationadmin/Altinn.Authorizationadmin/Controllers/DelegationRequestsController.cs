@@ -1,9 +1,9 @@
-﻿using Altinn.AuthorizationAdmin.Core.Enums;
-using Altinn.AuthorizationAdmin.Core.Models;
-using Altinn.AuthorizationAdmin.Core.Services;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Altinn.Authorizationadmin.Controllers
+namespace Altinn.AccessManagement.Controllers
 {
     /// <summary>
     /// Controller responsible for all operations for managing delegation requests
@@ -52,8 +52,8 @@ namespace Altinn.Authorizationadmin.Controllers
         public async Task<ActionResult<DelegationRequest>> Get(string id)
         {
             DelegationRequest delegationRequest = new DelegationRequest();
-            delegationRequest.RequestResources = new List<Core.Models.AuthorizationRequestResource>();
-            delegationRequest.RequestResources.Add(new Core.Models.AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 });
+            delegationRequest.RequestResources = new List<AuthorizationRequestResource>();
+            delegationRequest.RequestResources.Add(new AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 });
             return delegationRequest;
         }
     }

@@ -63,12 +63,14 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     if (asd.AttributeId.OriginalString.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute))
                     {
-                        org = asd.AttributeValues.FirstOrDefault().Value;
+                        XacmlAttributeValue orgAttr = asd.AttributeValues.FirstOrDefault();
+                        org = orgAttr != null ? orgAttr.Value : string.Empty;
                     }
 
                     if (asd.AttributeId.OriginalString.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute))
                     {
-                        app = asd.AttributeValues.FirstOrDefault().Value;
+                        XacmlAttributeValue appAttr = asd.AttributeValues.FirstOrDefault();
+                        app = appAttr != null ? appAttr.Value : string.Empty;
                     }
                 }
             }

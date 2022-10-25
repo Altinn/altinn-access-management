@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Core", "src\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj", "{9D059588-4085-4AEC-8F0A-25CE74BD554B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Tests", "src\Altinn.AccessManagement.Tests\Altinn.AccessManagement.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Tests", "test\Altinn.AccessManagement.Tests\Altinn.AccessManagement.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Integration", "src\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
 EndProject

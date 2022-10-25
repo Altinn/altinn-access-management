@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin", "backend\src\Altinn.Authorizationadmin\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.csproj", "{461307C1-8D2B-4D90-AE2D-FC895BA1940B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement", "src\Altinn.AccessManagement\Altinn.AccessManagement.csproj", "{461307C1-8D2B-4D90-AE2D-FC895BA1940B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Core", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Core\Altinn.AuthorizationAdmin.Core.csproj", "{9D059588-4085-4AEC-8F0A-25CE74BD554B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Core", "src\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj", "{9D059588-4085-4AEC-8F0A-25CE74BD554B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Tests", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Tests\Altinn.AuthorizationAdmin.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Tests", "test\Altinn.AccessManagement.Tests\Altinn.AccessManagement.Tests.csproj", "{240CA575-3BAA-4E8E-93CD-A9A40502B772}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AuthorizationAdmin.Integration", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Integration\Altinn.AuthorizationAdmin.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Integration", "src\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AuthorizationAdmin.Persistance", "backend\src\Altinn.Authorizationadmin\Altinn.AuthorizationAdmin.Persistance\Altinn.AuthorizationAdmin.Persistance.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Persistance", "src\Altinn.AccessManagement.Persistance\Altinn.AccessManagement.Persistance.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -141,6 +141,8 @@ namespace Altinn.AuthorizationAdmin.Tests
                 TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
             };
 
+            string expectedRuleId = "99e5cced-3bcb-42b6-9089-63c834f89e77";
+
             // Act
             HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeleteRules", content);
 
@@ -153,6 +155,7 @@ namespace Altinn.AuthorizationAdmin.Tests
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(actual[0].RuleId, expectedRuleId);
             Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
             Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
             AssertionUtil.AssertEqual(expected, actual);

@@ -138,7 +138,7 @@ namespace Altinn.AuthorizationAdmin.Tests
 
             List<Rule> expected = new List<Rule>
             {
-                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
             };
 
             // Act
@@ -497,6 +497,81 @@ namespace Altinn.AuthorizationAdmin.Tests
             Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
             Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
             AssertionUtil.AssertEqual(expected, actual);
+        }
+
+        /// <summary>
+        /// Test case: Calling the POST operation for DeletePolicy to perform a valid deletion of resource 1 and resource2
+        /// Expected: DeletePolicy returns status code 201 and list of rules created match expected
+        /// 
+        /// Scenario:
+        /// Calling the POST operation for DeletePolicy to perform a valid deletion
+        /// Input:
+        /// List of 2 policy files of resource1 and resource2 between for a single offeredby/coveredby combination resulting in all rules in two policyfile beeing removed.
+        /// Expected Result:
+        /// Rules are deleted and returned with the CreatedSuccessfully flag set and rule ids but not all rules is retuned
+        /// Success Criteria:
+        /// DeleteRules returns status code 201 and list of rules deleted to match expected
+        /// </summary>
+        [Fact]
+        public async Task Post_DeletePoliciesWithResourceRegistryId_Sucess()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/DeletePolicies/ReadResource1Resource2_50001337_20001337.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            List<Rule> expected = new List<Rule>
+            {
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", null, null, createdSuccessfully: true, resourceRegistryId: "resource1"),
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", null, null, createdSuccessfully: true, resourceRegistryId: "resource1"),
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
+                TestDataUtil.GetRuleModel(20001336, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", null, null, createdSuccessfully: true, resourceRegistryId: "resource2"),
+            };
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeletePolicy", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
+            Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
+            AssertionUtil.AssertEqual(expected, actual);
+        }
+
+        /// <summary>
+        /// Test case: Calling the POST operation for DeletePolicy to perform an invalid deletion of a non-existing resource.
+        /// Expected: DeletePolicy returns status code 400 and the error message "Unable to complete deletion".
+        /// 
+        /// Scenario:
+        /// Calling the POST operation for DeletePolicy to perform an invalid deletion
+        /// Input:
+        /// Resource with a non existing resource registry id.
+        /// Expected Result:
+        /// Response contains error message.
+        /// Success Criteria:
+        /// DeleteRules returns status code 400
+        /// </summary>
+        [Fact]
+        public async Task Post_DeletePoliciesWithNotExistingResourceRegistryId_Fail()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/DeletePolicies/ReadNotExistingResourceRegistryId.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            string expectedErrorMessage = "\"Unable to complete deletion\"";
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("authorization/api/v1/delegations/DeletePolicy", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(responseContent, expectedErrorMessage);
         }
 
         /// <summary>

@@ -316,7 +316,11 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                 altinnAppId = $"{org}/{app}";
             }
 
-            resource = await _resourceRegistryClient.GetResource(resourceregistryId);
+            if (!string.IsNullOrWhiteSpace(resourceregistryId))
+            {
+                resource = await _resourceRegistryClient.GetResource(resourceregistryId);
+            }
+
             if (resource == null)
             {
                 _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceregistryId);
@@ -471,11 +475,14 @@ namespace Altinn.AuthorizationAdmin.Services.Implementation
                 altinnAppId = $"{org}/{app}";
             }
 
-            resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
-            if (resource == null)
+            if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
-                return null;
+                resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+                if (resource == null)
+                {
+                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
+                    return null;
+                }
             }
 
             try

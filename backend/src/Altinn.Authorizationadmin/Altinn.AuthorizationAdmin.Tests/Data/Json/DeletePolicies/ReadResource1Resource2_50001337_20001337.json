@@ -1,0 +1,38 @@
+[
+  {
+    "deletedByUserId": 20001336,
+    "policyMatch": {
+      "offeredByPartyId": 50001337,
+      "resource": [
+        {
+          "id": "urn:altinn:resourceregistry",
+          "value": "resource1"
+        }
+    ],
+      "coveredBy": [
+        {
+          "id": "urn:altinn:userid",
+          "value": "20001337"
+        }
+      ]
+    }
+  },
+  {
+    "deletedByUserId": 20001336,
+    "policyMatch": {
+      "offeredByPartyId": 50001337,
+      "resource": [
+        {
+          "id": "urn:altinn:resourceregistry",
+          "value": "resource2"
+        }
+    ],
+      "coveredBy": [
+        {
+          "id": "urn:altinn:userid",
+          "value": "20001337"
+        }
+      ]
+    }
+  }  
+]

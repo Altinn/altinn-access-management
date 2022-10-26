@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.AuthorizationAdmin.Core.Constants;
 using Altinn.AuthorizationAdmin.Core.Models;
@@ -148,7 +147,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
         /// <returns>DelegationChange.</returns>
         public static DelegationChange GetResourceDelegationChange(string resourceRegistryId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
-            string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
+            string coveredBy = coveredByPartyId != null ? $"{coveredByPartyId}" : $"u{coveredByUserId}";
             return new DelegationChange
             {
                 DelegationChangeId = changeId,
@@ -158,7 +157,7 @@ namespace Altinn.AuthorizationAdmin.Tests.Utils
                 CoveredByPartyId = coveredByPartyId,
                 CoveredByUserId = coveredByUserId,
                 PerformedByUserId = performedByUserId,
-                BlobStoragePolicyPath = $"{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
+                BlobStoragePolicyPath = $"{resourceRegistryId}\\{offeredByPartyId}\\{coveredBy}\\delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now,
                 ResourceId = resourceRegistryId,

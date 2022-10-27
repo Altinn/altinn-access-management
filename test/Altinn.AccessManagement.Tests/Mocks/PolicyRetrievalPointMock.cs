@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;

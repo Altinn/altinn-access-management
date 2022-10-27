@@ -1,23 +1,19 @@
 using Altinn.AccessManagement.Configuration;
-using Altinn.AccessManagement.Configuration.Telemetry;
-using Altinn.AccessManagement.Core;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services;
-using Altinn.AccessManagement.Core.Services.Implementation;
-using Altinn.AccessManagement.Core.Services.Interface;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
-using Altinn.AccessManagement.Persistance;
+using Altinn.AccessManagement.Integration.Services;
+using Altinn.AccessManagement.Persistence;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
-using Altinn.AccessManagement.Services.Implementation;
-using Altinn.AccessManagement.Services.Interface;
 using Altinn.Common.PEP.Authorization;
 using AltinnCore.Authentication.Constants;
 using AltinnCore.Authentication.JwtCookie;
@@ -206,6 +202,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
+    services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 

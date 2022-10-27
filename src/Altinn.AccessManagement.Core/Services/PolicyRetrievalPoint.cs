@@ -1,12 +1,12 @@
 ﻿using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Repositories.Interface;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Xacml;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AccessManagement.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services
 {
     /// <summary>
     /// The Policy Retrieval point responsible to find the correct policy

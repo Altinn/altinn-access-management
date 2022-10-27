@@ -1,7 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AccessManagement.Core.Repositories.Interface
+namespace Altinn.AccessManagement.Core.Repositories.Interfaces
 {
     /// <summary>
     /// Interface for PostgreSQL operations on delegations.

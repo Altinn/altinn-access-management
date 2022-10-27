@@ -66,6 +66,7 @@ namespace Altinn.AccessManagement.Core.Services.Implementation
                     delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
                     delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
                     delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                    delegation.PerformedByPartyId = delegationChange.PerformedByPartyId;
                     delegation.Created = delegationChange.Created;
                     resourceDelegation.Delegations.Add(delegation);
                 }

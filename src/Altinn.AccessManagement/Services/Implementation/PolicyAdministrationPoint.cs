@@ -144,7 +144,7 @@ namespace Altinn.AccessManagement.Services.Implementation
             string altinnAppId = null;
             ServiceResource resource = null;
 
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
@@ -259,10 +259,12 @@ namespace Altinn.AccessManagement.Services.Implementation
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
                         PerformedByUserId = delegatedByUserId,
+                        PerformedByPartyId = delegatedByPartyId,
+                        PerformedDateTime = delegatedDateTime,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,
                         ResourceId = resourceRegistryId,
-                        ResourceType = resource != null ? resource.ResourceType.ToString() : null
+                        ResourceType = resource?.ResourceType.ToString()
                     };
 
                     change = await _delegationRepository.InsertDelegation(change);

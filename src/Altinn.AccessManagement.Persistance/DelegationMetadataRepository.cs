@@ -18,7 +18,7 @@ namespace Altinn.AccessManagement.Persistance
     {
         private readonly string _connectionString;
         private readonly ILogger _logger;
-        private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_blobStoragePolicyPath, @_blobStorageVersionId, @_resourceid, @_resourcetype)";
+        private readonly string insertDelegationChangeFunc = "select * from delegation.insert_delegationchange(@_delegationChangeType, @_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId, @_performedByUserId, @_performedByPartyId, @_performedDateTime, @_blobStoragePolicyPath, @_blobStorageVersionId, @_resourceid, @_resourcetype)";
         private readonly string getCurrentDelegationChangeSql = "select * from delegation.get_current_change(@_altinnAppId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getCurrentDelegationChangeBasedOnResourceRegistryIdSql = "select * from delegation.get_current_change_based_on_resourceregistryid(@_resourceRegistryId, @_offeredByPartyId, @_coveredByUserId, @_coveredByPartyId)";
         private readonly string getAllOfferedDelegations = "select * from delegation.get_all_offereddelegations(@_offeredByPartyId, @_resourcetype)";
@@ -58,7 +58,9 @@ namespace Altinn.AccessManagement.Persistance
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", delegationChange.OfferedByPartyId);
                 pgcom.Parameters.AddWithValue("_coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value);
-                pgcom.Parameters.AddWithValue("_performedByUserId", delegationChange.PerformedByUserId);
+                pgcom.Parameters.AddWithValue("_performedByUserId", delegationChange.PerformedByUserId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value);
+                pgcom.Parameters.AddWithValue("_performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByPartyId.Value : DBNull.Value );
+                pgcom.Parameters.AddWithValue("_performedDateTime", delegationChange.PerformedDateTime);
                 pgcom.Parameters.AddWithValue("_blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath);
                 pgcom.Parameters.AddWithValue("_blobStorageVersionId", delegationChange.BlobStorageVersionId);
                 pgcom.Parameters.AddWithValue("_resourceid", delegationChange.ResourceId == null ? DBNull.Value : delegationChange.ResourceId);
@@ -252,12 +254,13 @@ namespace Altinn.AccessManagement.Persistance
                 OfferedByPartyId = reader.GetFieldValue<int>("offeredbypartyid"),
                 CoveredByPartyId = reader.GetFieldValue<int?>("coveredbypartyid"),
                 CoveredByUserId = reader.GetFieldValue<int?>("coveredbyuserid"),
-                PerformedByUserId = reader.GetFieldValue<int>("performedbyuserid"),
+                PerformedByUserId = reader.IsDBNull("performedbyuserid") ? null : reader.GetFieldValue<int>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
                 Created = reader.IsDBNull("created") ? DateTime.MinValue : reader.GetFieldValue<DateTime>("created"),
                 ResourceId = reader.IsDBNull("resourceid") ? null : reader.GetFieldValue<string>("resourceid"),
-                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype")
+                ResourceType = reader.IsDBNull("resourcetype") ? null : reader.GetFieldValue<string>("resourcetype"),
+                PerformedByPartyId = reader.IsDBNull("performedbypartyid") ? null : reader.GetFieldValue<int>("performedbypartyid"),
             };
         }
 

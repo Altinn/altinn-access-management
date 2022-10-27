@@ -47,7 +47,18 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
-        public int PerformedByUserId { get; set; }
+        public int? PerformedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+        /// </summary>
+        [JsonPropertyName("performedbypartyid")]
+        public int? PerformedByPartyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timestamp for when the change was performed
+        /// </summary>
+        public DateTime PerformedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.

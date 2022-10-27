@@ -59,7 +59,7 @@ namespace Altinn.AccessManagement.Persistance
                 pgcom.Parameters.AddWithValue("_coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_performedByUserId", delegationChange.PerformedByUserId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value);
-                pgcom.Parameters.AddWithValue("_performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByPartyId.Value : DBNull.Value );
+                pgcom.Parameters.AddWithValue("_performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByPartyId.Value : DBNull.Value);
                 pgcom.Parameters.AddWithValue("_performedDateTime", delegationChange.PerformedDateTime);
                 pgcom.Parameters.AddWithValue("_blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath);
                 pgcom.Parameters.AddWithValue("_blobStorageVersionId", delegationChange.BlobStorageVersionId);

@@ -26,4 +26,4 @@ RUN addgroup -g 3000 dotnet && adduser -u 1000 -G dotnet -D -s /bin/false dotnet
 # update permissions of files if neccessary before becoming dotnet user
 USER dotnet
 RUN mkdir /tmp/logtelemetry
-ENTRYPOINT ["dotnet", "Altinn.Altinn.AccessManagement.dll"]
+ENTRYPOINT ["dotnet", "Altinn.AccessManagement.dll"]

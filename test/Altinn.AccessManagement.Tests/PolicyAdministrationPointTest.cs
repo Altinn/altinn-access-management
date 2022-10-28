@@ -32,7 +32,7 @@ namespace Altinn.AccessManagement.Tests
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly Mock<ILogger<IPolicyAdministrationPoint>> _logger;
         private DelegationMetadataRepositoryMock _delegationMetadataRepositoryMock;
-        private readonly ResourceRegistryClientMock _resourceRegistryClient;
+        private readonly ResourceRegistryClientMock _resourceRegistryClientMock = new ResourceRegistryClientMock();
 
         /// <summary>
         /// Constructor setting up dependencies
@@ -55,7 +55,7 @@ namespace Altinn.AccessManagement.Tests
                 _delegationMetadataRepositoryMock,
                 _eventQueue,
                 _logger.Object,
-                _resourceRegistryClient);
+                _resourceRegistryClientMock);
         }
 
         /// <summary>
@@ -104,6 +104,17 @@ namespace Altinn.AccessManagement.Tests
         /// </summary>
         [Fact]
         public async Task WritePolicy_TC04()
+        {
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _pap.WritePolicyAsync("org", "app", null));
+        }
+
+        /// <summary>
+        /// Test case: Write to storage a file that is null.
+        /// Expected: WritePolicyAsync throws ArgumentException.
+        /// </summary>
+        [Fact]
+        public async Task WritePolicy_TC05()
         {
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentException>(() => _pap.WritePolicyAsync("org", "app", null));

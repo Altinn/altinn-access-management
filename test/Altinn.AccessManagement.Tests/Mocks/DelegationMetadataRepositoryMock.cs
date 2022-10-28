@@ -92,6 +92,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     case "resource1":
                         result = TestDataUtil.GetResourceDelegationChange(resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
                         break;
+                    case "resource2":
+                        result = TestDataUtil.GetResourceDelegationChange(resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+                        break;
                     default:
                         result = null;
                         break;

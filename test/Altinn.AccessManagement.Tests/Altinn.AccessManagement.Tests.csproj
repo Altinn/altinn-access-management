@@ -52,7 +52,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\blobs\input\resource1\50001337\20001337\delegationpolicy.xml" />
+    <None Remove="Data\blobs\input\resource2\50001337\20001337\delegationpolicy.xml" />
+    <None Remove="Data\blobs\input\resourceregistry\resource2\50001337\u20001337\delegationpolicy.xml" />
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+    <None Remove="Data\Json\DeletePolicies\ReadNotExistingResourceRegistryId.json" />
+    <None Remove="Data\Json\DeletePolicies\ReadResource1Resource2_50001337_20001337.json" />
+    <None Remove="Data\Json\DeleteRules\ReadResource2_50001337_20001337.json" />
   </ItemGroup>
 
   <ItemGroup>

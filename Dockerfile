@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0.402-alpine3.16 AS build
 WORKDIR /app
 
-
 COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/
 COPY src/Altinn.AccessManagement.Core/*.csproj ./src/Altinn.AccessManagement.Core/
 COPY src/Altinn.AccessManagement.Integration/*.csproj ./src/Altinn.AccessManagement.Integration/
@@ -10,15 +9,12 @@ RUN dotnet restore ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 
 # Copy everything else and build
-COPY src/Altinn.AccessManagement/ ./src/Altinn.AccessManagement/
-COPY src/Altinn.AccessManagement.Core/ ./src/Altinn.AccessManagement.Core/
-COPY src/Altinn.AccessManagement.Integration/ ./src/Altinn.AccessManagement.Integration/
-COPY src/Altinn.AccessManagement.Persistance/ ./src/Altinn.AccessManagement.Persistance/
+COPY src ./src
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0.10-alpine3.16 AS final
-EXPOSE 5100
+EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .
 
@@ -30,4 +26,4 @@ RUN addgroup -g 3000 dotnet && adduser -u 1000 -G dotnet -D -s /bin/false dotnet
 # update permissions of files if neccessary before becoming dotnet user
 USER dotnet
 RUN mkdir /tmp/logtelemetry
-ENTRYPOINT ["dotnet", "Altinn.Altinn.AccessManagement.dll"]
+ENTRYPOINT ["dotnet", "Altinn.AccessManagement.dll"]

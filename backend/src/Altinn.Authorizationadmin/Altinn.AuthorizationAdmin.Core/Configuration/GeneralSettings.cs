@@ -66,5 +66,10 @@ namespace Altinn.AuthorizationAdmin.Core.Configuration
                 return Environment.GetEnvironmentVariable("GeneralSettings__SBLBaseAdress") ?? SBLBaseAdress;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the host name.
+        /// </summary>
+        public string HostName { get; set; }
     }
 }

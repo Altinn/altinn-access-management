@@ -224,6 +224,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/delegations/getalloffereddelegations")]
         public async Task<ActionResult<List<OfferedDelegations>>> GetAllOfferedDelegations([FromQuery] int offeredbyPartyId, string resourceType)
         {
@@ -261,6 +262,7 @@ namespace Altinn.AuthorizationAdmin.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/delegations/getallreceiveddelegations")]
         public async Task<ActionResult<List<ReceivedDelegation>>> GetAllReceivedDelegations([FromQuery] int coveredbyPartyId, string resourceType)
         {

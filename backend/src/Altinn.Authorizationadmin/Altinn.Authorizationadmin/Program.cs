@@ -198,6 +198,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddMvc();
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
+    PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
@@ -221,12 +222,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
             options.JwtCookieName = generalSettings.RuntimeCookieName;
-            options.MetadataAddress = generalSettings.OpenIdWellKnownEndpoint;
+            options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,

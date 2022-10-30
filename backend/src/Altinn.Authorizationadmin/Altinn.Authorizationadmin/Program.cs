@@ -33,7 +33,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Npgsql.Logging;
+using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
 
@@ -194,7 +196,17 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     builder.Services.AddEndpointsApiExplorer();
 
     services.AddHealthChecks().AddCheck<HealthCheck>("authorization_admin_health_check");
-    services.AddSwaggerGen();
+    services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
     services.AddMvc();
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();

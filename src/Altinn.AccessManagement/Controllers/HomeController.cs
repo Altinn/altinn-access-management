@@ -1,15 +1,42 @@
-﻿using Altinn.AccessManagement.Core.Helpers;
+﻿using System.Web;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Models;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin
+namespace Altinn.AccessManagement
 {
     /// <summary>
     /// HomeController
     /// </summary>
     public class HomeController : Controller
     {
+        private readonly IAntiforgery _antiforgery;
+        private readonly PlatformSettings _platformSettings;
+        private readonly IWebHostEnvironment _env;
+        private FrontEndEntryPointOptions _frontEndEntrypoints;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="frontEndEntrypoints">Configuration of frontend entry points</param>
+        /// <param name="antiforgery">the anti forgery service</param>
+        /// <param name="platformSettings">settings related to the platform</param>
+        /// <param name="env">the current environment</param>
+        public HomeController(
+            IOptions<FrontEndEntryPointOptions> frontEndEntrypoints,
+            IAntiforgery antiforgery,
+            IOptions<PlatformSettings> platformSettings,
+            IWebHostEnvironment env)
+        {
+            _frontEndEntrypoints = frontEndEntrypoints.Value;
+            _antiforgery = antiforgery;
+            _platformSettings = platformSettings.Value;
+            _env = env;
+        }
+
         /// <summary>
         /// Gets the index vew for AuthorizationAdmin
         /// </summary>
@@ -19,22 +46,35 @@ namespace Altinn.AuthorizationAdmin
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
-            bool frontendInDevMode = AppEnvironment.GetVariable("FRONTEND_MODE") == "Development";
-            string frontendDevUrl = AppEnvironment.GetVariable("FRONTEND_DEV_URL", "http://localhost:3000");
-
-            ViewData["frontendInDevMode"] = frontendInDevMode;
-            ViewData["frontendDevUrl"] = frontendDevUrl;
-
-            if (!frontendInDevMode)
+            // See comments in the configuration of Antiforgery in MvcConfiguration.cs.
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
             {
-                ViewData["frontendProdCss"] = _frontEndEntrypoints?.Css?[0];
-                ViewData["frontendProdJs"] = _frontEndEntrypoints?.File;
+                HttpOnly = false // Make this cookie readable by Javascript.
+            });
+
+            if (ShouldShowAppView())
+            {
+                return View();
             }
 
-            return View();
+            string scheme = _env.IsDevelopment() ? "http" : "https";
+            string goToUrl = HttpUtility.UrlEncode($"{scheme}://{Request.Host}/accessmanagement");
+
+            string redirectUrl = $"{_platformSettings.ApiAuthenticationEndpoint}authentication?goto={goToUrl}";
+
+            return Redirect(redirectUrl);
         }
 
-        private FrontEndEntryPointOptions _frontEndEntrypoints;
+        private bool ShouldShowAppView()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.

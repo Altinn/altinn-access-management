@@ -26,7 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Controllers
 {
     /// <summary>
     /// Test class for <see cref="DelegationsController"></see>
@@ -464,9 +464,9 @@ namespace Altinn.AccessManagement.Tests
 
             // Act
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeletePolicy", content);
-                        
+
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);            
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         /// <summary>
@@ -1220,10 +1220,10 @@ namespace Altinn.AccessManagement.Tests
         /// </summary>
         [Fact]
         public async Task GetAllOfferedDelegations_BadRequest_MissingOfferedBy()
-        {            
+        {
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=&resourcetype=MaskinportenSchema");
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -1315,6 +1315,7 @@ namespace Altinn.AccessManagement.Tests
         [Fact]
         public async Task GetAllOfferedDelegations_InvalidBearerToken()
         {
+            // Arrange
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
@@ -1507,7 +1508,7 @@ namespace Altinn.AccessManagement.Tests
             else if (coveredByPartyId == 50004216)
             {
                 List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));                
+                receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KARLSTAD OG ULOYBUKT", 50004222, 810418672));
                 receivedDelegations.Add(TestDataUtil.GetRecievedDelegation("KOLBJORNSVIK OG ROAN", 50004226, 810419342));
                 return receivedDelegations;
             }

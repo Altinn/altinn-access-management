@@ -43,20 +43,31 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc />
         public async Task<string> RefreshToken()
         {
-            string endpointUrl = $"refresh";
-            string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _client.GetAsync(endpointUrl);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            try
             {
-                string refreshedToken = await response.Content.ReadAsStringAsync();
-                refreshedToken = refreshedToken.Replace('"', ' ').Trim();
-                return refreshedToken;
+                string endpointUrl = $"refresh";
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response = await _client.GetAsync(endpointUrl);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string refreshedToken = await response.Content.ReadAsStringAsync();
+                    refreshedToken = refreshedToken.Replace('"', ' ').Trim();
+                    return refreshedToken;
+                }
+                else
+                {
+                    _logger.LogError($"Refreshing JwtToken failed with status code {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // AuthenticationClient // Refresh // Exception");
+                throw;
             }
 
-            _logger.LogError($"Refreshing JwtToken failed with status code {response.StatusCode}");
-            return string.Empty;
+            return null;
         }
     }
 }

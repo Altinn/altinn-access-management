@@ -7,7 +7,7 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Tests.Utils;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Services
 {
     /// <summary>
     /// Test class for <see cref="DelegationRequestsController"></see>

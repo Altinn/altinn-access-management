@@ -18,12 +18,18 @@ namespace Altinn.AccessManagement.Controllers
         private readonly IAuthenticationClient _authenticationClient;
         private readonly GeneralSettings _settings;
         private readonly PlatformSettings _platformSettings;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationController"/> class
         /// </summary>
-        public AuthenticationController(IAuthenticationClient authenticationClient, IOptions<GeneralSettings> settings, IOptions<PlatformSettings> platformSettings)
+        public AuthenticationController(
+            IAuthenticationClient authenticationClient, 
+            IOptions<GeneralSettings> settings, 
+            IOptions<PlatformSettings> platformSettings,
+            ILogger<DelegationsController> logger)
         {
+            _logger = logger;
             _authenticationClient = authenticationClient;
             _settings = settings.Value;
             _platformSettings = platformSettings.Value;
@@ -37,24 +43,31 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("api/v1/authentication/refresh")]
         public async Task<IActionResult> Refresh()
         {
-            string token = await _authenticationClient.RefreshToken();
-
-            CookieOptions runtimeCookieSetting = new CookieOptions
+            try
             {
-                Domain = _settings.HostName,
-                HttpOnly = true,
-                Secure = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.Lax
-            };
+                string token = await _authenticationClient.RefreshToken();
+                CookieOptions runtimeCookieSetting = new CookieOptions
+                {
+                    Domain = _settings.HostName,
+                    HttpOnly = true,
+                    Secure = true,
+                    IsEssential = true,
+                    SameSite = SameSiteMode.Lax
+                };
 
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                HttpContext.Response.Cookies.Append(_settings.RuntimeCookieName, token, runtimeCookieSetting);
-                return Ok();
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    HttpContext.Response.Cookies.Append(_settings.RuntimeCookieName, token, runtimeCookieSetting);
+                    return Ok();
+                }
+
+                return BadRequest();
             }
-
-            return BadRequest();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Refresh failed to return updated token");
+                return StatusCode(500);
+            }
         }
     }
 }

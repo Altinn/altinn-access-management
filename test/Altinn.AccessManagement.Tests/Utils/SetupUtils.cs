@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Tests.Controllers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 

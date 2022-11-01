@@ -199,6 +199,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
+    services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();

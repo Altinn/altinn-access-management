@@ -1,10 +1,10 @@
 ﻿using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Repositories.Interface;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 
-namespace Altinn.AccessManagement.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services
 {
     /// <summary>
     /// The Policy Information Point responsible for storing and modifying delegation policies

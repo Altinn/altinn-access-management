@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {

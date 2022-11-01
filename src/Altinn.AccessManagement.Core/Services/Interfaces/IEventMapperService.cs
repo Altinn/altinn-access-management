@@ -1,6 +1,6 @@
 using Altinn.AccessManagement.Core.Models;
 
-namespace Altinn.AccessManagement.Core.Services.Interface
+namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
     /// <summary>
     /// Service mapping internal delegation changes to delegation change events

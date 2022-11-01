@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Azure.Storage.Queues.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks

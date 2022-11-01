@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Tests.Utils;
 

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -54,11 +55,6 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [JsonPropertyName("performedbypartyid")]
         public int? PerformedByPartyId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timestamp for when the change was performed
-        /// </summary>
-        public DateTime PerformedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.

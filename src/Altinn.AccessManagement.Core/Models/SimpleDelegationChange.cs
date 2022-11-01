@@ -46,7 +46,7 @@ namespace Altinn.AccessManagement.Core.Models
         public int? PerformedByUserId { get; set; }
 
         /// <summary>
-        /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+        /// Gets or sets the party id of the party that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("p")]
         public int? PerformedByPartyId { get; set; }

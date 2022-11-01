@@ -260,7 +260,7 @@ namespace Altinn.AccessManagement.Services.Implementation
                         CoveredByUserId = coveredByUserId,
                         PerformedByUserId = delegatedByUserId,
                         PerformedByPartyId = delegatedByPartyId,
-                        PerformedDateTime = delegatedDateTime,
+                        Created = delegatedDateTime,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,
                         ResourceId = resourceRegistryId,

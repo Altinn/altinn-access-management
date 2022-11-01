@@ -301,9 +301,9 @@ namespace Altinn.AccessManagement.Services.Implementation
 
         private async Task<List<Rule>> ProcessPolicyFile(string policyPath, string org, string app, RequestToDelete deleteRequest, string resourceregistryId)
         {
-            ServiceResource resource = null;
             string altinnAppId = null;
             List<Rule> currentRules = new List<Rule>();
+
             string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
             if (leaseId == null)
             {
@@ -316,16 +316,6 @@ namespace Altinn.AccessManagement.Services.Implementation
                 altinnAppId = $"{org}/{app}";
             }
 
-            if (!string.IsNullOrWhiteSpace(resourceregistryId))
-            {
-                resource = await _resourceRegistryClient.GetResource(resourceregistryId);
-            }
-
-            if (resource == null)
-            {
-                _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceregistryId);
-            }
-
             try
             {
                 bool isAllRulesDeleted = false;
@@ -336,7 +326,15 @@ namespace Altinn.AccessManagement.Services.Implementation
                 XacmlPolicy existingDelegationPolicy = null;
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
-                    _logger.LogWarning("The policy is already deleted for App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", org, app, coveredBy, offeredBy);
+                    if (!string.IsNullOrWhiteSpace(altinnAppId))
+                    {
+                        _logger.LogWarning("The policy is already deleted for App: {altinnAppId} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", altinnAppId, coveredBy, offeredBy);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(resourceregistryId))
+                    {
+                        _logger.LogWarning("The policy is already deleted for Resource: {resourceregistryId} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", resourceregistryId, coveredBy, offeredBy);
+                    }
+                    
                     return null;
                 }
 
@@ -386,8 +384,8 @@ namespace Altinn.AccessManagement.Services.Implementation
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = response.Value.VersionId,
                         ResourceId = resourceregistryId,
-                        ResourceType = resource != null ? resource.ResourceType.ToString() : null
-                    };
+                        ResourceType = currentChange.ResourceType
+                    }; 
 
                     change = await _delegationRepository.InsertDelegation(change);
                     if (change == null || change.DelegationChangeId <= 0)

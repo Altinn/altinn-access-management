@@ -19,5 +19,15 @@
         /// Name of the cookie for where JWT is stored
         /// </summary>
         public string? JwtCookieName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the profile api endpoint.
+        /// </summary>
+        public string? ProfileApiEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subscriptionkey.
+        /// </summary>
+        public string? SubscriptionKey { get; set; }
     }
 }

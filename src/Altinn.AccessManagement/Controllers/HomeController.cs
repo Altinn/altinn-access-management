@@ -3,6 +3,7 @@ using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Models;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -11,6 +12,7 @@ namespace Altinn.AccessManagement
     /// <summary>
     /// HomeController
     /// </summary>
+    [Route("accessmanagement/")]
     public class HomeController : Controller
     {
         private readonly IAntiforgery _antiforgery;
@@ -38,20 +40,29 @@ namespace Altinn.AccessManagement
         }
 
         /// <summary>
-        /// Gets the index vew for AuthorizationAdmin
+        /// Gets the app frontend view for Accessmanagement
         /// </summary>
         /// <returns>View result</returns>
-        [HttpGet]
-        [Route("accessmanagement/")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
         {
             // See comments in the configuration of Antiforgery in MvcConfiguration.cs.
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-            HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+            if (_env.IsDevelopment())
             {
-                HttpOnly = false // Make this cookie readable by Javascript.
-            });
+                HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+                {
+                    HttpOnly = false // Make this cookie readable by Javascript.
+                });
+            }
+            else
+            {
+                HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+                {
+                    Secure = true,
+                    HttpOnly = false // Make this cookie readable by Javascript.
+                });
+            }
 
             if (ShouldShowAppView())
             {
@@ -74,15 +85,6 @@ namespace Altinn.AccessManagement
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
-        /// </summary>
-        /// <param name="frontEndEntrypoints">Configuration of frontend entry points</param>
-        public HomeController(IOptions<FrontEndEntryPointOptions> frontEndEntrypoints)
-        {
-            _frontEndEntrypoints = frontEndEntrypoints.Value;
         }
     }
 }

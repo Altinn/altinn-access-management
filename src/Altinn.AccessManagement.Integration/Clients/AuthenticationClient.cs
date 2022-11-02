@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
@@ -12,6 +13,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     /// <summary>
     /// A client for authentication actions in Altinn Platform.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuthenticationClient : IAuthenticationClient
     {
         private readonly ILogger _logger;

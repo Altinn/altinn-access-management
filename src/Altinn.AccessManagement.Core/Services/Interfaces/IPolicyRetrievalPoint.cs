@@ -1,6 +1,6 @@
 ﻿using Altinn.Authorization.ABAC.Xacml;
 
-namespace Altinn.AccessManagement.Services.Interface
+namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
     /// <summary>
     /// Defines the interface for the Policy Retrival Point

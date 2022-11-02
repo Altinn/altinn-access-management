@@ -1,14 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Azure.Storage;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AccessManagement.Core.Services.Implementation
+namespace Altinn.AccessManagement.Persistence
 {
     /// <inheritdoc />
     [ExcludeFromCodeCoverage]

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Tests.Utils;
 
 namespace Altinn.AccessManagement.Tests.Mocks

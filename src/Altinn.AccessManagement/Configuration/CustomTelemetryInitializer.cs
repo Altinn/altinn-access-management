@@ -1,7 +1,7 @@
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace Altinn.AccessManagement.Configuration.Telemetry
+namespace Altinn.AccessManagement.Configuration
 {
     /// <summary>
     /// Set up custom telemetry for Application Insights

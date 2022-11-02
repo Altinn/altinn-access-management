@@ -1,7 +1,7 @@
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 
-namespace Altinn.AccessManagement.Core.Services.Implementation
+namespace Altinn.AccessManagement.Integration.Services
 {
     /// <inheritdoc />
     public class EventMapperService : IEventMapperService

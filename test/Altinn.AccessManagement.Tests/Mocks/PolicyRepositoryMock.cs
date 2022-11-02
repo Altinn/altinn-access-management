@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Azure;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;

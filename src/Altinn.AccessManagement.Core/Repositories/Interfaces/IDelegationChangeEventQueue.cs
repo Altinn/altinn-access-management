@@ -1,7 +1,7 @@
 using Altinn.AccessManagement.Core.Models;
 using Azure.Storage.Queues.Models;
 
-namespace Altinn.AccessManagement.Core.Services.Interface
+namespace Altinn.AccessManagement.Core.Repositories.Interfaces
 {
     /// <summary>
     /// The service used to map internal delegation change to delegation change events and push them to the event queue.

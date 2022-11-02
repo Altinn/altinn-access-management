@@ -4,7 +4,7 @@ WORKDIR /app
 COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/
 COPY src/Altinn.AccessManagement.Core/*.csproj ./src/Altinn.AccessManagement.Core/
 COPY src/Altinn.AccessManagement.Integration/*.csproj ./src/Altinn.AccessManagement.Integration/
-COPY src/Altinn.AccessManagement.Persistance/*.csproj ./src/Altinn.AccessManagement.Persistance/
+COPY src/Altinn.AccessManagement.Persistence/*.csproj ./src/Altinn.AccessManagement.Persistence/
 RUN dotnet restore ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 

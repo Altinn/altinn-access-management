@@ -11,9 +11,11 @@ using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
+using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -53,6 +55,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 builder.ConfigureTestServices(services =>
                 {
                     services.AddSingleton<IAuthenticationClient, AuthenticationMock>();
+                    services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

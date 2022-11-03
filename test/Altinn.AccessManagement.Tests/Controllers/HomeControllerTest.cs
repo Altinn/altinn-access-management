@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
+using Altinn.AccessManagement.Tests.Utils;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     public class HomeControllerTest : IClassFixture<CustomWebApplicationFactory<HomeController>>
     {
         private readonly CustomWebApplicationFactory<HomeController> _factory;
-        private readonly HttpClient _client;
+        private HttpClient _client;
 
         /// <summary>
         /// Constructor setting up factory, test client and dependencies
@@ -34,11 +35,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public HomeControllerTest(CustomWebApplicationFactory<HomeController> factory)
         {
             _factory = factory;
-            _client = GetTestClient();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            string token = PrincipalUtil.GetAccessToken("sbl.authorization");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -48,8 +44,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task Index_Authenticated()
         {
+            HttpClient client = SetupUtils.GetTestClient(_factory, false);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            string token = PrincipalUtil.GetAccessToken("sbl.authorization");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/");
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/");
             string expectedCookie = "Antiforgery";
             string actualCookie = response.Headers.GetValues("Set-Cookie").FirstOrDefault();
 
@@ -66,27 +68,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task Index_NotAuthenticated()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Remove("Authorization");
+            HttpClient client = SetupUtils.GetTestClient(_factory, true);
             string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%2faccessmanagement";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/");
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/");
 
             // Assert
             Assert.Equal(requestUrl, response.RequestMessage.RequestUri.ToString());
-        }
-
-        private HttpClient GetTestClient()
-        {
-            HttpClient client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddSingleton<IAuthenticationClient, AuthenticationMock>();
-                });
-            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = true });
-
-            return client;
         }
     }
 }

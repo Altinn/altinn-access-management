@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   backend:
-    image: mcr.microsoft.com/dotnet/sdk:6.0
+    image: mcr.microsoft.com/dotnet/sdk:7.0
     container_name: altinn-auth-admin_backend
     working_dir: /app/Altinn.Authorizationadmin/Altinn.Authorizationadmin
     command: ["dotnet", "watch", "run", "--no-launch-profile"]
@@ -27,7 +27,7 @@ services:
       - "5117:5117"
 
   local-bridge:
-    image: mcr.microsoft.com/dotnet/sdk:6.0
+    image: mcr.microsoft.com/dotnet/sdk:7.0
     container_name: altinn-auth-admin_local-bridge
     working_dir: /app/src/LocalBridge
     command: ["dotnet", "watch", "run", "--no-launch-profile"]

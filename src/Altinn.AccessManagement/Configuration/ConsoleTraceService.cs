@@ -9,49 +9,36 @@ namespace Altinn.AccessManagement.Configuration
     [ExcludeFromCodeCoverage]
     public class ConsoleTraceService : ITraceService
     {
-        /// <summary>
-        /// Debug enabled 
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsDebugEnabled { get; set; } = false;
 
         /// <inheritdoc/>
         public bool IsTraceSensitiveData { get; set; } = false;
 
-        /// <summary>
-        /// TraceToDirectory
-        /// </summary>
-        public string TraceToDirectory { get; set; }
-
         /// <inheritdoc/>
         public bool IsTraceToFile { get; set; } = false;
 
         /// <inheritdoc/>
-        public bool IsTraceToDirectory { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsTraceToDirectory { get; set; } = false;
 
         /// <inheritdoc/>
-        public string TraceDirectory { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string TraceDirectory { get; set; }
 
-        /// <summary>
-        /// Info
-        /// </summary>      
+        /// <inheritdoc/>
         public void Info(string message, object payload = null)
         {
             var traceMessage = $"INF   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
             Console.Write(traceMessage);
         }
 
-        /// <summary>
-        /// Error
-        /// </summary>
+        /// <inheritdoc/>
         public void Error(string message, object payload = null)
         {
             var traceMessage = $"ERR   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
             Console.Write(traceMessage);
         }
 
-        /// <summary>
-        /// Debug
-        /// </summary>
+        /// <inheritdoc/>
         public void Debug(string message, object payload = null)
         {
             if (IsDebugEnabled)
@@ -61,18 +48,14 @@ namespace Altinn.AccessManagement.Configuration
             }
         }
 
-        /// <summary>
-        /// Success
-        /// </summary>
+        /// <inheritdoc/>
         public void Success(string message, object payload = null)
         {
             var traceMessage = $"INF   {DateTime.UtcNow.ToString("u")}   {message}{Environment.NewLine}";
             Console.Write(traceMessage);
         }
 
-        /// <summary>
-        /// Warn
-        /// </summary>
+        /// <inheritdoc/>
         public void Warn(string message, object payload = null)
         {
             var traceMessage = $"WRN   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";

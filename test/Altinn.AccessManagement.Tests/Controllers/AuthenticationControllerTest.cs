@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using AltinnCore.Authentication.JwtCookie;

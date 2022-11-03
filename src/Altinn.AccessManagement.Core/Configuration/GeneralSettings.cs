@@ -26,17 +26,6 @@ namespace Altinn.AccessManagement.Core.Configuration
         public string OpenIdWellKnownEndpoint { get; set; }
 
         /// <summary>
-        /// Gets the SBL base adress from kubernetes environment variables and appsettings if environment variable is not set
-        /// </summary>
-        public string GetSBLBaseAdress
-        {
-            get
-            {
-                return Environment.GetEnvironmentVariable("GeneralSettings__SBLBaseAdress") ?? SBLBaseAdress;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the host name.
         /// </summary>
         public string HostName { get; set; }

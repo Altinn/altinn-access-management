@@ -2,7 +2,6 @@
 using System.IO;
 using System.Net.Http;
 using Altinn.AccessManagement.Controllers;
-using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -78,11 +77,10 @@ namespace Altinn.AccessManagement.Tests.Utils
                 factory.Server.AllowSynchronousIO = true;
                 return factory.CreateClient(opts);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
- 
         }
 
         /// <summary>

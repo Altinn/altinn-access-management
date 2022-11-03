@@ -1,4 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Clients;
+﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +17,6 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly IAuthenticationClient _authenticationClient;
         private readonly GeneralSettings _settings;
-        private readonly PlatformSettings _platformSettings;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace Altinn.AccessManagement.Controllers
             _logger = logger;
             _authenticationClient = authenticationClient;
             _settings = settings.Value;
-            _platformSettings = platformSettings.Value;
         }
 
         /// <summary>

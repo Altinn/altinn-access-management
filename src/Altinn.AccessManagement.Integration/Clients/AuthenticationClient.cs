@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Integration.Configuration;
 using AltinnCore.Authentication.Utils;
 using Microsoft.AspNetCore.Http;
@@ -60,7 +60,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError($"Refreshing JwtToken failed with status code {response.StatusCode}");
+                    _logger.LogError("Refreshing JwtToken failed with status code", response.StatusCode);
                 }
             }
             catch (Exception ex)

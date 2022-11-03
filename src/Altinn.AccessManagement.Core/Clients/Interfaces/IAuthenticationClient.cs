@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Altinn.AccessManagement.Core.Clients
+namespace Altinn.AccessManagement.Core.Clients.Interfaces
 {
     /// <summary>
     /// Authentication interface.

@@ -18,7 +18,6 @@ namespace Altinn.AccessManagement
         private readonly IAntiforgery _antiforgery;
         private readonly PlatformSettings _platformSettings;
         private readonly IWebHostEnvironment _env;
-        private FrontEndEntryPointOptions _frontEndEntrypoints;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
@@ -33,7 +32,6 @@ namespace Altinn.AccessManagement
             IOptions<PlatformSettings> platformSettings,
             IWebHostEnvironment env)
         {
-            _frontEndEntrypoints = frontEndEntrypoints.Value;
             _antiforgery = antiforgery;
             _platformSettings = platformSettings.Value;
             _env = env;

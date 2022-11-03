@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Tests.Util;
 
 namespace Altinn.AccessManagement.Tests.Mocks

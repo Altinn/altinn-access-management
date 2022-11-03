@@ -26,7 +26,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
     public class HomeControllerTest : IClassFixture<CustomWebApplicationFactory<HomeController>>
     {
         private readonly CustomWebApplicationFactory<HomeController> _factory;
-        private HttpClient _client;
 
         /// <summary>
         /// Constructor setting up factory, test client and dependencies

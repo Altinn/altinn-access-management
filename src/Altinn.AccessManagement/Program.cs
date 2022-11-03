@@ -1,5 +1,4 @@
 using Altinn.AccessManagement.Configuration;
-using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;

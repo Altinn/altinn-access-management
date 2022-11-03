@@ -40,7 +40,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             }
             else
             {
-                key = $"{delegationChange.ResourceId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
+                key = $"resourceregistry/{delegationChange.ResourceId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
             }
 
             if (MetadataChanges.ContainsKey(key))

@@ -726,6 +726,46 @@ namespace Altinn.AccessManagement.Tests
         /// Scenario:
         /// Calling the POST operation for AddRules to perform a valid delegation
         /// Input:
+        /// List of one rule for delegation of the resourceregistry resource2 between for a single offeredby/coveredby combination resulting in a single delegation policy.
+        /// Expected Result:
+        /// Rules are created and returned with the CreatedSuccessfully flag set and rule ids
+        /// Success Criteria:
+        /// AddRules returns status code 201 and list of rules created match expected
+        /// </summary>
+        [Fact]
+        public async Task Post_AddRules_DelegatedByParty_Success()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/AddRules/ScopeaccessResourceRegistryId_50001337_20001337.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            List<Rule> expected = new List<Rule>
+            {
+                TestDataUtil.GetRuleModel(50001337, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "scopeaccess", null, null, createdSuccessfully: true, resourceRegistryId: "resource2", delegatedByParty: true),
+            };
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/addrules", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
+            Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
+            AssertionUtil.AssertEqual(expected, actual);
+            foreach (Rule rule in actual)
+            {
+                Assert.True(Guid.TryParse(rule.RuleId, out _));
+            }
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Calling the POST operation for AddRules to perform a valid delegation
+        /// Input:
         /// List of two rules for delegation of the resource between for a single offeredby/coveredby combination resulting in a single delegation policy.
         /// Expected Result:
         /// Rules are created and returned with the CreatedSuccessfully flag set and rule ids

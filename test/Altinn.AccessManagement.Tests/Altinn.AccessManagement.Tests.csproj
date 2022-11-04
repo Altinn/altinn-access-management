@@ -52,7 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\blobs\input\resourceregistry\resource2\50001337\u20001337\delegationpolicy.xml" />
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+    <None Remove="Data\Json\AddRules\ScopeaccessResourceRegistryId_50001337_20001337.json" />
+    <None Remove="Data\Xacml\3.0\ResourceRegistry\resource2\policy.xml" />
   </ItemGroup>
 
   <ItemGroup>

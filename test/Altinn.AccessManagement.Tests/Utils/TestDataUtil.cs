@@ -15,7 +15,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <summary>
         /// Creates a rule model from the input
         /// </summary>
-        /// <param name="delegatedByUserId">delegatedByUserId</param>
+        /// <param name="delegatedBy">delegatedBy</param>
         /// <param name="offeredByPartyId">offeredByPartyId</param>
         /// <param name="coveredBy">coveredBy</param>
         /// <param name="coveredByAttributeType">coveredByAttributeType</param>
@@ -28,7 +28,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="ruleType">ruleType</param>
         /// <param name="resourceRegistryId">resourceregistry id.</param>
         /// <returns>Rule model</returns>
-        public static Rule GetRuleModel(int delegatedByUserId, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null)
+        public static Rule GetRuleModel(int delegatedBy, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null, bool delegatedByParty = false)
         {
             Rule rule;
 
@@ -36,7 +36,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             {
                 rule = new Rule
                 {
-                    DelegatedByUserId = delegatedByUserId,
+                    DelegatedByUserId = delegatedByParty ? null : delegatedBy,
+                    DelegatedByPartyId = delegatedByParty ? delegatedBy : null,
                     OfferedByPartyId = offeredByPartyId,
                     CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
                     Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId } },
@@ -49,7 +50,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             {
                 rule = new Rule
                 {
-                    DelegatedByUserId = delegatedByUserId,
+                    DelegatedByUserId = delegatedByParty ? null : delegatedBy,
+                    DelegatedByPartyId = delegatedByParty ? delegatedBy : null,
                     OfferedByPartyId = offeredByPartyId,
                     CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = coveredByAttributeType, Value = coveredBy } },
                     Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } },

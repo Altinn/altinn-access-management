@@ -30,6 +30,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 resourceTitle = "resource 1";
                 return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
             }
+            else if (resourceId == "resource2")
+            {
+                resourceTitle = "resource 2";
+                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
+            }
             else
             {
                 return null;

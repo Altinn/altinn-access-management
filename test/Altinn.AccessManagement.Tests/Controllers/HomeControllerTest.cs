@@ -37,7 +37,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: 
+        /// Test case: Checks if the altifirgery cookie is set when authenticated
         /// Expected: 
         /// </summary>
         [Fact]
@@ -60,8 +60,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: 
-        /// Expected: 
+        /// Test case: Checks if the user is redirected to authentication when not authenticated
+        /// Expected: User is redirected to authentication
         /// </summary>
         [Fact]
         public async Task Index_NotAuthenticated()
@@ -74,6 +74,54 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await client.GetAsync($"accessmanagement/");
 
             // Assert
+            Assert.Equal(requestUrl, response.RequestMessage.RequestUri.ToString());
+        }
+
+        /// <summary>
+        /// Test case : Authenticate with a cookie
+        /// Expected : User is authenticated
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetHome_OK_WithAuthCookie()
+        {
+            string token = PrincipalUtil.GetAccessToken("sbl.authorization");
+
+            HttpClient client = SetupUtils.GetTestClient(_factory, false);
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "accessmanagement/");
+
+            SetupUtils.AddAuthCookie(httpRequestMessage, token, "AltinnStudioRuntime");
+
+            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+            _ = await response.Content.ReadAsStringAsync();
+            IEnumerable<string> cookieHeaders = response.Headers.GetValues("Set-Cookie");
+
+            // Verify that 
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(2, cookieHeaders.Count());
+            Assert.Contains("Antiforgery", cookieHeaders.ElementAt(0));
+            Assert.StartsWith("XSR", cookieHeaders.ElementAt(1));
+        }
+
+        /// <summary>
+        /// Test case : Authenticate with a invalid cookie
+        /// Expected : User is redirected to authentication
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetHome_UnAuthorized_WithInvalidAuthCookie()
+        {
+            string token = "This is an invalid token";
+
+            HttpClient client = SetupUtils.GetTestClient(_factory, true);
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "accessmanagement/");
+
+            SetupUtils.AddAuthCookie(httpRequestMessage, token, "AltinnStudioRuntime");
+
+            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
+            string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%2faccessmanagement";
+
+            // Verify that 
             Assert.Equal(requestUrl, response.RequestMessage.RequestUri.ToString());
         }
     }

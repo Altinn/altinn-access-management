@@ -28,6 +28,6 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// <summary>
         /// Gets or sets the host name.
         /// </summary>
-        public string HostName { get; set; }
+        public string AccessManagementApplicationHostName { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace Altinn.AccessManagement.Controllers
                 string token = await _authenticationClient.RefreshToken();
                 CookieOptions runtimeCookieSetting = new CookieOptions
                 {
-                    Domain = _settings.HostName,
+                    Domain = _settings.AccessManagementApplicationHostName,
                     HttpOnly = true,
                     Secure = true,
                     IsEssential = true,

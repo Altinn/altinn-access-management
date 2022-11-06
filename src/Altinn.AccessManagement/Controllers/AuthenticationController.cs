@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ namespace Altinn.AccessManagement.Controllers
     /// </summary>
     [Route("accessmanagement/")]
     [ApiController]
+    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationClient _authenticationClient;

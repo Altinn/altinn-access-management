@@ -43,8 +43,7 @@ namespace Altinn.AccessManagement
         /// <returns>View result</returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index()
-        {
-            // See comments in the configuration of Antiforgery in MvcConfiguration.cs.
+       {
             var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
             if (_env.IsDevelopment())
             {

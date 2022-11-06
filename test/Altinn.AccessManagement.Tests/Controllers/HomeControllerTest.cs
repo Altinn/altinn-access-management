@@ -51,12 +51,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await client.GetAsync($"accessmanagement/");
-            string expectedCookie = "Antiforgery";
-            string actualCookie = response.Headers.GetValues("Set-Cookie").FirstOrDefault();
+            IEnumerable<string> cookieHeaders = response.Headers.GetValues("Set-Cookie");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Contains(expectedCookie, actualCookie);
+            Assert.Equal(2, cookieHeaders.Count());
+            Assert.StartsWith("AS-", cookieHeaders.ElementAt(0));
+            Assert.StartsWith("XSR", cookieHeaders.ElementAt(1));
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Verify that 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(2, cookieHeaders.Count());
-            Assert.Contains("Antiforgery", cookieHeaders.ElementAt(0));
+            Assert.StartsWith("AS-", cookieHeaders.ElementAt(0));
             Assert.StartsWith("XSR", cookieHeaders.ElementAt(1));
         }
 

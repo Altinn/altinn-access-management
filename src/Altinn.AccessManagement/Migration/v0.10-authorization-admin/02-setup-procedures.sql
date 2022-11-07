@@ -119,6 +119,3 @@ INSERT INTO delegation.delegationChanges(
     _performedByPartyId
   ) RETURNING *;
 $BODY$;
-
-ALTER FUNCTION delegation.insert_delegationchange(delegation.delegationchangetype, character varying, integer, integer, integer, integer, integer, timestamp with time zone, character varying, character varying, character varying, character varying)
-    OWNER TO platform_authorization_admin;

@@ -2,7 +2,7 @@
 using System.Web;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,7 @@ namespace Altinn.AccessManagement.Services
     /// </summary>
     public class DelegationRequestProxy : IDelegationRequestsWrapper
     {
-        private readonly PlatformSettings _generalSettings;
+        private readonly SblBridgeSettings _sblBridgeSettings;
         private readonly ILogger _logger;
         private readonly HttpClient _client;
 
@@ -22,11 +22,11 @@ namespace Altinn.AccessManagement.Services
         /// Initializes a new instance of the <see cref="DelegationRequestProxy"/> class
         /// </summary>
         /// <param name="httpClient">HttpClient from default httpclientfactory</param>
-        /// <param name="generalSettings">the general settings</param>
+        /// <param name="sblBridgeSettings">the sbl bridge settings</param>
         /// <param name="logger">the logger</param>
-        public DelegationRequestProxy(HttpClient httpClient, IOptions<PlatformSettings> generalSettings, ILogger<DelegationRequestProxy> logger)
+        public DelegationRequestProxy(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, ILogger<DelegationRequestProxy> logger)
         {
-            _generalSettings = generalSettings.Value;
+            _sblBridgeSettings = sblBridgeSettings.Value;
             _logger = logger;
             _client = httpClient;
         }
@@ -34,7 +34,7 @@ namespace Altinn.AccessManagement.Services
         /// <inheritdoc/>
         public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
         {
-            UriBuilder uriBuilder = new UriBuilder($"{_generalSettings.BridgeApiEndpoint}api/DelegationRequests");
+            UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/DelegationRequests");
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["who"] = who;
             if (!string.IsNullOrEmpty(serviceCode))

@@ -1,6 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AccessManagement.Core
+namespace Altinn.AccessManagement.Core.Clients.Interfaces
 {
     /// <summary>
     /// Interface for client integration with the Resource Registry

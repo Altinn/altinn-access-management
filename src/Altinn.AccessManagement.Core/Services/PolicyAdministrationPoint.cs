@@ -1,18 +1,18 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Altinn.AccessManagement.Core;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interface;
-using Altinn.AccessManagement.Core.Services.Interface;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Xacml;
 using Azure;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Logging;
 
-namespace Altinn.AccessManagement.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services
 {
     /// <summary>
     /// The Policy Administration Point responsible for storing and modifying delegation policies

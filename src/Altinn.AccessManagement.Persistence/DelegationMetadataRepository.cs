@@ -3,12 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
-namespace Altinn.AccessManagement.Persistance
+namespace Altinn.AccessManagement.Persistence
 {
     /// <summary>
     /// Repository implementation for PostgreSQL operations on delegations.

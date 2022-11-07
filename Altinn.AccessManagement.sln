@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Integration", "src\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj", "{4144EF72-F38D-4A2D-876D-77CCBFF28C05}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Persistance", "src\Altinn.AccessManagement.Persistance\Altinn.AccessManagement.Persistance.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Persistence", "src\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

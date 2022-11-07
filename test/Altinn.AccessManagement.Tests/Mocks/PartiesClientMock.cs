@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -44,6 +45,18 @@ namespace Altinn.AccessManagement.Tests.Mocks
             }
 
             return Task.FromResult(filteredList);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<int>> GetKeyRoleParties(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public Task<List<MainUnit>> GetMainUnits(MainUnitQuery subunitPartyIds)
+        {
+            throw new NotImplementedException();
         }
 
         private static string GetPartiesPaths()

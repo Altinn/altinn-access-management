@@ -60,13 +60,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets blobstoragepolicypath.
         /// </summary>
         [JsonPropertyName("blobstoragepolicypath")]
-        public string BlobStoragePolicyPath { get; set; }
+        public string BlobStoragePolicyPath { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the blobstorage versionid
         /// </summary>
         [JsonPropertyName("blobstorageversionid")]
-        public string BlobStorageVersionId { get; set; }
+        public string BlobStorageVersionId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the resource id.

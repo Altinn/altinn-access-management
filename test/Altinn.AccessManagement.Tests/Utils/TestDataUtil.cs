@@ -27,6 +27,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="createdSuccessfully">createdSuccessfully</param>
         /// <param name="ruleType">ruleType</param>
         /// <param name="resourceRegistryId">resourceregistry id.</param>
+        /// <param name="delegatedByParty">Value indicating delegatedBy is party</param>
         /// <returns>Rule model</returns>
         public static Rule GetRuleModel(int delegatedBy, int offeredByPartyId, string coveredBy, string coveredByAttributeType, string action, string org, string app, string task = null, string appresource = null, bool createdSuccessfully = false, RuleType ruleType = RuleType.None, string resourceRegistryId = null, bool delegatedByParty = false)
         {

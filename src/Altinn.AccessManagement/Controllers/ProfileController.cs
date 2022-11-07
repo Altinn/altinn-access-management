@@ -10,7 +10,7 @@ namespace Altinn.AccessManagement.Controllers
     /// </summary>
     [Authorize(Policy = "PlatformAccess")]
     [Authorize(Policy = "AuthorizationLevel2")]
-    [Route("accessmanagement/api/v1/persons")]
+    [Route("accessmanagement/api/v1/profile")]
     public class ProfileController : ControllerBase
     {
         private readonly IProfileClient _profileClient;
@@ -38,7 +38,7 @@ namespace Altinn.AccessManagement.Controllers
             int userId = AuthenticationHelper.GetUserId(_httpContextAccessor.HttpContext);
             if (userId == 0)
             {
-                return BadRequest("The userId is not proviced in the context.");
+                return BadRequest("The userId is not provided in the context.");
             }
 
             try

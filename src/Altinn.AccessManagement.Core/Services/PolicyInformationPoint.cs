@@ -25,6 +25,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly ILogger _logger;
         private readonly IPolicyRetrievalPoint _prp;
         private readonly IDelegationMetadataRepository _delegationRepository;
+        private readonly IDelegationsService _delegationsService;
         private readonly IContextRetrievalService _contextRetrievalService;
 
         /// <summary>
@@ -33,12 +34,14 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="logger">The logger</param>
         /// <param name="policyRetrievalPoint">The policy retrieval point</param>
         /// <param name="delegationRepository">The delegation change repository</param>
-        /// <param name="contextRetrievalService">Context service for getting </param>
-        public PolicyInformationPoint(ILogger<IPolicyInformationPoint> logger, IPolicyRetrievalPoint policyRetrievalPoint, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService)
+        /// <param name="delegationsService">Service implementation for delegation retrieval</param>
+        /// <param name="contextRetrievalService">Service for retrieving context information</param>
+        public PolicyInformationPoint(ILogger<IPolicyInformationPoint> logger, IPolicyRetrievalPoint policyRetrievalPoint, IDelegationMetadataRepository delegationRepository, IDelegationsService delegationsService, IContextRetrievalService contextRetrievalService)
         {
             _logger = logger;
             _prp = policyRetrievalPoint;
             _delegationRepository = delegationRepository;
+            _delegationsService = delegationsService;
             _contextRetrievalService = contextRetrievalService;
         }
 
@@ -107,10 +110,13 @@ namespace Altinn.AccessManagement.Core.Services
             EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, roleAttributeMatches);
 
             // Delegation Policy Rights
+            List<XacmlPolicy> delegationPolicies = new();
             List<AttributeMatch> subjects = new();
-            List<MainUnit> mainUnit = await _contextRetrievalService.GetMainUnits(rightsQuery.From);
+
+            string resourceId = resourceRegistryId ?? $"{org}/{app}";
+            List<DelegationChange> delegations = await _delegationsService.FindAllDelegations(coveredByUserId, rightsQuery.From, resourceId);
             
-            foreach (XacmlPolicy delegationPolicy in new List<XacmlPolicy>())
+            foreach (XacmlPolicy delegationPolicy in delegationPolicies)
             {
                 EnrichRightsDictionaryWithRightsFromPolicy(result, delegationPolicy, RightSourceType.DelegationPolicy, subjects);
             }

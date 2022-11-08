@@ -15,6 +15,8 @@
         
         MaskinportenSchema = 4,
 
-        Api = 5
+        Api = 5,
+
+        OrgApp = 6
     }
 }

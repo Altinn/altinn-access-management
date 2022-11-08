@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
@@ -23,5 +24,15 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="resourceType">the type of resource</param>
         /// <returns>list o delgations</returns>
         public Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType);
+
+        /// <summary>
+        /// Gets all the delegation changes covering a user, both directly delegated or inheirited (through keyroles or from mainunit),
+        /// for a given reportee and resource.
+        /// </summary>
+        /// <param name="subjectUserId">The user id to find delegations for</param>
+        /// <param name="reporteePartyId">The party id of the reportee to find delegations from</param>
+        /// <param name="resourceRegistryId">The resource to find delegations of</param>
+        /// <returns>List of delgation changes</returns>
+        public Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceRegistryId);
     }
 }

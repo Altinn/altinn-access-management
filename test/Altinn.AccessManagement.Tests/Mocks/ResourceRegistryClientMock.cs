@@ -35,38 +35,5 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 return null;
             }
         }
-
-        /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
-
-                resource = await GetResource(id);
-                
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
-            }
-
-            return resources;
-        }
     }
 }

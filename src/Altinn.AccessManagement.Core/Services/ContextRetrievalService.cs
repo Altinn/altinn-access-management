@@ -1,19 +1,16 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
-using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.Authorization.ABAC.Constants;
-using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.Platform.Authorization.Services.Implementation
+namespace Altinn.AccessManagement.Core.Services
 {
     /// <summary>
     /// Context Retrieval Service
@@ -116,7 +113,7 @@ namespace Altinn.Platform.Authorization.Services.Implementation
         }
 
         /// <inheritdoc/>
-        public async Task<List<int>> GetKeyRoleParties(int userId)
+        public async Task<List<int>> GetKeyRolePartyIds(int userId)
         {
             string cacheKey = $"KeyRolePartyIds_u:{userId}";
 
@@ -171,6 +168,47 @@ namespace Altinn.Platform.Authorization.Services.Implementation
             }
 
             return resource;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetResources(List<string> resourceRegistryIds)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            foreach (string id in resourceRegistryIds)
+            {
+                ServiceResource resource = null;
+
+                try
+                {
+                    resource = await GetResource(id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
+                    throw;
+                }
+
+                if (resource == null)
+                {
+                    ServiceResource unavailableResource = new ServiceResource
+                    {
+                        Identifier = id,
+                        Title = new Dictionary<string, string>
+                        {
+                            { "en", "Not Available" },
+                            { "nb-no", "ikke tilgjengelig" },
+                            { "nn-no", "ikkje tilgjengelig" }
+                        }
+                    };
+                    resources.Add(unavailableResource);
+                }
+                else
+                {
+                    resources.Add(resource);
+                }
+            }
+
+            return resources;
         }
     }
 }

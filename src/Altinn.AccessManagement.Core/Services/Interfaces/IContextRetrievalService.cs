@@ -35,7 +35,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// </summary>
         /// <param name="userId">The user id</param>
         /// <returns>list of PartyIds where the logged in user have key role access</returns>
-        Task<List<int>> GetKeyRoleParties(int userId);
+        Task<List<int>> GetKeyRolePartyIds(int userId);
 
         /// <summary>
         /// Method that fetches a main unit for the input sub unit partyId. If the input partyId is not a sub unit the response model will have null values for main unit properties.
@@ -50,5 +50,12 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="resourceRegistryId">The identifier of the resource in the Resource Registry</param>
         /// <returns>The resource if exists</returns>
         Task<ServiceResource> GetResource(string resourceRegistryId);
+
+        /// <summary>
+        /// Integration point for retrieving a list of resources by it's resource id
+        /// </summary>
+        /// <param name="resourceIds">The identifier of the resource in the Resource Registry</param>
+        /// <returns>The resource list if exists</returns>
+        Task<List<ServiceResource>> GetResources(List<string> resourceIds);
     }
 }

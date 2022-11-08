@@ -485,9 +485,9 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             foreach (XacmlRule rule in policy.Rules)
             {
-                ICollection<XacmlAllOf> subjectAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Subject);
-                ICollection<XacmlAllOf> resourceAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Resource);
-                ICollection<XacmlAllOf> actionAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Action);
+                ICollection<XacmlAllOf> subjectAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
+                ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Resource);
+                ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Action);
 
                 int decomposedRuleCount = 0;
                 foreach (XacmlAllOf subject in subjectAllOfs)
@@ -524,8 +524,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>A collection of XacmlContextAttributes which can be used for a decision request</returns>
         public static ICollection<XacmlContextAttributes> GetContextAttributes(List<AttributeMatch> subjects, XacmlRule decomposedRule)
         {
-            ICollection<XacmlAllOf> resourceAllOfs = decomposedRule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Resource);
-            ICollection<XacmlAllOf> actionAllOfs = decomposedRule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Action);
+            ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(decomposedRule, XacmlConstants.MatchAttributeCategory.Resource);
+            ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(decomposedRule, XacmlConstants.MatchAttributeCategory.Action);
 
             List<AttributeMatch> resource = GetAttributeMatchFromXacmlAllOfs(resourceAllOfs.FirstOrDefault());
             List<AttributeMatch> action = GetAttributeMatchFromXacmlAllOfs(actionAllOfs.FirstOrDefault());
@@ -585,9 +585,9 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             foreach (XacmlRule rule in xacmlRules)
             {
-                ICollection<XacmlAllOf> subjectAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Subject);
-                ICollection<XacmlAllOf> resourceAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Resource);
-                ICollection<XacmlAllOf> actionAllOfs = rule.GetAllOfsByCategory(XacmlConstants.MatchAttributeCategory.Action);
+                ICollection<XacmlAllOf> subjectAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
+                ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Resource);
+                ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Action);
 
                 foreach (XacmlAllOf resource in resourceAllOfs)
                 {
@@ -662,6 +662,40 @@ namespace Altinn.AccessManagement.Core.Helpers
             }     
 
             return attributeMatches;
+        }
+
+        /// <summary>
+        /// Gets a collection of all XacmlAllOfs containing all XacmlMatch instances matching the specified attribute category, from a given XacmlRule
+        /// </summary>
+        /// <param name="rule">The xacml rule</param>
+        /// <param name="category">The attribute category to match</param>
+        /// <returns>Collection of AllOfs</returns>
+        private static ICollection<XacmlAllOf> GetAllOfsByCategory(XacmlRule rule, string category)
+        {
+            ICollection<XacmlAllOf> allOfs = new Collection<XacmlAllOf>();
+
+            foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    ICollection<XacmlMatch> allOfMatchesFound = new Collection<XacmlMatch>();
+
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(category))
+                        {
+                            allOfMatchesFound.Add(xacmlMatch);
+                        }
+                    }
+
+                    if (allOfMatchesFound.Count > 0)
+                    {
+                        allOfs.Add(new XacmlAllOf(allOfMatchesFound));
+                    }
+                }
+            }
+
+            return allOfs;
         }
 
         private static ICollection<XacmlAllOf> GetXacmlAllOfsFromAttributeMatches(List<AttributeMatch> attributeMatches)

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Extensions;
@@ -25,6 +26,8 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly HttpClient _client;
         private readonly IAppResources _appResources;
         private readonly IAccessTokenGenerator _accessTokenGenerator;
+        private readonly IKeyVaultService _keyVaultService;
+        private readonly KeyVaultSettings _keyVaultSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileClient"/> class
@@ -38,12 +41,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
         public ProfileClient(
             IOptions<PlatformSettings> platformSettings,
+            IOptions<KeyVaultSettings> keyVaultSettings,
             ILogger<ProfileClient> logger,
             IHttpContextAccessor httpContextAccessor,
             IOptionsMonitor<GeneralSettings> settings,
             HttpClient httpClient,
             IAppResources appResources,
-            IAccessTokenGenerator accessTokenGenerator)
+            IAccessTokenGenerator accessTokenGenerator,
+            IKeyVaultService keyVaultService)
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
@@ -54,6 +59,8 @@ namespace Altinn.AccessManagement.Integration.Clients
             _client = httpClient;
             _appResources = appResources;
             _accessTokenGenerator = accessTokenGenerator;
+            _keyVaultService = keyVaultService;
+            _keyVaultSettings = keyVaultSettings.Value;
         }
 
         /// <inheritdoc />
@@ -64,7 +71,16 @@ namespace Altinn.AccessManagement.Integration.Clients
             string endpointUrl = $"profile/{userId}";
             string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _settings.RuntimeCookieName);
 
-            HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, _accessTokenGenerator.GenerateAccessToken(_appResources.GetApplication().Org, _appResources.GetApplication().Id.Split("/")[1]));
+            string certBase64 =
+            await _keyVaultService.GetCertificateAsync(
+                _keyVaultSettings.KeyVaultURI,
+                _keyVaultSettings.PlatformCertSecretId);
+            string accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management", new X509Certificate2(
+            Convert.FromBase64String(certBase64),
+            (string)null,
+            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable));
+
+            HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 userProfile = await response.Content.ReadAsAsync<UserProfile>();

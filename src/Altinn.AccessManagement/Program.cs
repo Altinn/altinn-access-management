@@ -39,6 +39,7 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql.Logging;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
+using KeyVaultSettings = AltinnCore.Authentication.Constants.KeyVaultSettings;
 
 ILogger logger;
 
@@ -228,6 +229,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
+    services.AddSingleton<IKeyVaultService, KeyVaultService>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>

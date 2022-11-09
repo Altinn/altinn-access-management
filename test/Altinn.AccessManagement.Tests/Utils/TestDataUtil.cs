@@ -331,7 +331,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         private static string GetDelegationPath()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder,"..", "..", "..", "Data", "json", "Delegation");
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "json", "Delegation");
         }
     }
 }

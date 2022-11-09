@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -163,7 +164,6 @@ namespace Altinn.AccessManagement.Tests.Utils
                 CoveredByName = "KOLSAAS OG FLAAM",
                 CoveredByOrganizationNumber = 810418192,
                 CoveredByPartyId = 50004219,
-
             });
             delegations.Add(new Delegation
             {
@@ -259,6 +259,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         public static DelegationChange GetResourceDelegationChange(string resourceRegistryId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
+           
             return new DelegationChange
             {
                 DelegationChangeId = changeId,
@@ -268,7 +269,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 CoveredByPartyId = coveredByPartyId,
                 CoveredByUserId = coveredByUserId,
                 PerformedByUserId = performedByUserId,
-                BlobStoragePolicyPath = $"{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
+                BlobStoragePolicyPath = $"resourceregistry/{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
                 Created = DateTime.Now,
                 ResourceId = resourceRegistryId,

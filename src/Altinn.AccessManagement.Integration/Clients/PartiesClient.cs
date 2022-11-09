@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -12,6 +13,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     /// <summary>
     /// Proxy implementation for parties
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class PartiesClient : IPartiesClient
     {
         private readonly SblBridgeSettings _sblBridgeSettings;

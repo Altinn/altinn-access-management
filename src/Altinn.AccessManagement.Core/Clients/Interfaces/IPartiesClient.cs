@@ -9,10 +9,22 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
     public interface IPartiesClient
     {
         /// <summary>
+        /// Returns partyInfo
+        /// </summary>
+        /// <returns>party information</returns>
+        Task<Party> GetPartyAsync(int partyId);
+
+        /// <summary>
         /// Returns a list of parties
         /// </summary>
         /// <returns>List of parties</returns>
         Task<List<Party>> GetPartiesAsync(List<int> parties);
+
+        /// <summary>
+        /// Returns partyid for 
+        /// </summary>
+        /// <returns>List of parties</returns>
+        int GetPartyId(int id);
 
         /// <summary>
         /// Method that fetches a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)

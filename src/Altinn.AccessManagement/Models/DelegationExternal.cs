@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AccessManagement.Core.Models
+namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// This model describes a delegation. A delegation is an action that says if a resource is delegated to you or you have delegated a resource to another person/org
     /// </summary>
-    public class Delegation
+    public class DelegationExternal
     {
         /// <summary>
         /// Gets or sets the name of the delegation receiver
@@ -65,6 +65,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// The title of resource
         /// </summary>
+        [JsonPropertyName("resourcetitle")]
         public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>

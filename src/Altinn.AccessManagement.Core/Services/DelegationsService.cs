@@ -1,4 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -32,86 +33,157 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<OfferedDelegations>> GetAllOfferedDelegations(int offeredbyPartyId, ResourceType resourceType)
+        public async Task<List<Delegation>> GetAllOutboundDelegationsAsync(string who, ResourceType resourceType)
         {
-            List<DelegationChange> delegations = await _delegationRepository.GetAllOfferedDelegations(offeredbyPartyId, resourceType);
+            int offeredByPartyId = 0;
+
+            try
+            {
+                offeredByPartyId = GetParty(who);
+                if (offeredByPartyId == 0)
+                {
+                    throw new ArgumentException();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetAllOfferedDelegations(offeredByPartyId, resourceType);
             List<int> parties = new List<int>();
-            foreach (int party in delegations.Select(d => d.CoveredByPartyId).Where(c => c != null))
+            foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null))
             {
                 parties.Add(party);
             }
 
             List<ServiceResource> resources = new List<ServiceResource>();
             List<string> resourceIds;
-            resourceIds = delegations.Select(d => d.ResourceId).Distinct().ToList();
+            resourceIds = delegationChanges.Select(d => d.ResourceId).Distinct().ToList();
 
             resources = await _resourceRegistryClient.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
-            List<OfferedDelegations> resourceDelegations = new List<OfferedDelegations>();
-            foreach (ServiceResource resource in resources)
+            List<Delegation> delegations = new List<Delegation>();
+            
+            foreach (DelegationChange delegationChange in delegationChanges)
             {
-                OfferedDelegations resourceDelegation = new OfferedDelegations();
-                resourceDelegation.ResourceId = resource.Identifier;
-                resourceDelegation.ResourceTitle = resource.Title.FirstOrDefault().Value;
-                List<DelegationChange> query = delegations.FindAll(d => d.ResourceId.Equals(resource.Identifier));
-                resourceDelegation.Delegations = new List<Delegation>();
-
-                foreach (DelegationChange delegationChange in query)
-                {
-                    Delegation delegation = new Delegation();
-                    Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
-                    delegation.CoveredByName = partyInfo?.Name;
-                    delegation.CoveredByOrganizationNumber = Convert.ToInt32(partyInfo?.OrgNumber);
-                    delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
-                    delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
-                    delegation.PerformedByUserId = delegationChange.PerformedByUserId;
-                    delegation.Created = delegationChange.Created;
-                    resourceDelegation.Delegations.Add(delegation);
-                }
-
-                resourceDelegations.Add(resourceDelegation);
+                Delegation delegation = new Delegation();
+                Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
+                delegation.CoveredByName = partyInfo?.Name;
+                delegation.CoveredByOrganizationNumber = Convert.ToInt32(partyInfo?.OrgNumber);
+                delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
+                delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
+                delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                delegation.Created = delegationChange.Created;
+                delegation.ResourceId = delegationChange.ResourceId;
+                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
+                delegation.ResourceTitle = resource?.Title;
+                delegation.DelegationResourceType = resource.ResourceType;
+                delegations.Add(delegation);
             }
 
-            return resourceDelegations;
+            return delegations;
         }
 
         /// <inheritdoc/>
-        public async Task<List<ReceivedDelegation>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType)
+        public async Task<List<Delegation>> GetAllInboundDelegationsAsync(string who, ResourceType resourceType)
         {
-            List<DelegationChange> delegations = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
+            int coveredByPartyId = 0;
+
+            try
+            {
+                coveredByPartyId = GetParty(who);
+                if (coveredByPartyId == 0)
+                {
+                    throw new ArgumentException();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
             List<int> parties = new List<int>();
-            parties = delegations.Select(d => d.OfferedByPartyId).ToList();
+            parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
             List<ServiceResource> resources = new List<ServiceResource>();
             List<string> resourceIds;
-            resourceIds = delegations.Select(d => d.ResourceId).ToList();
+            resourceIds = delegationChanges.Select(d => d.ResourceId).ToList();
             resources = await _resourceRegistryClient.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
-            List<ReceivedDelegation> receivedDelegations = new List<ReceivedDelegation>();
-            foreach (Party party in partyList)
+            List<Delegation> delegations = new List<Delegation>();
+
+            foreach (DelegationChange delegationChange in delegationChanges)
             {
-                if (receivedDelegations.FindAll(rd => rd.OfferedByPartyId.Equals(party.PartyId)).Count <= 0)
-                {
-                    ReceivedDelegation receivedDelegation = new ReceivedDelegation();
-                    receivedDelegation.OfferedByPartyId = party.PartyId;
-                    receivedDelegation.OfferedByName = party.Name;
-                    receivedDelegation.OfferedByOrgNumber = Convert.ToInt32(party.OrgNumber);
-                    List<DelegationChange> query = delegations.FindAll(d => d.CoveredByPartyId.Equals(coveredByPartyId) && d.OfferedByPartyId.Equals(party.PartyId));
-                    receivedDelegation.Resources = new List<ServiceResource>();
-
-                    foreach (DelegationChange delegation in query)
-                    {
-                        ServiceResource resource = resources.Find(d => d.Identifier == delegation.ResourceId);
-                        receivedDelegation.Resources.Add(resource);
-                    }
-
-                    receivedDelegations.Add(receivedDelegation);
-                }
+                Delegation delegation = new Delegation();
+                Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
+                delegation.OfferedByName = partyInfo?.Name;
+                delegation.OfferedByOrganizationNumber = Convert.ToInt32(partyInfo?.OrgNumber);
+                delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
+                delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
+                delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                delegation.Created = delegationChange.Created;
+                delegation.ResourceId = delegationChange.ResourceId;
+                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
+                delegation.ResourceTitle = resource?.Title;
+                delegation.DelegationResourceType = resource.ResourceType;
+                delegations.Add(delegation);
             }
 
-            return receivedDelegations;
+            return delegations;
         }
+
+        #region private methods
+
+        /// <summary>
+        /// Gets the party identified by <paramref name="who"/>.
+        /// </summary>
+        /// <param name="who">
+        /// Who, valid values are , an organization number, or a party ID (the letter r followed by 
+        /// the party ID).
+        /// </param>
+        /// <returns>The party identified by <paramref name="who"/>.</returns>
+        private int GetParty(string who)
+        {
+            if (string.IsNullOrEmpty(who))
+            {
+                throw new ArgumentNullException();
+            }
+
+            try
+            {
+                int? partyId = DelegationHelper.TryParsePartyId(who);
+                if (partyId.HasValue)
+                {
+                    Party party = GetPartyById(partyId.Value);
+                    partyId = party != null ? party.PartyId : 0;
+                    return Convert.ToInt32(partyId);
+                }
+
+                int.TryParse(who, out int orgno);
+                return _partyClient.GetPartyId(orgno);
+            }   
+            catch (Exception)
+            {
+                throw;
+            }            
+        }
+
+        /// <summary>
+        /// Gets a party by party ID.
+        /// </summary>
+        /// <param name="partyId">Identifies a party (organization or person).</param>
+        /// <returns>The identified party.</returns>
+        private Party GetPartyById(int partyId)
+        {
+            Party party;
+            party = _partyClient.GetPartyAsync(partyId).Result;
+            return party;
+        }      
+
+        #endregion
     }
 }

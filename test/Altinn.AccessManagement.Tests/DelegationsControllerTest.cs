@@ -1572,9 +1572,9 @@ namespace Altinn.AccessManagement.Tests
 
         private static List<DelegationExternal> GetExpectedInboundDelegationsForParty(int covererdByPartyId)
         {
-            List<DelegationExternal> outboundDelegations = new List<DelegationExternal>();
-            outboundDelegations = TestDataUtil.GetDelegations(0, covererdByPartyId);
-            return outboundDelegations;
+            List<DelegationExternal> inboundDelegations = new List<DelegationExternal>();
+            inboundDelegations = TestDataUtil.GetDelegations(0, covererdByPartyId);
+            return inboundDelegations;
         }
 
         private HttpClient GetTestClient()

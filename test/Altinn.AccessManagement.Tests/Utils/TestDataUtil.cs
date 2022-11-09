@@ -282,11 +282,12 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// Sets up mock data for delegation list 
         /// </summary>
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="coveredByPartyId">partyid of the reportee that received the delegation</param>
         /// <returns>Received delegations</returns>
         public static List<DelegationExternal> GetDelegations(int offeredByPartyId, int coveredByPartyId)
         {
-            List<DelegationExternal> outboundDelegations = null;
-            List<DelegationExternal> filteredOutboundDelegations = new List<DelegationExternal>();
+            List<DelegationExternal> delegations = null;
+            List<DelegationExternal> filteredDelegations = new List<DelegationExternal>();
             string fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
 
             string path = GetDelegationPath();
@@ -305,7 +306,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                         };
                         try
                         {
-                            outboundDelegations = JsonSerializer.Deserialize<List<DelegationExternal>>(content, options);
+                            delegations = JsonSerializer.Deserialize<List<DelegationExternal>>(content, options);
                         }
                         catch (Exception ex)
                         { 
@@ -316,16 +317,15 @@ namespace Altinn.AccessManagement.Tests.Utils
 
                 if (offeredByPartyId != 0)
                 {
-                    filteredOutboundDelegations.AddRange(outboundDelegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
                 }
                 else if (coveredByPartyId != 0)
                 {
-                    filteredOutboundDelegations.AddRange(outboundDelegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
                 }
-                
             }
 
-            return filteredOutboundDelegations;
+            return filteredDelegations;
         }
 
         private static string GetDelegationPath()

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Models
@@ -6,6 +7,7 @@ namespace Altinn.AccessManagement.Models
     /// <summary>
     /// This model describes a delegation. A delegation is an action that says if a resource is delegated to you or you have delegated a resource to another person/org
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class DelegationExternal
     {
         /// <summary>

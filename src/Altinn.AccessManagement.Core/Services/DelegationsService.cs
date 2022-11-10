@@ -33,26 +33,40 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetAllOutboundDelegationsAsync(string who, ResourceType resourceType)
+        public Task<List<Delegation>> GetAllOutboundDelegationsAsync(string who, ResourceType resourceType)
         {
             int offeredByPartyId = 0;
 
-            try
+            offeredByPartyId = GetParty(who);
+            if (offeredByPartyId == 0)
             {
-                offeredByPartyId = GetParty(who);
-                if (offeredByPartyId == 0)
-                {
-                    throw new ArgumentException();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                throw new ArgumentException("OfferedByPartyId does not have a valid value");
             }
 
+            return GetOutboundDelegations(offeredByPartyId, resourceType);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<Delegation>> GetAllInboundDelegationsAsync(string who, ResourceType resourceType)
+        {
+            int coveredByPartyId = 0;
+
+            coveredByPartyId = GetParty(who);
+            if (coveredByPartyId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return GetInboundDelegations(coveredByPartyId, resourceType);
+        }
+
+        #region private methods
+
+        private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
+        {
             List<DelegationChange> delegationChanges = await _delegationRepository.GetAllOfferedDelegations(offeredByPartyId, resourceType);
             List<int> parties = new List<int>();
-            foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null))
+            foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
             {
                 parties.Add(party);
             }
@@ -65,7 +79,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<Delegation> delegations = new List<Delegation>();
-            
+
             foreach (DelegationChange delegationChange in delegationChanges)
             {
                 Delegation delegation = new Delegation();
@@ -86,24 +100,8 @@ namespace Altinn.AccessManagement.Core.Services
             return delegations;
         }
 
-        /// <inheritdoc/>
-        public async Task<List<Delegation>> GetAllInboundDelegationsAsync(string who, ResourceType resourceType)
+        private async Task<List<Delegation>> GetInboundDelegations(int coveredByPartyId, ResourceType resourceType)
         {
-            int coveredByPartyId = 0;
-
-            try
-            {
-                coveredByPartyId = GetParty(who);
-                if (coveredByPartyId == 0)
-                {
-                    throw new ArgumentException();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
             List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
             List<int> parties = new List<int>();
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
@@ -136,8 +134,6 @@ namespace Altinn.AccessManagement.Core.Services
             return delegations;
         }
 
-        #region private methods
-
         /// <summary>
         /// Gets the party identified by <paramref name="who"/>.
         /// </summary>
@@ -150,7 +146,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             if (string.IsNullOrEmpty(who))
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("the parameter who does not have a value");
             }
 
             try
@@ -163,11 +159,12 @@ namespace Altinn.AccessManagement.Core.Services
                     return Convert.ToInt32(partyId);
                 }
 
-                int.TryParse(who, out int orgno);
+                _ = int.TryParse(who, out int orgno);
                 return _partyClient.GetPartyId(orgno);
             }   
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("//DelegationsService //GetParty failed to fetch partyid", ex);
                 throw;
             }            
         }

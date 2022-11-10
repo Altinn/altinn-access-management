@@ -327,9 +327,6 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// the party ID as used in SBL).
         /// </param>
         /// <returns>Party ID extracted from 'who', or NULL if 'who' contains no party id.</returns>
-        /// <exception cref="AltinnException">
-        /// Thrown if who contains a party id that is not valid.
-        /// </exception>
         public static int? TryParsePartyId(string who)
         {
             bool hasPrefix = who[0] == 'r';
@@ -340,7 +337,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             int partyId;
-            if (!int.TryParse(who.Substring(1), out partyId))
+            if (!int.TryParse(who.AsSpan(1), out partyId))
             {
                 return 0;
             }

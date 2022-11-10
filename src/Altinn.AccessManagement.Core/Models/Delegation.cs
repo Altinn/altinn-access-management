@@ -72,6 +72,5 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [JsonPropertyName("resourcetype")]
         public ResourceType DelegationResourceType { get; set; }
-
     }
 }

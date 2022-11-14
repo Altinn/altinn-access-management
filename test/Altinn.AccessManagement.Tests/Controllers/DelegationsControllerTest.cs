@@ -1430,16 +1430,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOfferedDelegations returns unauthorized when the bearer token is not set
-        /// Expected: GetAllOfferedDelegations returns unauthorized when the bearer token is not set
+        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
         /// </summary>
         [Fact]
-        public async Task GetAllOfferedDelegations_MissingBearerToken()
+        public async Task GetAllOutboundDelegations_MissingBearerToken()
         {
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1450,14 +1450,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Expected: GetAllOfferedDelegations returns unauthorized when the bearer token is not valid
         /// </summary>
         [Fact]
-        public async Task GetAllOfferedDelegations_InvalidBearerToken()
+        public async Task GetAllOutboundDelegations_InvalidBearerToken()
         {
             // Arrange
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1583,33 +1583,33 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllReceivedDelegations returns unauthorized when the bearer token is not set
-        /// Expected: GetAllReceivedDelegations returns unauthorized when the bearer token is not set
+        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not set
         /// </summary>
         [Fact]
-        public async Task GetAllReceivedDelegations_MissingBearerToken()
+        public async Task GetAllInboundDelegations_MissingBearerToken()
         {
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         /// <summary>
-        /// Test case: GetAllReceivedDelegations returns unauthorized when the bearer token is not valid
-        /// Expected: GetAllReceivedDelegations returns unauthorized when the bearer token is not valid
+        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
         /// </summary>
         [Fact]
-        public async Task GetAllReceivedDelegations_InvalidBearerToken()
+        public async Task GetAllInboundDelegations_InvalidBearerToken()
         {
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/delegations/GetAllOfferedDelegations?offeredbypartyid=50004223&resourcetype=MaskinportenSchema");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

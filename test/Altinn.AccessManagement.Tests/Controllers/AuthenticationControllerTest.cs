@@ -30,6 +30,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     {
         private readonly CustomWebApplicationFactory<AuthenticationController> _factory;
         private readonly HttpClient _client;
+        private readonly HttpClient _clientForNullToken;
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -48,6 +49,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             string token = PrincipalUtil.GetAccessToken("sbl.authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            _clientForNullToken = GetTestClientForEmptyRefreshToken();
+            _clientForNullToken.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _clientForNullToken.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
         }
 
         private HttpClient GetTestClient()
@@ -57,6 +63,20 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 builder.ConfigureTestServices(services =>
                 {
                     services.AddSingleton<IAuthenticationClient, AuthenticationMock>();
+                    services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                });
+            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+            return client;
+        }
+
+        private HttpClient GetTestClientForEmptyRefreshToken()
+        {
+            HttpClient client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddSingleton<IAuthenticationClient, AuthenticationNullRefreshMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
@@ -97,6 +117,20 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Refresh returns badrequest when the authentication client returns null
+        /// Expected: Refresh returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task Refresh_ReturnsNull()
+        {
+            // Act
+            HttpResponseMessage response = await _clientForNullToken.GetAsync($"accessmanagement/api/v1/authentication/refresh");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         /// <summary>

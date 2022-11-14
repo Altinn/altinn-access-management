@@ -48,6 +48,61 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
+        public Task<Party> GetPartyAsync(int partyId)
+        {
+            List<Party> partyList = new List<Party>();
+            Party party = null;
+
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.PartyId == partyId);
+            }
+
+            return Task.FromResult(party);
+        }
+
+        /// <inheritdoc/>
+        public int GetPartyId(int ssnOrOrgno)
+        {
+            List<Party> partyList = new List<Party>();
+            Party party = null;
+            int partyId = 0;
+
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.SSN.Equals(ssnOrOrgno.ToString()) || p.OrgNumber.Equals(ssnOrOrgno.ToString()));
+
+                partyId = party != null ? party.PartyId : 0; 
+            }
+
+            return partyId;
+        }
+
+        /// <inheritdoc/>
         public Task<List<int>> GetKeyRoleParties(int userId)
         {
             throw new NotImplementedException();

@@ -52,6 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

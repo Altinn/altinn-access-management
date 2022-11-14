@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -12,6 +13,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     /// <summary>
     /// Proxy implementation for parties
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class PartiesClient : IPartiesClient
     {
         private readonly SblBridgeSettings _sblBridgeSettings;
@@ -29,6 +31,65 @@ namespace Altinn.AccessManagement.Integration.Clients
             _sblBridgeSettings = sblBridgeSettings.Value;
             _logger = logger;
             _client = httpClient;
+        }
+
+        /// <inheritdoc/>
+        public async Task<Party> GetPartyAsync(int partyId)
+        {
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/{partyId}");
+                
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent);
+                    return partyInfo;
+                }
+                else
+                {
+                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyAsync // Exception");
+                throw;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public int GetPartyId(int id)
+        {
+            int partyId = 0;
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookup");
+                StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = _client.PostAsync(uriBuilder.Uri, requestBody).Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string responseContent = response.Content.ReadAsStringAsync().Result;
+                    partyId = JsonSerializer.Deserialize<int>(responseContent);
+                    return partyId;
+                }
+                else
+                {
+                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyAsync // Exception");
+                throw;
+            }
+
+            return partyId;
         }
 
         /// <inheritdoc/>

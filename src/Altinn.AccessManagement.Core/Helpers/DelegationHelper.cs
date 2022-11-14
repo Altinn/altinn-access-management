@@ -323,7 +323,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// Extracts the (assumed) party ID from the given 'who' string. 
         /// </summary>
         /// <param name="who">
-        /// Who, valid values are "my", an organization number, or a party ID (the letter P followed by 
+        /// Who, valid values are an organization number, or a party ID (the letter R followed by 
         /// the party ID as used in SBL).
         /// </param>
         /// <returns>Party ID extracted from 'who', or NULL if 'who' contains no party id.</returns>

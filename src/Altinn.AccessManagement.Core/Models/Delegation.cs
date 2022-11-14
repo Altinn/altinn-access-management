@@ -57,7 +57,7 @@ namespace Altinn.AccessManagement.Core.Models
         public int CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the organization number that received the delegation
+        /// Gets or sets the resource id that is delegated
         /// </summary>
         [JsonPropertyName("resourceid")]
         public string ResourceId { get; set; }
@@ -68,7 +68,7 @@ namespace Altinn.AccessManagement.Core.Models
         public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the organization number that received the delegation
+        /// Gets or sets the type of resource that is delegated
         /// </summary>
         [JsonPropertyName("resourcetype")]
         public ResourceType DelegationResourceType { get; set; }

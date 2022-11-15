@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Helpers
 {
     /// <summary>
     /// Test class for <see cref="DelegationHelper"></see>

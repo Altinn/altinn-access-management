@@ -234,6 +234,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/outbound")]
         public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string who)
         {
@@ -271,6 +272,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/inbound")]
         public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string who)
         {

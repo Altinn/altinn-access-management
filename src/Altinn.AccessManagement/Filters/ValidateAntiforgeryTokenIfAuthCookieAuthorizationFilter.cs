@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Configuration;
+using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -15,15 +16,17 @@ namespace Altinn.AccessManagement.Filters
     public class ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter : IAsyncAuthorizationFilter, IAntiforgeryPolicy
     {
         private readonly IAntiforgery _antiforgery;
+        private readonly PlatformSettings _platformSettings;
         private readonly GeneralSettings _settings;
 
         /// <summary>
         /// Initialize a new instance of the <see cref="ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter"/> class.
         /// </summary>
         /// <param name="antiforgery">An accessor to the antiforgery system.</param>
-        /// <param name="settings">A reference to the current app settings.</param>
+        /// <param name="platformSettings">A reference to the current app settings.</param>
         public ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter(
             IAntiforgery antiforgery,
+            IOptionsMonitor<PlatformSettings> platformSettings,
             IOptionsMonitor<GeneralSettings> settings)
         {
             if (antiforgery == null)
@@ -32,6 +35,7 @@ namespace Altinn.AccessManagement.Filters
             }
 
             _antiforgery = antiforgery;
+            _platformSettings = platformSettings.CurrentValue;
             _settings = settings.CurrentValue;
         }
 
@@ -76,7 +80,7 @@ namespace Altinn.AccessManagement.Filters
                 return false;
             }
 
-            string authCookie = context.HttpContext.Request.Cookies[_settings.RuntimeCookieName];
+            string authCookie = context.HttpContext.Request.Cookies[_platformSettings.JwtCookieName];
             if (authCookie == null)
             {
                 return false;

@@ -18,7 +18,8 @@ namespace Altinn.AccessManagement.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationClient _authenticationClient;
-        private readonly GeneralSettings _settings;
+        private readonly PlatformSettings _platformSettings;
+        private readonly GeneralSettings _generalSettings;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -28,11 +29,13 @@ namespace Altinn.AccessManagement.Controllers
             IAuthenticationClient authenticationClient, 
             IOptions<GeneralSettings> settings, 
             IOptions<PlatformSettings> platformSettings,
+            IOptions<GeneralSettings> generalSettings,
             ILogger<DelegationsController> logger)
         {
             _logger = logger;
             _authenticationClient = authenticationClient;
-            _settings = settings.Value;
+            _platformSettings = platformSettings.Value;
+            _generalSettings = generalSettings.Value;
         }
 
         /// <summary>
@@ -48,7 +51,7 @@ namespace Altinn.AccessManagement.Controllers
                 string token = await _authenticationClient.RefreshToken();
                 CookieOptions runtimeCookieSetting = new CookieOptions
                 {
-                    Domain = _settings.AccessManagementApplicationHostName,
+                    Domain = _generalSettings.AccessManagementApplicationHostName,
                     HttpOnly = true,
                     Secure = true,
                     IsEssential = true,
@@ -57,7 +60,7 @@ namespace Altinn.AccessManagement.Controllers
 
                 if (!string.IsNullOrWhiteSpace(token))
                 {
-                    HttpContext.Response.Cookies.Append(_settings.RuntimeCookieName, token, runtimeCookieSetting);
+                    HttpContext.Response.Cookies.Append(_platformSettings.JwtCookieName, token, runtimeCookieSetting);
                     return Ok();
                 }
 

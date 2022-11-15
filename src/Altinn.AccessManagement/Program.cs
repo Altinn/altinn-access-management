@@ -238,7 +238,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
-            options.JwtCookieName = generalSettings.RuntimeCookieName;
+            options.JwtCookieName = platformSettings.JwtCookieName;
             options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
             options.TokenValidationParameters = new TokenValidationParameters
             {

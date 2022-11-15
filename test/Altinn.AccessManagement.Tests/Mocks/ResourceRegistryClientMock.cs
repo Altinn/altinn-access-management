@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Tests.Utils;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -9,8 +10,15 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// <summary>
     /// Mock class for <see cref="IResourceRegistryClient"></see> interface
     /// </summary>
-    internal class ResourceRegistryClientMock : IResourceRegistryClient
+    public class ResourceRegistryClientMock : IResourceRegistryClient
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
+        /// </summary>
+        public ResourceRegistryClientMock()
+        {
+        }
+
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId)
         {

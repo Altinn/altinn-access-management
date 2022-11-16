@@ -2,7 +2,9 @@
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.Authorization.ABAC.Constants;
+using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -320,6 +322,32 @@ namespace Altinn.AccessManagement.Core.Helpers
                     SetTypeForSingleRule(keyRolePartyIds, offeredByPartyId, coveredBy, parentPartyId, rule, coveredByPartyId, coveredByUserId);
                 }
             }
+        }
+
+        /// <summary>
+        /// Extracts the (assumed) party ID from the given 'who' string. 
+        /// </summary>
+        /// <param name="who">
+        /// Who, valid values are an organization number, or a party ID (the letter R followed by 
+        /// the party ID as used in SBL).
+        /// </param>
+        /// <returns>Party ID extracted from 'who', or NULL if 'who' contains no party id.</returns>
+        public static int? TryParsePartyId(string who)
+        {
+            bool hasPrefix = who[0] == 'r';
+
+            if (!hasPrefix)
+            {
+                return null;
+            }
+
+            int partyId;
+            if (!int.TryParse(who.AsSpan(1), out partyId))
+            {
+                return 0;
+            }
+
+            return partyId;
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

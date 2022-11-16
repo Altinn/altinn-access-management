@@ -1,12 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AccessManagement.Core.Models
+namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// This model describes a delegation. A delegation is an action that says if a resource is delegated to you or you have delegated a resource to another person/org
     /// </summary>
-    public class Delegation
+    [ExcludeFromCodeCoverage]
+    public class DelegationExternal
     {
         /// <summary>
         /// Gets or sets the name of the delegation receiver
@@ -36,13 +38,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
-        public int? PerformedByUserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
-        /// </summary>
-        [JsonPropertyName("performedbypartyid")]
-        public int? PerformedByPartyId { get; set; }
+        public int PerformedByUserId { get; set; }
 
         /// <summary>
         /// Gets or sets the userid that performed the delegation
@@ -63,7 +59,7 @@ namespace Altinn.AccessManagement.Core.Models
         public int CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource id that is delegated
+        /// Gets or sets the organization number that received the delegation
         /// </summary>
         [JsonPropertyName("resourceid")]
         public string ResourceId { get; set; }
@@ -71,12 +67,14 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// The title of resource
         /// </summary>
+        [JsonPropertyName("resourcetitle")]
         public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of resource that is delegated
+        /// Gets or sets the organization number that received the delegation
         /// </summary>
         [JsonPropertyName("resourcetype")]
         public ResourceType DelegationResourceType { get; set; }
+
     }
 }

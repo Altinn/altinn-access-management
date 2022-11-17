@@ -89,6 +89,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
                 delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
                 delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                delegation.PerformedByPartyId = delegationChange.PerformedByPartyId;
                 delegation.Created = delegationChange.Created;
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);

@@ -64,7 +64,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetAllOfferedDelegations(offeredByPartyId, resourceType);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceType);
             List<int> parties = new List<int>();
             foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
             {
@@ -90,7 +90,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
                 delegation.PerformedByUserId = delegationChange.PerformedByUserId;
                 delegation.PerformedByPartyId = delegationChange.PerformedByPartyId;
-                delegation.Created = delegationChange.Created;
+                delegation.Created = delegationChange.Created.Value;
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
@@ -103,7 +103,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetInboundDelegations(int coveredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedDelegationsAsync(coveredByPartyId, resourceType);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId, resourceType);
             List<int> parties = new List<int>();
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
@@ -124,7 +124,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
                 delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
                 delegation.PerformedByUserId = delegationChange.PerformedByUserId;
-                delegation.Created = delegationChange.Created;
+                delegation.Created = delegationChange.Created.Value;
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;

@@ -300,7 +300,7 @@ void Configure()
     }
     else
     {
-        app.UseExceptionHandler("/access-management/api/v1/error");
+        app.UseExceptionHandler("/accessmanagement/api/v1/error");
     }
 
     app.UseRouting();
@@ -334,14 +334,14 @@ void ConfigurePostgreSql()
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-
+        string workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
             new PostgreSqlBulkImportService(traceService),
             traceService,
             new Yuniql.AspNetCore.Configuration
             {
-                Workspace = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath")),
+                Workspace = workspacePath,
                 ConnectionString = connectionString,
                 IsAutoCreateDatabase = false,
                 IsDebug = true,

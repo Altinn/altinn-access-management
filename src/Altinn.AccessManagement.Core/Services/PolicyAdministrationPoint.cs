@@ -141,10 +141,9 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
-            string altinnAppId = null;
-            ServiceResource resource = null;
+            ServiceResource resourceRegistryService = null;
 
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
@@ -153,17 +152,17 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceRegistryId);
+                XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceId);
                 if (resourcePolicy == null)
                 {
                     _logger.LogWarning("No valid resource policy found for delegation policy path: {policyPath}", policyPath);
                     return false;
                 }
 
-                resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
-                if (resource == null)
+                resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
+                if (resourceRegistryService == null)
                 {
-                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
+                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceId);
                     return false;
                 }
 
@@ -176,7 +175,7 @@ namespace Altinn.AccessManagement.Core.Services
                     }
                 }
             }
-            else if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
+            else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
                 XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app);
                 if (appPolicy == null)
@@ -207,14 +206,7 @@ namespace Altinn.AccessManagement.Core.Services
                 try
                 {
                     // Check for a current delegation change from postgresql
-                    DelegationChange currentChange = new DelegationChange();
-
-                    if (!string.IsNullOrWhiteSpace(org) || !string.IsNullOrWhiteSpace(app))
-                    {
-                        altinnAppId = $"{org}/{app}";
-                    }
-
-                    currentChange = await _delegationRepository.GetCurrentDelegationChange(altinnAppId, resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+                    DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId);
 
                     XacmlPolicy existingDelegationPolicy = null;
                     if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
@@ -231,13 +223,13 @@ namespace Altinn.AccessManagement.Core.Services
                         {
                             if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                             {
-                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationRule(org, app, resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationRule(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
                             }
                         }
                     }
                     else
                     {
-                        delegationPolicy = PolicyHelper.BuildDelegationPolicy(org, app, resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId, rules);
+                        delegationPolicy = PolicyHelper.BuildDelegationPolicy(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rules);
                     }
 
                     // Write delegation policy to blob storage
@@ -254,7 +246,8 @@ namespace Altinn.AccessManagement.Core.Services
                     DelegationChange change = new DelegationChange
                     {
                         DelegationChangeType = DelegationChangeType.Grant,
-                        AltinnAppId = altinnAppId,
+                        ResourceId = resourceId,
+                        ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                         OfferedByPartyId = offeredByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
@@ -262,13 +255,11 @@ namespace Altinn.AccessManagement.Core.Services
                         PerformedByPartyId = delegatedByPartyId,
                         Created = delegatedDateTime,
                         BlobStoragePolicyPath = policyPath,
-                        BlobStorageVersionId = blobResponse.Value.VersionId,
-                        ResourceId = resourceRegistryId,
-                        ResourceType = resource?.ResourceType.ToString()
+                        BlobStorageVersionId = blobResponse.Value.VersionId                        
                     };
 
                     change = await _delegationRepository.InsertDelegation(change);
-                    if (change == null || change.DelegationChangeId <= 0)
+                    if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
                         // This means that the current version of the root blob is no longer in sync with changes in authorization postgresql delegation.delegatedpolicy table.
@@ -277,7 +268,7 @@ namespace Altinn.AccessManagement.Core.Services
                         return false;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(change.AltinnAppId))
+                    if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
                     {
                         try
                         {
@@ -301,9 +292,8 @@ namespace Altinn.AccessManagement.Core.Services
             return false;
         }
 
-        private async Task<List<Rule>> ProcessPolicyFile(string policyPath, string org, string app, RequestToDelete deleteRequest, string resourceregistryId)
+        private async Task<List<Rule>> ProcessPolicyFile(string policyPath, ResourceAttributeMatchType resourceMatchType, string resourceId, RequestToDelete deleteRequest)
         {
-            string altinnAppId = null;
             List<Rule> currentRules = new List<Rule>();
 
             string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
@@ -313,30 +303,17 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            if (!string.IsNullOrWhiteSpace(org) || !string.IsNullOrWhiteSpace(app))
-            {
-                altinnAppId = $"{org}/{app}";
-            }
-
             try
             {
                 bool isAllRulesDeleted = false;
                 string coveredBy = DelegationHelper.GetCoveredByFromMatch(deleteRequest.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
                 string offeredBy = deleteRequest.PolicyMatch.OfferedByPartyId.ToString();
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(altinnAppId, resourceregistryId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
 
                 XacmlPolicy existingDelegationPolicy = null;
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
-                    if (!string.IsNullOrWhiteSpace(altinnAppId))
-                    {
-                        _logger.LogWarning("The policy is already deleted for App: {altinnAppId} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", altinnAppId, coveredBy, offeredBy);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(resourceregistryId))
-                    {
-                        _logger.LogWarning("The policy is already deleted for Resource: {resourceregistryId} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", resourceregistryId, coveredBy, offeredBy);
-                    }
-                    
+                    _logger.LogWarning("The policy is already deleted for: {resourceId} CoveredBy: {coveredBy} OfferedBy: {offeredBy}", resourceId, coveredBy, offeredBy);
                     return null;
                 }
 
@@ -378,19 +355,18 @@ namespace Altinn.AccessManagement.Core.Services
                     DelegationChange change = new DelegationChange
                     {
                         DelegationChangeType = isAllRulesDeleted ? DelegationChangeType.RevokeLast : DelegationChangeType.Revoke,
-                        AltinnAppId = altinnAppId,
+                        ResourceId = resourceId,
+                        ResourceType = currentChange.ResourceType,
                         OfferedByPartyId = deleteRequest.PolicyMatch.OfferedByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
                         PerformedByUserId = deleteRequest.DeletedByUserId,
                         BlobStoragePolicyPath = policyPath,
-                        BlobStorageVersionId = response.Value.VersionId,
-                        ResourceId = resourceregistryId,
-                        ResourceType = currentChange.ResourceType
+                        BlobStorageVersionId = response.Value.VersionId
                     }; 
 
                     change = await _delegationRepository.InsertDelegation(change);
-                    if (change == null || change.DelegationChangeId <= 0)
+                    if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
                         // This means that the current version of the root blob is no longer in sync with changes in authorization postgresql delegation.delegatedpolicy table.
@@ -399,7 +375,7 @@ namespace Altinn.AccessManagement.Core.Services
                         return null;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(change.AltinnAppId))
+                    if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
                     {
                         try
                         {
@@ -427,12 +403,10 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            string altinnAppId = null;
-            ServiceResource resource = null;
-            bool resourceSuccessfullyRetrieved = DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
+            ServiceResource resourceRegistryService = null;
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            if (!resourceSuccessfullyRetrieved)
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app))
             {
                 _logger.LogError("The resource cannot be identified.");
                 return null;
@@ -441,19 +415,11 @@ namespace Altinn.AccessManagement.Core.Services
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceRegistryId, org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
             }
             catch (Exception ex)
             {
-                if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
-                {
-                    _logger.LogError(ex, "Not possible to build policy path App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", org, app, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
-                }
-                else
-                {
-                    _logger.LogError(ex, "Not possible to build policy path Resource: {resourceRegistryId} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", resourceRegistryId, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
-                }
-
+                _logger.LogError(ex, "Not possible to build policy path for: {resourceId} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", resourceId, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
                 return null;
             }
 
@@ -470,28 +436,23 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
-            {
-                altinnAppId = $"{org}/{app}";
-            }
-
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
-                if (resource == null)
+                resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
+                if (resourceRegistryService == null)
                 {
-                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceRegistryId);
+                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceId);
                     return null;
                 }
             }
 
             try
             {
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(altinnAppId, resourceRegistryId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
 
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
-                    _logger.LogWarning("The policy is already deleted for App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", org, app, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
+                    _logger.LogWarning("The policy is already deleted for: {resourceId} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId}", resourceId, coveredBy, policyToDelete.PolicyMatch.OfferedByPartyId);
                     return null;
                 }
 
@@ -519,19 +480,18 @@ namespace Altinn.AccessManagement.Core.Services
                 DelegationChange change = new DelegationChange
                 {
                     DelegationChangeType = DelegationChangeType.RevokeLast,
-                    AltinnAppId = altinnAppId,
+                    ResourceId = resourceId,
+                    ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                     OfferedByPartyId = policyToDelete.PolicyMatch.OfferedByPartyId,
                     CoveredByPartyId = coveredByPartyId,
                     CoveredByUserId = coveredByUserId,
                     PerformedByUserId = policyToDelete.DeletedByUserId,
                     BlobStoragePolicyPath = policyPath,
-                    BlobStorageVersionId = response.Value.VersionId,
-                    ResourceId = resourceRegistryId,
-                    ResourceType = resource != null ? resource.ResourceType.ToString() : null
+                    BlobStorageVersionId = response.Value.VersionId                    
                 };
 
                 change = await _delegationRepository.InsertDelegation(change);
-                if (change == null || change.DelegationChangeId <= 0)
+                if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                 {
                     // Comment:
                     // This means that the current version of the root blob is no longer in sync with changes in authorization postgresql delegation.delegatedpolicy table.
@@ -540,7 +500,7 @@ namespace Altinn.AccessManagement.Core.Services
                     return null;
                 }
 
-                if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
+                if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
                 {
                     try
                     {
@@ -569,9 +529,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
-            bool resourceSuccessfullyRetrieved = DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app);
-
-            if (!resourceSuccessfullyRetrieved)
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app))
             {
                 _logger.LogError("The resource cannot be identified.");
                 return null;
@@ -580,12 +538,12 @@ namespace Altinn.AccessManagement.Core.Services
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceRegistryId, org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
             }
             catch (Exception ex)
             {
                 string rulesToDeleteString = string.Join(", ", rulesToDelete.RuleIds);
-                _logger.LogError(ex, "Not possible to build policy path App: {org}/{app} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId} RuleIds: {rulesToDeleteString}", org, app, coveredBy, rulesToDelete.PolicyMatch.OfferedByPartyId, rulesToDeleteString);
+                _logger.LogError(ex, "Not possible to build policy path for: {resourceId} CoveredBy: {coveredBy} OfferedBy: {policyToDelete.PolicyMatch.OfferedByPartyId} RuleIds: {rulesToDeleteString}", resourceId, coveredBy, rulesToDelete.PolicyMatch.OfferedByPartyId, rulesToDeleteString);
                 return null;
             }
 
@@ -595,7 +553,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            List<Rule> currentRules = await ProcessPolicyFile(policyPath, org, app, rulesToDelete, resourceRegistryId);
+            List<Rule> currentRules = await ProcessPolicyFile(policyPath, resourceMatchType, resourceId, rulesToDelete);
 
             return currentRules;
         }

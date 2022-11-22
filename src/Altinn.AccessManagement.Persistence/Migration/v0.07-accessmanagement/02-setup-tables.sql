@@ -60,10 +60,3 @@ CREATE INDEX IF NOT EXISTS idx_rrdelegation_coveredbyparty
     ON delegation.ResourceRegistryDelegationChanges USING btree
     (coveredbypartyid ASC NULLS LAST)
     TABLESPACE pg_default;
-
--- Index: idx_rrdelegation_resourceid_offeredby_coveredby  TODO: ERROR: collate don't support integers??
---CREATE INDEX IF NOT EXISTS idx_rrdelegation_resourceid_offeredby_coveredby
---  ON delegation.ResourceRegistryDelegationChanges USING btree
---  (resourceId_fk COLLATE pg_catalog."default" ASC NULLS LAST)
---  INCLUDE(offeredByPartyId, coveredByPartyId, coveredByUserId)
---  TABLESPACE pg_default;

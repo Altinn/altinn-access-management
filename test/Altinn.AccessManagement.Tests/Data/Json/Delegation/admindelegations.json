@@ -6,15 +6,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "appid-119",
     "resourcetitle": {
       "en": "Automation Regression",
       "nb": "Automation Regression",
       "nn": "Automation Regression"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -23,14 +23,14 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "appid-122",
     "resourcetitle": {
       "en": "Automation Regression",
       "nb": "Automation Regression",
       "nn": "Automation Regression"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   }
 ]

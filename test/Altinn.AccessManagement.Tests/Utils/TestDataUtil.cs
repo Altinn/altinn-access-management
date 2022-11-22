@@ -294,7 +294,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             if (resourceIds != null)
             {
-                fileName = "delegations";
+                fileName = "admindelegations";
             }
             else
             {

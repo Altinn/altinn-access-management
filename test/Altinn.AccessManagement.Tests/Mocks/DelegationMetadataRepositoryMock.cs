@@ -255,8 +255,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> SearchDelegationsAsync(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> result = new List<DelegationChange>();
-            result.Add(TestDataUtil.GetDelegationChange("AppId-119", offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "appid-119", resourceType.ToString()));
-            result.Add(TestDataUtil.GetDelegationChange("AppId-122", offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "appid-122", resourceType.ToString()));
+            if (offeredByPartyid == 50004222 && coveredByPartyId == 50004219 && (resourceIds != null && resourceIds.Count > 0))
+            {
+                result.Add(TestDataUtil.GetDelegationChange("AppId-119", offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "appid-119", resourceType.ToString()));
+                result.Add(TestDataUtil.GetDelegationChange("AppId-122", offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234, "appid-122", resourceType.ToString()));
+            }
 
             return Task.FromResult(result);
         }

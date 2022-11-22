@@ -270,7 +270,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            ////Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            Assert.Equal(expected.ResourceType, actual.ResourceType);
         }
 
         /// <summary>

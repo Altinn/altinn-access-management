@@ -1553,7 +1553,7 @@ namespace Altinn.AccessManagement.Tests
         /// Expected: GetAllDelegationsForAdmin returns a list of delegations offered by supplier to consumer for a given scope
         /// </summary>
         [Fact]
-        public async Task GetAllDelegationsForAdmin_Valid_OfferedByOrg()
+        public async Task GetAllDelegationsForAdmin_Valid_input()
         {
             // Arrange
             List<string> resourceIds = new List<string>
@@ -1581,6 +1581,121 @@ namespace Altinn.AccessManagement.Tests
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin for orgnummer that does not have any delegations
+        /// Expected: GetAllDelegationsForAdmin returns ok, no delegations found
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_Valid_input_nodelegations()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin without sending consumer org number
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_missing_consumer()
+        {
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg=&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin without sending supplier org number
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_missing_supplier()
+        {
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg=&consumerorg={consumerOrg}&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin without sending scopes
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_missing_scopes()
+        {
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin for invalid orgnummer
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_invalid_orgnummer()
+        {
+            // Act
+            int supplierOrg = 12345;
+            int consumerOrg = 567574;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin for invalid orgnummer
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_scopes_notexist()
+        {
+            // Arrange
+            string expected = "No delegations found";
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scopes = "altinn:test/test";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
 
         private static List<Rule> GetExpectedRulesForUser()
         {

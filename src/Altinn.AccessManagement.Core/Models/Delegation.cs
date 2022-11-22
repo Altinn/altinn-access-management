@@ -11,55 +11,46 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the name of the delegation receiver
         /// </summary>
-        [JsonPropertyName("coveredbyname")]
         public string CoveredByName { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the delegator
         /// </summary>
-        [JsonPropertyName("offeredbyname")]
         public string OfferedByName { get; set; }
 
         /// <summary>
         /// Gets or sets the userid id for the delegation
         /// </summary>
-        [JsonPropertyName("offeredbypartyid")]
         public int OfferedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets the reportee that received the delegation
         /// </summary>
-        [JsonPropertyName("coveredbypartyid")]
         public int? CoveredByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
-        [JsonPropertyName("performedbyuserid")]
         public int PerformedByUserId { get; set; }
 
         /// <summary>
         /// Gets or sets the userid that performed the delegation
         /// </summary>
-        [JsonPropertyName("created")]
         public DateTime Created { get; set; }
 
         /// <summary>
         /// Gets or sets the organization number that offered the delegation
         /// </summary>
-        [JsonPropertyName("offeredbyorgnummer")]
         public int OfferedByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the organization number that received the delegation
         /// </summary>
-        [JsonPropertyName("coveredbyorgnummer")]
         public int CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the resource id that is delegated
         /// </summary>
-        [JsonPropertyName("resourceid")]
         public string ResourceId { get; set; }
 
         /// <summary>
@@ -70,7 +61,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the type of resource that is delegated
         /// </summary>
-        [JsonPropertyName("resourcetype")]
-        public ResourceType DelegationResourceType { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ResourceType ResourceType { get; set; }
     }
 }

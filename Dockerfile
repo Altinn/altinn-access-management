@@ -18,7 +18,7 @@ EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .
 
-COPY src/Altinn.AccessManagement/Migration ./Migration
+COPY src/Altinn.AccessManagement.Persistence/Migration ./Migration
 
 # setup the user and group
 # the user will have no password, using shell /bin/false and using the group dotnet

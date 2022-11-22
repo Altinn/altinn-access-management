@@ -1486,8 +1486,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOfferedDelegations returns unauthorized when the bearer token is not valid
-        /// Expected: GetAllOfferedDelegations returns unauthorized when the bearer token is not valid
+        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
         /// </summary>
         [Fact]
         public async Task GetAllOutboundDelegations_InvalidBearerToken()
@@ -1504,8 +1504,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllReceivedDelegations returns a list of delegations received by coveredby
-        /// Expected: GetAllReceivedDelegations returns a list of delegations received by coveredby
+        /// Test case: GetAllInboundDelegations returns a list of delegations received by coveredby
+        /// Expected: GetAllInboundDelegations returns a list of delegations received by coveredby
         /// </summary>
         [Fact]
         public async Task GetAllInboundDelegations_Valid_CoveredBy()

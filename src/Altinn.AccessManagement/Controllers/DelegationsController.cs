@@ -4,6 +4,7 @@ using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using AutoMapper;
 using Azure.Messaging;
@@ -16,6 +17,7 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
     [ApiController]
+    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;

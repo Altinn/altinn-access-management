@@ -60,6 +60,19 @@ namespace Altinn.AccessManagement.Core.Services
             return GetInboundDelegations(coveredByPartyId, resourceType);
         }
 
+        /// <inheritdoc/>
+        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scopes)
+        {
+            int consumerPartyId = GetParty(consumerOrg.ToString());
+            int supplierPartyId = GetParty(supplierOrg.ToString());
+            if (consumerPartyId == 0 || supplierPartyId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return GetMaskinportenDelegations(supplierPartyId, consumerPartyId, scopes);
+        }
+
         #region private methods
 
         private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
@@ -120,6 +133,45 @@ namespace Altinn.AccessManagement.Core.Services
                 Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
                 delegation.OfferedByName = partyInfo?.Name;
                 delegation.OfferedByOrganizationNumber = Convert.ToInt32(partyInfo?.OrgNumber);
+                delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
+                delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
+                delegation.PerformedByUserId = delegationChange.PerformedByUserId;
+                delegation.Created = delegationChange.Created;
+                delegation.ResourceId = delegationChange.ResourceId;
+                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
+                delegation.ResourceTitle = resource?.Title;
+                delegation.DelegationResourceType = resource.ResourceType;
+                delegations.Add(delegation);
+            }
+
+            return delegations;
+        }
+
+        private async Task<List<Delegation>> GetMaskinportenDelegations(int supplierPartyId, int consumerPartyId, string scopes)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            List<string> resourceIds;
+            
+            resources = await _resourceRegistryClient.SearchResources(scopes);
+            resourceIds = resources.Select(d => d.Identifier).ToList();
+
+            List<DelegationChange> delegationChanges = await _delegationRepository.SearchDelegationsAsync(resourceIds, supplierPartyId, consumerPartyId, ResourceType.MaskinportenSchema );
+            List<int> parties = new List<int>();
+            parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
+            parties.AddRange(delegationChanges.Select(d => d.CoveredByPartyId).Select(ds => Convert.ToInt32(ds)).ToList());
+
+            List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
+            List<Delegation> delegations = new List<Delegation>();
+
+            foreach (DelegationChange delegationChange in delegationChanges)
+            {
+                Delegation delegation = new Delegation();
+                Party partyInfo = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
+                Party coveredByPartyInfo = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
+                delegation.OfferedByName = partyInfo?.Name;
+                delegation.OfferedByOrganizationNumber = Convert.ToInt32(partyInfo?.OrgNumber);
+                delegation.CoveredByName = coveredByPartyInfo?.Name;
+                delegation.CoveredByOrganizationNumber = Convert.ToInt32(coveredByPartyInfo?.OrgNumber);
                 delegation.CoveredByPartyId = delegationChange.CoveredByPartyId;
                 delegation.OfferedByPartyId = delegationChange.OfferedByPartyId;
                 delegation.PerformedByUserId = delegationChange.PerformedByUserId;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
@@ -283,13 +284,23 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
         /// <param name="coveredByPartyId">partyid of the reportee that received the delegation</param>
+        /// <param name="resourceIds">resource id</param>
         /// <returns>Received delegations</returns>
-        public static List<DelegationExternal> GetDelegations(int offeredByPartyId, int coveredByPartyId)
+        public static List<DelegationExternal> GetDelegations(int offeredByPartyId, int coveredByPartyId, List<string> resourceIds = null)
         {
             List<DelegationExternal> delegations = null;
             List<DelegationExternal> filteredDelegations = new List<DelegationExternal>();
-            string fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
+            string fileName;
 
+            if (resourceIds != null)
+            {
+                fileName = "delegations";
+            }
+            else
+            {
+                fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
+            }
+            
             string path = GetDelegationPath();
             if (Directory.Exists(path))
             {
@@ -315,7 +326,11 @@ namespace Altinn.AccessManagement.Tests.Utils
                     }
                 }
 
-                if (offeredByPartyId != 0)
+                if (offeredByPartyId != 0 && coveredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations?.FindAll(od => od.OfferedByPartyId == offeredByPartyId && od.CoveredByPartyId == coveredByPartyId && resourceIds.Contains(od.ResourceId)));
+                }
+                else if (offeredByPartyId != 0)
                 {
                     filteredDelegations.AddRange(delegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
                 }

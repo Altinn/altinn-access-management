@@ -71,7 +71,7 @@ namespace Altinn.AccessManagement.Models
         public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the organization number that received the delegation
+        /// Gets or sets the resource type of the delegation
         /// </summary>
         [JsonPropertyName("resourcetype")]
         public ResourceType DelegationResourceType { get; set; }

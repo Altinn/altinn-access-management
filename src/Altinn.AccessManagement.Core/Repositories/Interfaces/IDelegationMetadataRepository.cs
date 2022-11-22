@@ -56,5 +56,14 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
         /// <param name="resourceType">the type of resource</param>
         Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType);
+
+        /// <summary>
+        /// Gets the delgations for a given supplier, consumer and resourcetype based on resourceids
+        /// </summary>
+        /// <param name="resourceIds">the resource ids</param>
+        /// <param name="offeredByPartyid">the party id of the entity that offered the delegation</param>
+        /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
+        /// <param name="resourceType">the type of resource</param>
+        Task<List<DelegationChange>> SearchDelegationsAsync(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType);
     }
 }

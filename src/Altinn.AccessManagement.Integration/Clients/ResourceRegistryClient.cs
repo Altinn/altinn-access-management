@@ -98,5 +98,63 @@ namespace Altinn.AccessManagement.Integration.Clients
 
             return resources;
         }
+
+        /// <summary>
+        /// Get resource information for the the given list of resourceids
+        /// </summary>
+        /// <param name="scopes"> the scope of resources</param>
+        /// <returns></returns>
+        public async Task<List<ServiceResource>> SearchResources(string scopes)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            List<ServiceResource> filteredResources = new List<ServiceResource>();
+            ResourceSearch resourceSearch = new ResourceSearch();
+            resourceSearch.ResourceType = ResourceType.MaskinportenSchema;
+
+            try
+            {
+                string endpointUrl = $"resourceregistry/api/v1/resource/search?search.resourcetype={ResourceType.MaskinportenSchema}";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    };
+                    string content = await response.Content.ReadAsStringAsync();
+                    resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                    ResourceReference resourceReference = new ResourceReference();
+                    resourceReference.ReferenceSource = ReferenceSource.Altinn3;
+                    resourceReference.Reference = scopes;
+                    resourceReference.ReferenceType = ReferenceType.MaskinportenScope;
+
+                    foreach (ServiceResource resource in resources)
+                    {
+                        foreach (ResourceReference reference in resource.ResourceReferences)
+                        {
+                            if (reference != null && reference.ReferenceSource == ReferenceSource.Altinn3 && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
+                            {
+                                filteredResources.Add(resource);
+                            }
+
+                            //if (resource.ResourceReferences.Contains(resourceReference))
+                            //{
+                            //    filteredResources.Add(resource);
+                            //}
+                        }
+                    }
+
+                    //filteredResources = resources.FindAll(r => r.ResourceReferences.any(resourceReference));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // SearchResources // Exception");
+                throw;
+            }
+
+            return filteredResources;
+        }
     }
 }

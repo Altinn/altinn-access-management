@@ -20,5 +20,12 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// <param name="resourceIds">The identifier of the resource in the Resource Registry</param>
         /// <returns>The resource list if exists</returns>
         Task<List<ServiceResource>> GetResources(List<string> resourceIds);
+
+        /// <summary>
+        /// Integration point for retrieving a list of resources by it's resource id
+        /// </summary>
+        /// <param name="scopes">The scope of the resource in the Resource Registry</param>
+        /// <returns>The resource list if exists</returns>
+        Task<List<ServiceResource>> SearchResources(string scopes);
     }
 }

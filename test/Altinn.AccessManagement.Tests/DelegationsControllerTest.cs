@@ -1548,6 +1548,40 @@ namespace Altinn.AccessManagement.Tests
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin returns a list of delegations between supplier and consumer for a given scope
+        /// Expected: GetAllDelegationsForAdmin returns a list of delegations offered by supplier to consumer for a given scope
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_Valid_OfferedByOrg()
+        {
+            // Arrange
+            List<string> resourceIds = new List<string>
+            {
+                "appid-119",
+                "appid-122"
+            };
+
+            List<DelegationExternal> expectedDelegations = GetExpectedDelegationsForAdmin(50004222, 50004219, resourceIds);
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scopes = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<DelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<DelegationExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1575,6 +1609,13 @@ namespace Altinn.AccessManagement.Tests
             List<DelegationExternal> inboundDelegations = new List<DelegationExternal>();
             inboundDelegations = TestDataUtil.GetDelegations(0, covererdByPartyId);
             return inboundDelegations;
+        }
+
+        private static List<DelegationExternal> GetExpectedDelegationsForAdmin(int offeredByPartyId, int covererdByPartyId, List<string> resourceIds)
+        {
+            List<DelegationExternal> delegations = new List<DelegationExternal>();
+            delegations = TestDataUtil.GetDelegations(offeredByPartyId, covererdByPartyId, resourceIds);
+            return delegations;
         }
 
         private HttpClient GetTestClient()

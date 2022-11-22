@@ -300,5 +300,52 @@ namespace Altinn.AccessManagement.Controllers
                 return StatusCode(500);
             }
         }
+
+        /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
+        [Authorize]
+        public async Task<ActionResult<List<DelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scopes)
+        {
+            if (supplierOrg == null || supplierOrg == 0)
+            {
+                return BadRequest("Either the parameter supplierorg has no value or the provided value is invalid");
+            }
+
+            if (consumerOrg == null || consumerOrg == 0)
+            {
+                return BadRequest("Either the parameter consumerOrg has no value or the provided value is invalid");
+            }
+
+            if (string.IsNullOrEmpty(scopes))
+            {
+                return BadRequest("Either the parameter scopes has no value or the provided value is invalid");
+            }
+
+            try
+            {
+                List<Delegation> delegations = await _delegation.GetAllDelegationsForAdminAsync(Convert.ToInt32(supplierOrg), Convert.ToInt32(consumerOrg), scopes);
+                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
+                if (delegationsExternal == null || delegationsExternal.Count == 0)
+                {
+                    return Ok("No delegations found");
+                }
+
+                return delegationsExternal;
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAlInboundDelegations failed to fetch delegations");
+                return StatusCode(500);
+            }
+        }
     }
 }

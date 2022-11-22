@@ -162,7 +162,7 @@ namespace Altinn.AccessManagement.Core.Services
                 resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
                 if (resourceRegistryService == null)
                 {
-                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceId);
+                    _logger.LogWarning("The specified resource {resourceId} does not exist.", resourceId);
                     return false;
                 }
 
@@ -247,7 +247,7 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         DelegationChangeType = DelegationChangeType.Grant,
                         ResourceId = resourceId,
-                        ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
+                        ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService?.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                         OfferedByPartyId = offeredByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
@@ -441,7 +441,7 @@ namespace Altinn.AccessManagement.Core.Services
                 resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
                 if (resourceRegistryService == null)
                 {
-                    _logger.LogWarning("The specified resource {resourceRegistryId} does not exist.", resourceId);
+                    _logger.LogWarning("The specified resource {resourceId} does not exist.", resourceId);
                     return null;
                 }
             }
@@ -481,7 +481,7 @@ namespace Altinn.AccessManagement.Core.Services
                 {
                     DelegationChangeType = DelegationChangeType.RevokeLast,
                     ResourceId = resourceId,
-                    ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
+                    ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService?.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                     OfferedByPartyId = policyToDelete.PolicyMatch.OfferedByPartyId,
                     CoveredByPartyId = coveredByPartyId,
                     CoveredByUserId = coveredByUserId,

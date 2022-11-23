@@ -148,7 +148,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// Gets ResourceType, ResourceRegistryId, Org, App, OfferedBy and CoveredBy as out params from a single Rule
         /// </summary>
         /// <returns>A bool indicating whether sufficent params where found</returns>
-        public static bool TryGetDelegationParamsFromRule(Rule rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int delegatedByUserId)
+        public static bool TryGetDelegationParamsFromRule(Rule rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
         {
             resourceMatchType = ResourceAttributeMatchType.None;
             resourceRegistryId = null;
@@ -157,7 +157,9 @@ namespace Altinn.AccessManagement.Core.Helpers
             offeredByPartyId = 0;
             coveredByPartyId = null;
             coveredByUserId = null;
-            delegatedByUserId = 0;
+            delegatedByUserId = null;
+            delegatedByPartyId = null;
+            delegatedDateTime = DateTime.UtcNow;
 
             try
             {
@@ -166,10 +168,13 @@ namespace Altinn.AccessManagement.Core.Helpers
                 coveredByPartyId = TryGetCoveredByPartyIdFromMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
                 coveredByUserId = TryGetCoveredByUserIdFromMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
                 delegatedByUserId = rule.DelegatedByUserId;
+                delegatedByPartyId = rule.DelegatedByPartyId;
+                delegatedDateTime = rule.DelegatedDateTime ?? DateTime.UtcNow;
 
                 if (resourceMatchType != ResourceAttributeMatchType.None
                     && offeredByPartyId != 0
-                    && (coveredByPartyId.HasValue || coveredByUserId.HasValue))
+                    && (coveredByPartyId.HasValue || coveredByUserId.HasValue)
+                    && (delegatedByUserId.HasValue || delegatedByPartyId.HasValue))
                 {
                     return true;
                 }
@@ -189,7 +194,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetDelegationPolicyPathFromRule(Rule rule, out string delegationPolicyPath)
         {
             delegationPolicyPath = null;
-            if (TryGetDelegationParamsFromRule(rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _))
+            if (TryGetDelegationParamsFromRule(rule, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _))
             {
                 try
                 {
@@ -311,7 +316,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         {
             foreach (Rule rule in rulesList)
             {
-                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _)
+                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _)
                     && rule.Type == RuleType.None)
                 {
                     SetTypeForSingleRule(keyRolePartyIds, offeredByPartyId, coveredBy, parentPartyId, rule, coveredByPartyId, coveredByUserId);

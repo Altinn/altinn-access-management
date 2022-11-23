@@ -4,6 +4,7 @@ using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using AutoMapper;
 using Azure.Messaging;
@@ -16,6 +17,7 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
     [ApiController]
+    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -234,6 +236,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/outbound")]
         public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string who)
         {
@@ -271,6 +274,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
+        [Authorize]
         [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/inbound")]
         public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string who)
         {

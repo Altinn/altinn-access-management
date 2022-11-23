@@ -31,7 +31,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
-        public int PerformedByUserId { get; set; }
+        public int? PerformedByUserId { get; set; }
 
         /// <summary>
         /// Gets or sets the userid that performed the delegation

@@ -16,13 +16,13 @@ namespace Altinn.AccessManagement.Core.Configuration
         public int PolicyCacheTimeout { get; set;  }
         
         /// <summary>
-        /// Name of the cookie for runtime
+        /// Gets or sets the host name.
         /// </summary>
-        public string RuntimeCookieName { get; set; }
+        public string AccessManagementApplicationHostName { get; set; }
 
         /// <summary>
-        /// Open Id Connect Well known endpoint. Related to JSON WEB token validation.
+        /// Option to disable csrf check
         /// </summary>
-        public string OpenIdWellKnownEndpoint { get; set; }
+        public bool DisableCsrfCheck { get; set; }
     }
 }

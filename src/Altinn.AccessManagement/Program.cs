@@ -29,7 +29,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Npgsql.Logging;
+using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
 
@@ -191,10 +193,21 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     builder.Services.AddEndpointsApiExplorer();
 
     services.AddHealthChecks().AddCheck<HealthCheck>("authorization_admin_health_check");
-    services.AddSwaggerGen();
+    services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
     services.AddMvc();
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
+    PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
@@ -220,12 +233,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
-            options.JwtCookieName = generalSettings.RuntimeCookieName;
-            options.MetadataAddress = generalSettings.OpenIdWellKnownEndpoint;
+            options.JwtCookieName = platformSettings.JwtCookieName;
+            options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -269,6 +283,20 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
     }
+
+    services.AddAntiforgery(options =>
+    {
+        // asp .net core expects two types of tokens: One that is attached to the request as header, and the other one as cookie.
+        // The values of the tokens are not the same and both need to be present and valid in a "unsafe" request.
+
+        // We use this for OIDC state validation. See authentication controller. 
+        // https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-6.0
+        // https://github.com/axios/axios/blob/master/lib/defaults.js
+        options.Cookie.Name = "AS-XSRF-TOKEN";
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+        options.HeaderName = "X-XSRF-TOKEN";
+    });
+    services.TryAddSingleton<ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter>();
 }
 
 void Configure()

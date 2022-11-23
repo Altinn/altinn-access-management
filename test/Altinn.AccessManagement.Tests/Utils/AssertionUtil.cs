@@ -246,6 +246,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.CreatedSuccessfully, actual.CreatedSuccessfully);
             Assert.Equal(expected.DelegatedByUserId, actual.DelegatedByUserId);
+            Assert.Equal(expected.DelegatedByPartyId, actual.DelegatedByPartyId);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             AssertEqual(expected.CoveredBy, actual.CoveredBy);
             AssertEqual(expected.Resource, actual.Resource);

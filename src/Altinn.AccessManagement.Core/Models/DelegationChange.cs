@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -47,19 +48,25 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
-        public int PerformedByUserId { get; set; }
+        public int? PerformedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+        /// </summary>
+        [JsonPropertyName("performedbypartyid")]
+        public int? PerformedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.
         /// </summary>
         [JsonPropertyName("blobstoragepolicypath")]
-        public string BlobStoragePolicyPath { get; set; }
+        public string BlobStoragePolicyPath { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the blobstorage versionid
         /// </summary>
         [JsonPropertyName("blobstorageversionid")]
-        public string BlobStorageVersionId { get; set; }
+        public string BlobStorageVersionId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the resource id.

@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Controllers
 {
     /// <summary>
     /// Test class for <see cref="DelegationsController"></see>
@@ -584,9 +584,9 @@ namespace Altinn.AccessManagement.Tests
 
             // Act
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeletePolicy", content);
-                        
+
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);            
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         /// <summary>
@@ -823,6 +823,46 @@ namespace Altinn.AccessManagement.Tests
             {
                 TestDataUtil.GetRuleModel(20001337, 50001337, "20001336", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "read", "org1", "app1", createdSuccessfully: true),
                 TestDataUtil.GetRuleModel(20001337, 50001337, "20001336", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "write", "org1", "app1", createdSuccessfully: true),
+            };
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/addrules", content);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.True(actual.TrueForAll(a => a.CreatedSuccessfully));
+            Assert.True(actual.TrueForAll(a => !string.IsNullOrEmpty(a.RuleId)));
+            AssertionUtil.AssertEqual(expected, actual);
+            foreach (Rule rule in actual)
+            {
+                Assert.True(Guid.TryParse(rule.RuleId, out _));
+            }
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Calling the POST operation for AddRules to perform a valid delegation
+        /// Input:
+        /// List of one rule for delegation of the resourceregistry resource2 between for a single offeredby/coveredby combination resulting in a single delegation policy.
+        /// Expected Result:
+        /// Rules are created and returned with the CreatedSuccessfully flag set and rule ids
+        /// Success Criteria:
+        /// AddRules returns status code 201 and list of rules created match expected
+        /// </summary>
+        [Fact]
+        public async Task Post_AddRules_DelegatedByParty_Success()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/AddRules/ScopeaccessResourceRegistryId_50001337_20001337.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            List<Rule> expected = new List<Rule>
+            {
+                TestDataUtil.GetRuleModel(50001337, 50001337, "20001337", AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "scopeaccess", null, null, createdSuccessfully: true, resourceRegistryId: "resource2", delegatedByParty: true),
             };
 
             // Act
@@ -1430,6 +1470,40 @@ namespace Altinn.AccessManagement.Tests
         }
 
         /// <summary>
+        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
+        /// </summary>
+        [Fact]
+        public async Task GetAllOutboundDelegations_MissingBearerToken()
+        {
+            _client.DefaultRequestHeaders.Remove("Authorization");
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
+        /// </summary>
+        [Fact]
+        public async Task GetAllOutboundDelegations_InvalidBearerToken()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Remove("Authorization");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        /// <summary>
         /// Test case: GetAllInboundDelegations returns a list of delegations received by coveredby
         /// Expected: GetAllInboundDelegations returns a list of delegations received by coveredby
         /// </summary>
@@ -1546,6 +1620,39 @@ namespace Altinn.AccessManagement.Tests
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not set
+        /// </summary>
+        [Fact]
+        public async Task GetAllInboundDelegations_MissingBearerToken()
+        {
+            _client.DefaultRequestHeaders.Remove("Authorization");
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
+        /// </summary>
+        [Fact]
+        public async Task GetAllInboundDelegations_InvalidBearerToken()
+        {
+            _client.DefaultRequestHeaders.Remove("Authorization");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         /// <summary>

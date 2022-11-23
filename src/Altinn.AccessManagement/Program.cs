@@ -339,7 +339,13 @@ void ConfigurePostgreSql()
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-        string workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
+        
+        string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
+        if (builder.Environment.IsDevelopment())
+        {
+            workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
+        }
+
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
             new PostgreSqlBulkImportService(traceService),

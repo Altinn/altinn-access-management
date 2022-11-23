@@ -17,12 +17,12 @@ namespace Altinn.AccessManagement.Integration.Services
                     DelegationChange = new SimpleDelegationChange
                     {
                         DelegationChangeId = delegationChange.DelegationChangeId,
-                        AltinnAppId = delegationChange.AltinnAppId,
+                        AltinnAppId = delegationChange.ResourceId,
                         OfferedByPartyId = delegationChange.OfferedByPartyId,
                         CoveredByPartyId = delegationChange.CoveredByPartyId,
                         CoveredByUserId = delegationChange.CoveredByUserId,
                         PerformedByUserId = delegationChange.PerformedByUserId,
-                        Created = delegationChange.Created
+                        Created = delegationChange.Created.Value
                     }
                 }).ToList()
             };

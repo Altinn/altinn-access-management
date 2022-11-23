@@ -15,16 +15,28 @@ namespace Altinn.AccessManagement.Core.Models
         public int DelegationChangeId { get; set; }
 
         /// <summary>
+        /// Gets or sets the resource registry delegation change id
+        /// </summary>
+        [JsonPropertyName("resourceregistrydelegationchangeid")]
+        public int ResourceRegistryDelegationChangeId { get; set; }
+
+        /// <summary>
         /// Gets or sets the delegation change type
         /// </summary>
         [JsonPropertyName("delegationchangetype")]
         public DelegationChangeType DelegationChangeType { get; set; }
 
         /// <summary>
-        /// Gets or sets the altinnappid. E.g. skd/skattemelding
+        /// Gets or sets the resource id.
         /// </summary>
-        [JsonPropertyName("altinnappid")]
-        public string? AltinnAppId { get; set; }
+        [JsonPropertyName("resourceid")]
+        public string ResourceId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the resourcetype.
+        /// </summary>
+        [JsonPropertyName("resourcetype")]
+        public string ResourceType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the offeredbypartyid, refering to the party id of the user or organization offering the delegation.
@@ -69,21 +81,9 @@ namespace Altinn.AccessManagement.Core.Models
         public string BlobStorageVersionId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the resource id.
-        /// </summary>
-        [JsonPropertyName("resourceid")]
-        public string? ResourceId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the resourcetype.
-        /// </summary>
-        [JsonPropertyName("resourcetype")]
-        public string? ResourceType { get; set; }
-
-        /// <summary>
         /// Gets or sets the created date and timestamp for the delegation change
         /// </summary>
         [JsonPropertyName("created")]
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
     }
 }

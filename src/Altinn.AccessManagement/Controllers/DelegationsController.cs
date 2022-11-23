@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -101,7 +102,7 @@ namespace Altinn.AccessManagement.Controllers
             List<int> coveredByPartyIds = new List<int>();
             List<int> coveredByUserIds = new List<int>();
             List<int> offeredByPartyIds = new List<int>();
-            List<string> appIds = new List<string>();
+            List<string> resourceIds = new List<string>();
 
             if (ruleQuery.KeyRolePartyIds.Any(id => id != 0))
             {
@@ -115,11 +116,9 @@ namespace Altinn.AccessManagement.Controllers
 
             foreach (List<AttributeMatch> resource in ruleQuery.Resources)
             {
-                string org = resource.FirstOrDefault(match => match.Id == XacmlRequestAttribute.OrgAttribute)?.Value;
-                string app = resource.FirstOrDefault(match => match.Id == XacmlRequestAttribute.AppAttribute)?.Value;
-                if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
+                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _))
                 {
-                    appIds.Add($"{org}/{app}");
+                    resourceIds.Add(resourceId);
                 }
             }
 
@@ -139,17 +138,15 @@ namespace Altinn.AccessManagement.Controllers
 
             if (offeredByPartyIds.Count == 0)
             {
-                _logger.LogInformation($"Unable to get the rules: Missing offeredbyPartyId value.");
                 return StatusCode(400, $"Unable to get the rules: Missing offeredbyPartyId value.");
             }
 
             if (offeredByPartyIds.Count == 0 && coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
             {
-                _logger.LogInformation($"Unable to get the rules: Missing offeredby and coveredby values.");
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
 
-            List<Rule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
+            List<Rule> rulesList = await _pip.GetRulesAsync(resourceIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
             DelegationHelper.SetRuleType(rulesList, ruleQuery.OfferedByPartyId, ruleQuery.KeyRolePartyIds, ruleQuery.CoveredBy, ruleQuery.ParentPartyId);
             return Ok(rulesList);
         }

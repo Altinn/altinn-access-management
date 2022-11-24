@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Xunit;
@@ -123,7 +124,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Count, actual.Count);
             foreach (DelegationChange expectedEntity in expected)
             {
-                DelegationChange actualentity = actual.FirstOrDefault(a => a.AltinnAppId == expectedEntity.AltinnAppId
+                DelegationChange actualentity = actual.FirstOrDefault(a => a.ResourceId == expectedEntity.ResourceId
+                                                                        && a.ResourceType == expectedEntity.ResourceType
                                                                         && a.BlobStoragePolicyPath == expectedEntity.BlobStoragePolicyPath
                                                                         && a.CoveredByPartyId == expectedEntity.CoveredByPartyId
                                                                         && a.CoveredByUserId == expectedEntity.CoveredByUserId
@@ -245,6 +247,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.CreatedSuccessfully, actual.CreatedSuccessfully);
             Assert.Equal(expected.DelegatedByUserId, actual.DelegatedByUserId);
+            Assert.Equal(expected.DelegatedByPartyId, actual.DelegatedByPartyId);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             AssertEqual(expected.CoveredBy, actual.CoveredBy);
             AssertEqual(expected.Resource, actual.Resource);
@@ -252,43 +255,24 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="ReceivedDelegation"/> have the same property in the same positions.
+        /// Assert that two <see cref="DelegationExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(ReceivedDelegation expected, ReceivedDelegation actual)
+        public static void AssertDelegationEqual(DelegationExternal expected, DelegationExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
 
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             Assert.Equal(expected.OfferedByName, actual.OfferedByName);
-            Assert.Equal(expected.OfferedByOrgNumber, actual.OfferedByOrgNumber);
-
-            for (int i = 0; i < expected.Resources.Count; i++)
-            {
-                AssertEqual(expected.Resources[i], actual.Resources[i]);
-            }
-        }
-
-        /// <summary>
-        /// Assert that two <see cref="OfferedDelegations"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(OfferedDelegations expected, OfferedDelegations actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
+            Assert.Equal(expected.OfferedByOrganizationNumber, actual.OfferedByOrganizationNumber);
+            Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
+            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
+            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-
-            Assert.Equal(expected.Delegations.Count, actual.Delegations.Count);
-            for (int i = 0; i < expected.Delegations.Count; i++)
-            {
-                AssertEqual(expected.Delegations[i], actual.Delegations[i]);
-            }
+            Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
         }
 
         /// <summary>

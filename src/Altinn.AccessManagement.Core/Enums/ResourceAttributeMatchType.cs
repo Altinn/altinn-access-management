@@ -18,6 +18,6 @@
         /// <summary>
         /// Legacy App resource identified by org owner and app name
         /// </summary>
-        AltinnApp = 2
+        AltinnAppId = 2
     }
 }

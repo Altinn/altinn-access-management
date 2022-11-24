@@ -14,5 +14,10 @@
         /// Name of the cookie for where JWT is stored
         /// </summary>
         public string? JwtCookieName { get; set; }
+
+        /// <summary>
+        /// Endpoint for authentication
+        /// </summary>
+        public string? ApiAuthenticationEndpoint { get; set; }
     }
 }

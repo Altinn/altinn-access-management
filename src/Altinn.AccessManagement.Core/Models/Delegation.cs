@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -35,7 +36,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
-        public int PerformedByUserId { get; set; }
+        public int? PerformedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+        /// </summary>
+        [JsonPropertyName("performedbypartyid")]
+        public int? PerformedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets the userid that performed the delegation
@@ -54,5 +61,22 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [JsonPropertyName("coveredbyorgnummer")]
         public int CoveredByOrganizationNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource id that is delegated
+        /// </summary>
+        [JsonPropertyName("resourceid")]
+        public string ResourceId { get; set; }
+
+        /// <summary>
+        /// The title of resource
+        /// </summary>
+        public Dictionary<string, string> ResourceTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of resource that is delegated
+        /// </summary>
+        [JsonPropertyName("resourcetype")]
+        public ResourceType DelegationResourceType { get; set; }
     }
 }

@@ -142,14 +142,14 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// Builds the delegation policy path based on org and app names, as well as identifiers for the delegating and receiving entities
         /// </summary>
         /// <param name="resourceMatchType">the resource match type</param>
-        /// <param name="resourceRegistryId">The id of the resource in the resourceregistry</param>
+        /// <param name="resourceId">The id of the resource. Either a resource registry id or org/app</param>
         /// <param name="org">The organization name/identifier</param>
         /// <param name="app">The altinn app name</param>
         /// <param name="offeredBy">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy or null if party id</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy or null if user id</param>
         /// <returns>policypath matching input data</returns>
-        public static string GetDelegationPolicyPath(ResourceAttributeMatchType resourceMatchType, string resourceRegistryId, string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId)
+        public static string GetDelegationPolicyPath(ResourceAttributeMatchType resourceMatchType, string resourceId, string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId)
         {
             if (string.IsNullOrWhiteSpace(offeredBy))
             {
@@ -191,15 +191,15 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                if (string.IsNullOrWhiteSpace(resourceRegistryId))
+                if (string.IsNullOrWhiteSpace(resourceId))
                 {
                     throw new ArgumentException("ResourceRegistryId was not defined");
                 }
 
-                return $"resourceregistry/{resourceRegistryId.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix.AsFileName()}{coveredBy.AsFileName()}/delegationpolicy.xml";
+                return $"resourceregistry/{resourceId.AsFileName()}/{offeredBy.AsFileName()}/{coveredByPrefix}{coveredBy.AsFileName()}/delegationpolicy.xml";
             }
 
-            if (resourceMatchType == ResourceAttributeMatchType.AltinnApp)
+            if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
                 if (string.IsNullOrWhiteSpace(org))
                 {
@@ -267,34 +267,25 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a XacmlPolicy <see cref="XacmlPolicy"/> representation based on the DelegationPolicy input
         /// </summary>
-        /// <param name="org">Unique identifier of the organisation responsible for the app.</param>
-        /// <param name="app">Application identifier which is unique within an organisation.</param>
-        /// <param name="resourceRegistryId">The identifier of the resource in resourceregistry.</param>
+        /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
         /// <param name="rules">The set of rules to be delegated</param>
-        public static XacmlPolicy BuildDelegationPolicy(string org, string app, string resourceRegistryId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, IList<Rule> rules)
+        public static XacmlPolicy BuildDelegationPolicy(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, IList<Rule> rules)
         {
             XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
             delegationPolicy.Version = "1.0";
 
             string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
 
-            if (!string.IsNullOrWhiteSpace(resourceRegistryId))
-            {
-                delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {offeredByPartyId} to {coveredBy}, for resources with the resource id; {resourceRegistryId}";
-            }
-            else
-            {
-                delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {offeredByPartyId} to {coveredBy}, for resources on the app; {org}/{app}";
-            }
+            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {offeredByPartyId} to {coveredBy}, for the resource; {resourceId}";
 
             foreach (Rule rule in rules)
             {
                 if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                 {
-                    delegationPolicy.Rules.Add(BuildDelegationRule(org, app, resourceRegistryId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
+                    delegationPolicy.Rules.Add(BuildDelegationRule(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
                 }
             }
 
@@ -304,29 +295,21 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
         /// </summary>
-        /// <param name="org">Unique identifier of the organisation responsible for the app.</param>
-        /// <param name="app">Application identifier which is unique within an organisation.</param>
-        /// <param name="resourceRegistryId">The identifier of the resource in resourceregistry.</param>
+        /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlRule BuildDelegationRule(string org, string app, string resourceRegistryId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Rule rule)
+        public static XacmlRule BuildDelegationRule(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Rule rule)
         {
             rule.RuleId = Guid.NewGuid().ToString();
             
             string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
             XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
             {
-                Description = $"Delegation of a right/action from {offeredByPartyId} to {coveredBy}, for a resource on the app; {org}/{app}, by user; {rule.DelegatedByUserId}",
+                Description = $"Delegation of a right/action from {offeredByPartyId} to {coveredBy}, for the resource: {resourceId}, by user; {rule.DelegatedByUserId}",
                 Target = BuildDelegationRuleTarget(coveredByPartyId, coveredByUserId, rule)
             };
-
-            if (!string.IsNullOrWhiteSpace(resourceRegistryId))
-            {
-                delegationRule.Description = $"Delegation of a right/action from {offeredByPartyId} to {coveredBy}, for a resource with the resourceid; {resourceRegistryId}, by user; {rule.DelegatedByUserId}";
-            }
-
             return delegationRule;
         }
 

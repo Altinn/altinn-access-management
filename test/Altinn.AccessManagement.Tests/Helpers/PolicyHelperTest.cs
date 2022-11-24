@@ -6,7 +6,7 @@ using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ABAC.Xacml;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Helpers
 {
     /// <summary>
     /// Test class for <see cref="PolicyHelper"></see>
@@ -61,7 +61,7 @@ namespace Altinn.AccessManagement.Tests
         {
             // Arrange
             XacmlPolicy policy = await _policyRetrievalPointMock.GetPolicyAsync("resource1");
-            
+
             List<string> expected = TestDataUtil.GetRolesWithAccess();
 
             // Act
@@ -91,7 +91,7 @@ namespace Altinn.AccessManagement.Tests
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, null, "app", "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, null, "app", "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {
@@ -122,7 +122,7 @@ namespace Altinn.AccessManagement.Tests
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, "org", string.Empty, "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, "org", string.Empty, "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {
@@ -158,7 +158,7 @@ namespace Altinn.AccessManagement.Tests
             catch (System.ArgumentException argEx)
             {
                 actual = argEx.Message;
-            }            
+            }
 
             // Assert
             Assert.Equal(expectedArgumentException, actual);

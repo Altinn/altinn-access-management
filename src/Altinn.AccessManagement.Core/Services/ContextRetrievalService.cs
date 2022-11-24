@@ -113,6 +113,25 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
+        public async Task<int> GetPartyId(string ssnOrOrgno)
+        {
+            string cacheKey = $"ssnOrgno:{ssnOrOrgno}";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out int partyId))
+            {
+                partyId = await _partiesClient.GetPartyId(ssnOrOrgno);
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+               .SetPriority(CacheItemPriority.High)
+               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+
+                _memoryCache.Set(cacheKey, partyId, cacheEntryOptions);
+            }
+
+            return partyId;
+        }
+
+        /// <inheritdoc/>
         public async Task<List<int>> GetKeyRolePartyIds(int userId)
         {
             string cacheKey = $"KeyRolePartyIds_u:{userId}";

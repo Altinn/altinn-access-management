@@ -1,48 +1,88 @@
-﻿using Altinn.AccessManagement.Core.Helpers;
+﻿using System.Web;
+using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Models;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace Altinn.AuthorizationAdmin
+namespace Altinn.AccessManagement
 {
     /// <summary>
     /// HomeController
     /// </summary>
+    [Route("accessmanagement/")]
     public class HomeController : Controller
     {
-        /// <summary>
-        /// Gets the index vew for AuthorizationAdmin
-        /// </summary>
-        /// <returns>View result</returns>
-        [HttpGet]
-        [Route("accessmanagement/")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult Index()
-        {
-            bool frontendInDevMode = AppEnvironment.GetVariable("FRONTEND_MODE") == "Development";
-            string frontendDevUrl = AppEnvironment.GetVariable("FRONTEND_DEV_URL", "http://localhost:3000");
-
-            ViewData["frontendInDevMode"] = frontendInDevMode;
-            ViewData["frontendDevUrl"] = frontendDevUrl;
-
-            if (!frontendInDevMode)
-            {
-                ViewData["frontendProdCss"] = _frontEndEntrypoints?.Css?[0];
-                ViewData["frontendProdJs"] = _frontEndEntrypoints?.File;
-            }
-
-            return View();
-        }
-
-        private FrontEndEntryPointOptions _frontEndEntrypoints;
+        private readonly IAntiforgery _antiforgery;
+        private readonly PlatformSettings _platformSettings;
+        private readonly IWebHostEnvironment _env;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="frontEndEntrypoints">Configuration of frontend entry points</param>
-        public HomeController(IOptions<FrontEndEntryPointOptions> frontEndEntrypoints)
+        /// <param name="antiforgery">the anti forgery service</param>
+        /// <param name="platformSettings">settings related to the platform</param>
+        /// <param name="env">the current environment</param>
+        public HomeController(
+            IOptions<FrontEndEntryPointOptions> frontEndEntrypoints,
+            IAntiforgery antiforgery,
+            IOptions<PlatformSettings> platformSettings,
+            IWebHostEnvironment env)
         {
-            _frontEndEntrypoints = frontEndEntrypoints.Value;
+            _antiforgery = antiforgery;
+            _platformSettings = platformSettings.Value;
+            _env = env;
+        }
+
+        /// <summary>
+        /// Gets the app frontend view for Accessmanagement
+        /// </summary>
+        /// <returns>View result</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult Index()
+        {
+            // See comments in the configuration of Antiforgery in MvcConfiguration.cs.
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            if (_env.IsDevelopment())
+            {
+                HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+                {
+                    HttpOnly = false // Make this cookie readable by Javascript.
+                });
+            }
+            else
+            {
+                HttpContext.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+                {
+                    Secure = true,
+                    HttpOnly = false // Make this cookie readable by Javascript.
+                });
+            }
+
+            if (ShouldShowAppView())
+            {
+                return View();
+            }
+
+            string scheme = _env.IsDevelopment() ? "http" : "https";
+            string goToUrl = HttpUtility.UrlEncode($"{scheme}://{Request.Host}/accessmanagement");
+
+            string redirectUrl = $"{_platformSettings.ApiAuthenticationEndpoint}authentication?goto={goToUrl}";
+
+            return Redirect(redirectUrl);
+        }
+
+        private bool ShouldShowAppView()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

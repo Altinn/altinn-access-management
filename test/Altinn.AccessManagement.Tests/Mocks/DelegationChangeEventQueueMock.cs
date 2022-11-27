@@ -15,7 +15,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <param name="delegationChange">The delegation change stored in postgresql</param>
         public Task<SendReceipt> Push(DelegationChange delegationChange)
         {
-            if (string.IsNullOrEmpty(delegationChange.AltinnAppId) || delegationChange.AltinnAppId == "error/delegationeventfail")
+            if (delegationChange.ResourceId == "error/delegationeventfail")
             {
                 throw new Exception("DelegationChangeEventQueue || Push || Error");
             }

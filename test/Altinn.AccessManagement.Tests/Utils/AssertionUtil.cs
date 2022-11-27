@@ -124,7 +124,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Count, actual.Count);
             foreach (DelegationChange expectedEntity in expected)
             {
-                DelegationChange actualentity = actual.FirstOrDefault(a => a.AltinnAppId == expectedEntity.AltinnAppId
+                DelegationChange actualentity = actual.FirstOrDefault(a => a.ResourceId == expectedEntity.ResourceId
+                                                                        && a.ResourceType == expectedEntity.ResourceType
                                                                         && a.BlobStoragePolicyPath == expectedEntity.BlobStoragePolicyPath
                                                                         && a.CoveredByPartyId == expectedEntity.CoveredByPartyId
                                                                         && a.CoveredByUserId == expectedEntity.CoveredByUserId

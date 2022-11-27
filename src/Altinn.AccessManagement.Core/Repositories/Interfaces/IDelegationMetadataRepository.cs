@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Repositories.Interfaces
@@ -18,44 +19,44 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <summary>
         /// Gets the latest delegation change matching the filter values
         /// </summary>
-        /// <param name="altinnAppId">The AltinnApp identifier iin the format org/appname</param>
-        /// <param name="resourceRegistryId">The Id of the resource in resourceRegistry.</param>
+        /// <param name="resourceMatchType">The resource match type specifying whether the lookup is for an Altinn App delegation or a resource from the Resource Registry</param>
+        /// <param name="resourceId">The resourceId to look up. Either Altinn app id (org/app) or resource registry id</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the entity is a user</param>
-        Task<DelegationChange> GetCurrentDelegationChange(string? altinnAppId, string? resourceRegistryId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
+        Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
 
         /// <summary>
         /// Gets all the delegation change records matching the filter values for a complete changelog
         /// </summary>
-        /// <param name="altinnAppId">The AltinnApp identifier iin the format org/appname</param>
+        /// <param name="altinnAppId">The Altinn app id (org/app)</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the entity is a user</param>
-        Task<List<DelegationChange>> GetAllDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
+        Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId);
 
         /// <summary>
         /// Gets all the current delegation change records matching the filter values
         /// </summary>
         /// <param name="offeredByPartyIds">The list of party id of the entity offering the delegated the policy</param>
-        /// <param name="altinnAppIds">The list of AltinnApp identifier iin the format org/appname</param>
+        /// <param name="altinnAppIds">The list of altinn app ids to look up</param>
         /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserIds">The list of user id of the entity having received the delegated policy, if the entity is a user</param>
-        Task<List<DelegationChange>> GetAllCurrentDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null);
+        Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null);
 
         /// <summary>
         /// Gets the delegated resources for a given reportee
         /// </summary>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegation</param>
         /// <param name="resourceType">the type of the resource that was delegated</param>
-        Task<List<DelegationChange>> GetAllOfferedDelegations(int offeredByPartyId, ResourceType resourceType);
+        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, ResourceType resourceType);
 
         /// <summary>
         /// Gets the received resource delgations for a given reportee
         /// </summary>
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
         /// <param name="resourceType">the type of resource</param>
-        Task<List<DelegationChange>> GetReceivedDelegationsAsync(int coveredByPartyId, ResourceType resourceType);
+        Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(int coveredByPartyId, ResourceType resourceType);
 
         /// <summary>
         /// Gets the delgations for a given supplier, consumer and resourcetype based on resourceids
@@ -64,6 +65,6 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="offeredByPartyid">the party id of the entity that offered the delegation</param>
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
         /// <param name="resourceType">the type of resource</param>
-        Task<List<DelegationChange>> SearchDelegationsAsync(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType);
+        Task<List<DelegationChange>> GetResourceRegistryDelegationChangesForAdmin(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType);
     }
 }

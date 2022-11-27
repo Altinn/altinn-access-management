@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
@@ -133,23 +134,22 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="changeType">changeType</param>
         /// <param name="changeId">changeId</param>
         /// <returns></returns>
-        public static DelegationChange GetDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337, string? resourceId = null, string? resourceType = null)
+        public static DelegationChange GetAltinnAppDelegationChange(string altinnAppId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
             return new DelegationChange
             {
                 DelegationChangeId = changeId,
                 DelegationChangeType = changeType,
-                AltinnAppId = altinnAppId,
+                ResourceId = altinnAppId,
+                ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
                 OfferedByPartyId = offeredByPartyId,
                 CoveredByPartyId = coveredByPartyId,
                 CoveredByUserId = coveredByUserId,
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"{altinnAppId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now,
-                ResourceId = resourceId,
-                ResourceType = resourceType
+                Created = DateTime.Now                
             };
         }
 
@@ -242,7 +242,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// Creates a DelegationChange model from the input.
         /// </summary>
         /// <returns>DelegationChange.</returns>
-        public static DelegationChange GetResourceDelegationChange(string resourceRegistryId, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        public static DelegationChange GetResourceRegistryDelegationChange(string resourceRegistryId, ResourceType resourceType, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
            
@@ -250,15 +250,15 @@ namespace Altinn.AccessManagement.Tests.Utils
             {
                 DelegationChangeId = changeId,
                 DelegationChangeType = changeType,
-                AltinnAppId = null,
+                ResourceId = resourceRegistryId,
+                ResourceType = resourceType.ToString(),
                 OfferedByPartyId = offeredByPartyId,
                 CoveredByPartyId = coveredByPartyId,
                 CoveredByUserId = coveredByUserId,
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"resourceregistry/{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now,
-                ResourceId = resourceRegistryId,
+                Created = DateTime.Now                
             };
         }
 

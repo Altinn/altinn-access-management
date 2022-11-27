@@ -91,7 +91,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, null, "app", "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, null, "app", "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {
@@ -122,7 +122,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnApp, null, "org", string.Empty, "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, "org", string.Empty, "50001337", 20001337, null);
             }
             catch (System.ArgumentException argEx)
             {

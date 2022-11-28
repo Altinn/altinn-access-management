@@ -11,22 +11,22 @@
         Unknown = 0,
 
         /// <summary>
-        /// Delegated directly to user
+        /// Delegated to user
         /// </summary>
         DirectUserDelegation = 1,
 
         /// <summary>
-        /// Delegated directly to user, from main unit
+        /// Delegated to user, from main unit
         /// </summary>
         DirectUserDelegationFromMainUnit = 2,
 
         /// <summary>
-        /// Delegated directly to user
+        /// Delegated to organization
         /// </summary>
         DirectOrgDelegation = 3,
 
         /// <summary>
-        /// Delegated directly to user, from main unit
+        /// Delegated to organization, from main unit
         /// </summary>
         DirectOrgDelegationFromMainUnit = 4,
 

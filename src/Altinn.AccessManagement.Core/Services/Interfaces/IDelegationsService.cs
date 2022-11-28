@@ -31,8 +31,9 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// </summary>
         /// <param name="subjectUserId">The user id to find delegations for</param>
         /// <param name="reporteePartyId">The party id of the reportee to find delegations from</param>
-        /// <param name="resourceRegistryId">The resource to find delegations of</param>
+        /// <param name="resourceId">The resource to find delegations of. Either a resource registry id or an altinn app</param>
+        /// <param name="resourceMatchType">Indicator whether the resourceId is a resource from the Resource Registry or an Altinn App</param>
         /// <returns>List of delgation changes</returns>
-        public Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceRegistryId);
+        public Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType);
     }
 }

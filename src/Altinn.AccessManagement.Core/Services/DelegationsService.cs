@@ -42,15 +42,22 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceRegistryId)
+        public async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
         {
-            Dictionary<DelegationType, List<DelegationChange>> result = new Dictionary<DelegationType, List<DelegationChange>>();
-            List<int> offeredByPartyIds = new List<int> { reporteePartyId };
-            List<int> coveredByUserIds = new List<int> { subjectUserId };
+            if (resourceMatchType == ResourceAttributeMatchType.None)
+            {
+                throw new NotSupportedException("Must specify the resource match type");
+            }
+
+            List<DelegationChange> delegations = new List<DelegationChange>();
+            List<int> offeredByPartyIds = reporteePartyId.SingleToList();
+            List<string> resourceIds = resourceId.SingleToList();
 
             // 1. Direct user delegations
-            List<DelegationChange> delegations = await GetAllCachedDelegationChanges(offeredByPartyIds, resourceRegistryId.SingleToList(), coveredByUserIds: coveredByUserIds);
-            ////result.Add(DelegationType.DirectUserDelegation, delegations);
+            List<DelegationChange> userDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
+                await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) :
+                await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserId: subjectUserId);
+            delegations.AddRange(userDelegations);
 
             // 2. Direct user delegations from mainunit
             List<MainUnit> mainunits = await _contextRetrievalService.GetMainUnits(reporteePartyId);
@@ -59,12 +66,13 @@ namespace Altinn.AccessManagement.Core.Services
             if (mainunitPartyIds.Any())
             {
                 offeredByPartyIds.AddRange(mainunitPartyIds);
-                List<DelegationChange> directMainUnitDelegations = await GetAllCachedDelegationChanges(mainunitPartyIds, resourceRegistryId.SingleToList(), coveredByUserIds: coveredByUserIds);
+                List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
+                    await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) :
+                    await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserId: subjectUserId);
 
                 if (directMainUnitDelegations.Any())
                 {
                     delegations.AddRange(directMainUnitDelegations);
-                    ////result.Add(DelegationType., directMainUnitDelegations);
                 }
             }
 
@@ -72,7 +80,9 @@ namespace Altinn.AccessManagement.Core.Services
             List<int> keyrolePartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId);
             if (keyrolePartyIds.Any())
             {
-                List<DelegationChange> keyRoleDelegations = await GetAllCachedDelegationChanges(offeredByPartyIds, resourceRegistryId.SingleToList(), coveredByPartyIds: keyrolePartyIds);
+                List<DelegationChange> keyRoleDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
+                    await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds) :
+                    await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds);
 
                 if (keyRoleDelegations.Any())
                 {
@@ -113,7 +123,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceType);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId.SingleToList(), resourceTypes: resourceType.SingleToList());
             List<int> parties = new List<int>();
             foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
             {
@@ -152,7 +162,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetInboundDelegations(int coveredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId, resourceType);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId.SingleToList(), new List<int>(), resourceTypes: resourceType.SingleToList()); // ToDo Fix Optional OfferedBy
             List<int> parties = new List<int>();
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
@@ -228,50 +238,6 @@ namespace Altinn.AccessManagement.Core.Services
             Party party;
             party = _contextRetrievalService.GetPartyAsync(partyId).Result;
             return party;
-        }
-
-        private async Task<List<DelegationChange>> GetAllCachedDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null)
-        {
-            List<DelegationChange> delegationChanges;
-            string cacheKey = GetDlgChangeCacheKey(offeredByPartyIds, resourceRegistryIds, coveredByPartyIds, coveredByUserIds);
-            if (!_memoryCache.TryGetValue(cacheKey, out delegationChanges))
-            {
-                ////delegationChanges = await _delegationRepository.GetAllCurrentDelegationChanges(offeredByPartyIds, resourceRegistryIds, coveredByPartyIds, coveredByUserIds);
-
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, 0, 5, 0)); // Should GetRight use cache? How long?
-
-                _memoryCache.Set(cacheKey, delegationChanges, cacheEntryOptions);
-            }
-
-            return delegationChanges;
-        }
-
-        private string GetDlgChangeCacheKey(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null)
-        {
-            string cacheKey = null;
-            foreach (int id in offeredByPartyIds ?? Enumerable.Empty<int>())
-            {
-                cacheKey += $"o:{id};";
-            }
-
-            foreach (string id in resourceRegistryIds ?? Enumerable.Empty<string>())
-            {
-                cacheKey += $"a:{id};";
-            }
-
-            foreach (int id in coveredByPartyIds ?? Enumerable.Empty<int>())
-            {
-                cacheKey += $"p:{id};";
-            }
-
-            foreach (int id in coveredByUserIds ?? Enumerable.Empty<int>())
-            {
-                cacheKey += $"u:{id};";
-            }
-
-            return cacheKey;
         }
     }
 }

@@ -24,5 +24,31 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             return roleMatches;
         }
+
+        /// <summary>
+        /// Gets the subject list for a given delegation change, for building a XacmlContextRequest
+        /// </summary>
+        /// <param name="delegationChange">The delegation change to retrieve subject from</param>
+        /// <returns>List of attribute matches</returns>
+        public static List<AttributeMatch> GetSubjectAttributeMatches(DelegationChange delegationChange)
+        {
+            if (delegationChange.CoveredByUserId.HasValue)
+            {
+                return new List<AttributeMatch>()
+                {
+                    new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = delegationChange.CoveredByUserId.Value.ToString() }
+                };
+            }
+
+            if (delegationChange.CoveredByPartyId.HasValue)
+            {
+                return new List<AttributeMatch>()
+                {
+                    new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = delegationChange.CoveredByPartyId.Value.ToString() }
+                };
+            }
+
+            return new();
+        }
     }
 }

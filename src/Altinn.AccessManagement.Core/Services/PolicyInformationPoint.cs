@@ -68,6 +68,8 @@ namespace Altinn.AccessManagement.Core.Services
             Dictionary<string, Right> result = new Dictionary<string, Right>();
             XacmlPolicy policy = null;
 
+            // TODO: Caching??
+
             // Verify resource
             if (!DelegationHelper.TryGetResourceFromAttributeMatch(rightsQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app)
                 || resourceMatchType == ResourceAttributeMatchType.None)
@@ -110,14 +112,13 @@ namespace Altinn.AccessManagement.Core.Services
             EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, roleAttributeMatches);
 
             // Delegation Policy Rights
-            List<XacmlPolicy> delegationPolicies = new();
-            List<AttributeMatch> subjects = new();
-
-            string resourceId = resourceRegistryId ?? $"{org}/{app}";
-            List<DelegationChange> delegations = await _delegationsService.FindAllDelegations(coveredByUserId, rightsQuery.From, resourceId);
+            string resourceId = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ? $"{org}/{app}" : resourceRegistryId;
+            List<DelegationChange> delegations = await _delegationsService.FindAllDelegations(coveredByUserId, rightsQuery.From, resourceId, resourceMatchType);
             
-            foreach (XacmlPolicy delegationPolicy in delegationPolicies)
+            foreach (DelegationChange delegation in delegations)
             {
+                XacmlPolicy delegationPolicy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId);
+                List<AttributeMatch> subjects = RightsHelper.GetSubjectAttributeMatches(delegation);
                 EnrichRightsDictionaryWithRightsFromPolicy(result, delegationPolicy, RightSourceType.DelegationPolicy, subjects);
             }
 
@@ -218,16 +219,17 @@ namespace Altinn.AccessManagement.Core.Services
                     if (decisionResult.Decision.Equals(XacmlContextDecision.Permit))
                     {
                         rights[ruleRight.RightKey].HasPermit = true;
-                        rights[ruleRight.RightKey].RightSources.Add(
-                            new RightSource
-                            {
-                                PolicyId = policy.PolicyId.OriginalString,
-                                PolicyVersion = policy.Version,
-                                RuleId = rule.RuleId,
-                                RightSourceType = policySourceType,
-                                Subject = subjects // ToDo: Get subject matches from ABAC
-                            });
                     }
+                    
+                    rights[ruleRight.RightKey].RightSources.Add(
+                        new RightSource
+                        {
+                            PolicyId = policy.PolicyId.OriginalString,
+                            PolicyVersion = policy.Version,
+                            RuleId = rule.RuleId,
+                            RightSourceType = policySourceType,
+                            Subject = subjects // ToDo: Get subject matches from ABAC
+                        });
                 }
             }
         }

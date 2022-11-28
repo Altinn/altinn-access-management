@@ -35,8 +35,8 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         ////[Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("accessmanagement/api/v1/rights/received")]
-        public async Task<List<Right>> RightsQuery([FromBody] RightsQuery rightsQuery)
+        [Route("accessmanagement/api/v1/{party}/rights/received")]
+        public async Task<List<Right>> RightsQuery([FromBody] RightsQuery rightsQuery) // TODO replace body with path and query
         {
             List<Right> result = new();
             try

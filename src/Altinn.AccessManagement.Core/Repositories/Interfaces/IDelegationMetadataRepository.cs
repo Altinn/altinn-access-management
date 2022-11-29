@@ -62,9 +62,9 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// Gets the delgations for a given supplier, consumer and resourcetype based on resourceids
         /// </summary>
         /// <param name="resourceIds">the resource ids</param>
-        /// <param name="offeredByPartyid">the party id of the entity that offered the delegation</param>
+        /// <param name="offeredByPartyId">the party id of the entity that offered the delegation</param>
         /// <param name="coveredByPartyId">The party id of the entity that received the delegation</param>
         /// <param name="resourceType">the type of resource</param>
-        Task<List<DelegationChange>> GetResourceRegistryDelegationChangesForAdmin(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType);
+        Task<List<DelegationChange>> GetResourceRegistryDelegationChangesForAdmin(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType);
     }
 }

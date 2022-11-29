@@ -1715,7 +1715,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Act
             int supplierOrg = 810418362;
-            int consumerOrg = 810418532;
             string scopes = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg=&scopes={scopes}");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -1732,7 +1731,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllDelegationsForAdmin_missing_supplier()
         {
             // Act
-            int supplierOrg = 810418362;
             int consumerOrg = 810418532;
             string scopes = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg=&consumerorg={consumerOrg}&scopes={scopes}");
@@ -1752,7 +1750,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             int supplierOrg = 810418362;
             int consumerOrg = 810418532;
-            string scopes = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes=");
             string responseContent = await response.Content.ReadAsStringAsync();
 

@@ -310,7 +310,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
         [Authorize]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scopes)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scopes)
         {
             if (supplierOrg == null || supplierOrg == 0)
             {
@@ -330,7 +330,7 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 List<Delegation> delegations = await _delegation.GetAllDelegationsForAdminAsync(Convert.ToInt32(supplierOrg), Convert.ToInt32(consumerOrg), scopes);
-                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
+                List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
                 if (delegationsExternal == null || delegationsExternal.Count == 0)
                 {
                     return Ok("No delegations found");

@@ -84,6 +84,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
         {
             DelegationChange result = null;
+            DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
 
             switch (resourceId)
             {
@@ -104,10 +105,10 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.Grant);
                     break;
                 case "resource1":
-                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, coveredByUserId, coveredByPartyId);
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
                     break;
                 case "resource2":
-                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, coveredByUserId, coveredByPartyId);
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
                     break;
                 default:
                     result = null;
@@ -192,24 +193,25 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> result = new List<DelegationChange>();
+            DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
 
             if (offeredByPartyId == 50004223 && resourceType == ResourceType.MaskinportenSchema)
             {
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1236));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004221, 20000002, DelegationChangeType.Grant, 1236));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004220, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004221, 20000002, DelegationChangeType.Grant, 1234));
             }
             else if (offeredByPartyId == 50004226 && resourceType == ResourceType.MaskinportenSchema)
             {
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1236));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004220, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, null, 50004221, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004221, 20000002, DelegationChangeType.Grant, 1236));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004220, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, offeredByPartyId, created, null, 50004221, 20000002, DelegationChangeType.Grant, 1234));
             }
 
             return Task.FromResult(result);
@@ -219,21 +221,22 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(int coveredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> result = new List<DelegationChange>();
+            DateTime created = DateTime.Parse("2022-09-27T13:02:23.786072Z");
             if (coveredByPartyId == 50004219 && resourceType == ResourceType.MaskinportenSchema)
             {
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004220, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004220, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004221, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004221, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004220, created, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004220, created, null, coveredByPartyId, 20000007, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004221, created, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004221, created, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
             }
             else if (coveredByPartyId == 50004216 && resourceType == ResourceType.MaskinportenSchema)
             {
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, 50004226, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004226, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, 50004226, created, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004226, created, null, coveredByPartyId, 20000002, DelegationChangeType.Grant, 1234));
             }
 
             return Task.FromResult(result);
@@ -245,8 +248,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
             List<DelegationChange> result = new List<DelegationChange>();
             if (offeredByPartyid == 50004222 && coveredByPartyId == 50004219 && (resourceIds != null && resourceIds.Count > 0))
             {
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("appid-119", resourceType, offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant));
-                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("appid-122", resourceType, offeredByPartyid, null, coveredByPartyId, 20000008, DelegationChangeType.Grant));
+                DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", resourceType, offeredByPartyid, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("appid-123", resourceType, offeredByPartyid, created, null, coveredByPartyId, 20000008, DelegationChangeType.Grant));
             }
 
             return Task.FromResult(result);

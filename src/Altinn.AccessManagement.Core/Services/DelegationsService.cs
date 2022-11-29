@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -182,7 +183,8 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
-                ////delegation.DelegationResourceType = resource.ResourceType;
+                delegation.AltinnIIResourceId = delegationChange.ResourceId.StartsWith("appid-") ? Guid.Parse(GetReferenceValue(delegationChange.ResourceId, resource, ReferenceSource.Altinn2, ReferenceType.DelegationSchemeId)) : null;
+                delegation.Scopes = new HashSet<string>(resource?.ResourceReferences?.Where(rf => string.Equals(rf.ReferenceType, ReferenceType.MaskinportenScope)).Select(rf => rf.Reference).ToList());
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }
@@ -236,6 +238,31 @@ namespace Altinn.AccessManagement.Core.Services
             party = _partyClient.GetPartyAsync(partyId).Result;
             return party;
         }      
+
+        /// <summary>
+        /// Gets the altinn 2 id for a given resource
+        /// </summary>
+        /// <param name="resourceId">resource id in altinn 3</param>
+        /// <param name="resources">list of resources</param>
+        private string GetIdForAltinnIIResource(string resourceId, List<ServiceResource> resources)
+        {
+            ServiceResource resource = resources.Find(r => r.Identifier == resourceId);
+            ResourceReference resourceReference = resource.ResourceReferences.Find(rf => rf.ReferenceSource == ReferenceSource.Altinn3 && rf.ReferenceType == ReferenceType.DelegationSchemeId);
+            return resourceReference.Reference;
+        }
+
+        /// <summary>
+        /// Gets the reference value for a given resourcereference type
+        /// </summary>
+        /// <param name="resourceId">resource id in altinn 3</param>
+        /// <param name="resource">resource</param>
+        /// <param name="referenceSource">reference source</param>
+        /// <param name="referenceType">reference type</param>
+        private string GetReferenceValue(string resourceId, ServiceResource resource, ReferenceSource referenceSource, ReferenceType referenceType)
+        {
+            ResourceReference reference = resource.ResourceReferences.Find(rf => rf.ReferenceSource == referenceSource && rf.ReferenceType == referenceType);
+            return reference.Reference;
+        }
 
         #endregion
     }

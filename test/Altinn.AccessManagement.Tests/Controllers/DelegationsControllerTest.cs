@@ -1665,11 +1665,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<string> resourceIds = new List<string>
             {
-                "appid-119",
-                "appid-122"
+                "nav_aa_distribution",
+                "appid-123"
             };
 
-            List<DelegationExternal> expectedDelegations = GetExpectedDelegationsForAdmin(50004222, 50004219, resourceIds);
+            List<MPDelegationExternal> expectedDelegations = GetExpectedDelegationsForAdmin("810418672", "810418192", resourceIds);
 
             // Act
             int supplierOrg = 810418672;
@@ -1677,11 +1677,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string scopes = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<DelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<DelegationExternal>>(responseContent, options);
+            List<MPDelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(responseContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -1833,10 +1829,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return inboundDelegations;
         }
 
-        private static List<DelegationExternal> GetExpectedDelegationsForAdmin(int offeredByPartyId, int covererdByPartyId, List<string> resourceIds)
+        private static List<MPDelegationExternal> GetExpectedDelegationsForAdmin(string supplierOrg, string consumerOrg, List<string> resourceIds)
         {
-            List<DelegationExternal> delegations = new List<DelegationExternal>();
-            delegations = TestDataUtil.GetDelegations(offeredByPartyId, covererdByPartyId, resourceIds);
+            List<MPDelegationExternal> delegations = new List<MPDelegationExternal>();
+            delegations = TestDataUtil.GetAdminDelegations(supplierOrg, consumerOrg, resourceIds);
             return delegations;
         }
 

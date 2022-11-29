@@ -124,28 +124,17 @@ namespace Altinn.AccessManagement.Integration.Clients
                     };
                     string content = await response.Content.ReadAsStringAsync();
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
-                    ResourceReference resourceReference = new ResourceReference();
-                    resourceReference.ReferenceSource = ReferenceSource.Altinn3;
-                    resourceReference.Reference = scopes;
-                    resourceReference.ReferenceType = ReferenceType.MaskinportenScope;
 
                     foreach (ServiceResource resource in resources)
                     {
                         foreach (ResourceReference reference in resource.ResourceReferences)
                         {
-                            if (reference != null && reference.ReferenceSource == ReferenceSource.Altinn3 && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
+                            if (reference != null && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
                             {
                                 filteredResources.Add(resource);
                             }
-
-                            //if (resource.ResourceReferences.Contains(resourceReference))
-                            //{
-                            //    filteredResources.Add(resource);
-                            //}
                         }
                     }
-
-                    //filteredResources = resources.FindAll(r => r.ResourceReferences.any(resourceReference));
                 }
             }
             catch (Exception ex)

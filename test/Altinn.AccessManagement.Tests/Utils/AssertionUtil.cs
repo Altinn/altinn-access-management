@@ -277,6 +277,23 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
+        /// Assert that two <see cref="MPDelegationExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(MPDelegationExternal expected, MPDelegationExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.SupplierOrg, actual.SupplierOrg);
+            Assert.Equal(expected.ConsumerOrg, actual.ConsumerOrg);
+            Assert.Equal(expected.Scopes, actual.Scopes);
+            Assert.Equal(expected.DelegationSchemeId, actual.DelegationSchemeId);
+            Assert.Equal(expected.Created, actual.Created);
+        }
+
+        /// <summary>
         /// Assert that two <see cref="Rule"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>

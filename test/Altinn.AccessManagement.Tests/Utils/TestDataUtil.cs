@@ -242,7 +242,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// Creates a DelegationChange model from the input.
         /// </summary>
         /// <returns>DelegationChange.</returns>
-        public static DelegationChange GetResourceRegistryDelegationChange(string resourceRegistryId, ResourceType resourceType, int offeredByPartyId, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
+        public static DelegationChange GetResourceRegistryDelegationChange(string resourceRegistryId, ResourceType resourceType, int offeredByPartyId, DateTime? created, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
            
@@ -258,7 +258,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"resourceregistry/{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now                
+                Created = created                
             };
         }
 
@@ -342,6 +342,53 @@ namespace Altinn.AccessManagement.Tests.Utils
                 {
                     filteredDelegations.AddRange(delegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
                 }
+            }
+
+            return filteredDelegations;
+        }
+
+        /// <summary>
+        /// Sets up mock data for admin delegation list 
+        /// </summary>
+        /// <param name="supplierOrg">partyid of the reportee that delegated the resource</param>
+        /// <param name="consumerOrg">partyid of the reportee that received the delegation</param>
+        /// <param name="resourceIds">resource id</param>
+        /// <returns>Received delegations</returns>
+        public static List<MPDelegationExternal> GetAdminDelegations(string supplierOrg, string consumerOrg, List<string> resourceIds = null)
+        {
+            List<MPDelegationExternal> delegations = null;
+            List<MPDelegationExternal> filteredDelegations = new List<MPDelegationExternal>();
+            string fileName = "admindelegations";
+            string path = GetDelegationPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains(fileName))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        try
+                        {
+                            delegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(content);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                    }
+                }
+
+                foreach (MPDelegationExternal delegation in delegations)
+                {
+                    if (delegation.SupplierOrg == supplierOrg && delegation.ConsumerOrg == consumerOrg && resourceIds.Contains(delegation.ResourceId))
+                    {
+                        filteredDelegations.Add(delegation);
+                    }
+                }
+
+                //filteredDelegations.AddRange(delegations?.FindAll(od => od.SupplierOrg == supplierOrg && od.ConsumerOrg == consumerOrg && resourceIds.Contains(od.ResourceId)));
             }
 
             return filteredDelegations;

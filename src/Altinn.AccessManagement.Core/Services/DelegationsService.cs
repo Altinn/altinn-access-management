@@ -4,6 +4,7 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Core.Utilities;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
 using static System.Formats.Asn1.AsnWriter;
@@ -62,16 +63,21 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scopes)
+        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scope)
         {
             int consumerPartyId = GetParty(consumerOrg.ToString());
             int supplierPartyId = GetParty(supplierOrg.ToString());
             if (consumerPartyId == 0 || supplierPartyId == 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Either the supplier or the consumer organisation number is not valid");
             }
 
-            return GetResourceRegistryDelegationChangesForAdmin(supplierPartyId, consumerPartyId, scopes);
+            if (!RegexUtil.IsValidMaskinportenScope(scope))
+            {
+                throw new ArgumentException("Scope is not well formatted");
+            }
+
+            return GetResourceRegistryDelegationChangesForAdmin(supplierPartyId, consumerPartyId, scope);
         }
 
         #region private methods

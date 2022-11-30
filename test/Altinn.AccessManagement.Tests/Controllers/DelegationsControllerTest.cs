@@ -1674,8 +1674,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             int supplierOrg = 810418672;
             int consumerOrg = 810418192;
-            string scopes = "altinn:test/theworld.write";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
             List<MPDelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(responseContent);
 
@@ -1692,13 +1692,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllDelegationsForAdmin_Valid_input_nodelegations()
         {
             // Arrange
-            string expected = "No delegations found";
+            string expected = "[]";
 
             // Act
             int supplierOrg = 810418362;
             int consumerOrg = 810418532;
-            string scopes = "altinn:test/theworld.write";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1713,14 +1713,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllDelegationsForAdmin_missing_consumer()
         {
+            // Arrange
+            string expected = "Either the parameter consumerOrg has no value or the provided value is invalid";
+
             // Act
             int supplierOrg = 810418362;
-            string scopes = "altinn:test/theworld.write";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg=&scopes={scopes}");
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg=&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
         /// <summary>
@@ -1730,14 +1734,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllDelegationsForAdmin_missing_supplier()
         {
+            // Arrange
+            string expected = "Either the parameter supplierorg has no value or the provided value is invalid";
+
             // Act
             int consumerOrg = 810418532;
-            string scopes = "altinn:test/theworld.write";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg=&consumerorg={consumerOrg}&scopes={scopes}");
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg=&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
         /// <summary>
@@ -1747,14 +1755,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllDelegationsForAdmin_missing_scopes()
         {
+            // Arrange
+            string expected = "Either the parameter scope has no value or the provided value is invalid";
+
             // Act
             int supplierOrg = 810418362;
             int consumerOrg = 810418532;
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes=");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope=");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
         /// <summary>
@@ -1764,15 +1776,19 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllDelegationsForAdmin_invalid_orgnummer()
         {
+            // Arrange
+            string expected = "Either the supplier or the consumer organisation number is not valid";
+
             // Act
             int supplierOrg = 12345;
             int consumerOrg = 567574;
-            string scopes = "altinn:test/theworld.write";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
         /// <summary>
@@ -1783,17 +1799,39 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllDelegationsForAdmin_scopes_notexist()
         {
             // Arrange
-            string expected = "No delegations found";
+            string expected = "[]";
 
             // Act
             int supplierOrg = 810418672;
             int consumerOrg = 810418192;
-            string scopes = "altinn:test/test";
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scopes={scopes}");
+            string scope = "altinn:test/test";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetAllDelegationsForAdmin for invalid orgnummer
+        /// Expected: GetAllDelegationsForAdmin returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetAllDelegationsForAdmin_invalidscope()
+        {
+            // Arrange
+            string expected = "Scope is not well formatted";
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scope = "test invalid scope";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 

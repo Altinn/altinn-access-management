@@ -29,8 +29,8 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// </summary>
         /// <param name="supplierOrg">the organisation number of the supplier org</param>
         /// <param name="consumerOrg">the organisation number of the consumer of the resource</param>
-        /// <param name="scopes">the scope of the resource</param>
+        /// <param name="scope">the scope of the resource</param>
         /// <returns>list of delgations</returns>
-        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scopes);
+        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scope);
     }
 }

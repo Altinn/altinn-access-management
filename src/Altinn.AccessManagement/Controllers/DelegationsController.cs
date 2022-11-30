@@ -310,7 +310,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
         [Authorize]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scopes)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scope)
         {
             if (supplierOrg == null || supplierOrg == 0)
             {
@@ -322,29 +322,25 @@ namespace Altinn.AccessManagement.Controllers
                 return BadRequest("Either the parameter consumerOrg has no value or the provided value is invalid");
             }
 
-            if (string.IsNullOrEmpty(scopes))
+            if (string.IsNullOrEmpty(scope))
             {
-                return BadRequest("Either the parameter scopes has no value or the provided value is invalid");
+                return BadRequest("Either the parameter scope has no value or the provided value is invalid");
             }
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllDelegationsForAdminAsync(Convert.ToInt32(supplierOrg), Convert.ToInt32(consumerOrg), scopes);
+                List<Delegation> delegations = await _delegation.GetAllDelegationsForAdminAsync(Convert.ToInt32(supplierOrg), Convert.ToInt32(consumerOrg), scope);
                 List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
 
                 return delegationsExternal;
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GetAlInboundDelegations failed to fetch delegations");
+                _logger.LogError(ex, "GetAllDelegationsForAdmin failed to fetch delegations");
                 return StatusCode(500);
             }
         }

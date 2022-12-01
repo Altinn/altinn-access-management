@@ -582,16 +582,10 @@ namespace Altinn.AccessManagement.Core.Helpers
                             rights.Add(rightKey, new Right
                             {
                                 RightKey = rightKey,
-                                PolicySubjects = new List<List<AttributeMatch>>(),
                                 RightSources = new List<RightSource>(),
                                 Resource = GetAttributeMatchFromXacmlAllOfs(resource),
                                 Action = GetAttributeMatchFromXacmlAllOfs(action).FirstOrDefault()
                             });
-                        }
-
-                        foreach (XacmlAllOf subject in subjectAllOfs)
-                        {
-                            rights[rightKey].PolicySubjects.Add(GetAttributeMatchFromXacmlAllOfs(subject));
                         }
                     }
                 }
@@ -625,6 +619,39 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return attributeIds.Keys.ToList();
+        }
+
+        /// <summary>
+        /// Gets a nested list of AttributeMatche models for all XacmlMatch instances matching the specified attribute category. 
+        /// </summary>
+        /// <param name="rule">The xacml rule to process</param>
+        /// <param name="category">The attribute category to match</param>
+        /// <returns>Nested list of AttributeMatche models of AttributeId</returns>
+        public static List<List<AttributeMatch>> GetRuleAttributeMatchesForCategory(XacmlRule rule, string category)
+        {
+            List<List<AttributeMatch>> ruleAttributeMatches = new();
+
+            foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    List<AttributeMatch> anyOfAttributeMatches = new();
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(category))
+                        {
+                            anyOfAttributeMatches.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                        }
+                    }
+
+                    if (anyOfAttributeMatches.Any())
+                    {
+                        ruleAttributeMatches.Add(anyOfAttributeMatches);
+                    }
+                }                
+            }
+
+            return ruleAttributeMatches;
         }
 
         private static string GetXacmlAllOffKey(XacmlAllOf allOf)

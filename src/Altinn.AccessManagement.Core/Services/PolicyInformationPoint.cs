@@ -63,7 +63,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Right>> GetRights(RightsQuery rightsQuery)
+        public async Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false)
         {
             Dictionary<string, Right> result = new Dictionary<string, Right>();
             XacmlPolicy policy = null;
@@ -71,22 +71,22 @@ namespace Altinn.AccessManagement.Core.Services
             // TODO: Caching??
 
             // Verify resource
-            if (!DelegationHelper.TryGetResourceFromAttributeMatch(rightsQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app)
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(rightsQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
-                throw new ValidationException("RightsQuery must specify a valid Resource. Valid resource can either be a single resource from the Altinn resource registry or an Altinn app");
+                throw new ValidationException($"RightsQuery must specify a valid Resource. Valid resource can either be a single resource from the Altinn resource registry ({AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute}) or an Altinn app (identified by both {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute})");
             }
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
                 // ToDo: does resource existance matter?
-                ServiceResource registryResource = await _contextRetrievalService.GetResource(resourceRegistryId);
+                ServiceResource registryResource = await _contextRetrievalService.GetResource(resourceId);
                 if (registryResource == null || !registryResource.IsComplete.HasValue || !registryResource.IsComplete.Value || DateTime.Now < registryResource.ValidFrom || DateTime.Now > registryResource.ValidTo)
                 {
-                    throw new ValidationException($"The specified resource registry id: {resourceRegistryId} does not exist or is not active");
+                    throw new ValidationException($"The specified resource registry id: {resourceId} does not exist or is not active");
                 }
 
-                policy = await _prp.GetPolicyAsync(resourceRegistryId);
+                policy = await _prp.GetPolicyAsync(resourceId);
             }
             else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
@@ -98,31 +98,43 @@ namespace Altinn.AccessManagement.Core.Services
                 throw new ValidationException($"No valid policy found for the specified resource");
             }
 
-            // Verify coveredBy
-            if (!DelegationHelper.TryGetCoveredByUserIdFromMatch(rightsQuery.Reportee, out int coveredByUserId))
+            // Verify From/OfferedBy
+            if (!DelegationHelper.TryGetPartyIdFromAttributeMatch(rightsQuery.From, out int offeredByPartyId))
             {
-                throw new ValidationException($"Rights query currently only support lookup of rights for a coveredBy user id ({AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute})");
+                throw new ValidationException($"Rights query currently only support lookup of rights FROM partyid ({AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute})");
+            }
+
+            // Verify To/CoveredBy
+            if (!DelegationHelper.TryGetUserIdFromAttributeMatch(rightsQuery.To, out int coveredByUserId))
+            {
+                throw new ValidationException($"Rights query currently only support lookup of rights TO a userid: ({AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute})");
             }
 
             // Policy Rights
-            List<Role> roles = await _contextRetrievalService.GetDecisionPointRolesForUser(coveredByUserId, rightsQuery.From);
-            List<AttributeMatch> roleAttributeMatches = RightsHelper.GetRoleAttributeMatches(roles);
-
-            RightSourceType policyType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? RightSourceType.ResourceRegistryPolicy : RightSourceType.AppPolicy;
-            EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, roleAttributeMatches);
+            List<Role> userRoles = await _contextRetrievalService.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId);
+            if (userRoles.Any() || returnAllPolicyRights)
+            {
+                List<AttributeMatch> userRoleAttributeMatches = RightsHelper.GetRoleAttributeMatches(userRoles);
+                RightSourceType policyType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? RightSourceType.ResourceRegistryPolicy : RightSourceType.AppPolicy;
+                EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, userRoleAttributeMatches, returnAllPolicyRights);
+            }
 
             // Delegation Policy Rights
-            string resourceId = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ? $"{org}/{app}" : resourceRegistryId;
-            List<DelegationChange> delegations = await _delegationsService.FindAllDelegations(coveredByUserId, rightsQuery.From, resourceId, resourceMatchType);
+            List<DelegationChange> delegations = await _delegationsService.FindAllDelegations(coveredByUserId, offeredByPartyId, resourceId, resourceMatchType);
             
             foreach (DelegationChange delegation in delegations)
             {
                 XacmlPolicy delegationPolicy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId);
-                List<AttributeMatch> subjects = RightsHelper.GetSubjectAttributeMatches(delegation);
+                List<AttributeMatch> subjects = RightsHelper.GetDelegationSubjectAttributeMatches(delegation);
                 EnrichRightsDictionaryWithRightsFromPolicy(result, delegationPolicy, RightSourceType.DelegationPolicy, subjects);
             }
 
-            return result.Values.ToList();
+            if (returnAllPolicyRights)
+            {
+                return result.Values.ToList();
+            }
+
+            return result.Values.Where(r => r.HasPermit).ToList();
         }
 
         private static List<Rule> GetRulesFromPolicyAndDelegationChange(ICollection<XacmlRule> xacmlRules, DelegationChange delegationChange)
@@ -192,7 +204,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
         }
 
-        private void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> subjects)
+        private void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> userSubjects, bool returnAllPolicyRights = false)
         {
             PolicyDecisionPoint pdp = new PolicyDecisionPoint();
 
@@ -201,10 +213,11 @@ namespace Altinn.AccessManagement.Core.Services
                 XacmlPolicy singleRulePolicy = new XacmlPolicy(new Uri($"{policy.PolicyId}_{rule.RuleId}"), policy.RuleCombiningAlgId, policy.Target);
                 singleRulePolicy.Rules.Add(rule);
 
+                List<List<AttributeMatch>> ruleSubjects = PolicyHelper.GetRuleAttributeMatchesForCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
                 ICollection<Right> ruleRights = PolicyHelper.GetRightsFromXacmlRules(rule.SingleToList());
                 foreach (Right ruleRight in ruleRights)
                 {
-                    ICollection<XacmlContextAttributes> contextAttributes = PolicyHelper.GetContextAttributes(subjects, ruleRight.Resource, ruleRight.Action.SingleToList());
+                    ICollection<XacmlContextAttributes> contextAttributes = PolicyHelper.GetContextAttributes(userSubjects, ruleRight.Resource, ruleRight.Action.SingleToList());
                     XacmlContextRequest authRequest = new XacmlContextRequest(false, false, contextAttributes);
 
                     XacmlContextResponse response = pdp.Authorize(authRequest, singleRulePolicy);
@@ -220,16 +233,21 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         rights[ruleRight.RightKey].HasPermit = true;
                     }
-                    
-                    rights[ruleRight.RightKey].RightSources.Add(
-                        new RightSource
-                        {
-                            PolicyId = policy.PolicyId.OriginalString,
-                            PolicyVersion = policy.Version,
-                            RuleId = rule.RuleId,
-                            RightSourceType = policySourceType,
-                            Subject = subjects // ToDo: Get subject matches from ABAC
-                        });
+
+                    if (decisionResult.Decision.Equals(XacmlContextDecision.Permit) || returnAllPolicyRights)
+                    {
+                        rights[ruleRight.RightKey].RightSources.Add(
+                            new RightSource
+                            {
+                                PolicyId = policy.PolicyId.OriginalString,
+                                PolicyVersion = policy.Version,
+                                RuleId = rule.RuleId,
+                                RightSourceType = policySourceType,
+                                HasPermit = decisionResult.Decision.Equals(XacmlContextDecision.Permit),
+                                UserSubjects = userSubjects, // ToDo: Get subject matches from ABAC
+                                PolicySubjects = ruleSubjects
+                            });
+                    }
                 }
             }
         }

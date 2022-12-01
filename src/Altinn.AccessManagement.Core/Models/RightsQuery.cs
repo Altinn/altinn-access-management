@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -11,19 +10,19 @@ namespace Altinn.AccessManagement.Core.Models
     public class RightsQuery
     {
         /// <summary>
-        /// Gets or sets the party id for the reportee the rights query is to find rights for
+        /// Gets or sets the set of Attribute Id and Attribute Value for the entity having offered rights
         /// </summary>
         [Required]
-        public int From { get; set; }
+        public List<AttributeMatch> From { get; set; }
 
         /// <summary>
-        /// Gets or sets the set of Attribute Id and Attribute Value for the coveredby id
+        /// Gets or sets the set of Attribute Id and Attribute Value for the entity having received rights
         /// </summary>
         [Required]
-        public List<AttributeMatch> Reportee { get; set; }
+        public List<AttributeMatch> To { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource match the rights query is for
+        /// Gets or sets the set of Attribute Id and Attribute Value for identifying the resource the rights 
         /// </summary>
         [Required]
         public List<AttributeMatch> Resource { get; set; }

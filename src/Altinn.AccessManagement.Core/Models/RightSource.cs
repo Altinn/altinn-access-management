@@ -9,6 +9,12 @@ namespace Altinn.AccessManagement.Core.Models
     public class RightSource
     {
         /// <summary>
+        /// Gets or sets the set of type of source this right originated from (Role, AccessGroup, AppDelegation, ResourceRegistryDelegation etc.)
+        /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public RightSourceType RightSourceType { get; set; }
+
+        /// <summary>
         /// Gets or sets the unique identifier for the specific policy the right originates (Output only).
         /// </summary>
         public string PolicyId { get; set; }
@@ -27,23 +33,28 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the party offering the rights to the receiving (CoveredBy) entity.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int OfferedByPartyId { get; set; }
+        public int OfferedByPartyId { get; set; } // Todo: remove?
 
         /// <summary>
         /// Gets or sets the party receiving (covered by) the rights from the delegating (OfferedByPartyId) entity
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<AttributeMatch> CoveredBy { get; set; }
+        public List<AttributeMatch> CoveredBy { get; set; } // Todo: remove?
 
         /// <summary>
-        /// Gets or sets the list of subject matches which uniquely identifies the subject this rule applies to.
+        /// Gets or sets a value indicating whether the user or party has the right
         /// </summary>
-        public List<AttributeMatch> Subject { get; set; }
+        public bool HasPermit { get; set; }
 
         /// <summary>
-        /// Gets or sets the set of type of source this right originated from (Role, AccessGroup, AppDelegation, ResourceRegistryDelegation etc.)
+        /// Gets or sets the list of subject matches the user has.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public RightSourceType RightSourceType { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public List<AttributeMatch> UserSubjects { get; set; } // Todo: remove?
+
+        /// <summary>
+        /// Gets or sets the list of subject matches which provides access to this right in the resource policy
+        /// </summary>
+        public List<List<AttributeMatch>> PolicySubjects { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="delegationChange">The delegation change to retrieve subject from</param>
         /// <returns>List of attribute matches</returns>
-        public static List<AttributeMatch> GetSubjectAttributeMatches(DelegationChange delegationChange)
+        public static List<AttributeMatch> GetDelegationSubjectAttributeMatches(DelegationChange delegationChange)
         {
             if (delegationChange.CoveredByUserId.HasValue)
             {

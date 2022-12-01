@@ -1,4 +1,6 @@
-﻿namespace Altinn.AccessManagement.Core.Models
+﻿using System.Security.Claims;
+
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a single right
@@ -29,10 +31,5 @@
         /// Gets or sets the set of identified sources providing the right
         /// </summary>
         public List<RightSource> RightSources { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of subject matches which provides access to this right in the resource policy
-        /// </summary>
-        public List<List<AttributeMatch>> PolicySubjects { get; set; }
     }
 }

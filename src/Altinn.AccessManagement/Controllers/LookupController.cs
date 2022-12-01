@@ -1,4 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
@@ -18,22 +19,22 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IPartiesClient _partyClient;
+        private readonly IRegister _register;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
         /// </summary>
         /// <param name="logger">the logger.</param>
         /// <param name="mapper">mapper handler</param>
-        /// <param name="partyClient">handler for party</param>
+        /// <param name="register">handler for register</param>
         public LookupController(
             ILogger<DelegationsController> logger,
             IMapper mapper,
-            IPartiesClient partyClient)
+            IRegister register)
         {
             _logger = logger;
             _mapper = mapper;
-            _partyClient = partyClient;
+            _register = register;
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Altinn.AccessManagement.Controllers
                     return BadRequest("The organisation number is not valid");
                 }
 
-                Party party = await _partyClient.LookupPartyBySSNOrOrgNo(orgNummer);
+                Party party = await _register.GetOrganisation(orgNummer);
                 return _mapper.Map<PartyExternal>(party);
             }
             catch (Exception ex)

@@ -5,14 +5,14 @@ using Altinn.Platform.Register.Models;
 namespace Altinn.AccessManagement.Mappers
 {
     /// <summary>
-    /// A class that holds the delegation mapper configuration
+    /// A class that holds the access management mapper configuration
     /// </summary>
-    public class DelegationMapper : AutoMapper.Profile
+    public class AccessManagementMapper : AutoMapper.Profile
     {
         /// <summary>
-        /// Configuration for delegation mapper
+        /// Configuration for accessmanagement mapper
         /// </summary>
-        public DelegationMapper() 
+        public AccessManagementMapper() 
         {
             CreateMap<Delegation, DelegationExternal>();
             CreateMap<Party, PartyExternal>();

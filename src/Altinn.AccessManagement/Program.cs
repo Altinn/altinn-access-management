@@ -218,9 +218,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+    services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();

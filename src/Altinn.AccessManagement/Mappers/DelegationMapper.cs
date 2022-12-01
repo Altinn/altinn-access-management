@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Models;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Mappers
 {
@@ -14,6 +15,7 @@ namespace Altinn.AccessManagement.Mappers
         public DelegationMapper() 
         {
             CreateMap<Delegation, DelegationExternal>();
+            CreateMap<Party, PartyExternal>();
         }
     }
 }

@@ -53,7 +53,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _clientForNullToken = GetTestClientForEmptyRefreshToken();
             _clientForNullToken.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _clientForNullToken.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
         }
 
         private HttpClient GetTestClient()

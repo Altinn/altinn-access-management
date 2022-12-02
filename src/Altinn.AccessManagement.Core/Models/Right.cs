@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a single right

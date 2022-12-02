@@ -8,7 +8,6 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Authorization.Platform.Authorization.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {

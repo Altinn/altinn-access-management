@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.5" />
     <PackageReference Include="Altinn.Common.PEP" Version="1.0.39" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
@@ -24,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\altinn-authorization\src\Altinn.Authorization.ABAC\Altinn.Authorization.ABAC.csproj" />
     <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
     <ProjectReference Include="..\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj" />
     <ProjectReference Include="..\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj" />

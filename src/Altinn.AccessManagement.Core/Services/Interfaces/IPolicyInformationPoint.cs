@@ -1,5 +1,4 @@
 ﻿using Altinn.AccessManagement.Core.Models;
-using LanguageExt.Common;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {

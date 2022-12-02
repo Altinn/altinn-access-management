@@ -50,11 +50,11 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the list of subject matches the user has.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<AttributeMatch> UserSubjects { get; set; } // Todo: remove?
+        public List<AttributeMatch> UserSubjects { get; set; }
 
         /// <summary>
         /// Gets or sets the list of subject matches which provides access to this right in the resource policy
         /// </summary>
-        public List<List<AttributeMatch>> PolicySubjects { get; set; }
+        public List<List<PolicyAttributeMatch>> PolicySubjects { get; set; }
     }
 }

@@ -625,21 +625,21 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rule">The xacml rule to process</param>
         /// <param name="category">The attribute category to match</param>
-        /// <returns>Nested list of AttributeMatche models of AttributeId</returns>
-        public static List<List<AttributeMatch>> GetRuleAttributeMatchesForCategory(XacmlRule rule, string category)
+        /// <returns>Nested list of PolicyAttributeMatch models</returns>
+        public static List<List<PolicyAttributeMatch>> GetRulePolicyAttributeMatchesForCategory(XacmlRule rule, string category)
         {
-            List<List<AttributeMatch>> ruleAttributeMatches = new();
+            List<List<PolicyAttributeMatch>> ruleAttributeMatches = new();
 
             foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
             {
                 foreach (XacmlAllOf allOf in anyOf.AllOf)
                 {
-                    List<AttributeMatch> anyOfAttributeMatches = new();
+                    List<PolicyAttributeMatch> anyOfAttributeMatches = new();
                     foreach (XacmlMatch xacmlMatch in allOf.Matches)
                     {
                         if (xacmlMatch.AttributeDesignator.Category.Equals(category))
                         {
-                            anyOfAttributeMatches.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                            anyOfAttributeMatches.Add(new PolicyAttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
                         }
                     }
 

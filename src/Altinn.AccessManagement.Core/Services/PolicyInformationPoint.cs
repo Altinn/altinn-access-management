@@ -211,7 +211,7 @@ namespace Altinn.AccessManagement.Core.Services
                 XacmlPolicy singleRulePolicy = new XacmlPolicy(new Uri($"{policy.PolicyId}_{rule.RuleId}"), policy.RuleCombiningAlgId, policy.Target);
                 singleRulePolicy.Rules.Add(rule);
 
-                List<List<AttributeMatch>> ruleSubjects = PolicyHelper.GetRuleAttributeMatchesForCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
+                List<List<PolicyAttributeMatch>> ruleSubjects = PolicyHelper.GetRulePolicyAttributeMatchesForCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
                 ICollection<Right> ruleRights = PolicyHelper.GetRightsFromXacmlRules(rule.SingleToList());
                 foreach (Right ruleRight in ruleRights)
                 {

@@ -276,6 +276,26 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
+        /// Assert that two <see cref="PartyExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertPartyEqual(PartyExternal expected, PartyExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.PartyTypeName, actual.PartyTypeName);
+            Assert.Equal(expected.OrgNumber, actual.OrgNumber);
+            Assert.Equal(expected.Organization.Name, actual.Organization.Name);
+            Assert.Equal(expected.Organization.OrgNumber, actual.Organization.OrgNumber);
+            Assert.Equal(expected.Organization.UnitType, actual.Organization.UnitType);
+            Assert.Equal(expected.PartyId, actual.PartyId);
+            Assert.Equal(expected.UnitType, actual.UnitType);
+            Assert.Equal(expected.Name, actual.Name);
+        }
+
+        /// <summary>
         /// Assert that two <see cref="Rule"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>

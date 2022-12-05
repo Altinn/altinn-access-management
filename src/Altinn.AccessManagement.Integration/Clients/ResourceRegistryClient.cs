@@ -98,5 +98,31 @@ namespace Altinn.AccessManagement.Integration.Clients
 
             return resources;
         }
+
+        /// <summary>
+        /// Get resource list
+        /// </summary>
+        /// <param name="resourceType"> the resource type</param>
+        /// <returns></returns>
+        public async Task<List<ServiceResource>> GetResources(ResourceType resourceType)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+            ResourceSearch resourceSearch = new ResourceSearch();
+            resourceSearch.ResourceType = resourceType;
+            string endpointUrl = $"resourceregistry/api/v1/resource/search?ResourceType={(int)resourceType}";
+
+            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+                string content = await response.Content.ReadAsStringAsync();
+                resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+            }
+
+            return resources;
+        }
     }
 }

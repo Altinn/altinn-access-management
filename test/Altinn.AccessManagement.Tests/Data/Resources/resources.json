@@ -1,0 +1,255 @@
+[
+  {
+    "identifier": "acn_1",
+    "title": {
+      "en": "ACN 1",
+      "nb-no": "ACN 1",
+      "nn-no": "ACN 1"
+    },
+    "description": {
+      "en": "Acn service 1",
+      "nb-no": "Acn service 1",
+      "nn-no": "Acn service 1"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    },
+    "homepage": "https://www.nav.no/",
+    "status": "Active",
+    "validFrom": "2022-09-20T06:46:07.598Z",
+    "validTo": "2022-12-24T23:59:59",
+    "isPartOf": "navportal",
+    "isPublicService": true,
+    "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "urn:altinn:resourceregistry:nav_aa",
+        "referenceType": "Uri"
+      }
+    ],
+    "isComplete": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "DIGDIR"
+    },
+    "keywords": [
+      {
+        "word": "delegation",
+        "language": "nb"
+      }
+    ],
+    "sector": [
+      "privat"
+    ],
+    "resourceType": "MaskinportenSchema"
+  },
+  {
+    "identifier": "nav_aa_distribution",
+    "title": {
+      "en": "nav_aa_distribution",
+      "nb-no": "nav_aa_distribution",
+      "nn-no": "nav_aa_distribution"
+    },
+    "description": {
+      "en": "nav aa distribution",
+      "nb-no": "nav aa distribution",
+      "nn-no": "nav aa distribution"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    },
+    "homepage": "https://www.nav.no/",
+    "status": "Active",
+    "validFrom": "2022-09-20T06:46:07.598Z",
+    "validTo": "2022-12-24T23:59:59",
+    "isPartOf": "navportal",
+    "isPublicService": true,
+    "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "urn:altinn:resourceregistry:nav_aa",
+        "referenceType": "Uri"
+      },
+      {
+        "referenceSource": "Altinn3",
+        "reference": "urn:altinn:maskinporten:nav_aa",
+        "referenceType": "MaskinportenScope"
+      }
+    ],
+    "isComplete": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "DIGDIR"
+    },
+    "keywords": [
+      {
+        "word": "delegation",
+        "language": "nb"
+      }
+    ],
+    "sector": [
+      "privat"
+    ],
+    "resourceType": "MaskinportenSchema"
+  },
+  {
+    "identifier": "ssb_1",
+    "title": {
+      "en": "Statistikk informasjon",
+      "nb-no": "Statistikk informasjon",
+      "nn-no": "Statistikk informasjon"
+    },
+    "description": {
+      "en": "Statistikk informasjon",
+      "nb-no": "Statistikk informasjon",
+      "nn-no": "Statistikk informasjon"
+    },
+    "rightDescription": {
+      "en": "Permission to use the api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Løyve til å ta api i bruk"
+    },
+    "homepage": "https://www.data.ssb.no/",
+    "status": "Active",
+    "validFrom": "2022-09-20T06:46:07.598Z",
+    "validTo": "2022-12-24T23:59:59",
+    "isPartOf": "ssb_ressurser",
+    "isPublicService": true,
+    "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "urn:altinn:resourceregistry:ssb_1",
+        "referenceType": "Uri"
+      }
+    ],
+    "isComplete": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "DIGDIR"
+    },
+    "keywords": [
+      {
+        "word": "ssb",
+        "language": "nb"
+      }
+    ],
+    "sector": [
+      "privat"
+    ],
+    "resourceType": "MaskinportenSchema"
+  },
+  {
+    "identifier": "ttd_1",
+    "title": {
+      "en": "TTD 1",
+      "nb-no": "TTD 1",
+      "nn-no": "TTD 1"
+    },
+    "description": {
+      "en": "Test department service 1",
+      "nb-no": "Test department service 1",
+      "nn-no": "Test department service 1"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    },
+    "homepage": "https://www.nav.no/",
+    "status": "Active",
+    "validFrom": "2022-09-20T06:46:07.598Z",
+    "validTo": "2022-12-24T23:59:59",
+    "isPartOf": "navportal",
+    "isPublicService": true,
+    "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "urn:altinn:resourceregistry:nav_aa",
+        "referenceType": "Uri"
+      }
+    ],
+    "isComplete": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "DIGDIR"
+    },
+    "keywords": [
+      {
+        "word": "delegation",
+        "language": "nb"
+      }
+    ],
+    "sector": [
+      "privat"
+    ],
+    "resourceType": "MaskinportenSchema"
+  },
+  {
+    "identifier": "appid-123",
+    "title": {
+      "en": "appid 123",
+      "nb-no": "appid 123",
+      "nn-no": "appid 123"
+    },
+    "description": {
+      "en": "appid 123",
+      "nb-no": "appid 123",
+      "nn-no": "appid 123"
+    },
+    "rightDescription": {
+      "en": "Allows you to test maskinporten changes as part of automation testing",
+      "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+      "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+    },
+    "homepage": null,
+    "status": "Active",
+    "validFrom": "2020-03-06T09:41:15.817",
+    "validTo": "9999-12-31T23:59:59.997",
+    "isPartOf": null,
+    "isPublicService": true,
+    "thematicArea": null,
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn2",
+        "reference": "3cb27d7b-9e2c-475c-ba91-e1fc359bc717",
+        "referenceType": "DelegationSchemeId"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "altinn:test/theworld.write",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "altinn:test/theworld.admin",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "AppId:123",
+        "referenceType": "ServiceCode"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "1",
+        "referenceType": "ServiceEditionCode"
+      }
+    ],
+    "isComplete": false,
+    "hasCompetentAuthority": {
+      "organization": "974761076",
+      "orgcode": "SKD"
+    },
+    "keywords": null,
+    "sector": null,
+    "resourceType": "MaskinportenSchema"
+  }
+]

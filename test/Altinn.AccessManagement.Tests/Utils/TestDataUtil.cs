@@ -195,7 +195,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="resourceId">ResourceId.</param>
         /// <param name="resourceTitle">title of the resource</param>
         /// <returns>Returns the newly created ServiceResource.</returns>
-        public static ServiceResource GetResource(string resourceId, string resourceTitle)
+        public static ServiceResource GetResource(string resourceId, string resourceTitle, ResourceType resourceType, string description = "Test", DateTime? validFrom = null, DateTime? validTo = null, string status = "Active")
         {
             if (resourceId == "nav1_aa_distribution")
             {
@@ -212,8 +212,10 @@ namespace Altinn.AccessManagement.Tests.Utils
                 {
                     { "Description", resourceTitle }
                 },
-                    ValidFrom = DateTime.Now,
-                    ValidTo = DateTime.Now.AddDays(1),
+                    ValidFrom = Convert.ToDateTime(validFrom),
+                    ValidTo = Convert.ToDateTime(validTo),
+                    Status = "NA",
+                    ResourceType = resourceType,
                 };
             }
             else
@@ -229,12 +231,50 @@ namespace Altinn.AccessManagement.Tests.Utils
                 },
                     Description = new Dictionary<string, string>
                 {
-                    { "Description", resourceTitle }
+                    { "en", description },
+                    { "nb-no", description },
+                    { "nn-no", description }
                 },
-                    ValidFrom = DateTime.Now,
-                    ValidTo = DateTime.Now.AddDays(1),
+                    ValidFrom = Convert.ToDateTime(validFrom),
+                    ValidTo = Convert.ToDateTime(validTo),
+                    Status = status,
+                    ResourceType = resourceType,
                 };
             }
+        }
+
+        /// <summary>
+        /// Gets a list of service resources
+        /// </summary>
+        /// <param name="resourceType">the resource type.</param>
+        /// <returns>Returns thelist of service resources.</returns>
+        public static List<ServiceResourceExternal> GetResources(ResourceType resourceType)
+        {
+            List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
+            List<ServiceResourceExternal> filteredResources = null;
+
+            string path = GetResourcesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("resources"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                        };
+                        resources = JsonSerializer.Deserialize<List<ServiceResourceExternal>>(content, options);
+                    }
+                }
+
+                filteredResources = resources.FindAll(r => r.ResourceType == resourceType);
+            }
+
+            return filteredResources;
         }
 
         /// <summary>
@@ -336,6 +376,12 @@ namespace Altinn.AccessManagement.Tests.Utils
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Json", "Delegation");
+        }
+
+        private static string GetResourcesPath()
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Resources");
         }
     }
 }

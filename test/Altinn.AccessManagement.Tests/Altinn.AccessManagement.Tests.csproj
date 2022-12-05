@@ -53,6 +53,7 @@
 
   <ItemGroup>
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+    <None Remove="Data\Resources\resources.json" />
   </ItemGroup>
 
   <ItemGroup>

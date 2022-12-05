@@ -1,7 +1,6 @@
 -- Table: accessmanagement.resource
 ALTER TABLE accessmanagement.resource
-DROP COLUMN IF EXISTS resourcestatus
-ADD CONSTRAINT IF NOT EXISTS 
+DROP COLUMN IF EXISTS resourcestatus;
 
 -- A drop create as there is no "add constraint if not exists" this is just for local dev where changes to yuniql db can be performed.
 ALTER TABLE accessmanagement.resource

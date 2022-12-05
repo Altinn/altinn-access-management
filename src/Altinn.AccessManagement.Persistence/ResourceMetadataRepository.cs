@@ -45,8 +45,8 @@ namespace Altinn.AccessManagement.Persistence
                 await conn.OpenAsync();
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(insertResorceAccessManagment, conn);
-                pgcom.Parameters.AddWithValue("_delegationChangeType", resource.ResourceRegistryId);
-                pgcom.Parameters.AddWithValue("_resourceRegistryId", resource.ResourceType);
+                pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
+                pgcom.Parameters.AddWithValue("_resourcetype", resource.ResourceType);
                 
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())

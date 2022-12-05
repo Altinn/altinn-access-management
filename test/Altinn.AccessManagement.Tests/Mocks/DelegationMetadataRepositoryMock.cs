@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -109,6 +111,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 case "resource2":
                     result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, coveredByUserId, coveredByPartyId);
                     break;
+                case "jks_audi_etron_gt":
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, coveredByUserId, coveredByPartyId);
+                    break;
                 default:
                     result = null;
                     break;
@@ -191,7 +196,40 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, int? coveredByUserId = null)
         {
-            throw new NotImplementedException();
+            List<DelegationChange> result = new List<DelegationChange>();
+
+            foreach (string resourceRegistryId in resourceRegistryIds)
+            {
+                foreach (int offeredByPartyId in offeredByPartyIds)
+                {
+                    if (coveredByPartyIds != null)
+                    {
+                        foreach (int coveredByPartyId in offeredByPartyIds)
+                        {
+                            string delegationChangePath = GetResourceRegistryDelegationPath_ForCoveredByPartyId(resourceRegistryId, offeredByPartyId, coveredByPartyId);
+                            if (File.Exists(delegationChangePath))
+                            {
+                                string content = File.ReadAllText(delegationChangePath);
+                                DelegationChange delegationChange = (DelegationChange)JsonSerializer.Deserialize(content, typeof(DelegationChange), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                                result.Add(delegationChange);
+                            }
+                        }
+                    }
+
+                    if (coveredByUserId.HasValue)
+                    {
+                        string delegationChangePath = GetResourceRegistryDelegationPath_ForCoveredByUserId(resourceRegistryId, offeredByPartyId, coveredByUserId.Value);
+                        if (File.Exists(delegationChangePath))
+                        {
+                            string content = File.ReadAllText(delegationChangePath);
+                            DelegationChange delegationChange = (DelegationChange)JsonSerializer.Deserialize(content, typeof(DelegationChange), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            result.Add(delegationChange);
+                        }
+                    }
+                }
+            }
+
+            return Task.FromResult(result);
         }
 
         /// <inheritdoc/>
@@ -249,6 +287,18 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
         {
             throw new NotImplementedException();
+        }
+
+        private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId)
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"p{coveredByPartyId}", "delegationchange.json");
+        }
+
+        private static string GetResourceRegistryDelegationPath_ForCoveredByUserId(string resourceRegistryId, int offeredByPartyId, int coveredByUserId)
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");
         }
     }
 }

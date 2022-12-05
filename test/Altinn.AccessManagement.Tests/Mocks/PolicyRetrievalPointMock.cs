@@ -76,9 +76,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry)
         {
-            if (File.Exists(Path.Combine(GetAltinnResourcePolicyPath(resourceRegistry), "policy.xml")))
+            if (File.Exists(Path.Combine(GetAltinnResourcePolicyPath(resourceRegistry), "resourcepolicy.xml")))
             {
-                return await Task.FromResult(ParsePolicy("policy.xml", GetAltinnResourcePolicyPath(resourceRegistry)));
+                return await Task.FromResult(ParsePolicy("resourcepolicy.xml", GetAltinnResourcePolicyPath(resourceRegistry)));
             }
 
             return null;

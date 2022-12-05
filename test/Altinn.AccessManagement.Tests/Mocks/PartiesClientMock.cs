@@ -105,19 +105,53 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public Task<List<int>> GetKeyRoleParties(int userId)
         {
-            throw new NotImplementedException();
+            List<int> keyRoleUnitPartyIds = new();
+
+            string keyRoleUnitsPath = GetKeyRoleUnitsPaths(userId);
+            if (File.Exists(keyRoleUnitsPath))
+            {
+                string content = File.ReadAllText(keyRoleUnitsPath);
+                keyRoleUnitPartyIds = (List<int>)JsonSerializer.Deserialize(content, typeof(List<int>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return Task.FromResult(keyRoleUnitPartyIds);
         }
 
         /// <inheritdoc/>
         public Task<List<MainUnit>> GetMainUnits(MainUnitQuery subunitPartyIds)
         {
-            throw new NotImplementedException();
+            List<MainUnit> mainUnits = new();
+
+            foreach (int subunitPartyId in subunitPartyIds.PartyIds)
+            {
+                string mainUnitsPath = GetMainUnitsPath(subunitPartyId);
+                if (File.Exists(mainUnitsPath))
+                {
+                    string content = File.ReadAllText(mainUnitsPath);
+                    List<MainUnit> readMainUnits = (List<MainUnit>)JsonSerializer.Deserialize(content, typeof(List<MainUnit>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    mainUnits.AddRange(readMainUnits);
+                }
+            }
+
+            return Task.FromResult(mainUnits);
         }
 
         private static string GetPartiesPaths()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Parties");
+        }
+
+        private static string GetMainUnitsPath(int subunitPartyId)
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "MainUnits", $"{subunitPartyId}", "mainunits.json");
+        }
+
+        private static string GetKeyRoleUnitsPaths(int userId)
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "KeyRoleUnits", $"{userId}", "keyroleunits.json");
         }
 
         private static string GetFilterFileName(int offeredByPartyId)

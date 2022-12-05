@@ -1,0 +1,47 @@
+{
+  "identifier": "jks_audi_etron_gt",
+  "title": {
+    "en": "JK's Audi E-Tron GT",
+    "nb-no": "JK's Audi E-Tron GT",
+    "nn-no": "JK's Audi E-Tron GT"
+  },
+  "description": {
+    "en": "Very nice car",
+    "nb-no": "Veldig fin bil",
+    "nn-no": "Steikje fine bil"
+  },
+  "rightDescription": {
+    "en": "Permission to borrow the car",
+    "nb-no": "Gir mottaker lov til å låne bilen",
+    "nn-no": "Løyve til å ta ei rånerunde ned i vik"
+  },
+  "homepage": "https://www.jksaudi.no/",
+  "status": "Active",
+  "validFrom": "2022-09-20T06:46:07.598Z",
+  "validTo": "2022-12-24T23:59:59",
+  "isPartOf": "jk_ressurser",
+  "isPublicService": true,
+  "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+  "resourceReferences": [
+    {
+      "referenceSource": "Altinn3",
+      "reference": "urn:altinn:resourceregistry:jks_audi_etron_gt",
+      "referenceType": "Uri"
+    }
+  ],
+  "isComplete": true,
+  "hasCompetentAuthority": {
+    "organization": "991825827",
+    "orgcode": "DIGDIR"
+  },
+  "keywords": [
+    {
+      "word": "bil",
+      "language": "nb"
+    }
+  ],
+  "sector": [
+    "privat"
+  ],
+  "resourceType": "MaskinportenSchema"
+}

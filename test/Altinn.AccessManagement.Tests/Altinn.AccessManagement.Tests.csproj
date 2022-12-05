@@ -52,7 +52,38 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\blobs\input\resourceregistry\jks_audi_etron_gt\50005545\u20000095\delegationpolicy.xml" />
     <None Remove="Data\Json\AddRules\ReadWriteResourceregistryId_50001337_20001337.json" />
+    <None Remove="Data\Json\RightsQuery\RightsQuery_SuccessRequest.json" />
+    <None Remove="Data\KeyRoleUnits\parties.json" />
+    <None Remove="Data\MainUnits\parties.json" />
+    <None Remove="Data\ResourceRegistryDelegationChanges\jks_audi_etron_gt\resource.json" />
+    <None Remove="Data\Rights\jks_audi_etron_gt\user_20000095\party_50005545\rights_returnall_false.json" />
+    <None Remove="Data\Rights\jks_audi_etron_gt\user_20000095\party_50005545\rights_returnall_true.json" />
+    <None Remove="Data\Roles\user_20000490\party_50005545\roles.json" />
+    <None Remove="Data\Roles\user_20000095\party_50005545\roles.json" />
+    <None Remove="Data\Xacml\3.0\ResourceRegistry\jks_audi_etron_gt\resourcepolicy.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Data\ResourceRegistryDelegationChanges\jks_audi_etron_gt\50005545\u20000095\delegationchange.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Data\ResourceRegistryResources\jks_audi_etron_gt\resource.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Data\Rights\jks_audi_etron_gt\user_20000095\party_50005545\rights_returnall_true.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Data\Rights\jks_audi_etron_gt\user_20000095\party_50005545\rights_returnall_false.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Data\Roles\user_20000490\party_50005545\roles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Data\Roles\user_20000095\party_50005545\roles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

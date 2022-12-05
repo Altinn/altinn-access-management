@@ -37,10 +37,9 @@ namespace Altinn.AccessManagement.Persistence
             _connectionString = string.Format(
                 postgresSettings.Value.ConnectionString,
                 postgresSettings.Value.AuthorizationDbPwd);
-            
         }
 
-        ///<inheritdoc />
+        /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
             try

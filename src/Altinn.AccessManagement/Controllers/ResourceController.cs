@@ -70,17 +70,5 @@ namespace Altinn.AccessManagement.Controllers
             _logger.LogInformation("Delegation could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{resourcesJson}", resourcesJson);
             return BadRequest("Delegation could not be completed");
         }
-
-        /// <summary>
-        /// Just a simple test for authorization with nothing else to fail
-        /// </summary>
-        /// <returns>Hello world</returns>
-        [HttpGet]
-        [Route("accessmanagement/api/v1/internal/test")]
-        [Authorize(Policy = AuthzConstants.INTERNAL_AUTHORIZATION)]
-        public async Task<ActionResult> Get()
-        {
-            return Ok("Hello world");
-        }
     }
 }

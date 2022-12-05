@@ -12,6 +12,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
+using Altinn.AccessManagement.Tests.Utils;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -32,8 +33,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true,
-            
+            PropertyNameCaseInsensitive = true
         };
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            ListAccessManagementResourceAreEqual(expected, actual);
+            AssertionUtil.ListAccessManagementResourceAreEqual(expected, actual);
         }
 
         /// <summary>
@@ -117,20 +117,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
-        /// <summary>
-        /// tEST
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task Test_OK()
-        {
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/internal/test");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
         private HttpClient GetTestClient()
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
@@ -143,22 +129,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
             return client;
-        }
-
-        private void ListAccessManagementResourceAreEqual(List<AccessManagementResource> expected, List<AccessManagementResource> actual)
-        {
-            Assert.Equal(expected.Count, actual.Count);
-            for (int i = 0; i < actual.Count; i++)
-            {
-                AccessManagementResource currentExpectedElement = expected[i];
-                AccessManagementResource currentActualElement = actual[i];
-
-                Assert.Equal(currentExpectedElement.Created, currentActualElement.Created);
-                Assert.Equal(currentExpectedElement.Modified, currentActualElement.Modified);
-                Assert.Equal(currentExpectedElement.ResourceRegistryId, currentActualElement.ResourceRegistryId);
-                Assert.Equal(currentExpectedElement.ResourceId, currentActualElement.ResourceId);
-                Assert.Equal(currentExpectedElement.ResourceType, currentActualElement.ResourceType);
-            }
         }
     }
 }

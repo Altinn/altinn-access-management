@@ -16,7 +16,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// </summary>
         /// <param name="resource">the resource to store in AccessManagment</param>
         /// <returns>the inserted/updated resource</returns>
-        public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
+        public Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
             Stream dataStream = File.OpenRead($"Data/Json/InsertAccessManagementResource/InsertData_{resource.ResourceRegistryId}.json");
             JsonSerializerOptions options = new JsonSerializerOptions
@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 PropertyNameCaseInsensitive = true
             };
             AccessManagementResource result = JsonSerializer.Deserialize<AccessManagementResource>(dataStream, options);
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

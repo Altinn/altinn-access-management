@@ -1,0 +1,14 @@
+[
+  {
+    "resourceregistryid": "string",
+    "resourcetype": "string2"
+  },
+  {
+    "resourceregistryid": "string2",
+    "resourcetype": "string"
+  },
+  {
+    "resourceregistryid": "string3",
+    "resourcetype": "string"
+  }
+]

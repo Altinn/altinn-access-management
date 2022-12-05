@@ -18,12 +18,20 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <returns>the inserted/updated resource</returns>
         public Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
+            AccessManagementResource result = null
+                ;
+            if (resource.ResourceRegistryId == "string3")
+            {
+                return Task.FromResult(result);
+            }
+
             Stream dataStream = File.OpenRead($"Data/Json/InsertAccessManagementResource/InsertData_{resource.ResourceRegistryId}.json");
             JsonSerializerOptions options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            AccessManagementResource result = JsonSerializer.Deserialize<AccessManagementResource>(dataStream, options);
+            
+            result = JsonSerializer.Deserialize<AccessManagementResource>(dataStream, options);
             return Task.FromResult(result);
         }
     }

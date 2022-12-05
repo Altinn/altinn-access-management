@@ -49,11 +49,6 @@ namespace Altinn.AccessManagement.Controllers
                 return BadRequest("Missing resources in body");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid model");
-            }
-
             List<AccessManagementResource> addResourceResult = await _pap.TryWriteResourceFromResourceRegister(resources);
 
             if (addResourceResult.Count == resources.Count)

@@ -1,18 +1,22 @@
-﻿using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
-using Altinn.AccessManagement.Persistence.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Persistence.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Npgsql;
+
 namespace Altinn.AccessManagement.Persistence
 {
+    /// <summary>
+    /// Storing Resource Rigistry metadata to Access management
+    /// </summary>
     public class ResourceMetadataRepository : IResourceMetadataRepository
     {
         private readonly string _connectionString;

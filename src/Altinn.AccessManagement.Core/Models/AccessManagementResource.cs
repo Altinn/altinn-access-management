@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Altinn.AccessManagement.Core.Models
 {
-    
+    /// <summary>
+    /// Entity holding resource information for storing in AccessManagement
+    /// </summary>
     public class AccessManagementResource
     {
         #nullable enable

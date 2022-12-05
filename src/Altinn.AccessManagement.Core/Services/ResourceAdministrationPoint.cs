@@ -17,7 +17,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IResourceMetadataRepository _resourceRepository;
         private readonly ILogger<IResourceAdministrationPoint> _logger;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceAdministrationPoint"/> class.
         /// </summary>

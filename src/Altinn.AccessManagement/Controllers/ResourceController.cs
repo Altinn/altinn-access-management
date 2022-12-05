@@ -72,10 +72,9 @@ namespace Altinn.AccessManagement.Controllers
         }
 
         /// <summary>
-        /// Updates or creates a Resource placeholder in AccessManagement to be used for describing which resource a given delegation is connected with
+        /// Just a simple test for authorization with nothing else to fail
         /// </summary>
-        /// <param name="resources">List of new Resources to add or update</param>
-        /// <returns></returns>
+        /// <returns>Hello world</returns>
         [HttpGet]
         [Route("accessmanagement/api/v1/internal/test")]
         [Authorize(Policy = AuthzConstants.INTERNAL_AUTHORIZATION)]

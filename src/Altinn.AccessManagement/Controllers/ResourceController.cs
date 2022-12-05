@@ -18,7 +18,7 @@ namespace Altinn.AccessManagement.Controllers
     public class ResourceController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly IResourceAdministrationPoint _pap;
+        private readonly IResourceAdministrationPoint _rap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -30,7 +30,7 @@ namespace Altinn.AccessManagement.Controllers
             IResourceAdministrationPoint resourceAdministrationPoint)
         {
             _logger = logger;
-            _pap = resourceAdministrationPoint;
+            _rap = resourceAdministrationPoint;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Controllers
                 return BadRequest("Missing resources in body");
             }
 
-            List<AccessManagementResource> addResourceResult = await _pap.TryWriteResourceFromResourceRegister(resources);
+            List<AccessManagementResource> addResourceResult = await _rap.TryWriteResourceFromResourceRegister(resources);
 
             if (addResourceResult.Count == resources.Count)
             {

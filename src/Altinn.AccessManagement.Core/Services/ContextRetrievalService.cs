@@ -65,20 +65,8 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<Party> GetPartyAsync(int partyId)
         {
-            string cacheKey = $"p:{partyId}";
-
-            if (!_memoryCache.TryGetValue(cacheKey, out Party party))
-            {
-                List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());
-
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.KeyRolePartyIdsCacheTimeout, 0));
-
-                _memoryCache.Set(cacheKey, result.FirstOrDefault(), cacheEntryOptions);
-            }
-
-            return party;
+            List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());
+            return result.FirstOrDefault();
         }
 
         /// <inheritdoc/>
@@ -87,7 +75,7 @@ namespace Altinn.AccessManagement.Core.Services
             List<Party> parties = new List<Party>();
             List<int> partyIdsNotInCache = new List<int>();
 
-            foreach (int partyId in partyIds)
+            foreach (int partyId in partyIds.Distinct())
             {
                 if (_memoryCache.TryGetValue($"p:{partyId}", out Party party))
                 {
@@ -103,6 +91,8 @@ namespace Altinn.AccessManagement.Core.Services
 
             foreach (Party party in remainingParties)
             {
+                parties.Add(party);
+
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetPriority(CacheItemPriority.High)
                .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
@@ -38,7 +39,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     }
                 }
 
-                foreach (int partyId in parties)
+                foreach (int partyId in parties.Distinct())
                 {
                     filteredList.Add(partyList.Find(p => p.PartyId == partyId));
                 }

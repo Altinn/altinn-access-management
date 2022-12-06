@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Altinn.AccessManagement.Persistence
     /// <summary>
     /// Storing Resource Rigistry metadata to Access management
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ResourceMetadataRepository : IResourceMetadataRepository
     {
         private readonly string _connectionString;

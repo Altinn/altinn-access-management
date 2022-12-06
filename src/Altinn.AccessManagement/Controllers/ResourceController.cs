@@ -44,7 +44,7 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize(Policy = AuthzConstants.INTERNAL_AUTHORIZATION)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {
-            if (resources == null || resources.Count < 1)
+            if (resources.Count < 1)
             {
                 return BadRequest("Missing resources in body");
             }

@@ -1728,26 +1728,48 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer
+        /// Test case: GetMaskinportenSchemaDelegations for invalid supplier orgnummer
         /// Expected: GetMaskinportenSchemaDelegations returns badrequest
         /// </summary>
-        //[Fact]
-        //public async Task GetMaskinportenSchemaDelegations_invalid_orgnummer()
-        //{
-        //    // Arrange
-        //    string expected = "Either the supplier or the consumer organisation number is not valid";
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_invalid_supplierorgnummer()
+        {
+            // Arrange
+            string expected = "Supplierorg is not an valid organization number";
 
-        //    // Act
-        //    string supplierOrg = "12345";
-        //    string consumerOrg = "567574";
-        //    string scope = "altinn:test/theworld.write";
-        //    HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
-        //    string responseContent = await response.Content.ReadAsStringAsync();
+            // Act
+            string supplierOrg = "12345";
+            string consumerOrg = "810418532";
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        //    Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
-        //}
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for invalid  consumer orgnummer
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_invalid_consumerorgnummer()
+        {
+            // Arrange
+            string expected = "Consumerorg is not an valid organization number";
+
+            // Act
+            string supplierOrg = "810418362";
+            string consumerOrg = "12345";
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
 
         /// <summary>
         /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer

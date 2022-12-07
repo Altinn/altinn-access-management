@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Azure.Messaging;
 using Microsoft.AspNetCore.Authorization;
@@ -312,6 +313,16 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize]
         public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenSchemaDelegations([FromQuery] string? supplierOrg, string? consumerOrg, string scope)
         {
+            if (!string.IsNullOrEmpty(supplierOrg) && !IdentificatorUtil.ValidateOrganizationNumber(supplierOrg))
+            {
+                return BadRequest("Supplierorg is not an valid organization number");
+            }
+
+            if (!string.IsNullOrEmpty(consumerOrg) && !IdentificatorUtil.ValidateOrganizationNumber(consumerOrg))
+            {
+                return BadRequest("Consumerorg is not an valid organization number");
+            }
+
             if (string.IsNullOrEmpty(scope))
             {
                 return BadRequest("Either the parameter scope has no value or the provided value is invalid");

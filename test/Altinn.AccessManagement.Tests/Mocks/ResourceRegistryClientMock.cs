@@ -54,43 +54,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        public async Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
-
-                resource = await GetResource(id);
-                
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
-            }
-
-            return resources;
-        }
-
-        /// <inheritdoc/>
-        public Task<List<ServiceResource>> SearchResources(string scopes)
-        {
-            List<ServiceResource> resourcesList = new List<ServiceResource>();
-            List<ServiceResource> filteredList = new List<ServiceResource>();
 
             string path = GetDataPathForResources();
             if (Directory.Exists(path))
@@ -105,26 +71,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     if (file.Contains("resources"))
                     {
                         string content = File.ReadAllText(Path.Combine(path, file));
-                        resourcesList = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
-                    }
-                }
-
-                foreach (ServiceResource resource in resourcesList)
-                {
-                    if (resource.ResourceReferences != null)
-                    {
-                        foreach (ResourceReference reference in resource.ResourceReferences)
-                        {
-                            if (reference != null && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
-                            {
-                                filteredList.Add(resource);
-                            }
-                        }
+                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                     }
                 }
             }
 
-            return Task.FromResult(filteredList);
+            return resources;
         }
 
         private static string GetDataPathForResources()

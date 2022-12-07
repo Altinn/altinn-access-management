@@ -14,7 +14,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -31,7 +31,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -48,7 +48,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -65,7 +65,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -82,7 +82,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -99,7 +99,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -116,7 +116,7 @@
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -133,7 +133,7 @@
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -150,7 +150,7 @@
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -167,7 +167,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -184,7 +184,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -201,6 +201,6 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   }
 ]

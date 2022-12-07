@@ -1,7 +1,7 @@
 -- FUNCTION: CREATE new delegation.select_active_resourceregistrydelegationchanges_admin
-CREATE OR REPLACE FUNCTION delegation.select_active_resourceregistrydelegationchanges_admin(
-	_offeredbypartyid integer,
-	_coveredbypartyid integer,
+CREATE OR REPLACE FUNCTION delegation.select_active_resourceregistrydelegationchanges_coveredbypartys(
+	_coveredbypartyids integer[],
+	_offeredbypartyids integer[],
 	_resourceregistryids text[] DEFAULT NULL::text[],
 	_resourcetypes text[] DEFAULT NULL::text[])
     RETURNS TABLE(resourceregistrydelegationchangeid integer, delegationchangetype delegation.delegationchangetype, resourceregistryid text, resourcetype text, offeredbypartyid integer, coveredbyuserid integer, coveredbypartyid integer, performedbyuserid integer, performedbypartyid integer, blobstoragepolicypath text, blobstorageversionid text, created timestamp with time zone) 
@@ -42,11 +42,11 @@ AS $BODY$
 			FROM delegation.ResourceRegistryDelegationChanges AS rrdc
 				INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
 			WHERE
-				offeredByPartyId = _offeredByPartyId
-			AND 
-				coveredByPartyId = _coveredByPartyId
+				(_offeredByPartyIds IS NULL OR offeredByPartyId = ANY (_offeredByPartyIds))
+				AND (_coveredbypartyids IS NULL OR coveredByPartyId = ANY (_coveredbypartyids))
 			GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId
 		) AS selectMaxChange
 	ON resourceRegistryDelegationChangeId = selectMaxChange.maxChange
 	WHERE delegationchangetype != 'revoke_last'
 $BODY$;
+

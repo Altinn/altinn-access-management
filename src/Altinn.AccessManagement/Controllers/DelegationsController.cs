@@ -310,18 +310,8 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
         [Authorize]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetAllDelegationsForAdmin([FromQuery] int? supplierOrg, int? consumerOrg, string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenSchemaDelegations([FromQuery] string? supplierOrg, string? consumerOrg, string scope)
         {
-            if (supplierOrg == null || supplierOrg == 0)
-            {
-                return BadRequest("Either the parameter supplierorg has no value or the provided value is invalid");
-            }
-
-            if (consumerOrg == null || consumerOrg == 0)
-            {
-                return BadRequest("Either the parameter consumerOrg has no value or the provided value is invalid");
-            }
-
             if (string.IsNullOrEmpty(scope))
             {
                 return BadRequest("Either the parameter scope has no value or the provided value is invalid");
@@ -329,7 +319,7 @@ namespace Altinn.AccessManagement.Controllers
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllDelegationsForAdminAsync(Convert.ToInt32(supplierOrg), Convert.ToInt32(consumerOrg), scope);
+                List<Delegation> delegations = await _delegation.GetMaskinportenSchemaDelegations(supplierOrg, consumerOrg, scope);
                 List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
 
                 return delegationsExternal;

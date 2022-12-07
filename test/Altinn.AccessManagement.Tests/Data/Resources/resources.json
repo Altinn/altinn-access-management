@@ -3594,9 +3594,9 @@
   },
   {
     "title": {
-      "en": "nav_aa_distribution",
-      "nb-no": "nav_aa_distribution",
-      "nn-no": "nav_aa_distribution"
+      "en": "NAV aa distribution",
+      "nb-no": "NAV aa distribution",
+      "nn-no": "NAV aa distribution"
     },
     "sector": [
       "privat"
@@ -3648,5 +3648,62 @@
       "orgcode": "DIGDIR",
       "organization": "991825827"
     }
-  }
+  },
+    {
+      "title": {
+        "en": "SKD 1",
+        "nb-no": "SKD 1",
+        "nn-no": "SKD 1"
+      },
+      "sector": [
+        "privat"
+      ],
+      "status": "Active",
+      "validTo": "2022-12-24T23:59:59",
+      "homepage": "https://www.nav.no/",
+      "isPartOf": "navportal",
+      "keywords": [
+        {
+          "word": "delegation",
+          "language": "nb"
+        }
+      ],
+      "validFrom": "2022-09-20T06:46:07.598Z",
+      "identifier": "skd_1",
+      "isComplete": true,
+      "description": {
+        "en": "SKD 1",
+        "nb-no": "SKD 1",
+        "nn-no": "SKD 1"
+      },
+      "resourceType": "MaskinportenSchema",
+      "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+      "isPublicService": true,
+      "rightDescription": {
+        "en": "Gir mottaker lov til å bruke api",
+        "nb-no": "Gir mottaker lov til å bruke api",
+        "nn-no": "Gir mottaker lov til å bruke api"
+      },
+      "resourceReferences": [
+        {
+          "reference": "urn:altinn:resourceregistry:skd_1",
+          "referenceType": "Uri",
+          "referenceSource": "Altinn3"
+        },
+        {
+          "reference": "urn:altinn:maskinporten:skd_1",
+          "referenceType": "MaskinportenScope",
+          "referenceSource": "Altinn3"
+        },
+        {
+          "reference": "altinn:test/theworld.write",
+          "referenceType": "MaskinportenScope",
+          "referenceSource": "Altinn3"
+        }
+      ],
+      "hasCompetentAuthority": {
+        "orgcode": "DIGDIR",
+        "organization": "991825827"
+      }
+    }
 ]

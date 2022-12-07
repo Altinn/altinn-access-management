@@ -17,7 +17,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly ILogger<IDelegationsService> _logger;
         private readonly IPartiesClient _partyClient;
-        private readonly IResourceRegistryClient _resourceRegistryClient;
+        private readonly IResourceAdministrationPoint _resourceAdministrationPoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
@@ -25,13 +25,13 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="delegationRepository">delgation change handler</param>
         /// <param name="logger">handler for logger</param>
         /// <param name="partyClient">handler for party</param>
-        /// <param name="resourceRegistryClient">handler for resoruce registry</param>
-        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesClient partyClient, IResourceRegistryClient resourceRegistryClient)
+        /// <param name="resourceAdministrationPoint">handler for resoruce registry</param>
+        public DelegationsService(IDelegationMetadataRepository delegationRepository, ILogger<IDelegationsService> logger, IPartiesClient partyClient, IResourceAdministrationPoint resourceAdministrationPoint)
         {
             _delegationRepository = delegationRepository;
             _logger = logger;
             _partyClient = partyClient;
-            _resourceRegistryClient = resourceRegistryClient;
+            _resourceAdministrationPoint = resourceAdministrationPoint;
         }
 
         /// <inheritdoc/>
@@ -63,21 +63,17 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public Task<List<Delegation>> GetAllDelegationsForAdminAsync(int supplierOrg, int consumerOrg, string scope)
+        public Task<List<Delegation>> GetMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, string scope)
         {
-            int consumerPartyId = GetParty(consumerOrg.ToString());
-            int supplierPartyId = GetParty(supplierOrg.ToString());
-            if (consumerPartyId == 0 || supplierPartyId == 0)
-            {
-                throw new ArgumentException("Either the supplier or the consumer organisation number is not valid");
-            }
+            int consumerPartyId = string.IsNullOrEmpty(consumerOrg) ? 0 : GetParty(consumerOrg);
+            int supplierPartyId = string.IsNullOrEmpty(supplierOrg) ? 0 : GetParty(supplierOrg);
 
             if (!RegexUtil.IsValidMaskinportenScope(scope))
             {
                 throw new ArgumentException("Scope is not well formatted");
             }
 
-            return GetResourceRegistryDelegationChangesForAdmin(supplierPartyId, consumerPartyId, scope);
+            return GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);
         }
 
         #region private methods
@@ -92,10 +88,10 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             List<ServiceResource> resources = new List<ServiceResource>();
-            List<string> resourceIds;
-            resourceIds = delegationChanges.Select(d => d.ResourceId).Distinct().ToList();
+            List<Tuple<string, string>> resourceIds;
+            resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
 
-            resources = await _resourceRegistryClient.GetResources(resourceIds);
+            resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<Delegation> delegations = new List<Delegation>();
@@ -114,7 +110,6 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
-                ////delegation.DelegationResourceType = resource.ResourceType;
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }
@@ -129,9 +124,9 @@ namespace Altinn.AccessManagement.Core.Services
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
             List<ServiceResource> resources = new List<ServiceResource>();
-            List<string> resourceIds;
-            resourceIds = delegationChanges.Select(d => d.ResourceId).ToList();
-            resources = await _resourceRegistryClient.GetResources(resourceIds);
+            List<Tuple<string, string>> resourceIds;
+            resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
+            resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
             List<Party> partyList = await _partyClient.GetPartiesAsync(parties);
             List<Delegation> delegations = new List<Delegation>();
@@ -149,7 +144,6 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
-                ////delegation.DelegationResourceType = resource.ResourceType;
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }
@@ -157,12 +151,12 @@ namespace Altinn.AccessManagement.Core.Services
             return delegations;
         }
 
-        private async Task<List<Delegation>> GetResourceRegistryDelegationChangesForAdmin(int supplierPartyId, int consumerPartyId, string scopes)
+        private async Task<List<Delegation>> GetAllMaskinportenSchemaDelegations(int supplierPartyId, int consumerPartyId, string scopes)
         {
             List<ServiceResource> resources;
             List<string> resourceIds;
             
-            resources = await _resourceRegistryClient.SearchResources(scopes);
+            resources = await _resourceAdministrationPoint.GetResources(scopes);
             resourceIds = resources.Select(d => d.Identifier).ToList();
 
             List<DelegationChange> delegationChanges = await _delegationRepository.GetResourceRegistryDelegationChangesForAdmin(resourceIds, supplierPartyId, consumerPartyId, ResourceType.MaskinportenSchema);
@@ -189,8 +183,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
-                delegation.AltinnIIResourceId = delegationChange.ResourceId.StartsWith("appid-") ? Guid.Parse(DelegationHelper.GetReferenceValue(resource, ReferenceSource.Altinn2, ReferenceType.DelegationSchemeId)) : null;
-                delegation.Scopes = new HashSet<string>(resource?.ResourceReferences?.Where(rf => string.Equals(rf.ReferenceType, ReferenceType.MaskinportenScope)).Select(rf => rf.Reference).ToList());
+                delegation.ResourceReferences = resource.ResourceReferences;
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }

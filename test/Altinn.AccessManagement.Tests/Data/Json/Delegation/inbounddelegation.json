@@ -14,7 +14,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -31,7 +31,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -48,7 +48,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -65,7 +65,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -82,7 +82,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -99,7 +99,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -116,7 +116,7 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -133,7 +133,7 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -150,7 +150,7 @@
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -167,6 +167,6 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   }
 ]

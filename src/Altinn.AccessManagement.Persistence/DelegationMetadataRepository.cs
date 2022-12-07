@@ -323,10 +323,10 @@ namespace Altinn.AccessManagement.Persistence
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
-                NpgsqlCommand pgcom = new NpgsqlCommand(searchDelegationsSql, conn);
-                pgcom.Parameters.AddWithValue("_offeredbypartyid", NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyId);
-                pgcom.Parameters.AddWithValue("_coveredbypartyid", NpgsqlTypes.NpgsqlDbType.Integer, coveredByPartyId);
-                pgcom.Parameters.AddWithValue("_resourceids", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, resourceIds);
+                NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds, conn);
+                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, coveredByPartyId == 0 ? DBNull.Value : new List<int> { coveredByPartyId });
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyId == 0 ? DBNull.Value : new List<int> { offeredByPartyId });
+                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, resourceIds);
                 pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
 
                 List<DelegationChange> receivedDelegations = new List<DelegationChange>();

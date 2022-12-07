@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -394,10 +395,46 @@ namespace Altinn.AccessManagement.Tests.Utils
             return filteredDelegations;
         }
 
+        /// <summary>
+        /// Gets the organisation information
+        /// </summary>
+        /// <param name="orgNummer">the organisation number</param>
+        /// <returns>organisation information</returns>
+        public static PartyExternal GetOrganisation(string orgNummer)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+            PartyExternal party = null;
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.Organization?.OrgNumber == orgNummer);
+            }
+
+            return party;
+        }
+
         private static string GetDelegationPath()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Json", "Delegation");
+        }
+
+        private static string GetPartiesPath()
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "Parties");
         }
     }
 }

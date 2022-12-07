@@ -23,7 +23,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// </summary>
         /// <param name="policyRepository">The policy Repository..</param>
         /// <param name="memoryCache">The cache handler </param>
-        /// <param name="settings">The app settings</param>
+        /// <param name="cacheConfig">The cache config settings</param>
         public PolicyRetrievalPoint(IPolicyRepository policyRepository, IMemoryCache memoryCache, IOptions<CacheConfig> cacheConfig)
         {
             _repository = policyRepository;

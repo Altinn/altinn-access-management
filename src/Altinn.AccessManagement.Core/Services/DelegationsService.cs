@@ -1,5 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Configuration;
-using Altinn.AccessManagement.Core.Enums;
+﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
@@ -8,17 +7,13 @@ using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Register.Models;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Core.Services
 {
     /// <inheritdoc/>
     public class DelegationsService : IDelegationsService
     {
-        private readonly CacheConfig _cacheConfig;
-        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<IDelegationsService> _logger;
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IContextRetrievalService _contextRetrievalService;
@@ -26,16 +21,12 @@ namespace Altinn.AccessManagement.Core.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
         /// </summary>
-        /// <param name="cacheConfig">Cache config</param>
-        /// <param name="memoryCache">The cache handler </param>
         /// <param name="logger">handler for logger</param>
         /// <param name="delegationRepository">delgation change handler</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
-        public DelegationsService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService)
+        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService)
         {
             _logger = logger;
-            _cacheConfig = cacheConfig.Value;
-            _memoryCache = memoryCache;
             _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
         }
@@ -122,7 +113,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId.SingleToList(), resourceTypes: resourceType.SingleToList());
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceTypes: resourceType.SingleToList());
             List<int> parties = new List<int>();
             foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
             {
@@ -161,7 +152,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetInboundDelegations(int coveredByPartyId, ResourceType resourceType)
         {
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId.SingleToList(), new List<int>(), resourceTypes: resourceType.SingleToList()); // ToDo Fix Optional OfferedBy
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId.SingleToList(), resourceTypes: resourceType.SingleToList());
             List<int> parties = new List<int>();
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
@@ -213,7 +204,7 @@ namespace Altinn.AccessManagement.Core.Services
                 int? partyId = DelegationHelper.TryParsePartyId(who);
                 if (partyId.HasValue)
                 {
-                    Party party = GetPartyById(partyId.Value);
+                    Party party = await _contextRetrievalService.GetPartyAsync(partyId.Value);
                     partyId = party != null ? party.PartyId : 0;
                     return Convert.ToInt32(partyId);
                 }
@@ -225,18 +216,6 @@ namespace Altinn.AccessManagement.Core.Services
                 _logger.LogError("//DelegationsService //GetParty failed to fetch partyid", ex);
                 throw;
             }            
-        }
-
-        /// <summary>
-        /// Gets a party by party ID.
-        /// </summary>
-        /// <param name="partyId">Identifies a party (organization or person).</param>
-        /// <returns>The identified party.</returns>
-        private Party GetPartyById(int partyId)
-        {
-            Party party;
-            party = _contextRetrievalService.GetPartyAsync(partyId).Result;
-            return party;
         }
     }
 }

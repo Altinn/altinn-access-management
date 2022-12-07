@@ -114,7 +114,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 List<AttributeMatch> userRoleAttributeMatches = RightsHelper.GetRoleAttributeMatches(userRoles);
                 RightSourceType policyType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? RightSourceType.ResourceRegistryPolicy : RightSourceType.AppPolicy;
-                EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, userRoleAttributeMatches, returnAllPolicyRights);
+                EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, userRoleAttributeMatches, returnAllPolicyRights: returnAllPolicyRights);
             }
 
             // Delegation Policy Rights
@@ -124,7 +124,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 XacmlPolicy delegationPolicy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId);
                 List<AttributeMatch> subjects = RightsHelper.GetDelegationSubjectAttributeMatches(delegation);
-                EnrichRightsDictionaryWithRightsFromPolicy(result, delegationPolicy, RightSourceType.DelegationPolicy, subjects);
+                EnrichRightsDictionaryWithRightsFromPolicy(result, delegationPolicy, RightSourceType.DelegationPolicy, subjects, delegation.OfferedByPartyId);
             }
 
             if (returnAllPolicyRights)
@@ -202,7 +202,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
         }
 
-        private void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> userSubjects, bool returnAllPolicyRights = false)
+        private static void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> userSubjects, int delegationOfferedByPartyId = 0, bool returnAllPolicyRights = false)
         {
             PolicyDecisionPoint pdp = new PolicyDecisionPoint();
 
@@ -219,8 +219,7 @@ namespace Altinn.AccessManagement.Core.Services
                     XacmlContextRequest authRequest = new XacmlContextRequest(false, false, contextAttributes);
 
                     XacmlContextResponse response = pdp.Authorize(authRequest, singleRulePolicy);
-
-                    XacmlContextResult decisionResult = response.Results.FirstOrDefault();
+                    XacmlContextResult decisionResult = response.Results.First();
 
                     if (!rights.ContainsKey(ruleRight.RightKey))
                     {
@@ -242,7 +241,8 @@ namespace Altinn.AccessManagement.Core.Services
                                 RuleId = rule.RuleId,
                                 RightSourceType = policySourceType,
                                 HasPermit = decisionResult.Decision.Equals(XacmlContextDecision.Permit),
-                                UserSubjects = userSubjects, // ToDo: Get subject matches from ABAC
+                                OfferedByPartyId = delegationOfferedByPartyId,
+                                UserSubjects = userSubjects,
                                 PolicySubjects = ruleSubjects
                             });
                     }

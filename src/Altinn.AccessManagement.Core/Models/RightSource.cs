@@ -33,13 +33,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the party offering the rights to the receiving (CoveredBy) entity.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int OfferedByPartyId { get; set; } // Todo: remove?
-
-        /// <summary>
-        /// Gets or sets the party receiving (covered by) the rights from the delegating (OfferedByPartyId) entity
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<AttributeMatch> CoveredBy { get; set; } // Todo: remove?
+        public int OfferedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user or party has the right

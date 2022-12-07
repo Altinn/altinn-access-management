@@ -51,15 +51,15 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="resourceRegistryIds">The list of resource registry ids to look up</param>
         /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the user having received the delegated policy</param>
-        Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, int? coveredByUserId = null);
+        Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null);
 
         /// <summary>
         /// Gets all the active resource registry delegations a given party have delegated to others
         /// </summary>
-        /// <param name="offeredByPartyIds">The party ids of the entities offering the delegations</param>
+        /// <param name="offeredByPartyId">The party id of the entity offering the delegations</param>
         /// <param name="resourceRegistryIds">The resource registry ids of resources to find delegations of</param>
         /// <param name="resourceTypes">The types of resources to find delegations of</param>
-        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
+        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
 
         /// <summary>
         /// Gets all the active resource registry delegations a list of parties have received from others
@@ -68,7 +68,7 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="offeredByPartyIds">The list of party ids of the entities offering the delegations</param>
         /// <param name="resourceRegistryIds">The resource registry ids of resources to find delegations of</param>
         /// <param name="resourceTypes">The types of resources to find delegations of</param>
-        Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
+        Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
 
         /// <summary>
         /// Gets all the active resource registry delegations a given user have received from others

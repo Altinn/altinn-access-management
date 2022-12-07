@@ -233,11 +233,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+        public Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
         {
             List<DelegationChange> result = new List<DelegationChange>();
 
-            if (offeredByPartyIds.Count() == 1 && offeredByPartyIds.First() == 50004223 && resourceTypes.Count() == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
+            if (offeredByPartyId == 50004223 && resourceTypes.Count == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
             {
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004223, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004223, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
@@ -246,7 +246,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004223, null, 50004220, 20000002, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004223, null, 50004221, 20000002, DelegationChangeType.Grant, 1234));
             }
-            else if (offeredByPartyIds.Count() == 1 && offeredByPartyIds.First() == 50004226 && resourceTypes.Count() == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
+            else if (offeredByPartyId == 50004226 && resourceTypes.Count == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
             {
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, 50004226, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav1_aa_distribution", ResourceType.MaskinportenSchema, 50004226, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
@@ -263,7 +263,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
         {
             List<DelegationChange> result = new List<DelegationChange>();
-            if (coveredByPartyIds.Count() == 1 && coveredByPartyIds.First() == 50004219 && resourceTypes.Count() == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
+            if (coveredByPartyIds.Count == 1 && coveredByPartyIds.First() == 50004219 && resourceTypes.Count == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
             {
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, null, 50004219, 20000008, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, null, 50004219, 20000008, DelegationChangeType.Grant, 1234));
@@ -272,7 +272,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004221, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004221, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
             }
-            else if (coveredByPartyIds.Count() == 1 && coveredByPartyIds.First() == 50004216 && resourceTypes.Count() == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
+            else if (coveredByPartyIds.Count == 1 && coveredByPartyIds.First() == 50004216 && resourceTypes.Count == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
             {
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("nav_aa_distribution", ResourceType.MaskinportenSchema, 50004222, null, 50004216, 20000008, DelegationChangeType.Grant, 1234));
                 result.Add(TestDataUtil.GetResourceRegistryDelegationChange("skd_1", ResourceType.MaskinportenSchema, 50004222, null, 50004216, 20000008, DelegationChangeType.Grant, 1234));

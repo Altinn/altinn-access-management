@@ -141,14 +141,14 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<MainUnit>> GetMainUnits(int subUnitPartyId)
+        public async Task<List<MainUnit>> GetMainUnits(int subunitPartyId)
         {
-            string cacheKey = $"subunit:{subUnitPartyId}";
+            string cacheKey = $"subunit:{subunitPartyId}";
 
             if (!_memoryCache.TryGetValue(cacheKey, out List<MainUnit> mainUnits))
             {
                 // Key not in cache, so get data.
-                mainUnits = await _partiesClient.GetMainUnits(new MainUnitQuery { PartyIds = new List<int> { subUnitPartyId } });
+                mainUnits = await _partiesClient.GetMainUnits(new MainUnitQuery { PartyIds = new List<int> { subunitPartyId } });
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetPriority(CacheItemPriority.High)

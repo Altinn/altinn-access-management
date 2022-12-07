@@ -567,7 +567,6 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             foreach (XacmlRule rule in xacmlRules)
             {
-                ICollection<XacmlAllOf> subjectAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
                 ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Resource);
                 ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Action);
 
@@ -702,25 +701,6 @@ namespace Altinn.AccessManagement.Core.Helpers
                         allOfs.Add(new XacmlAllOf(allOfMatchesFound));
                     }
                 }
-            }
-
-            return allOfs;
-        }
-
-        private static ICollection<XacmlAllOf> GetXacmlAllOfsFromAttributeMatches(List<AttributeMatch> attributeMatches)
-        {
-            ICollection<XacmlAllOf> allOfs = new Collection<XacmlAllOf>();
-            ICollection<XacmlMatch> allOfMatchesFound = new Collection<XacmlMatch>();
-            foreach (AttributeMatch match in attributeMatches)
-            {
-                XacmlAttributeValue attributeValue = new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), match.Value);
-                XacmlAttributeDesignator attributeDesignator = new XacmlAttributeDesignator(new Uri(match.Id), new Uri(XacmlConstants.DataTypes.XMLString));
-                allOfMatchesFound.Add(new XacmlMatch(new Uri(XacmlConstants.AttributeMatchFunction.StringEqual), attributeValue, attributeDesignator));
-            }
-
-            if (allOfMatchesFound.Count > 0)
-            {
-                allOfs.Add(new XacmlAllOf(allOfMatchesFound));
             }
 
             return allOfs;

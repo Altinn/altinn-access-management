@@ -226,6 +226,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
+    services.AddSingleton<IRegister, RegisterService>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)

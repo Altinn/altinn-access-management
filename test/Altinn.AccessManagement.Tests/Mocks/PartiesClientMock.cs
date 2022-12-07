@@ -104,6 +104,32 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
+        public Task<Party> LookupPartyBySSNOrOrgNo(string orgnummer)
+        {
+            List<Party> partyList = new List<Party>();
+            Party party = null;
+
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.Organization?.OrgNumber == orgnummer);
+            }
+
+            return Task.FromResult(party);
+        }
+
+        /// <inheritdoc/>
         public Task<List<int>> GetKeyRoleParties(int userId)
         {
             List<int> keyRoleUnitPartyIds = new();

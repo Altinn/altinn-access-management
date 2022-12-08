@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
@@ -14,14 +12,10 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
-using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
-using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -30,11 +24,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
     /// Test class for <see cref="RightsController"></see>
     /// </summary>
     [Collection("RightsController Tests")]
-    public class RightsControllerTest : IClassFixture<CustomWebApplicationFactory<AuthenticationController>>
+    public class RightsControllerTest : IClassFixture<CustomWebApplicationFactory<RightsController>>
     {
-        private readonly CustomWebApplicationFactory<AuthenticationController> _factory;
+        private readonly CustomWebApplicationFactory<RightsController> _factory;
         private readonly HttpClient _client;
-        private readonly HttpClient _clientForNullToken;
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -45,7 +38,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Constructor setting up factory, test client and dependencies
         /// </summary>
         /// <param name="factory">CustomWebApplicationFactory</param>
-        public RightsControllerTest(CustomWebApplicationFactory<AuthenticationController> factory)
+        public RightsControllerTest(CustomWebApplicationFactory<RightsController> factory)
         {
             _factory = factory;
             _client = GetTestClient();
@@ -53,14 +46,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: RightsQuery returns a list of rights given from the offering partyid to the covered userid
+        /// Test case: RightsQuery returns a list of rights given from the offering partyid to the covered userid for the specified resource from the resource registry
         /// Expected: GetRights returns a list of right matching expected
         /// </summary>
         [Fact]
-        public async Task RightsQuery_Delegated_SingleRight_ReturnAllPolicyRights_False()
+        public async Task RightsQuery_Delegated_ResourceRight_ReturnAllPolicyRights_False()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_SuccessRequest.json");
+            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_Resource_SuccessRequest.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000095, false);
@@ -76,17 +69,65 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: RightsQuery returns a list of rights given from the offering partyid to the covered userid
+        /// Test case: RightsQuery returns a list of rights between an offering partyid to a covered userid, returnAllPolicyRights query param is set to true and operation should return all rights found in the resource registry XACML policy
         /// Expected: GetRights returns a list of right matching expected
         /// </summary>
         [Fact]
-        public async Task RightsQuery_Delegated_SingleRight_ReturnAllPolicyRights_True()
+        public async Task RightsQuery_Delegated_ResourceRight_ReturnAllPolicyRights_True()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_SuccessRequest.json");
+            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_Resource_SuccessRequest.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000095, true);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returns a list of rights given from the offering partyid to the covered userid for the specified altinn app
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQuery_Delegated_AppRight_ReturnAllPolicyRights_False()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_App_SuccessRequest.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("org1_app1", 50001337, 20001337, false);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=false", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returns a list of rights between an offering partyid to a covered userid, returnAllPolicyRights query param is set to true and operation should return all rights found in the altinn app XACML policy
+        /// Note: This test scenario is setup using existing test data for Org1 App1 and offeredBy 50001337 and coveredby user 20001337, where the delegation policy contains rules for resources not in the App policy:
+        /// ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app  policy is changed to remove some rights.
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQuery_Delegated_AppRight_ReturnAllPolicyRights_True()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_App_SuccessRequest.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("org1_app1", 50001337, 20001337, true);
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", content);

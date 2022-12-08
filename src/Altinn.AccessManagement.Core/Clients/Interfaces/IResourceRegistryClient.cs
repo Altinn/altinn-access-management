@@ -15,17 +15,9 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         Task<ServiceResource> GetResource(string resourceId);
 
         /// <summary>
-        /// Integration point for retrieving a list of resources by it's resource id
+        /// Integration point for retrieving a list of resources
         /// </summary>
-        /// <param name="resourceIds">The identifier of the resource in the Resource Registry</param>
         /// <returns>The resource list if exists</returns>
-        Task<List<ServiceResource>> GetResources(List<string> resourceIds);
-
-        /// <summary>
-        /// Integration point for retrieving a list of resources by resourceType
-        /// </summary>
-        /// <param name="resourceType">resource type</param>
-        /// <returns>The resource list if exists</returns>
-        Task<List<ServiceResource>> GetResources(ResourceType resourceType);
+        Task<List<ServiceResource>> GetResources();
     }
 }

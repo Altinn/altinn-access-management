@@ -314,6 +314,36 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetResourceRegistryDelegationChangesForAdmin(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds, conn);
+                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, coveredByPartyId == 0 ? DBNull.Value : new List<int> { coveredByPartyId });
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, offeredByPartyId == 0 ? DBNull.Value : new List<int> { offeredByPartyId });
+                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, resourceIds);
+                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
+
+                List<DelegationChange> receivedDelegations = new List<DelegationChange>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    receivedDelegations.Add(GetResourceRegistryDelegationChange(reader));
+                }
+
+                return receivedDelegations;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                throw;
+            }
+        }
+
         private static void CheckIfOfferedbyPartyIdsHasValue(List<int> offeredByPartyIds)
         {
             if (offeredByPartyIds == null)

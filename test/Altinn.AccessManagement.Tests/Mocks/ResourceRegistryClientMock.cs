@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -51,49 +54,35 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        public async Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
 
-                resource = await GetResource(id);
-                
-                if (resource == null)
+            string path = GetDataPathForResources();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+                var options = new JsonSerializerOptions
                 {
-                    ServiceResource unavailableResource = new ServiceResource
+                    PropertyNameCaseInsensitive = true,
+                };
+                foreach (string file in files)
+                {
+                    if (file.Contains("resources"))
                     {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                    }
                 }
             }
 
             return resources;
         }
 
-        /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(ResourceType resourceType)
+        private static string GetDataPathForResources()
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            resources.Add(TestDataUtil.GetResource("acn_1", "ACN 1", ResourceType.MaskinportenSchema, "Acn service 1", Convert.ToDateTime("2022-09-20T06:46:07.598"), Convert.ToDateTime("2022-12-24T23:59:59"), "Active"));
-            resources.Add(TestDataUtil.GetResource("nav_aa_distribution", "nav_aa_distribution", ResourceType.MaskinportenSchema, "nav aa distribution", Convert.ToDateTime("2022-09-20T06:46:07.598"), Convert.ToDateTime("2022-12-24T23:59:59"), "Active"));
-            resources.Add(TestDataUtil.GetResource("ssb_1", "Statistikk informasjon", ResourceType.MaskinportenSchema, "Statistikk informasjon", Convert.ToDateTime("2022-09-20T06:46:07.598"), Convert.ToDateTime("2022-12-24T23:59:59"), "Active"));
-            resources.Add(TestDataUtil.GetResource("ttd_1", "TTD 1", ResourceType.MaskinportenSchema, "Test department service 1", Convert.ToDateTime("2022-09-20T06:46:07.598"), Convert.ToDateTime("2022-12-24T23:59:59"), "Active"));
-            resources.Add(TestDataUtil.GetResource("appid-123", "appid 123", ResourceType.MaskinportenSchema, "appid 123", Convert.ToDateTime("2020-03-06T09:41:15.817"), Convert.ToDateTime("9999-12-31T23:59:59.997"), "Active"));
-
-            return resources;
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "Resources");
         }
     }
 }

@@ -64,8 +64,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns a list of delegations received by coveredby when the coveredby is an organisation number
-        /// Expected: GetAllInboundDelegations returns a list of delegations received by coveredby
+        /// Test case: GetResources returns a list of resources 
+        /// Expected: GetResources returns a list of resources filtered by resourcetype
         /// </summary>
         [Fact]
         public async Task GetResources_valid_resourcetype()

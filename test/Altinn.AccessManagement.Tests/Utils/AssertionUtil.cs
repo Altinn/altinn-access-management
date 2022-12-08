@@ -272,7 +272,45 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            ////Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            Assert.Equal(expected.ResourceType, actual.ResourceType);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="MPDelegationExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(MPDelegationExternal expected, MPDelegationExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.SupplierOrg, actual.SupplierOrg);
+            Assert.Equal(expected.ConsumerOrg, actual.ConsumerOrg);
+            Assert.Equal(expected.Scopes, actual.Scopes);
+            Assert.Equal(expected.DelegationSchemeId, actual.DelegationSchemeId);
+            Assert.Equal(expected.Created, actual.Created);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="PartyExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertPartyEqual(PartyExternal expected, PartyExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.PartyTypeName, actual.PartyTypeName);
+            Assert.Equal(expected.OrgNumber, actual.OrgNumber);
+            Assert.Equal(expected.Organization.Name, actual.Organization.Name);
+            Assert.Equal(expected.Organization.OrgNumber, actual.Organization.OrgNumber);
+            Assert.Equal(expected.Organization.UnitType, actual.Organization.UnitType);
+            Assert.Equal(expected.PartyId, actual.PartyId);
+            Assert.Equal(expected.UnitType, actual.UnitType);
+            Assert.Equal(expected.Name, actual.Name);
         }
 
         /// <summary>

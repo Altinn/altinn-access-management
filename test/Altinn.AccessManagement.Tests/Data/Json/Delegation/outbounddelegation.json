@@ -6,15 +6,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -23,15 +23,15 @@
     "coveredbypartyid": 50004220,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418362,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418362,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -40,15 +40,15 @@
     "coveredbypartyid": 50004221,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418532,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418532,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -57,15 +57,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -74,15 +74,15 @@
     "coveredbypartyid": 50004220,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418362,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418362,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -91,15 +91,15 @@
     "coveredbypartyid": 50004221,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418532,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418532,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -108,15 +108,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "nav1_aa_distribution",
     "resourceTitle": {
       "en": "Not Available",
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -125,15 +125,15 @@
     "coveredbypartyid": 50004220,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418362,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418362,
     "resourceid": "nav1_aa_distribution",
     "resourceTitle": {
       "en": "Not Available",
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -142,15 +142,15 @@
     "coveredbypartyid": 50004221,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418532,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418532,
     "resourceid": "nav1_aa_distribution",
     "resourceTitle": {
       "en": "Not Available",
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "KOLSAAS OG FLAAM",
@@ -159,15 +159,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418192,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418192,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "NORDRE FROGN OG MORTENHALS",
@@ -176,15 +176,15 @@
     "coveredbypartyid": 50004220,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418362,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418362,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": "LUNDAMO OG FLEINVAR",
@@ -193,14 +193,14 @@
     "coveredbypartyid": 50004221,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 0,
-    "coveredbyorgnummer": 810418532,
+    "offeredbyorganizationNumber": 0,
+    "CoveredByOrganizationNumber": 810418532,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   }
 ]

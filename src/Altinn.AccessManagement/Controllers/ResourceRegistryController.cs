@@ -26,7 +26,7 @@ namespace Altinn.AccessManagement.Controllers
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
         /// </summary>
         /// <param name="logger">the logger.</param>
-        ///<param name="resourceRegistryClient">the resource register handler</param>
+        ///<param name="resourceAdministrationPoint">the resource register handler</param>
         /// <param name="mapper">mapper handler</param>
         public ResourceRegistryController(
             ILogger<ResourceRegistryController> logger,
@@ -49,10 +49,6 @@ namespace Altinn.AccessManagement.Controllers
         public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party) 
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            if (party == 0)
-            {
-                return BadRequest("Missing party");
-            }
 
             resources = await _resourceAdministrationPoint.GetResources(ResourceType.MaskinportenSchema);
             return _mapper.Map<List<ServiceResourceExternal>>(resources);

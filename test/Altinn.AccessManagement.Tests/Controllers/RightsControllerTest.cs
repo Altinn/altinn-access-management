@@ -53,7 +53,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_Delegated_ResourceRight_ReturnAllPolicyRights_False()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_Resource_SuccessRequest.json");
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/jks_audi_etron_gt/user_20000095/party_50005545/RightsQuery.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000095, false);
@@ -76,7 +76,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_Delegated_ResourceRight_ReturnAllPolicyRights_True()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_Resource_SuccessRequest.json");
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/jks_audi_etron_gt/user_20000095/party_50005545/RightsQuery.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000095, true);
@@ -99,7 +99,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_Delegated_AppRight_ReturnAllPolicyRights_False()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_App_SuccessRequest.json");
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/org1_app1/user_20001337/party_50001337/RightsQuery.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("org1_app1", 50001337, 20001337, false);
@@ -124,10 +124,102 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_Delegated_AppRight_ReturnAllPolicyRights_True()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/Json/RightsQuery/RightsQuery_App_SuccessRequest.json");
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/org1_app1/user_20001337/party_50001337/RightsQuery.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             List<Right> expectedRights = GetExpectedRights("org1_app1", 50001337, 20001337, true);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returning the list of rights a DAGL has for its organization for the resource from the resource registry
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQuery_Resource_DAGL_ReturnAllPolicyRights_False()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/jks_audi_etron_gt/user_20000490/party_50005545/RightsQuery.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000490, false);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=false", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returning the list of rights a DAGL has for its organization for the resource from the resource registry. returnAllPolicyRights query param is set to true and operation should return all rights found in the resource XACML policy
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQuery_Resource_DAGL_ReturnAllPolicyRights_True()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/jks_audi_etron_gt/user_20000490/party_50005545/RightsQuery.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", 50005545, 20000490, true);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returning the list of rights a DAGL has for its organization for the Altinn App
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQueryd_AppRight_DAGL_ReturnAllPolicyRights_False()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/ttd_rf-0002/user_20000490/party_50005545/RightsQuery.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("ttd_rf-0002", 50005545, 20000490, false);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=false", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: RightsQuery returning the list of rights a DAGL has for its organization for the Altinn App. returnAllPolicyRights query param is set to true and operation should return all rights found in the apps XACML policy
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task RightsQueryd_AppRight_DAGL_ReturnAllPolicyRights_True()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/ttd_rf-0002/user_20000490/party_50005545/RightsQuery.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            List<Right> expectedRights = GetExpectedRights("ttd_rf-0002", 50005545, 20000490, true);
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", content);
@@ -161,7 +253,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             List<Right> rights = new();
 
-            string rightsPath = GetRightsPath(resourceRegistryId, fromPartyId, toUserId, returnAllPolicyRights);
+            string rightsPath = Path.Combine("Data", "Rights", $"{resourceRegistryId}", $"user_{toUserId}", $"party_{fromPartyId}", $"rights_returnall_{returnAllPolicyRights}.json");
             if (File.Exists(rightsPath))
             {
                 string content = File.ReadAllText(rightsPath);
@@ -169,12 +261,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             }
 
             return rights;
-        }
-
-        private static string GetRightsPath(string resourceRegistryId, int fromPartyId, int toUserId, bool returnAllPolicyRights)
-        {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(RightsControllerTest).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "Data", "Rights", $"{resourceRegistryId}", $"user_{toUserId}", $"party_{fromPartyId}", $"rights_returnall_{returnAllPolicyRights}.json");
         }
     }
 }

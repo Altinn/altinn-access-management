@@ -54,55 +54,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             return await Task.FromResult(result);
         }
 
-        /// <summary>
-        /// Get resource information for the the given list of resourceids
-        /// </summary>
-        /// <param name="resourceIds"> the list of resource ids</param>
-        /// <returns></returns>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
-
-                try
-                {
-                    resource = await GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
-                    throw;
-                }
-
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
-            }
-
-            return resources;
-        }
-
-        /// <summary>
-        /// Get resource information for the the given list of resourceids
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
@@ -120,17 +72,6 @@ namespace Altinn.AccessManagement.Integration.Clients
                     };
                     string content = await response.Content.ReadAsStringAsync();
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
-
-                    //foreach (ServiceResource resource in resources)
-                    //{
-                    //    foreach (ResourceReference reference in resource.ResourceReferences)
-                    //    {
-                    //        if (reference != null && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
-                    //        {
-                    //            filteredResources.Add(resource);
-                    //        }
-                    //    }
-                    //}
                 }
             }
             catch (Exception ex)

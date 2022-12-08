@@ -21,8 +21,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly CacheConfig _cacheConfig;
         private readonly IMemoryCache _memoryCache;
         private readonly IResourceRegistryClient _resourceRegistryClient;
-        private readonly IAltinnRolesClient _altinnRolesClient;
-        private readonly IPartiesClient _partiesClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextRetrievalService"/> class
@@ -31,16 +29,12 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="cacheConfig">Cache config</param>
         /// <param name="memoryCache">The cache handler </param>
         /// <param name="resourceRegistryClient">The client for integration with the ResourceRegistry</param>
-        /// <param name="altinnRolesClient">The client for integration with the SBL Bridge for role information</param>
-        /// <param name="partiesClient">The client for integration </param>
-        public ContextRetrievalService(ILogger<IContextRetrievalService> logger, IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
+        public ContextRetrievalService(ILogger<IContextRetrievalService> logger, IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient)
         {
             _logger = logger;
             _cacheConfig = cacheConfig.Value;
             _memoryCache = memoryCache;
             _resourceRegistryClient = resourceRegistryClient;
-            _altinnRolesClient = altinnRolesClient;
-            _partiesClient = partiesClient;
         }
 
         /// <inheritdoc/>
@@ -50,7 +44,8 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (!_memoryCache.TryGetValue(cacheKey, out ServiceResource resource))
             {
-                resource = GetResources().Result.Find(r => r.Identifier == resourceRegistryId);
+                List<ServiceResource> resources = await GetResources();
+                resource =resources.Find(r => r.Identifier == resourceRegistryId);
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetPriority(CacheItemPriority.High)

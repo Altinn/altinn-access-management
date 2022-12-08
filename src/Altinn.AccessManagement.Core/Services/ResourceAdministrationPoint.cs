@@ -36,23 +36,24 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc />
         public async Task<List<ServiceResource>> GetResources(ResourceType resourceType)
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            List<ServiceResource> filteredResources = new List<ServiceResource>();
-
-            resources = await _contextRetrievalService.GetResources();
-
-            filteredResources = resources.FindAll(r => r.ResourceType == resourceType);
-
-            return filteredResources;
+            try
+            {
+                List<ServiceResource> resources = await _contextRetrievalService.GetResources();
+                return resources.FindAll(r => r.ResourceType == resourceType);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("//ResourceAdministrationPoint //GetResources by resourcetype failed to fetch resources", ex);
+                throw;
+            }
         }
 
         /// <inheritdoc />
         public async Task<List<ServiceResource>> GetResources(string scopes)
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
             List<ServiceResource> filteredResources = new List<ServiceResource>();
 
-            resources = await _contextRetrievalService.GetResources();
+            List<ServiceResource> resources = await _contextRetrievalService.GetResources();
 
             foreach (ServiceResource resource in resources)
             {
@@ -71,35 +72,41 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc />
         public async Task<List<ServiceResource>> GetResources(List<Tuple<string, string>> resourceIds)
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
             List<ServiceResource> filteredResources = new List<ServiceResource>();
 
-            resources = await _contextRetrievalService.GetResources();
-            foreach (Tuple<string, string> id in resourceIds)
+            try
             {
-                ServiceResource resource = null;
-
-                resource = await GetResource(id.Item1);
-
-                if (resource == null)
+                foreach (Tuple<string, string> id in resourceIds)
                 {
-                    ServiceResource unavailableResource = new ServiceResource
+                    ServiceResource resource = null;
+
+                    resource = await GetResource(id.Item1);
+
+                    if (resource == null)
                     {
-                        Identifier = id.Item1,
-                        Title = new Dictionary<string, string>
+                        ServiceResource unavailableResource = new ServiceResource
+                        {
+                            Identifier = id.Item1,
+                            Title = new Dictionary<string, string>
                         {
                             { "en", "Not Available" },
                             { "nb-no", "ikke tilgjengelig" },
                             { "nn-no", "ikkje tilgjengelig" }
                         },
-                        ResourceType = Enum.TryParse<ResourceType>(id.Item2, out ResourceType resourceType) ? resourceType : ResourceType.Default
-                    };
-                    filteredResources.Add(unavailableResource);
+                            ResourceType = Enum.TryParse<ResourceType>(id.Item2, out ResourceType resourceType) ? resourceType : ResourceType.Default
+                        };
+                        filteredResources.Add(unavailableResource);
+                    }
+                    else
+                    {
+                        filteredResources.Add(resource);
+                    }
                 }
-                else
-                {
-                    filteredResources.Add(resource);
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("//ResourceAdministrationPoint //GetResources by resource id failed to fetch resources", ex);
+                throw;
             }
 
             return filteredResources;
@@ -108,7 +115,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc />
         public async Task<ServiceResource> GetResource(string resourceRegistryId)
         {
-            return  await _contextRetrievalService.GetResource(resourceRegistryId);
+            return await _contextRetrievalService.GetResource(resourceRegistryId);
         }
     }
 }

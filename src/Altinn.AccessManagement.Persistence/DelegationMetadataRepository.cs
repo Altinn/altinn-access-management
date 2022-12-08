@@ -35,7 +35,6 @@ namespace Altinn.AccessManagement.Persistence
         private readonly string getResourceRegistryDelegationChangesForCoveredByPartyIds = "select * from delegation.select_active_resourceregistrydelegationchanges_coveredbypartys(@_coveredByPartyIds, @_offeredByPartyIds, @_resourceRegistryIds, @_resourceTypes)";
         private readonly string getResourceRegistryDelegationChangesForCoveredByUserId = "select * from delegation.select_active_resourceregistrydelegationchanges_coveredbyuser(@_coveredByUserId, @_offeredByPartyIds, @_resourceRegistryIds, @_resourceTypes)";
         private readonly string getResourceRegistryDelegationChangesOfferedByPartyId = "select * from delegation.select_active_resourceregistrydelegationchanges_offeredby(@_offeredByPartyId, @_resourceRegistryIds, @_resourceTypes)";
-        private readonly string searchDelegationsSql = "select * from delegation.select_active_resourceregistrydelegationchanges_admin(@_offeredByPartyId, @_coveredByPartyId, @_resourceIds, @_resourcetypes)";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepository"/> class

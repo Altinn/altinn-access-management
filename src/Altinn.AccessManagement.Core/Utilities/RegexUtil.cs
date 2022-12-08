@@ -64,5 +64,4 @@ namespace Altinn.AccessManagement.Core.Utilities
             return MaskinportenScopes.IsMatch(scope);
         }
     }
-
 }

@@ -388,8 +388,6 @@ namespace Altinn.AccessManagement.Tests.Utils
                         filteredDelegations.Add(delegation);
                     }
                 }
-
-                //filteredDelegations.AddRange(delegations?.FindAll(od => od.SupplierOrg == supplierOrg && od.ConsumerOrg == consumerOrg && resourceIds.Contains(od.ResourceId)));
             }
 
             return filteredDelegations;

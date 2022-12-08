@@ -19,7 +19,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// Primary key created when inserted in Access management
         /// </summary>
         public int? ResourceId { get; set; }
-#nullable disable
+        #nullable disable
 
         /// <summary>
         /// The resource registry id

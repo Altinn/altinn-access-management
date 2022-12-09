@@ -201,6 +201,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
@@ -223,6 +224,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
+    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
     services.AddSingleton<IRegister, RegisterService>();

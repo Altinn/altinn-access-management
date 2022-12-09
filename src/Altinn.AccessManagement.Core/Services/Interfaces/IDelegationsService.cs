@@ -23,5 +23,14 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="resourceType">the type of resource that was delegated</param>
         /// <returns>list o delgations</returns>
         public Task<List<Delegation>> GetAllInboundDelegationsAsync(string who, ResourceType resourceType);
+
+        /// <summary> 
+        /// Gets all the delegations for an admin or owner
+        /// </summary>
+        /// <param name="supplierOrg">the organisation number of the supplier org</param>
+        /// <param name="consumerOrg">the organisation number of the consumer of the resource</param>
+        /// <param name="scope">the scope of the resource</param>
+        /// <returns>list of delgations</returns>
+        public Task<List<Delegation>> GetMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, string scope);
     }
 }

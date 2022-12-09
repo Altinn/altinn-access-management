@@ -54,46 +54,30 @@ namespace Altinn.AccessManagement.Integration.Clients
             return await Task.FromResult(result);
         }
 
-        /// <summary>
-        /// Get resource information for the the given list of resourceids
-        /// </summary>
-        /// <param name="resourceIds"> the list of resource ids</param>
-        /// <returns></returns>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
+
+            try
             {
-                ServiceResource resource = null;
+                string endpointUrl = $"resourceregistry/api/v1/resource/search";
 
-                try
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    resource = await GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
-                    throw;
-                }
-
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
+                    var options = new JsonSerializerOptions
                     {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
+                        PropertyNameCaseInsensitive = true,
                     };
-                    resources.Add(unavailableResource);
+                    string content = await response.Content.ReadAsStringAsync();
+                    resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                 }
-                else
-                {
-                    resources.Add(resource);
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // SearchResources // Exception");
+                throw;
             }
 
             return resources;

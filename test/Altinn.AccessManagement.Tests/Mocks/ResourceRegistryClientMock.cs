@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -50,36 +54,35 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        public async Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
-            {
-                ServiceResource resource = null;
 
-                resource = await GetResource(id);
-                
-                if (resource == null)
+            string path = GetDataPathForResources();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+                var options = new JsonSerializerOptions
                 {
-                    ServiceResource unavailableResource = new ServiceResource
+                    PropertyNameCaseInsensitive = true,
+                };
+                foreach (string file in files)
+                {
+                    if (file.Contains("resources"))
                     {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                    }
                 }
             }
 
             return resources;
+        }
+
+        private static string GetDataPathForResources()
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "Resources");
         }
     }
 }

@@ -11,7 +11,7 @@
       "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
       "value": "drive"
     },
-    "hasPermit": false,
+    "hasPermit": true,
     "rightSources": [
       {
         "rightSourceType": "ResourceRegistryPolicy",
@@ -85,6 +85,29 @@
               "matchFound": null,
               "id": "urn:altinn:location",
               "value": "driveway"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:2",
+        "policyVersion": "1.0",
+        "ruleId": "7d4ea875-c62e-4a45-acfd-32c9c5b1b122",
+        "offeredByPartyId": 50005545,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:partyid",
+            "value": "50004222"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:partyid",
+              "value": "50004222"
             }
           ]
         ]
@@ -185,7 +208,8 @@
         "rightSourceType": "DelegationPolicy",
         "policyId": "urn:altinn:policyid:1",
         "policyVersion": "1.0",
-        "ruleId": "7b7945b4-81f6-493c-9f4e-ce9e0f6554fb",
+        "ruleId": "4ab005d9-1770-4c9b-9dc0-9e06eb31c5b4",
+        "offeredByPartyId": 50005545,
         "hasPermit": true,
         "userSubjects": [
           {

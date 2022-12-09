@@ -346,6 +346,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.PolicyVersion, actual.PolicyVersion);
             Assert.Equal(expected.RuleId, actual.RuleId);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
             AssertEqual(expected.UserSubjects, actual.UserSubjects);
             AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
         }

@@ -204,7 +204,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 {
                     if (coveredByPartyIds != null)
                     {
-                        foreach (int coveredByPartyId in offeredByPartyIds)
+                        foreach (int coveredByPartyId in coveredByPartyIds)
                         {
                             string delegationChangePath = GetResourceRegistryDelegationPath_ForCoveredByPartyId(resourceRegistryId, offeredByPartyId, coveredByPartyId);
                             if (File.Exists(delegationChangePath))

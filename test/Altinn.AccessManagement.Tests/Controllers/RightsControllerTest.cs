@@ -249,11 +249,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return client;
         }
 
-        private static List<Right> GetExpectedRights(string resourceRegistryId, int fromPartyId, int toUserId, bool returnAllPolicyRights)
+        private static List<Right> GetExpectedRights(string resourceId, int fromPartyId, int toUserId, bool returnAllPolicyRights)
         {
             List<Right> rights = new();
 
-            string rightsPath = Path.Combine("Data", "Rights", $"{resourceRegistryId}", $"user_{toUserId}", $"party_{fromPartyId}", $"rights_returnall_{returnAllPolicyRights}.json");
+            string rightsPath = $"Data/Json/RightsQuery/{resourceId}/user_{toUserId}/party_{fromPartyId}/expected_rights_returnall_{returnAllPolicyRights}.json";
             if (File.Exists(rightsPath))
             {
                 string content = File.ReadAllText(rightsPath);

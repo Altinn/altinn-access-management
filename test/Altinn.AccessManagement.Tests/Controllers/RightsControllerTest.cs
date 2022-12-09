@@ -254,11 +254,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<Right> rights = new();
 
             string rightsPath = $"Data/Json/RightsQuery/{resourceId}/user_{toUserId}/party_{fromPartyId}/expected_rights_returnall_{returnAllPolicyRights}.json";
-            if (File.Exists(rightsPath))
-            {
-                string content = File.ReadAllText(rightsPath);
-                rights = (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
+            string content = File.ReadAllText(rightsPath);
+            rights = (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             return rights;
         }

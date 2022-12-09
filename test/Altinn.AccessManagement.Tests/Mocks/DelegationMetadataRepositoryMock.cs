@@ -243,7 +243,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<DelegationChange>> GetResourceRegistryDelegationChangesForAdmin(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType)
+        public Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> result = new List<DelegationChange>();
             if (offeredByPartyid == 50004222 && coveredByPartyId == 50004219 && (resourceIds != null && resourceIds.Count > 0))

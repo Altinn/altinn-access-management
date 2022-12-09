@@ -1,5 +1,5 @@
--- FUNCTION: CREATE new delegation.select_active_resourceregistrydelegationchanges_admin
-CREATE OR REPLACE FUNCTION delegation.select_active_resourceregistrydelegationchanges_coveredbypartys(
+-- FUNCTION: CREATE new delegation.select_active_resourceregistrydelegationchanges
+CREATE OR REPLACE FUNCTION delegation.select_active_resourceregistrydelegationchanges(
 	_coveredbypartyids integer[],
 	_offeredbypartyids integer[],
 	_resourceregistryids text[] DEFAULT NULL::text[],
@@ -49,4 +49,5 @@ AS $BODY$
 	ON resourceRegistryDelegationChangeId = selectMaxChange.maxChange
 	WHERE delegationchangetype != 'revoke_last'
 $BODY$;
+
 

@@ -251,13 +251,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private static List<Right> GetExpectedRights(string resourceId, int fromPartyId, int toUserId, bool returnAllPolicyRights)
         {
-            List<Right> rights = new();
-
-            string rightsPath = $"Data/Json/RightsQuery/{resourceId}/user_{toUserId}/party_{fromPartyId}/expected_rights_returnall_{returnAllPolicyRights}.json";
+            string rightsPath = $"Data/Json/RightsQuery/{resourceId}/user_{toUserId}/party_{fromPartyId}/expected_rights_returnall_{returnAllPolicyRights.ToString().ToLower()}.json";
             string content = File.ReadAllText(rightsPath);
-            rights = (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return rights;
+            return (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
     }
 }

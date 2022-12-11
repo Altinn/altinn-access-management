@@ -161,7 +161,7 @@ namespace Altinn.AccessManagement.Core.Services
             resources = await _resourceAdministrationPoint.GetResources(scopes);
             resourceIds = resources.Select(d => d.Identifier).ToList();
 
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetResourceRegistryDelegationChangesForAdmin(resourceIds, supplierPartyId, consumerPartyId, ResourceType.MaskinportenSchema);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetResourceRegistryDelegationChanges(resourceIds, supplierPartyId, consumerPartyId, ResourceType.MaskinportenSchema);
             List<int> parties;
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
             parties.AddRange(delegationChanges.Select(d => d.CoveredByPartyId).Select(ds => Convert.ToInt32(ds)).ToList());

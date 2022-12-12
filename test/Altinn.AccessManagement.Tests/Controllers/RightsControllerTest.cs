@@ -12,10 +12,13 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -43,6 +46,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _factory = factory;
             _client = GetTestClient();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            string token = PrincipalUtil.GetAccessToken("sbl.authorization");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -299,6 +305,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
                     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepositoryMock>();
                     services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
+                    services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();

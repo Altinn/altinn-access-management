@@ -30,22 +30,22 @@ namespace Altinn.AccessManagement.Tests.Mocks
             if (resourceId == "nav_aa_distribution")
             {
                 resourceTitle = "NAV aa distribution";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
+                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
             }
             else if (resourceId == "skd_1")
             {
                 resourceTitle = "SKD 1";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
+                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
             }
             else if (resourceId == "resource1")
             {
                 resourceTitle = "resource 1";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
+                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
             }
             else if (resourceId == "resource2")
             {
                 resourceTitle = "resource 2";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle));
+                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
             }
             else
             {

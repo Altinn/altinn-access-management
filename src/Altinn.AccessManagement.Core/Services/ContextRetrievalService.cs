@@ -180,41 +180,19 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceRegistryIds)
+        public async Task<List<ServiceResource>> GetResources()
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceRegistryIds)
+            string cacheKey = $"resources:all";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out List<ServiceResource> resources))
             {
-                ServiceResource resource = null;
+                resources = await _resourceRegistryClient.GetResources();
 
-                try
-                {
-                    resource = await GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
-                    throw;
-                }
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+               .SetPriority(CacheItemPriority.High)
+               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
+                _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
             }
 
             return resources;

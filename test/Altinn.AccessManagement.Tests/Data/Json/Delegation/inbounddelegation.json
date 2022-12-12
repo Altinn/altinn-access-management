@@ -6,15 +6,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -23,15 +23,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -40,15 +40,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 810418362,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418362,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -57,15 +57,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 810418362,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418362,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -74,15 +74,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418532,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418532,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -91,15 +91,15 @@
     "coveredbypartyid": 50004219,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418532,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418532,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -108,15 +108,15 @@
     "coveredbypartyid": 50004216,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "nav_aa_distribution",
     "resourcetitle": {
       "en": "NAV aa distribution",
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -125,15 +125,15 @@
     "coveredbypartyid": 50004216,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810418672,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -142,15 +142,15 @@
     "coveredbypartyid": 50004216,
     "performedbyuserid": 20000002,
     "created": "2022-10-17T11:37:58.053427Z",
-    "offeredbyorgnummer": 810419342,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810419342,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "nav1_aa_distribution",
     "resourceTitle": {
       "en": "Not Available",
       "nb-no": "ikke tilgjengelig",
       "nn-no": "ikkje tilgjengelig"
     },
-    "resourcetype": 0
+    "resourcetype": "MaskinportenSchema"
   },
   {
     "coveredbyname": null,
@@ -159,14 +159,14 @@
     "coveredbypartyid": 50004216,
     "performedbyuserid": 20000002,
     "created": "2022-09-24T22:00:00Z",
-    "offeredbyorgnummer": 810419342,
-    "coveredbyorgnummer": 0,
+    "offeredbyorganizationNumber": 810419342,
+    "CoveredByOrganizationNumber": 0,
     "resourceid": "skd_1",
     "resourcetitle": {
       "en": "SKD 1",
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "delegationresourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema"
   }
 ]

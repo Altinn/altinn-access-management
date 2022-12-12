@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -59,10 +60,42 @@ namespace Altinn.AccessManagement.Tests.Mocks
             }
         }
 
+        /// <inheritdoc/>
+        public Task<List<ServiceResource>> GetResources()
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+
+            string path = GetDataPathForResources();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+                foreach (string file in files)
+                {
+                    if (file.Contains("resources"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                    }
+                }
+            }
+
+            return Task.FromResult(resources);
+        }
+
         private static string GetResourcePath(string resourceRegistryId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "ResourceRegistryResources", $"{resourceRegistryId}", "resource.json");
+        }
+
+        private static string GetDataPathForResources()
+        {
+            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "Resources");
         }
     }
 }

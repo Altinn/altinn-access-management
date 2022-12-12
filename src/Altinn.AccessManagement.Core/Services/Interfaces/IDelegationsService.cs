@@ -25,6 +25,15 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <returns>list o delgations</returns>
         public Task<List<Delegation>> GetAllInboundDelegationsAsync(string who, ResourceType resourceType);
 
+        /// <summary> 
+        /// Gets all the delegations for an admin or owner
+        /// </summary>
+        /// <param name="supplierOrg">the organisation number of the supplier org</param>
+        /// <param name="consumerOrg">the organisation number of the consumer of the resource</param>
+        /// <param name="scope">the scope of the resource</param>
+        /// <returns>list of delgations</returns>
+        public Task<List<Delegation>> GetMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, string scope);
+
         /// <summary>
         /// Gets all the delegation changes covering a user, both directly delegated or inheirited (through keyroles or from mainunit),
         /// for a given reportee and resource.

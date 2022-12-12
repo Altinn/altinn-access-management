@@ -60,8 +60,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Integration point for retrieving a list of resources by it's resource id
         /// </summary>
-        /// <param name="resourceRegistryIds">The identifier of the resource in the Resource Registry</param>
         /// <returns>The resource list if exists</returns>
-        Task<List<ServiceResource>> GetResources(List<string> resourceRegistryIds);
+        Task<List<ServiceResource>> GetResources();
     }
 }

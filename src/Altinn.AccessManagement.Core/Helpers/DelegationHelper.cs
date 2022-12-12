@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 
@@ -347,6 +348,18 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return partyId;
+        }
+
+        /// <summary>
+        /// Gets the reference value for a given resourcereference type
+        /// </summary>
+        /// <param name="resource">resource</param>
+        /// <param name="referenceSource">reference source</param>
+        /// <param name="referenceType">reference type</param>
+        public static string GetReferenceValue(ServiceResource resource, ReferenceSource referenceSource, ReferenceType referenceType)
+        {
+            ResourceReference reference = resource.ResourceReferences.Find(rf => rf.ReferenceSource == referenceSource && rf.ReferenceType == referenceType);
+            return reference.Reference;
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

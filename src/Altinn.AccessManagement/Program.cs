@@ -224,6 +224,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
+    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
     services.AddSingleton<IRegister, RegisterService>();

@@ -64,6 +64,5 @@ namespace Altinn.AccessManagement.Models
         /// Gets or sets the value of ChildParties
         /// </summary>
         public List<Party> ChildParties { get; set; }
-
     }
 }

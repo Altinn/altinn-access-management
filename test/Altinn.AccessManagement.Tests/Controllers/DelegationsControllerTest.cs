@@ -1655,6 +1655,166 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations returns a list of delegations between supplier and consumer for a given scope
+        /// Expected: GetMaskinportenSchemaDelegations returns a list of delegations offered by supplier to consumer for a given scope
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_Valid_input()
+        {
+            // Arrange
+            List<string> resourceIds = new List<string>
+            {
+                "nav_aa_distribution",
+                "appid-123"
+            };
+
+            List<MPDelegationExternal> expectedDelegations = GetExpectedMaskinportenSchemaDelegations("810418672", "810418192", resourceIds);
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<MPDelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for orgnummer that does not have any delegations
+        /// Expected: GetMaskinportenSchemaDelegations returns ok, no delegations found
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_Valid_input_nodelegations()
+        {
+            // Arrange
+            string expected = "[]";
+
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains(expected, responseContent);
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations without sending scopes
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_missing_scopes()
+        {
+            // Arrange
+            string expected = "Either the parameter scope has no value or the provided value is invalid";
+
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope=");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for invalid supplier orgnummer
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_invalid_supplierorgnummer()
+        {
+            // Arrange
+            string expected = "Supplierorg is not an valid organization number";
+
+            // Act
+            string supplierOrg = "12345";
+            string consumerOrg = "810418532";
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for invalid  consumer orgnummer
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_invalid_consumerorgnummer()
+        {
+            // Arrange
+            string expected = "Consumerorg is not an valid organization number";
+
+            // Act
+            string supplierOrg = "810418362";
+            string consumerOrg = "12345";
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_scopes_notexist()
+        {
+            // Arrange
+            string expected = "[]";
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scope = "altinn:test/test";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer
+        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_invalidscope()
+        {
+            // Arrange
+            string expected = "Scope is not well formatted";
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scope = "test invalid scope";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1682,6 +1842,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationExternal> inboundDelegations = new List<DelegationExternal>();
             inboundDelegations = TestDataUtil.GetDelegations(0, covererdByPartyId);
             return inboundDelegations;
+        }
+
+        private static List<MPDelegationExternal> GetExpectedMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, List<string> resourceIds)
+        {
+            List<MPDelegationExternal> delegations = new List<MPDelegationExternal>();
+            delegations = TestDataUtil.GetAdminDelegations(supplierOrg, consumerOrg, resourceIds);
+            return delegations;
         }
 
         private HttpClient GetTestClient()

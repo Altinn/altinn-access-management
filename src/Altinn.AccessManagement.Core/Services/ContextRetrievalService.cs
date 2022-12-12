@@ -63,6 +63,25 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
+        public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId)
+        {
+            string cacheKey = $"DelgRoles_u:{coveredByUserId}_p:{offeredByPartyId}";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out List<Role> roles))
+            {
+                roles = await _altinnRolesClient.GetRolesForDelegation(coveredByUserId, offeredByPartyId) ?? new List<Role>();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+               .SetPriority(CacheItemPriority.High)
+               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.AltinnRoleCacheTimeout, 0));
+
+                _memoryCache.Set(cacheKey, roles, cacheEntryOptions);
+            }
+
+            return roles;
+        }
+
+        /// <inheritdoc/>
         public async Task<Party> GetPartyAsync(int partyId)
         {
             List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());

@@ -24,5 +24,13 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user have access to</param>
         /// <returns>A list of rights</returns>
         Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false);
+
+		/// <summary>
+        /// Gets the all rights a user can delegate on behalf of a given reportee and resource
+        /// </summary>
+        /// <param name="rightsQuery">The query model</param>
+        /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user have access to delegate</param>
+        /// <returns>A list of rights</returns>
+        Task<List<Right>> GetDelegableRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false);
     }
 }

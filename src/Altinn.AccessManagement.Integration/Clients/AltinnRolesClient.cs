@@ -53,5 +53,30 @@ namespace Altinn.AccessManagement.Integration.Clients
                 throw;
             }
         }
+
+        /// <inheritdoc />
+        public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId)
+        {
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/delegatableroles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
+
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+                string roleList = await response.Content.ReadAsStringAsync();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return JsonSerializer.Deserialize<List<Role>>(roleList);
+                }
+
+                _logger.LogError("AccessManagement // AltinnRolesClient // GetRolesForDelegation // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
+                return new();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetRolesForDelegation // Exception");
+                throw;
+            }
+        }
     }
 }

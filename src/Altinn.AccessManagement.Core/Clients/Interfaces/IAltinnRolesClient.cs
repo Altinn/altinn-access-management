@@ -14,5 +14,14 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// <param name="offeredByPartyId">the partyid of the person/org the logged in user is representing</param>
         /// <returns>list of actors that the logged in user can represent</returns>
         Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId);
+
+        /// <summary>
+        /// Get the roles the user has for a given reportee, as basis for evaluating rights for delegation.
+        /// For any user having HADM this means, getting additional roles as DAGL etc.
+        /// </summary>
+        /// <param name="coveredByUserId">the user id</param>
+        /// <param name="offeredByPartyId">the partyid of the person/org the user is representing</param>
+        /// <returns>list of actors that the logged in user can represent</returns>
+        Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId);
     }
 }

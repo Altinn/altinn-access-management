@@ -164,6 +164,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
+                delegation.ResourceReferences = resource.ResourceReferences;
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }
@@ -198,6 +199,7 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceId = delegationChange.ResourceId;
                 ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegation.ResourceTitle = resource?.Title;
+                delegation.ResourceReferences = resource.ResourceReferences;
                 delegation.ResourceType = resource.ResourceType;
                 delegations.Add(delegation);
             }

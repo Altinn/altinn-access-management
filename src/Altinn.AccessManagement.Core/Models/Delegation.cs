@@ -72,18 +72,8 @@ namespace Altinn.AccessManagement.Core.Models
         public ResourceType ResourceType { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource id for a resource migrated from altinn 2
-        /// </summary>
-        public Guid? AltinnIIResourceId { get; set; }
-
-        /// <summary>
         /// ResourceReference
         /// </summary>
         public List<ResourceReference> ResourceReferences { get; set; }
-
-        /// <summary>
-        /// Gets or sets a list of scopes in the MaskinportenSchema
-        /// </summary>
-        public HashSet<string> Scopes { get; set; }
     }
 }

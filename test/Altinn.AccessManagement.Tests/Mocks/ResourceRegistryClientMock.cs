@@ -7,7 +7,6 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Tests.Utils;
-using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -49,12 +48,20 @@ namespace Altinn.AccessManagement.Tests.Mocks
             }
             else
             {
-                return null;
+                ServiceResource resource = null;
+                string rolesPath = GetResourcePath(resourceId);
+                if (File.Exists(rolesPath))
+                {
+                    string content = File.ReadAllText(rolesPath);
+                    resource = (ServiceResource)JsonSerializer.Deserialize(content, typeof(ServiceResource), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+
+                return await Task.FromResult(resource);
             }
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources()
+        public Task<List<ServiceResource>> GetResources()
         {
             List<ServiceResource> resources = new List<ServiceResource>();
 
@@ -76,7 +83,13 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 }
             }
 
-            return resources;
+            return Task.FromResult(resources);
+        }
+
+        private static string GetResourcePath(string resourceRegistryId)
+        {
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "ResourceRegistryResources", $"{resourceRegistryId}", "resource.json");
         }
 
         private static string GetDataPathForResources()

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Xml;
 using Altinn.AccessManagement.Core.Constants;
@@ -452,6 +453,257 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Decomposes the provided XacmlPolicy with individual XacmlRules pr. Subject, Resource and Action AllOf combinations
+        /// </summary>
+        /// <param name="policy">The XacmlPolicy to decompose</param>
+        /// <returns>A decomposed XacmlPolicy</returns>
+        public static XacmlPolicy GetDecomposedXacmlPolicy(XacmlPolicy policy)
+        {
+            XacmlPolicy decomposedPolicy = new XacmlPolicy(new Uri($"{policy.PolicyId}_decomposed"), policy.RuleCombiningAlgId, policy.Target);
+            decomposedPolicy.Description = $"Decomposed policy of policyid: {policy.PolicyId}. Original description: {policy.Description}";
+
+            foreach (XacmlRule rule in policy.Rules)
+            {
+                ICollection<XacmlAllOf> subjectAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
+                ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Resource);
+                ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Action);
+
+                int decomposedRuleCount = 0;
+                foreach (XacmlAllOf subject in subjectAllOfs)
+                {
+                    foreach (XacmlAllOf resource in resourceAllOfs)
+                    {
+                        foreach (XacmlAllOf action in actionAllOfs)
+                        {
+                            decomposedRuleCount++;
+
+                            XacmlRule decomposedRule = new XacmlRule($"{rule.RuleId}_{decomposedRuleCount}", rule.Effect);
+                            decomposedRule.Description = $"Decomposed rule from policyid: {policy.PolicyId} ruleid: {rule.RuleId}. Original description: {rule.Description}";
+                            decomposedRule.Target = new XacmlTarget(new List<XacmlAnyOf>
+                            {
+                                new XacmlAnyOf(new List<XacmlAllOf> { subject }),
+                                new XacmlAnyOf(new List<XacmlAllOf> { resource }),
+                                new XacmlAnyOf(new List<XacmlAllOf> { action })
+                            });
+
+                            decomposedPolicy.Rules.Add(decomposedRule);
+                        }
+                    }
+                }
+            }
+
+            return decomposedPolicy;
+        }
+
+        /// <summary>
+        /// Builds a collection of XacmlContextAttributes which can be used for a decision request, based on a list of subject attributes and an already decomposed XacmlRule (has a single combination of subject, resource and action AllOfs) 
+        /// </summary>
+        /// <param name="subjects">The list of subject values to add to the context (Roles, access groups, delegation recipients etc.)</param>
+        /// <param name="decomposedRule">The decomposed XacmlRule (has a single combination of subject, resource and action AllOfs)</param>
+        /// <returns>A collection of XacmlContextAttributes which can be used for a decision request</returns>
+        public static ICollection<XacmlContextAttributes> GetContextAttributes(List<AttributeMatch> subjects, XacmlRule decomposedRule)
+        {
+            ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(decomposedRule, XacmlConstants.MatchAttributeCategory.Resource);
+            ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(decomposedRule, XacmlConstants.MatchAttributeCategory.Action);
+
+            List<AttributeMatch> resource = GetAttributeMatchFromXacmlAllOfs(resourceAllOfs.FirstOrDefault());
+            List<AttributeMatch> action = GetAttributeMatchFromXacmlAllOfs(actionAllOfs.FirstOrDefault());
+
+            return GetContextAttributes(subjects, resource, action);
+        }
+
+        /// <summary>
+        /// Takes an already decomposed XacmlRule (has a single combination of subject, resource and action AllOfs) and builds a collection of XacmlContextAttributes which can be used for a decision request
+        /// </summary>
+        /// <param name="subjects">The list of subject values to add to the context (Roles, access groups, delegation recipients etc.)</param>
+        /// <param name="resource">The list of attribute values identifying a single resource to add to the context (Org/App, ResourceRegistryId)</param>
+        /// <param name="action">The list of action attribute values identifying a single action to add to the context (Read, Write etc.)</param>
+        /// <returns>A collection of XacmlContextAttributes which can be used for a decision request</returns>
+        public static ICollection<XacmlContextAttributes> GetContextAttributes(List<AttributeMatch> subjects, List<AttributeMatch> resource, List<AttributeMatch> action)
+        {
+            ICollection<XacmlContextAttributes> contextAttributes = new Collection<XacmlContextAttributes>();
+
+            ICollection<XacmlAttribute> subjectsAttributes = new Collection<XacmlAttribute>();
+            foreach (AttributeMatch subjectMatch in subjects)
+            {
+                XacmlAttribute subjectAttribute = new XacmlAttribute(new Uri(subjectMatch.Id), true);
+                subjectAttribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), subjectMatch.Value));
+                subjectsAttributes.Add(subjectAttribute);
+            }
+
+            ICollection<XacmlAttribute> resourceAttributes = new Collection<XacmlAttribute>();
+            foreach (AttributeMatch resourceMatch in resource)
+            {
+                XacmlAttribute resourceAttribute = new XacmlAttribute(new Uri(resourceMatch.Id), true);
+                resourceAttribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value));
+                resourceAttributes.Add(resourceAttribute);
+            }
+
+            ICollection<XacmlAttribute> actionAttributes = new Collection<XacmlAttribute>();
+            foreach (AttributeMatch actionMatch in action)
+            {
+                XacmlAttribute actionAttribute = new XacmlAttribute(new Uri(actionMatch.Id), true);
+                actionAttribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), actionMatch.Value));
+                actionAttributes.Add(actionAttribute);
+            }
+
+            contextAttributes.Add(new XacmlContextAttributes(new Uri(XacmlConstants.MatchAttributeCategory.Subject), subjectsAttributes));
+            contextAttributes.Add(new XacmlContextAttributes(new Uri(XacmlConstants.MatchAttributeCategory.Resource), resourceAttributes));
+            contextAttributes.Add(new XacmlContextAttributes(new Uri(XacmlConstants.MatchAttributeCategory.Action), actionAttributes));
+            return contextAttributes;
+        }
+
+        /// <summary>
+        /// Creates a collection of Rights (single Resource and Action combinations) from the provided collection of XacmlRules
+        /// </summary>
+        /// <param name="xacmlRules">The collection of XacmlRules</param>
+        /// <returns>A collection of Rights</returns>
+        public static ICollection<Right> GetRightsFromXacmlRules(ICollection<XacmlRule> xacmlRules)
+        {
+            Dictionary<string, Right> rights = new Dictionary<string, Right>();
+
+            foreach (XacmlRule rule in xacmlRules)
+            {
+                ICollection<XacmlAllOf> resourceAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Resource);
+                ICollection<XacmlAllOf> actionAllOfs = GetAllOfsByCategory(rule, XacmlConstants.MatchAttributeCategory.Action);
+
+                foreach (XacmlAllOf resource in resourceAllOfs)
+                {
+                    foreach (XacmlAllOf action in actionAllOfs)
+                    {
+                        string rightKey = $"{GetXacmlAllOffKey(resource)}:{GetXacmlAllOffKey(action)}";
+                        if (!rights.ContainsKey(rightKey))
+                        {
+                            rights.Add(rightKey, new Right
+                            {
+                                RightKey = rightKey,
+                                RightSources = new List<RightSource>(),
+                                Resource = GetAttributeMatchFromXacmlAllOfs(resource),
+                                Action = GetAttributeMatchFromXacmlAllOfs(action).FirstOrDefault()
+                            });
+                        }
+                    }
+                }
+            }
+
+            return rights.Values;
+        }
+
+        /// <summary>
+        /// Gets a collection of distinct AttributeId used in XacmlMatch instances matching the specified attribute category. 
+        /// </summary>
+        /// <param name="rule">The xacml rule to find match attribute ids in</param>
+        /// <param name="category">The attribute category to match</param>
+        /// <returns>Collection of AttributeId</returns>
+        public static ICollection<string> GetRuleMatchAttributeIdsForCategory(XacmlRule rule, string category)
+        {
+            SortedList<string, string> attributeIds = new SortedList<string, string>();
+
+            foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(category) && !attributeIds.ContainsKey(xacmlMatch.AttributeDesignator.AttributeId.OriginalString))
+                        {
+                            attributeIds.Add(xacmlMatch.AttributeDesignator.AttributeId.OriginalString, xacmlMatch.AttributeDesignator.AttributeId.OriginalString);
+                        }
+                    }
+                }
+            }
+
+            return attributeIds.Keys.ToList();
+        }
+
+        /// <summary>
+        /// Gets a nested list of AttributeMatche models for all XacmlMatch instances matching the specified attribute category. 
+        /// </summary>
+        /// <param name="rule">The xacml rule to process</param>
+        /// <param name="category">The attribute category to match</param>
+        /// <returns>Nested list of PolicyAttributeMatch models</returns>
+        public static List<List<PolicyAttributeMatch>> GetRulePolicyAttributeMatchesForCategory(XacmlRule rule, string category)
+        {
+            List<List<PolicyAttributeMatch>> ruleAttributeMatches = new();
+
+            foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    List<PolicyAttributeMatch> anyOfAttributeMatches = new();
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(category))
+                        {
+                            anyOfAttributeMatches.Add(new PolicyAttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                        }
+                    }
+
+                    if (anyOfAttributeMatches.Any())
+                    {
+                        ruleAttributeMatches.Add(anyOfAttributeMatches);
+                    }
+                }                
+            }
+
+            return ruleAttributeMatches;
+        }
+
+        private static string GetXacmlAllOffKey(XacmlAllOf allOf)
+        {
+            return string.Join(",", allOf.Matches.OrderBy(m => m.AttributeDesignator.AttributeId.OriginalString).Select(m => m.AttributeValue.Value));
+        }
+
+        private static List<AttributeMatch> GetAttributeMatchFromXacmlAllOfs(XacmlAllOf allOf)
+        {
+            List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
+            foreach (XacmlMatch xacmlMatch in allOf.Matches)
+            {
+                attributeMatches.Add(new AttributeMatch
+                {
+                    Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString,
+                    Value = xacmlMatch.AttributeValue.Value
+                });
+            }     
+
+            return attributeMatches;
+        }
+
+        /// <summary>
+        /// Gets a collection of all XacmlAllOfs containing all XacmlMatch instances matching the specified attribute category, from a given XacmlRule
+        /// </summary>
+        /// <param name="rule">The xacml rule</param>
+        /// <param name="category">The attribute category to match</param>
+        /// <returns>Collection of AllOfs</returns>
+        private static ICollection<XacmlAllOf> GetAllOfsByCategory(XacmlRule rule, string category)
+        {
+            ICollection<XacmlAllOf> allOfs = new Collection<XacmlAllOf>();
+
+            foreach (XacmlAnyOf anyOf in rule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    ICollection<XacmlMatch> allOfMatchesFound = new Collection<XacmlMatch>();
+
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(category))
+                        {
+                            allOfMatchesFound.Add(xacmlMatch);
+                        }
+                    }
+
+                    if (allOfMatchesFound.Count > 0)
+                    {
+                        allOfs.Add(new XacmlAllOf(allOfMatchesFound));
+                    }
+                }
+            }
+
+            return allOfs;
         }
 
         private static void AddActionsToResourcePolicy(List<ResourceAction> actions, ResourcePolicy resourcePolicy)

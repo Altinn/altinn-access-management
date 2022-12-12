@@ -24,6 +24,7 @@ namespace Altinn.AccessManagement.Filters
         /// </summary>
         /// <param name="antiforgery">An accessor to the antiforgery system.</param>
         /// <param name="platformSettings">A reference to the current app settings.</param>
+        /// <param name="settings">general settings</param>
         public ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter(
             IAntiforgery antiforgery,
             IOptionsMonitor<PlatformSettings> platformSettings,

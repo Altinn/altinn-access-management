@@ -1,6 +1,5 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -133,7 +132,26 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, ResourceType resourceType)
+        public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null)
+        {
+            List<DelegationChange> delegationChanges = new List<DelegationChange>();
+            CheckIfOfferedbyPartyIdsHasValue(offeredByPartyIds);
+
+            if (coveredByPartyIds?.Count > 0)
+            {
+                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyIds, offeredByPartyIds, resourceRegistryIds));
+            }
+
+            if (coveredByUserId.HasValue)
+            {
+                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByUser(coveredByUserId.Value, offeredByPartyIds, resourceRegistryIds));
+            }
+
+            return delegationChanges;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
         {
             try
             {
@@ -141,10 +159,9 @@ namespace Altinn.AccessManagement.Persistence
                 await conn.OpenAsync();
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesOfferedByPartyId, conn);
-                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, new List<int> { offeredByPartyId });
-                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
-
-                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, DBNull.Value);
+                pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
+                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
+                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
                 List<DelegationChange> delegatedResources = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();
@@ -163,7 +180,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(int coveredByPartyId, ResourceType resourceType)
+        public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
         {
             try
             {
@@ -171,11 +188,40 @@ namespace Altinn.AccessManagement.Persistence
                 await conn.OpenAsync();
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds, conn);
-                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, new List<int> { coveredByPartyId });
-                pgcom.Parameters.AddWithValue("_resourceType", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
+                pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, coveredByPartyIds);
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (offeredByPartyIds == null || !offeredByPartyIds.Any()) ? DBNull.Value : offeredByPartyIds);
+                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
+                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
-                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, DBNull.Value);
-                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, DBNull.Value);
+                List<DelegationChange> receivedDelegations = new List<DelegationChange>();
+                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                while (reader.Read())
+                {
+                    receivedDelegations.Add(GetResourceRegistryDelegationChange(reader));
+                }
+
+                return receivedDelegations;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetReceivedResourceRegistryDelegationsForCoveredByParty // Exception");
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByUserId, conn);
+                pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId);
+                pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Integer, (offeredByPartyIds == null || !offeredByPartyIds.Any()) ? DBNull.Value : offeredByPartyIds);
+                pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
+                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
                 List<DelegationChange> receivedDelegations = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();

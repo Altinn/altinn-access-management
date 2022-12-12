@@ -123,11 +123,11 @@ namespace Altinn.AccessManagement.Controllers
                 }
             }
 
-            if (DelegationHelper.TryGetCoveredByPartyIdFromMatch(ruleQuery.CoveredBy, out int partyId))
+            if (DelegationHelper.TryGetPartyIdFromAttributeMatch(ruleQuery.CoveredBy, out int partyId))
             {
                 coveredByPartyIds.Add(partyId);
             }
-            else if (DelegationHelper.TryGetCoveredByUserIdFromMatch(ruleQuery.CoveredBy, out int userId))
+            else if (DelegationHelper.TryGetUserIdFromAttributeMatch(ruleQuery.CoveredBy, out int userId))
             {
                 coveredByUserIds.Add(userId);
             }

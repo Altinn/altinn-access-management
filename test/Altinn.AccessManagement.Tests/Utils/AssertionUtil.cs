@@ -351,6 +351,58 @@ namespace Altinn.AccessManagement.Tests.Utils
             AssertEqual(expected.Action, actual.Action);
         }
 
+        /// <summary>
+        /// Assert that two <see cref="Right"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRightEqual(Right expected, Right actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightKey, actual.RightKey);
+            AssertEqual(expected.Resource, actual.Resource);
+            AssertEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.HasPermit, actual.HasPermit);
+            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="RightSource"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRightSourceEqual(RightSource expected, RightSource actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightSourceType, actual.RightSourceType);
+            Assert.Equal(expected.PolicyId, actual.PolicyId);
+            Assert.Equal(expected.PolicyVersion, actual.PolicyVersion);
+            Assert.Equal(expected.RuleId, actual.RuleId);
+            Assert.Equal(expected.HasPermit, actual.HasPermit);
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            AssertEqual(expected.UserSubjects, actual.UserSubjects);
+            AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
+        }
+
+        private static void AssertPolicySubjects(List<PolicyAttributeMatch> expected, List<PolicyAttributeMatch> actual)
+        {
+            AssertCollections(expected, actual, AssertPolicyAttributeMatchEqual);
+        }
+
+        private static void AssertPolicyAttributeMatchEqual(PolicyAttributeMatch expected, PolicyAttributeMatch actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.MatchFound, actual.MatchFound);
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.Equal(expected.Value, actual.Value);
+        }
+
         private static void AssertEqual(List<AttributeMatch> expected, List<AttributeMatch> actual)
         {
             if (expected == null)

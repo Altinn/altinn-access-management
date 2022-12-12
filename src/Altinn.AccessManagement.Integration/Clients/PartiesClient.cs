@@ -63,14 +63,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public int GetPartyId(int id)
+        public async Task<int> GetPartyId(string id)
         {
             int partyId = 0;
             try
             {
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookup");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PostAsync(uriBuilder.Uri, requestBody).Result;
+                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {

@@ -1,0 +1,139 @@
+[
+  {
+    "rightKey": "app1,org1:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "read"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "57b3ee85-f932-42c6-9ab0-941eb6c96eb0",
+        "offeredByPartyId": 50001337,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20001337"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20001337"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,org1,task1:write",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "task1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "write"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "78e5cced-3bcb-42b6-9089-63c834f89e73",
+        "offeredByPartyId": 50001337,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20001337"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20001337"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,event1,org1:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      },
+      {
+        "id": "urn:altinn:appresource",
+        "value": "event1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "read"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "31776194-9921-4383-994d-dfd42a2aa91b",
+        "offeredByPartyId": 50001337,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20001337"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20001337"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

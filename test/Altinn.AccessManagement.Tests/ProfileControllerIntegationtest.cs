@@ -72,7 +72,7 @@ namespace Altinn.AccessManagement.Tests
 
         private IProfileClient GetProfileClient(HttpStatusCode expectedHttpStatusCode, UserProfile expectedUserProfile)
         {
-            var platformSettings = Options.Create(new PlatformSettings { ProfileApiEndpoint = "http://www.test.no/" });
+            var platformSettings = Options.Create(new PlatformSettings { ProfileApiEndpoint = "http://www.test.no/", SubscriptionKeyHeaderName = "SubscriptionKeyHeaderName"});
             var keyVaultSettings = Options.Create(new KeyVaultSettings { KeyVaultURI = "spotify:track:6KDCteFISA2GEHoVANwBvn?si=c5ce80373d8c46e7", PlatformCertSecretId = "PlatformCertSecretId"});
             var generalSettings = Mock.Of<IOptionsMonitor<GeneralSettings>>(optionsMonitor => optionsMonitor.CurrentValue == new GeneralSettings() { RuntimeCookieName = "RuntimeCookieName" });
             
@@ -99,7 +99,7 @@ namespace Altinn.AccessManagement.Tests
                 });
 
             var httpClient = new HttpClient(handler.Object);
-            var profileClient = new ProfileClient(platformSettings, keyVaultSettings, _logger.Object, new HttpContextAccessor(), generalSettings, httpClient, null, accessTokenGeneratorMock, keyVaultServiceMock);
+            var profileClient = new ProfileClient(platformSettings, keyVaultSettings, _logger.Object, new HttpContextAccessor(), generalSettings, httpClient, accessTokenGeneratorMock, keyVaultServiceMock);
 
             return profileClient;
         }

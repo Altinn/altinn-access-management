@@ -5,7 +5,6 @@ using Altinn.AccessManagement.Core.Clients;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Implementation;
 using Altinn.AccessManagement.Core.Repositories.Interface;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Implementation;
@@ -22,7 +21,6 @@ using Altinn.AccessManagement.Services.Implementation;
 using Altinn.AccessManagement.Services.Interface;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.PEP.Authorization;
-using AltinnCore.Authentication.Constants;
 using AltinnCore.Authentication.JwtCookie;
 
 using Azure.Identity;
@@ -207,14 +205,12 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
-    services.Configure<AppSettings>(config.GetSection("GeneralSettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
     services.AddHttpClient<IProfileClient, ProfileClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
-    services.AddTransient<IAppResources, AppResources>();
 
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

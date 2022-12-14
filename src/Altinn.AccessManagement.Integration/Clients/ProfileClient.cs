@@ -24,7 +24,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GeneralSettings _settings;
         private readonly HttpClient _client;
-        private readonly IAppResources _appResources;
         private readonly IAccessTokenGenerator _accessTokenGenerator;
         private readonly IKeyVaultService _keyVaultService;
         private readonly KeyVaultSettings _keyVaultSettings;
@@ -32,13 +31,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileClient"/> class
         /// </summary>
-        /// <param name="logger">the logger</param>
         /// <param name="platformSettings">the platform settings</param>
+        /// <param name="keyVaultSettings">the KeyVault settings</param>
+        /// <param name="logger">the logger</param>
         /// <param name="httpContextAccessor">The http context accessor </param>
         /// <param name="settings">The application settings.</param>
         /// <param name="httpClient">A HttpClient provided by the HttpClientFactory.</param>
-        /// <param name="appResources">An instance of the AppResources service.</param>
         /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
+        /// <param name="keyVaultService">Instance of KeyVaultService</param>
         public ProfileClient(
             IOptions<PlatformSettings> platformSettings,
             IOptions<KeyVaultSettings> keyVaultSettings,
@@ -46,7 +46,6 @@ namespace Altinn.AccessManagement.Integration.Clients
             IHttpContextAccessor httpContextAccessor,
             IOptionsMonitor<GeneralSettings> settings,
             HttpClient httpClient,
-            IAppResources appResources,
             IAccessTokenGenerator accessTokenGenerator,
             IKeyVaultService keyVaultService)
         {
@@ -54,10 +53,9 @@ namespace Altinn.AccessManagement.Integration.Clients
             _httpContextAccessor = httpContextAccessor;
             _settings = settings.CurrentValue;
             httpClient.BaseAddress = new Uri(platformSettings.Value.ProfileApiEndpoint);
-            httpClient.DefaultRequestHeaders.Add(General.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
+            httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;
-            _appResources = appResources;
             _accessTokenGenerator = accessTokenGenerator;
             _keyVaultService = keyVaultService;
             _keyVaultSettings = keyVaultSettings.Value;

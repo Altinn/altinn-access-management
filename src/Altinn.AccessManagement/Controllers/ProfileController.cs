@@ -8,8 +8,6 @@ namespace Altinn.AccessManagement.Controllers
     /// <summary>
     /// The <see cref="ProfileController"/> provides the API endpoints related to persons.
     /// </summary>
-    [Authorize(Policy = "PlatformAccess")]
-    [Authorize(Policy = "AuthorizationLevel2")]
     [Route("accessmanagement/api/v1/profile")]
     public class ProfileController : ControllerBase
     {

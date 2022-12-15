@@ -444,7 +444,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 have for the From party 50005545 for the digdirs_company_car resource from the resource registry.
+        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 is able to delegate to others, for the From party 50005545 for the digdirs_company_car resource from the resource registry.
         ///            In this case:
         ///            - The user 20001337 is HADM for the From unit 50005545
         /// Expected: GetRights returns a list of right matching expected
@@ -467,10 +467,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 have for the From party 50005545 for the digdirs_company_car resource from the resource registry.
+        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 is able to delegate to others, for the From party 50005545 for the digdirs_company_car resource from the resource registry.
         ///            In this case:
         ///            - The user 20001337 is HADM for the From unit 50005545
-        ///            - The returnAllPolicyRights query param is set to True and operation should return all rights found in the resource registry XACML policy whether or not the user has Permit for the rights.
+        ///            - The returnAllPolicyRights query param is set to True and operation should return all rights found in the resource registry XACML policy whether or not the user can delegate the right (which is indicated by the CanDelegate bool).
         /// Expected: GetRights returns a list of right matching expected
         /// </summary>
         [Fact]
@@ -479,6 +479,55 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<Right> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", true);
             StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 is able to delegate to others, for the From party 50001337 for the Altinn App org1/app1.
+        ///            In this case:
+        ///            - The test scenario is setup using existing test data for Org1/App1, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
+        ///                 ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegableRightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_False()
+        {
+            // Arrange
+            List<Right> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", false);
+            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegableRightsQuery returns a list of rights the To userid 20001337 is able to delegate to others, for the From party 50001337 for the Altinn App org1/app1.
+        ///            In this case:
+        ///            - The test scenario is setup using existing test data for Org1/App1, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
+        ///                 ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
+        ///            - The returnAllPolicyRights query param is set to True and operation should return all rights found in the resource registry XACML policy whether or not the user can delegate the right (which is indicated by the CanDelegate bool).
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegableRightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_True()
+        {
+            // Arrange
+            List<Right> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", true);
+            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);

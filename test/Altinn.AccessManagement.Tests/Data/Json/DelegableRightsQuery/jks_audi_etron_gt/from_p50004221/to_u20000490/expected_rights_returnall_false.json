@@ -1,6 +1,6 @@
 [
   {
-    "rightKey": "jks_audi_etron_gt:race",
+    "rightKey": "jks_audi_etron_gt:drive",
     "resource": [
       {
         "id": "urn:altinn:resourceregistry",
@@ -9,29 +9,29 @@
     ],
     "action": {
       "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "race"
+      "value": "drive"
     },
     "canDelegate": true,
     "rightSources": [
       {
         "rightSourceType": "DelegationPolicy",
-        "policyId": "urn:altinn:policyid:5",
+        "policyId": "urn:altinn:policyid:4",
         "policyVersion": "1.0",
-        "ruleId": "e7a89266-9457-45c9-86c4-53155c6f0230",
-        "offeredByPartyId": 50004221,
+        "ruleId": "45453412-efea-4238-8887-6256d8d1727f",
+        "offeredByPartyId": 50004222,
         "canDelegate": true,
         "userSubjects": [
           {
-            "id": "urn:altinn:userid",
-            "value": "20000490"
+            "id": "urn:altinn:partyid",
+            "value": "50005545"
           }
         ],
         "policySubjects": [
           [
             {
               "matchFound": null,
-              "id": "urn:altinn:userid",
-              "value": "20000490"
+              "id": "urn:altinn:partyid",
+              "value": "50005545"
             }
           ]
         ]
@@ -78,7 +78,7 @@
     ]
   },
   {
-    "rightKey": "jks_audi_etron_gt:drive",
+    "rightKey": "jks_audi_etron_gt:race",
     "resource": [
       {
         "id": "urn:altinn:resourceregistry",
@@ -87,29 +87,29 @@
     ],
     "action": {
       "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "drive"
+      "value": "race"
     },
     "canDelegate": true,
     "rightSources": [
       {
         "rightSourceType": "DelegationPolicy",
-        "policyId": "urn:altinn:policyid:4",
+        "policyId": "urn:altinn:policyid:5",
         "policyVersion": "1.0",
-        "ruleId": "45453412-efea-4238-8887-6256d8d1727f",
-        "offeredByPartyId": 50004222,
+        "ruleId": "e7a89266-9457-45c9-86c4-53155c6f0230",
+        "offeredByPartyId": 50004221,
         "canDelegate": true,
         "userSubjects": [
           {
-            "id": "urn:altinn:partyid",
-            "value": "50005545"
+            "id": "urn:altinn:userid",
+            "value": "20000490"
           }
         ],
         "policySubjects": [
           [
             {
               "matchFound": null,
-              "id": "urn:altinn:partyid",
-              "value": "50005545"
+              "id": "urn:altinn:userid",
+              "value": "20000490"
             }
           ]
         ]

@@ -119,7 +119,7 @@ namespace Altinn.AccessManagement.Core.Services
                 userRoles = await _contextRetrievalService.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId);
             }
 
-            if (userRoles.Any() || returnAllPolicyRights)
+            if (userRoles.Any() || returnAllPolicyRights || getDelegableRights)
             {
                 List<AttributeMatch> userRoleAttributeMatches = RightsHelper.GetRoleAttributeMatches(userRoles);
                 RightSourceType policyType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? RightSourceType.ResourceRegistryPolicy : RightSourceType.AppPolicy;
@@ -235,11 +235,18 @@ namespace Altinn.AccessManagement.Core.Services
                     XacmlContextResponse response = pdp.Authorize(authRequest, singleRulePolicy);
                     XacmlContextResult decisionResult = response.Results.First();
 
+                    // If getting rights for delegation, the right source is a delegation policy and the right does no longer exist in the app/resource policy: it should NOT be added as a delegable right
+                    if (getDelegableRights && policySourceType == RightSourceType.DelegationPolicy && !rights.ContainsKey(ruleRight.RightKey))
+                    {
+                        continue;
+                    }
+
                     if (!rights.ContainsKey(ruleRight.RightKey))
                     {
                         rights.Add(ruleRight.RightKey, ruleRight);
                     }
 
+                    // If getting rights for delegation, the xacml decision is to be used for indicating if the user can delegate the right. Otherwise the decision indicate whether the user actually have the right.
                     if (getDelegableRights)
                     {
                         rights[ruleRight.RightKey].CanDelegate = (rights[ruleRight.RightKey].CanDelegate.HasValue && rights[ruleRight.RightKey].CanDelegate.Value) || decisionResult.Decision.Equals(XacmlContextDecision.Permit);

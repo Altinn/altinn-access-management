@@ -109,7 +109,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Policy Rights
-            List<Role> userRoles = new();
+            List<Role> userRoles;
             if (getDelegableRights)
             {
                 userRoles = await _contextRetrievalService.GetRolesForDelegation(coveredByUserId, offeredByPartyId);

@@ -65,7 +65,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        ////[Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
+        [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/internal/delegablerights")]
         public async Task<ActionResult<List<Right>>> DelegableRightsQuery([FromBody] RightsQuery rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {

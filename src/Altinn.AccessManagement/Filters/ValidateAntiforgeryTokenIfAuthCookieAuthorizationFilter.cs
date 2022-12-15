@@ -74,7 +74,8 @@ namespace Altinn.AccessManagement.Filters
             }
 
             string method = context.HttpContext.Request.Method;
-            if (string.Equals("HEAD", method, StringComparison.OrdinalIgnoreCase) ||
+            if (string.Equals("GET", method, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals("HEAD", method, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals("TRACE", method, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals("OPTIONS", method, StringComparison.OrdinalIgnoreCase))
             {

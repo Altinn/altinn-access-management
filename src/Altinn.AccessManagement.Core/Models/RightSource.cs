@@ -38,7 +38,14 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user or party has the right
         /// </summary>
-        public bool HasPermit { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool? HasPermit { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user or party is permitted to delegate the right to others
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool? CanDelegate { get; set; }
 
         /// <summary>
         /// Gets or sets the list of subject matches the user has.

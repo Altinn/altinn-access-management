@@ -34,10 +34,30 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return Task.FromResult(roles);
         }
 
+        /// <inheritdoc/>
+        public Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId)
+        {
+            List<Role> roles = new List<Role>();
+            string rolesPath = GetRolesForDelegationPath(coveredByUserId, offeredByPartyId);
+            if (File.Exists(rolesPath))
+            {
+                string content = File.ReadAllText(rolesPath);
+                roles = (List<Role>)JsonSerializer.Deserialize(content, typeof(List<Role>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return Task.FromResult(roles);
+        }
+
         private static string GetRolesPath(int coveredByUserId, int offeredByPartyId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(AltinnRolesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Roles", $"user_{coveredByUserId}", $"party_{offeredByPartyId}", "roles.json");
+        }
+
+        private static string GetRolesForDelegationPath(int coveredByUserId, int offeredByPartyId)
+        {
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(AltinnRolesClientMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "RolesForDelegation", $"user_{coveredByUserId}", $"party_{offeredByPartyId}", "roles.json");
         }
     }
 }

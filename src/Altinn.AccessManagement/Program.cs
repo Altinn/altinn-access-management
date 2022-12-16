@@ -226,6 +226,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddSingleton<IKeyVaultService, KeyVaultService>();
+    services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>

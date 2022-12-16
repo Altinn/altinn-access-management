@@ -73,16 +73,13 @@ namespace Altinn.AccessManagement.Tests
         private IProfileClient GetProfileClient(HttpStatusCode expectedHttpStatusCode, UserProfile expectedUserProfile)
         {
             var platformSettings = Options.Create(new PlatformSettings { ProfileApiEndpoint = "http://www.test.no/", SubscriptionKeyHeaderName = "SubscriptionKeyHeaderName"});
-            var keyVaultSettings = Options.Create(new KeyVaultSettings { KeyVaultURI = "spotify:track:6KDCteFISA2GEHoVANwBvn?si=c5ce80373d8c46e7", PlatformCertSecretId = "PlatformCertSecretId"});
             var generalSettings = Mock.Of<IOptionsMonitor<GeneralSettings>>(optionsMonitor => optionsMonitor.CurrentValue == new GeneralSettings() { RuntimeCookieName = "RuntimeCookieName" });
             
-            var keyVaultServiceMock = Mock.Of<IKeyVaultService>();
-            Mock.Get(keyVaultServiceMock).Setup(m => m.GetCertificateAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(GetTestCert);
-
             var accessTokenGeneratorMock = Mock.Of<IAccessTokenGenerator>();
+            
             Mock.Get(accessTokenGeneratorMock)
-                .Setup(m => m.GenerateAccessToken(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<X509Certificate2>())).Returns("SomeStringRepresentingAccessToken");
+                .Setup(m => m.GenerateAccessToken(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns("SomeStringRepresentingAccessToken");
 
             _logger.Setup(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
             
@@ -99,7 +96,7 @@ namespace Altinn.AccessManagement.Tests
                 });
 
             var httpClient = new HttpClient(handler.Object);
-            var profileClient = new ProfileClient(platformSettings, keyVaultSettings, _logger.Object, new HttpContextAccessor(), generalSettings, httpClient, accessTokenGeneratorMock, keyVaultServiceMock);
+            var profileClient = new ProfileClient(platformSettings, _logger.Object, new HttpContextAccessor(), generalSettings, httpClient, accessTokenGeneratorMock);
 
             return profileClient;
         }

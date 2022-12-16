@@ -25,29 +25,23 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly GeneralSettings _settings;
         private readonly HttpClient _client;
         private readonly IAccessTokenGenerator _accessTokenGenerator;
-        private readonly IKeyVaultService _keyVaultService;
-        private readonly KeyVaultSettings _keyVaultSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileClient"/> class
         /// </summary>
         /// <param name="platformSettings">the platform settings</param>
-        /// <param name="keyVaultSettings">the KeyVault settings</param>
         /// <param name="logger">the logger</param>
         /// <param name="httpContextAccessor">The http context accessor </param>
         /// <param name="settings">The application settings.</param>
         /// <param name="httpClient">A HttpClient provided by the HttpClientFactory.</param>
         /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
-        /// <param name="keyVaultService">Instance of KeyVaultService</param>
         public ProfileClient(
             IOptions<PlatformSettings> platformSettings,
-            IOptions<KeyVaultSettings> keyVaultSettings,
             ILogger<ProfileClient> logger,
             IHttpContextAccessor httpContextAccessor,
             IOptionsMonitor<GeneralSettings> settings,
             HttpClient httpClient,
-            IAccessTokenGenerator accessTokenGenerator,
-            IKeyVaultService keyVaultService)
+            IAccessTokenGenerator accessTokenGenerator)
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
@@ -57,8 +51,6 @@ namespace Altinn.AccessManagement.Integration.Clients
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;
             _accessTokenGenerator = accessTokenGenerator;
-            _keyVaultService = keyVaultService;
-            _keyVaultSettings = keyVaultSettings.Value;
         }
 
         /// <inheritdoc />
@@ -69,15 +61,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             string endpointUrl = $"profile/{userId}";
             string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _settings.RuntimeCookieName);
 
-            string certBase64 =
-            await _keyVaultService.GetCertificateAsync(
-                _keyVaultSettings.KeyVaultURI,
-                _keyVaultSettings.PlatformCertSecretId);
-            string accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management", new X509Certificate2(
-            Convert.FromBase64String(certBase64),
-            (string)null,
-            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable));
-
+            var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
             HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

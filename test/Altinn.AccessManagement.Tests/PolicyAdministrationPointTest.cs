@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Tests
             _prp = new PolicyRepositoryMock(new Mock<ILogger<PolicyRepositoryMock>>().Object);
             _eventQueue = new DelegationChangeEventQueueMock();
             _pap = new PolicyAdministrationPoint(
-                new PolicyRetrievalPoint(_prp, memoryCache, Options.Create(new GeneralSettings { PolicyCacheTimeout = 1 })),
+                new PolicyRetrievalPoint(_prp, memoryCache, Options.Create(new CacheConfig { PolicyCacheTimeout = 1 })),
                 _prp,
                 _delegationMetadataRepositoryMock,
                 _eventQueue,

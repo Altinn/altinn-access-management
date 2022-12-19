@@ -1,10 +1,9 @@
 ﻿using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Constants;
-using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -46,30 +45,30 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Gets a string representation of the CoveredByPartyId
+        /// Trys to get the PartyId attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The CoveredByPartyId value</returns>
-        public static bool TryGetCoveredByPartyIdFromMatch(List<AttributeMatch> match, out int coveredByPartyId)
+        /// <returns>The party id if found as the single attribute in the collection</returns>
+        public static bool TryGetPartyIdFromAttributeMatch(List<AttributeMatch> match, out int partyid)
         {
-            coveredByPartyId = 0;
+            partyid = 0;
             if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
             {
-                return int.TryParse(match.First().Value, out coveredByPartyId) && coveredByPartyId != 0;
+                return int.TryParse(match.First().Value, out partyid) && partyid != 0;
             }
 
             return false;
         }
 
         /// <summary>
-        /// Gets a string representation of the CoveredByUserId
+        /// Trys to get the UserId attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The CoveredByUserId value</returns>
-        public static bool TryGetCoveredByUserIdFromMatch(List<AttributeMatch> match, out int coveredByUserId)
+        /// <returns>The user id if found as the single attribute in the collection</returns>
+        public static bool TryGetUserIdFromAttributeMatch(List<AttributeMatch> match, out int userid)
         {
-            coveredByUserId = 0;
+            userid = 0;
             if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
             {
-                return int.TryParse(match.First().Value, out coveredByUserId) && coveredByUserId != 0;
+                return int.TryParse(match.First().Value, out userid) && userid != 0;
             }
 
             return false;
@@ -87,8 +86,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>The CoveredByUserId or CoveredByPartyId in the input AttributeMatch list as a string primarly used to create a policypath for fetching a delegated policy file.</returns>
         public static string GetCoveredByFromMatch(List<AttributeMatch> match, out int? coveredByUserId, out int? coveredByPartyId)
         {
-            bool validUser = TryGetCoveredByUserIdFromMatch(match, out int coveredByUserIdTemp);
-            bool validParty = TryGetCoveredByPartyIdFromMatch(match, out int coveredByPartyIdTemp);
+            bool validUser = TryGetUserIdFromAttributeMatch(match, out int coveredByUserIdTemp);
+            bool validParty = TryGetPartyIdFromAttributeMatch(match, out int coveredByPartyIdTemp);
             coveredByPartyId = validParty ? coveredByPartyIdTemp : null;
             coveredByUserId = validUser ? coveredByUserIdTemp : null;
 
@@ -166,8 +165,8 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app);
                 offeredByPartyId = rule.OfferedByPartyId;
-                coveredByPartyId = TryGetCoveredByPartyIdFromMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
-                coveredByUserId = TryGetCoveredByUserIdFromMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
+                coveredByPartyId = TryGetPartyIdFromAttributeMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
+                coveredByUserId = TryGetUserIdFromAttributeMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
                 delegatedByUserId = rule.DelegatedByUserId;
                 delegatedByPartyId = rule.DelegatedByPartyId;
                 delegatedDateTime = rule.DelegatedDateTime ?? DateTime.UtcNow;
@@ -351,10 +350,22 @@ namespace Altinn.AccessManagement.Core.Helpers
             return partyId;
         }
 
+        /// <summary>
+        /// Gets the reference value for a given resourcereference type
+        /// </summary>
+        /// <param name="resource">resource</param>
+        /// <param name="referenceSource">reference source</param>
+        /// <param name="referenceType">reference type</param>
+        public static string GetReferenceValue(ServiceResource resource, ReferenceSource referenceSource, ReferenceType referenceType)
+        {
+            ResourceReference reference = resource.ResourceReferences.Find(rf => rf.ReferenceSource == referenceSource && rf.ReferenceType == referenceType);
+            return reference.Reference;
+        }
+
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)
         {
-            bool isUserId = TryGetCoveredByUserIdFromMatch(coveredBy, out int coveredByUserIdFromRequest);
-            bool isPartyId = TryGetCoveredByPartyIdFromMatch(coveredBy, out int coveredByPartyIdFromRequest);
+            bool isUserId = TryGetUserIdFromAttributeMatch(coveredBy, out int coveredByUserIdFromRequest);
+            bool isPartyId = TryGetPartyIdFromAttributeMatch(coveredBy, out int coveredByPartyIdFromRequest);
 
             if (((isUserId && coveredByUserIdFromRequest == coveredByUserId) || (isPartyId && coveredByPartyIdFromRequest == coveredByPartyId))
                 && rule.OfferedByPartyId == offeredByPartyId)

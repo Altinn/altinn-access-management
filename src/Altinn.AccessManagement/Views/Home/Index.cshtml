@@ -1,42 +1,26 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite App</title>
-
-  @* See https://vitejs.dev/guide/backend-integration.html *@
-  @if ((bool)(@ViewData["frontendInDevMode"] ?? false))
-  {
+﻿
+<!DOCTYPE html>
+<html lang="no">
+  <head>
     <script type="module">
-      import RefreshRuntime from '@ViewData["frontendDevUrl"]/@@react-refresh'
-      RefreshRuntime.injectIntoGlobalHook(window)
-      window.$RefreshReg$ = () => { }
-      window.$RefreshSig$ = () => (type) => type
-      window.__vite_plugin_react_preamble_installed__ = true
-    </script>
-    <script type="module" src="@ViewData["frontendDevUrl"]/entrypoint.js"></script>
-  }
-  else
-  {
-    <link rel="stylesheet" href="@ViewData["frontendProdCss"]" />
-    <script type="module" src="@ViewData["frontendProdJs"]"></script>
-  }
+import RefreshRuntime from "http://localhost:5173/@@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
 
-  <script type="application/json" id="altinn3-app-config">
-    {
-      "backendApiUrl": "http://localhost:5117/api/", @* TODO: This should be dynamic *@
-      "defaultLocale": "no"
-    }
-  </script>
-</head>
+    <script type="module" src="http://localhost:5173/@@vite/client"></script>
 
-<body>
-  stuff
-  <div id="altinn3-auth-admin-feature-root"></div>
-  more stuff
-</body>
-
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/altinn-logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Altinn API Delegering">
+    <meta name="keywords" content="Altinn Profil API Delegering">
+    <title>Profil</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="http://localhost:5173/src/main.jsx"></script>
+  </body>
 </html>

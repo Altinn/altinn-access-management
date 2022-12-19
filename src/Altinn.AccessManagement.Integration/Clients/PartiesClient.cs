@@ -63,14 +63,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public int GetPartyId(int id)
+        public async Task<int> GetPartyId(string id)
         {
             int partyId = 0;
             try
             {
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookup");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PostAsync(uriBuilder.Uri, requestBody).Result;
+                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -176,6 +176,36 @@ namespace Altinn.AccessManagement.Integration.Clients
                 _logger.LogError(ex, "AccessManagement // PartiesClient // partyparents // Failed // Unexpected Exception");
                 throw;
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<Party> LookupPartyBySSNOrOrgNo(string id)
+        {
+            Party party = null;
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookupObject");
+                StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    party = JsonSerializer.Deserialize<Party>(responseContent);
+                    return party;
+                }
+                else
+                {
+                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // PartiesClient // LookupPartyBySSNOrOrgNo // Exception");
+                throw;
+            }
+
+            return party;
         }
     }
 }

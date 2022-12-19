@@ -16,19 +16,19 @@ namespace Altinn.AccessManagement.Core.Services
     {
         private readonly IPolicyRepository _repository;
         private readonly IMemoryCache _memoryCache;
-        private readonly GeneralSettings _generalSettings;
+        private readonly CacheConfig _cacheConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyRetrievalPoint"/> class.
         /// </summary>
         /// <param name="policyRepository">The policy Repository..</param>
         /// <param name="memoryCache">The cache handler </param>
-        /// <param name="settings">The app settings</param>
-        public PolicyRetrievalPoint(IPolicyRepository policyRepository, IMemoryCache memoryCache, IOptions<GeneralSettings> settings)
+        /// <param name="cacheConfig">The cache config settings</param>
+        public PolicyRetrievalPoint(IPolicyRepository policyRepository, IMemoryCache memoryCache, IOptions<CacheConfig> cacheConfig)
         {
             _repository = policyRepository;
             _memoryCache = memoryCache;
-            _generalSettings = settings.Value;
+            _cacheConfig = cacheConfig.Value;
         }
 
         /// <inheritdoc/>
@@ -80,7 +80,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _generalSettings.PolicyCacheTimeout, 0));
+               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PolicyCacheTimeout, 0));
 
             _memoryCache.Set(policyPath, policy, cacheEntryOptions);
         }

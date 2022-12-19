@@ -54,46 +54,56 @@ namespace Altinn.AccessManagement.Integration.Clients
             return await Task.FromResult(result);
         }
 
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetResources()
+        {
+            List<ServiceResource> resources = null;
+
+            try
+            {
+                string endpointUrl = $"resourceregistry/api/v1/resource/search";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    };
+                    string content = await response.Content.ReadAsStringAsync();
+                    resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // SearchResources // Exception");
+                throw;
+            }
+
+            return resources;
+        }
+
         /// <summary>
-        /// Get resource information for the the given list of resourceids
+        /// Get resource list
         /// </summary>
-        /// <param name="resourceIds"> the list of resource ids</param>
+        /// <param name="resourceType"> the resource type</param>
         /// <returns></returns>
-        public async Task<List<ServiceResource>> GetResources(List<string> resourceIds)
+        public async Task<List<ServiceResource>> GetResources(ResourceType resourceType)
         {
             List<ServiceResource> resources = new List<ServiceResource>();
-            foreach (string id in resourceIds)
+            ResourceSearch resourceSearch = new ResourceSearch();
+            resourceSearch.ResourceType = resourceType;
+            string endpointUrl = $"resourceregistry/api/v1/resource/search?ResourceType={(int)resourceType}";
+
+            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                ServiceResource resource = null;
-
-                try
+                var options = new JsonSerializerOptions
                 {
-                    resource = await GetResource(id);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResources // Exception");
-                    throw;
-                }
-
-                if (resource == null)
-                {
-                    ServiceResource unavailableResource = new ServiceResource
-                    {
-                        Identifier = id,
-                        Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        }
-                    };
-                    resources.Add(unavailableResource);
-                }
-                else
-                {
-                    resources.Add(resource);
-                }
+                    PropertyNameCaseInsensitive = true,
+                };
+                string content = await response.Content.ReadAsStringAsync();
+                resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
             }
 
             return resources;

@@ -1,0 +1,3709 @@
+[
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-04T18:04:27.27",
+        "identifier": "appid-119",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "8f08210a-d792-48f5-9e27-0f029e41111e",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:119",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-06T09:36:15.443",
+        "identifier": "appid-122",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "da7650a5-d893-404a-9bfe-28d0904fe896",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:122",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-06T09:41:15.817",
+        "identifier": "appid-123",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "3cb27d7b-9e2c-475c-ba91-e1fc359bc717",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:123",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-04T19:07:46.143",
+        "identifier": "appid-120",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "a6574ca8-5836-46b0-91f0-8ebb0ff214cf",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:120",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-25T15:17:18.487",
+        "identifier": "appid-124",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "fb1bc117-333d-4dea-9400-6bd3e1ce07dd",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:124",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-13T11:10:52.203",
+        "identifier": "appid-126",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "4f9b0f81-74a6-4b76-8ce5-0e1fe153c872",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:126",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-19T11:13:36.8",
+        "identifier": "appid-127",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "38da61a2-4cd8-4dac-9d6b-8205f91661c4",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:127",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-03-25T15:20:40.17",
+        "identifier": "appid-125",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "c8e7b227-3d62-4682-81a2-f2865f0eb91f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:125",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-19T11:18:52.84",
+        "identifier": "appid-128",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "74f5dcb3-eee0-4a3b-9499-93fc2148a513",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:128",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-20T11:49:19.26",
+        "identifier": "appid-129",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "d0fc231c-aaa3-4e6a-bece-4e283e6e2f6f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:129",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-20T12:32:41.78",
+        "identifier": "appid-130",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "3fc8a856-d5b1-4861-ace0-6b3fd5ffd916",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:130",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-28T23:38:06.337",
+        "identifier": "appid-132",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "923bdaaf-0a5e-4b63-908b-4a5ecf75e37b",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:132",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-28T23:39:09.01",
+        "identifier": "appid-133",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "f7670967-0428-4b90-86a2-2ac637d0ec2a",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:133",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-28T23:40:31.413",
+        "identifier": "appid-134",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "d812fd77-7a43-4332-a782-375b37aff1eb",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:134",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-05-29T09:50:19.333",
+        "identifier": "appid-136",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "911f9e93-1541-429d-a8c6-a06f9a52d827",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:136",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "MAT",
+            "organization": "985399077"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-06-05T14:05:14.83",
+        "identifier": "appid-137",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "938a1d17-5015-4a17-bd20-575bf5cd1102",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:137",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-06-17T12:46:18.437",
+        "identifier": "appid-138",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "b4c2ac55-fa7d-44d1-8c95-e64d47206a57",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:138",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SLK",
+            "organization": "960885406"
+        }
+    },
+    {
+        "title": {
+            "en": "Test-API for a demo",
+            "nb": "Test-API for demo",
+            "nn": "Test-API for ein demo"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-08-27T08:15:12.673",
+        "identifier": "appid-139",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "This service grants full access to a test API",
+            "nb": "Denne tjenesten gir full tilgang til et test-API",
+            "nn": "Denne tenesta gir full tilgang til eit test-API"
+        },
+        "resourceReferences": [
+            {
+                "reference": "0f184d85-afa3-4dcf-916b-5a8f85a12c95",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:ettellerannetscope.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:ettellerannetscope.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:139",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-09-11T07:32:49.723",
+        "identifier": "appid-142",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "1f6952b3-84ef-4eec-b742-846d986691e3",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:142",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "JK's Security Level 3 Scheme",
+            "nb": "JK's Sikkerhetsnivå 3 Scheme",
+            "nn": "JK's Sikkringsnivå 3 Scheme"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-09-22T11:46:26.11",
+        "identifier": "appid-144",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Example of a DelegationScheme with security level 3 requirement",
+            "nb": "Eksempel på DelegationScheme med sikkerhetsnivå 3 krav",
+            "nn": "Eit døme på DelegationScheme med sikkringsnivå 3 krav"
+        },
+        "resourceReferences": [
+            {
+                "reference": "5f03a306-8a01-47b5-8219-8014843ce691",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/seclvl3.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/seclvl3.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:144",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "JK's Security Level 2 Scheme",
+            "nb": "JK's Sikkerhetsnivå 2 Scheme",
+            "nn": "JK's Sikkringsnivå 2 Scheme"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-09-22T11:54:03.32",
+        "identifier": "appid-145",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Example of a DelegationScheme with security level 2 requirement",
+            "nb": "Eksempel på DelegationScheme med sikkerhetsnivå 2 krav",
+            "nn": "Eit døme på DelegationScheme med sikkringsnivå 2 krav"
+        },
+        "resourceReferences": [
+            {
+                "reference": "6685c771-459a-43ac-acb0-27a46d8f32d1",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/seclvl2.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/seclvl2.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:145",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-09-29T12:32:40.68",
+        "identifier": "appid-147",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "08d6bac5-e581-4e34-b33e-1f3e2994159a",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:147",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-09-30T10:57:40.96",
+        "identifier": "appid-148",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "6d91d828-5554-48f9-8875-3a5cb1cf562e",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:148",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-11-23T08:36:19.6",
+        "identifier": "appid-150",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "77b6ba03-b0e0-4b38-8477-0928f4a2131c",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:150",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2020-12-16T11:19:44.693",
+        "identifier": "appid-153",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "4ee353be-b998-4e86-8366-99a9c8ece1bc",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:153",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-01-10T22:55:28.887",
+        "identifier": "appid-154",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "630031e8-8074-4e85-b39d-b5ec523354fa",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:154",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "NAV",
+            "organization": "889640782"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-01-12T20:47:54.047",
+        "identifier": "appid-155",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "7a44f919-f4a6-4ac1-8caf-0d364e8f355f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:155",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-01-15T09:06:22.017",
+        "identifier": "appid-164",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "5fec884c-c232-456f-8b2f-9e54c0d1efb3",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:164",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-01-28T18:05:06.683",
+        "identifier": "appid-168",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "30168308-9f93-460f-868a-0edbb921ea8f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:168",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-15T19:51:35.823",
+        "identifier": "appid-178",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "04e68c88-92f4-42a1-a464-a97f41d7a58f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:178",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-15T19:54:20.687",
+        "identifier": "appid-179",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "692cc835-60b0-49d7-b10d-2f9fa3c07eec",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:179",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-15T19:57:22.347",
+        "identifier": "appid-180",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "da9b46e2-479f-44c1-8423-01c3a0fab56c",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:180",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-15T19:57:28.673",
+        "identifier": "appid-181",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "73085841-e264-4257-bc0c-061c5707d54b",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:181",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Regression",
+            "nb": "Regression",
+            "nn": "Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-15T19:57:42.953",
+        "identifier": "appid-182",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes",
+            "nb": "Gir anledning til å teste maskinporten",
+            "nn": "Gjer høve til å teste maskinporten"
+        },
+        "resourceReferences": [
+            {
+                "reference": "c6086d53-6d60-41b3-9f67-32a6347222e2",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:maskinporten/delegationschemes.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:182",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-16T16:01:27.67",
+        "identifier": "appid-184",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "3210f4eb-2d76-4666-9574-664c0fd985f5",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:184",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-02-16T16:02:03.783",
+        "identifier": "appid-185",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "165a2af4-a9e3-4d94-a5f2-65ec749af10e",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:185",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-09T14:11:22.853",
+        "identifier": "appid-191",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "86a49da7-9d41-42ba-9ab8-0ded1f6b6b34",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:191",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SVV",
+            "organization": "971032081"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-09T14:11:34.503",
+        "identifier": "appid-192",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "cc8878d7-21d2-43af-ae4a-27ffcd0f06e4",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:192",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SVV",
+            "organization": "971032081"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-09T20:12:53.51",
+        "identifier": "appid-193",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "47a69357-3028-48bc-abdf-1fd4857446bb",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:193",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:35.29",
+        "identifier": "appid-196",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "b6bdc87c-e124-437b-9858-35f27171a24a",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:196",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:39.577",
+        "identifier": "appid-197",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "09ef4c47-0493-49ba-ba69-7028df31134c",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:197",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:43.623",
+        "identifier": "appid-198",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "98e7d274-3b64-4d10-b7d4-2b6e27026350",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:198",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:47.017",
+        "identifier": "appid-199",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "6ac1efeb-0ae7-4e3d-aafd-5bfe2184e348",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:199",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:49.973",
+        "identifier": "appid-200",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "0d552f1c-dc41-43a6-9f76-4650434ed5e1",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:200",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:54.017",
+        "identifier": "appid-201",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "45164e1d-147b-4c51-8446-19d9233a0c27",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:201",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T13:59:57.35",
+        "identifier": "appid-202",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "d60d98dd-830e-4554-b2d4-b9b76696f770",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:202",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T14:00:00.53",
+        "identifier": "appid-203",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "eb7a322c-98f5-4d91-8720-baf4b7a61dcc",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:203",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-03-19T14:00:04.45",
+        "identifier": "appid-204",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "18ab3b9a-a0c2-408c-b9fa-21838330c2fa",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:204",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-05-18T13:47:29.147",
+        "identifier": "appid-205",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "92e7f534-b126-415c-8a65-d7a8d8ff70a5",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:205",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SVV",
+            "organization": "971032081"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-10T09:46:01.027",
+        "identifier": "appid-206",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "72f5b1bd-3e0e-49d0-8133-236cb8b628e5",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:206",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-10T09:47:12.093",
+        "identifier": "appid-207",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "71cee800-9b2c-4326-b336-7921223f9ca3",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:207",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-10T09:47:54.12",
+        "identifier": "appid-208",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "fd9a3748-2c56-49dd-9860-64de0258ada3",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:208",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-10T09:48:49.723",
+        "identifier": "appid-209",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "f011cd46-d7f3-4037-975c-5bdcd166295e",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:209",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-10T10:01:35.137",
+        "identifier": "appid-210",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "55d73b7c-6040-41ff-b0dc-877692ba0ea6",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:210",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-12T13:27:33.327",
+        "identifier": "appid-211",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "43a73290-3193-49be-89f5-2b309e373442",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:211",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-08-18T14:22:38",
+        "identifier": "appid-212",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "5295d5bd-c4c4-43c4-a55e-7c15ecde1ce7",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:212",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "nb": "Bjørn 1"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-09-28T13:55:27.403",
+        "identifier": "appid-214",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "nb": "Bla bla bla bla bla"
+        },
+        "resourceReferences": [
+            {
+                "reference": "61aeb251-1e1c-4dcd-b33a-6e63e30b0e6f",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:214",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "nb": "Bjørn 1"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-09-03T12:30:33.887",
+        "identifier": "appid-213",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "nb": "Bla bla bla bla bla"
+        },
+        "resourceReferences": [
+            {
+                "reference": "8931d72d-0bab-4c9f-a260-ce37810d6f16",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:213",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+    {
+        "title": {
+            "nb": "Automation Test Delegation Scheme Requires Level 3"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-10-27T16:11:59.113",
+        "identifier": "appid-215",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "nb": "Bla bla bla bla bla"
+        },
+        "resourceReferences": [
+            {
+                "reference": "89058b75-8ddb-4c69-8e5c-158b87f7e6cc",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:215",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "NAV",
+            "organization": "889640782"
+        }
+    },
+    {
+        "title": {
+            "nb": "Automation Test Delegation Scheme Requires Level 3"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-10-27T16:12:00.827",
+        "identifier": "appid-216",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "nb": "Bla bla bla bla bla"
+        },
+        "resourceReferences": [
+            {
+                "reference": "9fd1e158-2dad-4e56-bf7f-ab2e69b73a0a",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.read",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:bjorn/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:216",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "NAV",
+            "organization": "889640782"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-12-13T12:12:34.827",
+        "identifier": "appid-217",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "ea6e52be-b4d6-44d3-a272-f955b84b34e6",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:217",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {
+            "en": "Automation Regression",
+            "nb": "Automation Regression",
+            "nn": "Automation Regression"
+        },
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2021-12-13T12:12:49.563",
+        "identifier": "appid-218",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {
+            "en": "Allows you to test maskinporten changes as part of automation testing",
+            "nb": "Gir anledning til a teste maskinporten som en del av automatiserte tester",
+            "nn": "Gjer hove til a teste maskinporten som en del av automatiserte tester"
+        },
+        "resourceReferences": [
+            {
+                "reference": "ed752be2-e80b-4cc5-83e5-263dbc1cf60d",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.write",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "altinn:test/theworld.admin",
+                "referenceType": "MaskinportenScope",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:218",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DIGDIR",
+            "organization": "991825827"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2022-03-01T13:28:17.143",
+        "identifier": "appid-219",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "5b16379f-f999-4805-9a67-2c32ce304ffa",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:219",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "DFO",
+            "organization": "986252932"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2022-04-01T15:29:03.213",
+        "identifier": "appid-220",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "122cea91-6b64-4ea4-b460-3ab597ffe15d",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:220",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "NHN",
+            "organization": "994598759"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2022-04-20T13:31:33.433",
+        "identifier": "appid-221",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "fae69028-5497-432f-9a32-d7821b487fff",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:221",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "MAT",
+            "organization": "985399077"
+        }
+    },
+    {
+        "title": {},
+        "sector": null,
+        "status": null,
+        "validTo": "9999-12-31T23:59:59.997",
+        "homepage": null,
+        "isPartOf": null,
+        "keywords": null,
+        "validFrom": "2022-06-08T09:45:50.453",
+        "identifier": "appid-222",
+        "isComplete": false,
+        "description": null,
+        "resourceType": "MaskinportenSchema",
+        "thematicArea": null,
+        "isPublicService": true,
+        "rightDescription": {},
+        "resourceReferences": [
+            {
+                "reference": "95c94595-c026-4b7b-880a-7c03d9736ceb",
+                "referenceType": "DelegationSchemeId",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "AppId:222",
+                "referenceType": "ServiceCode",
+                "referenceSource": "Altinn2"
+            },
+            {
+                "reference": "1",
+                "referenceType": "ServiceEditionCode",
+                "referenceSource": "Altinn2"
+            }
+        ],
+        "hasCompetentAuthority": {
+            "orgcode": "SKD",
+            "organization": "974761076"
+        }
+    },
+  {
+    "title": {},
+    "sector": null,
+    "status": null,
+    "validTo": "9999-12-31T23:59:59.997",
+    "homepage": null,
+    "isPartOf": null,
+    "keywords": null,
+    "validFrom": "2022-06-13T13:41:02.943",
+    "identifier": "appid-223",
+    "isComplete": false,
+    "description": null,
+    "resourceType": "MaskinportenSchema",
+    "thematicArea": null,
+    "isPublicService": true,
+    "rightDescription": {},
+    "resourceReferences": [
+      {
+        "reference": "2d04277f-f4a9-498f-b317-8bfacb0d19e9",
+        "referenceType": "DelegationSchemeId",
+        "referenceSource": "Altinn2"
+      },
+      {
+        "reference": "AppId:223",
+        "referenceType": "ServiceCode",
+        "referenceSource": "Altinn2"
+      },
+      {
+        "reference": "1",
+        "referenceType": "ServiceEditionCode",
+        "referenceSource": "Altinn2"
+      }
+    ],
+    "hasCompetentAuthority": {
+      "orgcode": "DIGDIR",
+      "organization": "991825827"
+    }
+  },
+  {
+    "title": {
+      "en": "NAV aa distribution",
+      "nb-no": "NAV aa distribution",
+      "nn-no": "NAV aa distribution"
+    },
+    "sector": [
+      "privat"
+    ],
+    "status": "Active",
+    "validTo": "2022-12-24T23:59:59",
+    "homepage": "https://www.nav.no/",
+    "isPartOf": "navportal",
+    "keywords": [
+      {
+        "word": "delegation",
+        "language": "nb"
+      }
+    ],
+    "validFrom": "2022-09-20T06:46:07.598Z",
+    "identifier": "nav_aa_distribution",
+    "isComplete": true,
+    "description": {
+      "en": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nb-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nn-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger"
+    },
+    "resourceType": "MaskinportenSchema",
+    "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+    "isPublicService": true,
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    },
+    "resourceReferences": [
+      {
+        "reference": "urn:altinn:resourceregistry:nav_aa",
+        "referenceType": "Uri",
+        "referenceSource": "Altinn3"
+      },
+      {
+        "reference": "urn:altinn:maskinporten:nav_aa",
+        "referenceType": "MaskinportenScope",
+        "referenceSource": "Altinn3"
+      },
+      {
+        "reference": "altinn:test/theworld.write",
+        "referenceType": "MaskinportenScope",
+        "referenceSource": "Altinn3"
+      }
+    ],
+    "hasCompetentAuthority": {
+      "orgcode": "DIGDIR",
+      "organization": "991825827"
+    }
+  },
+    {
+      "title": {
+        "en": "SKD 1",
+        "nb-no": "SKD 1",
+        "nn-no": "SKD 1"
+      },
+      "sector": [
+        "privat"
+      ],
+      "status": "Active",
+      "validTo": "2022-12-24T23:59:59",
+      "homepage": "https://www.nav.no/",
+      "isPartOf": "navportal",
+      "keywords": [
+        {
+          "word": "delegation",
+          "language": "nb"
+        }
+      ],
+      "validFrom": "2022-09-20T06:46:07.598Z",
+      "identifier": "skd_1",
+      "isComplete": true,
+      "description": {
+        "en": "SKD 1",
+        "nb-no": "SKD 1",
+        "nn-no": "SKD 1"
+      },
+      "resourceType": "MaskinportenSchema",
+      "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+      "isPublicService": true,
+      "rightDescription": {
+        "en": "Gir mottaker lov til å bruke api",
+        "nb-no": "Gir mottaker lov til å bruke api",
+        "nn-no": "Gir mottaker lov til å bruke api"
+      },
+      "resourceReferences": [
+        {
+          "reference": "urn:altinn:resourceregistry:skd_1",
+          "referenceType": "Uri",
+          "referenceSource": "Altinn3"
+        },
+        {
+          "reference": "urn:altinn:maskinporten:skd_1",
+          "referenceType": "MaskinportenScope",
+          "referenceSource": "Altinn3"
+        },
+        {
+          "reference": "altinn:test/theworld.write",
+          "referenceType": "MaskinportenScope",
+          "referenceSource": "Altinn3"
+        }
+      ],
+      "hasCompetentAuthority": {
+        "orgcode": "DIGDIR",
+        "organization": "991825827"
+      }
+    }
+]

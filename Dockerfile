@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0.403-alpine3.16 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.404-alpine3.16 AS build
 WORKDIR /app
 
 COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/
@@ -13,7 +13,7 @@ COPY src ./src
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.11-alpine3.16 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.12-alpine3.16 AS final
 EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .

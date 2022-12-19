@@ -1,0 +1,307 @@
+[
+  {
+    "rightKey": "jks_audi_etron_gt:drive",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "drive"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:3",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "driveway"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:4",
+        "policyVersion": "1.0",
+        "ruleId": "45453412-efea-4238-8887-6256d8d1727f",
+        "offeredByPartyId": 50004222,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:partyid",
+            "value": "50005545"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:partyid",
+              "value": "50005545"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt:park",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "park"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:3",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "driveway"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:3",
+        "policyVersion": "1.0",
+        "ruleId": "16f91ee0-2c15-474c-a9df-712371289b15",
+        "offeredByPartyId": 50004222,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20000490"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20000490"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt:race",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "race"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:5",
+        "policyVersion": "1.0",
+        "ruleId": "e7a89266-9457-45c9-86c4-53155c6f0230",
+        "offeredByPartyId": 50004221,
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20000490"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20000490"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt,mechanic_work:change_tires",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "mechanic_work"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "change_tires"
+    },
+    "hasPermit": false,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:2",
+        "hasPermit": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -1,4 +1,5 @@
-﻿using NpgsqlTypes;
+﻿using System.Runtime.Serialization;
+using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
@@ -11,7 +12,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         Default = 0,
 
         [PgName("systemresource")]
-        Systemresource = 1,
+        SystemResource = 1,
 
         [PgName("maskinportenschema")]
         MaskinportenSchema = 2

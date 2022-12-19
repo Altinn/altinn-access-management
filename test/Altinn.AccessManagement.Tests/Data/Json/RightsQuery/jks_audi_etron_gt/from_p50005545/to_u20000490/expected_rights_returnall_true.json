@@ -1,0 +1,814 @@
+[
+  {
+    "rightKey": "jks_audi_etron_gt:drive",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "drive"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:3",
+        "hasPermit": false,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "driveway"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt:park",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "park"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:3",
+        "hasPermit": false,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "driveway"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt:race",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "race"
+    },
+    "hasPermit": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "hasPermit": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "INNH"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "jks_audi_etron_gt,mechanic_work:change_tires",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "jks_audi_etron_gt"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "mechanic_work"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "change_tires"
+    },
+    "hasPermit": false,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:2",
+        "hasPermit": false,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LEDE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "HADM"
+            },
+            {
+              "matchFound": null,
+              "id": "urn:altinn:location",
+              "value": "garage"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

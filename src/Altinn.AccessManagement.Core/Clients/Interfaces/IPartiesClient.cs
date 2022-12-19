@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// Returns partyid for 
         /// </summary>
         /// <returns>List of parties</returns>
-        int GetPartyId(int id);
+        Task<int> GetPartyId(string id);
 
         /// <summary>
         /// Method that fetches a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)
@@ -39,5 +39,16 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// <param name="subunitPartyIds">The list of PartyIds to check and retrieve any main units for</param>
         /// <returns>list of main units</returns>
         Task<List<MainUnit>> GetMainUnits(MainUnitQuery subunitPartyIds);
+
+        /// <summary>
+        /// Looks up a party based on SSN or OrgNumber.
+        /// </summary>
+        /// <param name="id">
+        /// SSN or OrgNumber.
+        /// </param>
+        /// <returns>
+        /// The party that represents the given SSN or OrgNumber.
+        /// </returns>
+        Task<Party> LookupPartyBySSNOrOrgNo(string id);
     }
 }

@@ -272,7 +272,64 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            ////Assert.Equal(expected.DelegationResourceType, actual.DelegationResourceType);
+            Assert.Equal(expected.ResourceType, actual.ResourceType);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="MPDelegationExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationEqual(MPDelegationExternal expected, MPDelegationExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.SupplierOrg, actual.SupplierOrg);
+            Assert.Equal(expected.ConsumerOrg, actual.ConsumerOrg);
+            Assert.Equal(expected.Scopes, actual.Scopes);
+            Assert.Equal(expected.DelegationSchemeId, actual.DelegationSchemeId);
+            Assert.Equal(expected.Created, actual.Created);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="PartyExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertPartyEqual(PartyExternal expected, PartyExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.PartyTypeName, actual.PartyTypeName);
+            Assert.Equal(expected.OrgNumber, actual.OrgNumber);
+            Assert.Equal(expected.Organization.Name, actual.Organization.Name);
+            Assert.Equal(expected.Organization.OrgNumber, actual.Organization.OrgNumber);
+            Assert.Equal(expected.Organization.UnitType, actual.Organization.UnitType);
+            Assert.Equal(expected.PartyId, actual.PartyId);
+            Assert.Equal(expected.UnitType, actual.UnitType);
+            Assert.Equal(expected.Name, actual.Name);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ServiceResource"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertResourceExternalEqual(ServiceResourceExternal expected, ServiceResourceExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.Identifier, actual.Identifier);
+            Assert.Equal(expected.Status, actual.Status);
+            Assert.Equal(expected.Title, actual.Title);
+            Assert.Equal(expected.Description, actual.Description);
+            Assert.Equal(expected.ResourceType, actual.ResourceType);
+            Assert.Equal(expected.ValidFrom, actual.ValidFrom);
+            Assert.Equal(expected.ValidTo, actual.ValidTo);
         }
 
         /// <summary>
@@ -292,6 +349,58 @@ namespace Altinn.AccessManagement.Tests.Utils
             AssertEqual(expected.CoveredBy, actual.CoveredBy);
             AssertEqual(expected.Resource, actual.Resource);
             AssertEqual(expected.Action, actual.Action);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="Right"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRightEqual(Right expected, Right actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightKey, actual.RightKey);
+            AssertEqual(expected.Resource, actual.Resource);
+            AssertEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.HasPermit, actual.HasPermit);
+            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="RightSource"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRightSourceEqual(RightSource expected, RightSource actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightSourceType, actual.RightSourceType);
+            Assert.Equal(expected.PolicyId, actual.PolicyId);
+            Assert.Equal(expected.PolicyVersion, actual.PolicyVersion);
+            Assert.Equal(expected.RuleId, actual.RuleId);
+            Assert.Equal(expected.HasPermit, actual.HasPermit);
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            AssertEqual(expected.UserSubjects, actual.UserSubjects);
+            AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
+        }
+
+        private static void AssertPolicySubjects(List<PolicyAttributeMatch> expected, List<PolicyAttributeMatch> actual)
+        {
+            AssertCollections(expected, actual, AssertPolicyAttributeMatchEqual);
+        }
+
+        private static void AssertPolicyAttributeMatchEqual(PolicyAttributeMatch expected, PolicyAttributeMatch actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.MatchFound, actual.MatchFound);
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
         /// <summary>

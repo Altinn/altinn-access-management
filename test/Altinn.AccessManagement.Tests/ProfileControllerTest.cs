@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
@@ -51,7 +52,6 @@ namespace Altinn.AccessManagement.Tests
                     services.AddSingleton<IProfileClient>(sp => _profileClient);
                     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
-                    
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             

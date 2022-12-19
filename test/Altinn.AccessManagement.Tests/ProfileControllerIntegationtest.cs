@@ -34,11 +34,11 @@ namespace Altinn.AccessManagement.Tests
     /// Integrationtests of ProfileController
     /// </summary>
     [Collection("ProfileController integrationtests")]
-    public class ProfileControllerIntegationtest: IClassFixture<CustomWebApplicationFactory<ProfileController>>
+    public partial class ProfileControllerIntegationtest: IClassFixture<CustomWebApplicationFactory<ProfileController>>
     {
         private readonly CustomWebApplicationFactory<ProfileController> _factory;
         private readonly Mock<ILogger<ProfileClient>> _logger;
-
+        
         /// <summary>
         /// Integration test of ProfileController
         /// </summary>
@@ -46,21 +46,21 @@ namespace Altinn.AccessManagement.Tests
         public ProfileControllerIntegationtest(CustomWebApplicationFactory<ProfileController> factory)
         {
             _factory = factory;
-            Mock.Of<IKeyVaultService>();          
-            Mock.Of<IAccessTokenGenerator>();
             _logger = new Mock<ILogger<ProfileClient>>();
         }
 
-        private HttpClient GetTestClient(IProfileClient profileClient, int userId)
+        private HttpClient GetClient(int userId, MessageHandlerMock handler)
         {
-            var messageHandlerMock = new Mock<HttpMessageHandler>();
             var client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
-                    services.AddSingleton<IProfileClient>(sp => profileClient);
                     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
+                    services.AddSingleton(typeof(ILogger<ProfileClient>),  _logger.Object);
+                    services.AddHttpClient<IProfileClient, ProfileClient>().AddHttpMessageHandler<MessageHandlerMock>();
+                    services.AddSingleton<MessageHandlerMock>(handler);
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -68,43 +68,6 @@ namespace Altinn.AccessManagement.Tests
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             return client;
-        }
-
-        private IProfileClient GetProfileClient(HttpStatusCode expectedHttpStatusCode, UserProfile expectedUserProfile)
-        {
-            var platformSettings = Options.Create(new PlatformSettings { ProfileApiEndpoint = "http://www.test.no/", SubscriptionKeyHeaderName = "SubscriptionKeyHeaderName"});
-            var generalSettings = Mock.Of<IOptionsMonitor<GeneralSettings>>(optionsMonitor => optionsMonitor.CurrentValue == new GeneralSettings() { RuntimeCookieName = "RuntimeCookieName" });
-            
-            var accessTokenGeneratorMock = Mock.Of<IAccessTokenGenerator>();
-            
-            Mock.Get(accessTokenGeneratorMock)
-                .Setup(m => m.GenerateAccessToken(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns("SomeStringRepresentingAccessToken");
-
-            _logger.Setup(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
-            
-            var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            handler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()).ReturnsAsync(new HttpResponseMessage()
-                {
-                    StatusCode = expectedHttpStatusCode,
-                    Content = JsonContent.Create(expectedUserProfile)
-                });
-
-            var httpClient = new HttpClient(handler.Object);
-            var profileClient = new ProfileClient(platformSettings, _logger.Object, new HttpContextAccessor(), generalSettings, httpClient, accessTokenGeneratorMock);
-
-            return profileClient;
-        }
-
-        private static string GetTestCert()
-        {
-            var x509Certificate2 = new X509Certificate2("selfSignedTestCertificate.pfx", "qwer1234");
-            return Convert.ToBase64String(x509Certificate2.Export(X509ContentType.Cert));
         }
 
         /// <summary>
@@ -115,13 +78,14 @@ namespace Altinn.AccessManagement.Tests
         public async Task GetUserProfile_ReturnsUserProfile()
         {
             const int userId = 1234;
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
             var userProfile = new UserProfile { UserId = userId };
-            var profileClient = GetProfileClient(HttpStatusCode.OK, userProfile);
-            var client = GetTestClient(profileClient, userId);
+            var handler = new MessageHandlerMock(expectedStatusCode, JsonContent.Create(userProfile));
+            var client = GetClient(userId, handler);
 
             var response = await client.GetAsync("accessmanagement/api/v1/profile/user");
             
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(expectedStatusCode, response.StatusCode);
             var userProfileResult = await response.Content.ReadAsAsync<UserProfile>();
             Assert.Equivalent(userProfile, userProfileResult);
         }
@@ -137,10 +101,11 @@ namespace Altinn.AccessManagement.Tests
             const HttpStatusCode expectedStatusCode = HttpStatusCode.NotFound;
             var expectedErrorMessage =
                 $"Getting user profile with userId {userId} failed with statuscode {expectedStatusCode}";
-
             var userProfile = new UserProfile { UserId = userId };
-            var profileClient = GetProfileClient(expectedStatusCode, userProfile);
-            var client = GetTestClient(profileClient, userId);
+            var handler = new MessageHandlerMock(expectedStatusCode, JsonContent.Create(userProfile));
+            
+            _logger.Setup(x => x.Log(LogLevel.Error, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
+            var client = GetClient(userId, handler);
 
             var response = await client.GetAsync("accessmanagement/api/v1/profile/user");
 
@@ -153,12 +118,13 @@ namespace Altinn.AccessManagement.Tests
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
-
+            
             // Verify errormessage
             var loggedErrorMessages = _logger.Invocations
                 .Where(x => (LogLevel)x.Arguments[0] == LogLevel.Error)
                 .Select(x => x.Arguments[2].ToString()).First();
             
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Equal(expectedErrorMessage, loggedErrorMessages);
         }
     }

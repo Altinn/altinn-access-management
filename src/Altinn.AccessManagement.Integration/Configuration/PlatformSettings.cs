@@ -30,6 +30,7 @@
         /// </summary>
         public string? SubscriptionKeyHeaderName { get; set; }
         
+        /// <summary>
         /// Endpoint for authentication
         /// </summary>
         public string? ApiAuthenticationEndpoint { get; set; }

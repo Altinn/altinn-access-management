@@ -1,0 +1,24 @@
+{
+  "from": [
+    {
+      "id": "urn:altinn:partyid",
+      "value": "50005545"
+    }
+  ],
+  "to": [
+    {
+      "id": "urn:altinn:userid",
+      "value": "20000490"
+    }
+  ],
+  "resource": [
+    {
+      "id": "urn:altinn:org",
+      "value": "ttd"
+    },
+    {
+      "id": "urn:altinn:app",
+      "value": "rf-0002"
+    }
+  ]
+}

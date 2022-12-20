@@ -6,11 +6,6 @@
     public class PlatformSettings
     {
         /// <summary>
-        /// Gets or sets the bridge api endpoint
-        /// </summary>
-        public string? BridgeApiEndpoint { get; set; }
-
-        /// <summary>
         /// Open Id Connect Well known endpoint
         /// </summary>
         public string? OpenIdWellKnownEndpoint { get; set; }
@@ -34,5 +29,9 @@
         /// Gets or sets the SubscriptionKeyHeaderName
         /// </summary>
         public string? SubscriptionKeyHeaderName { get; set; }
+        
+        /// Endpoint for authentication
+        /// </summary>
+        public string? ApiAuthenticationEndpoint { get; set; }
     }
 }

@@ -1,21 +1,19 @@
 using Altinn.AccessManagement.Configuration;
-using Altinn.AccessManagement.Configuration.Telemetry;
-using Altinn.AccessManagement.Core;
-using Altinn.AccessManagement.Core.Clients;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Repositories.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services;
-using Altinn.AccessManagement.Core.Services.Implementation;
-using Altinn.AccessManagement.Core.Services.Interface;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
+using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Persistance;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
 using Altinn.AccessManagement.Services.Implementation;
 using Altinn.AccessManagement.Services.Interface;
@@ -34,7 +32,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Npgsql.Logging;
+using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
 using KeyVaultSettings = AltinnCore.Authentication.Constants.KeyVaultSettings;
@@ -129,18 +129,9 @@ async Task SetConfigurationProviders(ConfigurationManager config)
 
     config.SetBasePath(basePath);
     string configJsonFile1 = $"{basePath}/altinn-appsettings/altinn-dbsettings-secret.json";
-    string configJsonFile2 = $"{Directory.GetCurrentDirectory()}/appsettings.json";
-
-    if (basePath == "/")
-    {
-        configJsonFile2 = "/app/appsettings.json";
-    }
 
     logger.LogInformation($"Loading configuration file: '{configJsonFile1}'");
     config.AddJsonFile(configJsonFile1, optional: true, reloadOnChange: true);
-
-    logger.LogInformation($"Loading configuration file2: '{configJsonFile2}'");
-    config.AddJsonFile(configJsonFile2, optional: false, reloadOnChange: true);
 
     config.AddEnvironmentVariables();
     config.AddCommandLine(args);
@@ -190,25 +181,40 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     logger.LogInformation("Startup // ConfigureServices");
+    services.AddAutoMapper(typeof(Program));
     services.AddControllersWithViews();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
     services.AddHealthChecks().AddCheck<HealthCheck>("authorization_admin_health_check");
-    services.AddSwaggerGen();
+    services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey
+        });
+        options.OperationFilter<SecurityRequirementsOperationFilter>();
+    });
     services.AddMvc();
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
+    PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
-    services.Configure<PlatformSettings>(config.GetSection("GeneralSettings"));
+    services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
+    services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
     services.AddHttpClient<IProfileClient, ProfileClient>();
+    services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
@@ -218,20 +224,27 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+    services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
+    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
+    services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
+    services.AddSingleton<IRegister, RegisterService>();
+    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
-            options.JwtCookieName = generalSettings.RuntimeCookieName;
-            options.MetadataAddress = generalSettings.OpenIdWellKnownEndpoint;
+            options.JwtCookieName = platformSettings.JwtCookieName;
+            options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -252,6 +265,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
+        options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
@@ -275,6 +289,20 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
     }
+
+    services.AddAntiforgery(options =>
+    {
+        // asp .net core expects two types of tokens: One that is attached to the request as header, and the other one as cookie.
+        // The values of the tokens are not the same and both need to be present and valid in a "unsafe" request.
+
+        // We use this for OIDC state validation. See authentication controller. 
+        // https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-6.0
+        // https://github.com/axios/axios/blob/master/lib/defaults.js
+        options.Cookie.Name = "AS-XSRF-TOKEN";
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+        options.HeaderName = "X-XSRF-TOKEN";
+    });
+    services.TryAddSingleton<ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter>();
 }
 
 void Configure()
@@ -292,7 +320,7 @@ void Configure()
     }
     else
     {
-        app.UseExceptionHandler("/access-management/api/v1/error");
+        app.UseExceptionHandler("/accessmanagement/api/v1/error");
     }
 
     app.UseRouting();
@@ -326,6 +354,12 @@ void ConfigurePostgreSql()
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
+        
+        string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
+        if (builder.Environment.IsDevelopment())
+        {
+            workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
+        }
 
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
@@ -333,7 +367,7 @@ void ConfigurePostgreSql()
             traceService,
             new Yuniql.AspNetCore.Configuration
             {
-                Workspace = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath")),
+                Workspace = workspacePath,
                 ConnectionString = connectionString,
                 IsAutoCreateDatabase = false,
                 IsDebug = true,

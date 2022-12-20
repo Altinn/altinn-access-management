@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Azure.Storage.Queues.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -15,7 +15,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <param name="delegationChange">The delegation change stored in postgresql</param>
         public Task<SendReceipt> Push(DelegationChange delegationChange)
         {
-            if (string.IsNullOrEmpty(delegationChange.AltinnAppId) || delegationChange.AltinnAppId == "error/delegationeventfail")
+            if (delegationChange.ResourceId == "error/delegationeventfail")
             {
                 throw new Exception("DelegationChangeEventQueue || Push || Error");
             }

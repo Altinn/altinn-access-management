@@ -1,10 +1,15 @@
 ﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Filters;
+using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Utilities;
+using AutoMapper;
+using Azure.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +19,14 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
     [ApiController]
+    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
         private readonly IDelegationsService _delegation;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -28,12 +35,19 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="policyAdministrationPoint">The policy administration point</param>
         /// <param name="delegationsService">Handler for the delegation service</param>
-        public DelegationsController(ILogger<DelegationsController> logger, IPolicyInformationPoint policyInformationPoint, IPolicyAdministrationPoint policyAdministrationPoint, IDelegationsService delegationsService)
+        /// <param name="mapper">mapper handler</param>
+        public DelegationsController(
+            ILogger<DelegationsController> logger, 
+            IPolicyInformationPoint policyInformationPoint, 
+            IPolicyAdministrationPoint policyAdministrationPoint, 
+            IDelegationsService delegationsService,
+            IMapper mapper)
         {
             _logger = logger;
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
             _delegation = delegationsService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -89,7 +103,7 @@ namespace Altinn.AccessManagement.Controllers
             List<int> coveredByPartyIds = new List<int>();
             List<int> coveredByUserIds = new List<int>();
             List<int> offeredByPartyIds = new List<int>();
-            List<string> appIds = new List<string>();
+            List<string> resourceIds = new List<string>();
 
             if (ruleQuery.KeyRolePartyIds.Any(id => id != 0))
             {
@@ -103,19 +117,17 @@ namespace Altinn.AccessManagement.Controllers
 
             foreach (List<AttributeMatch> resource in ruleQuery.Resources)
             {
-                string org = resource.FirstOrDefault(match => match.Id == XacmlRequestAttribute.OrgAttribute)?.Value;
-                string app = resource.FirstOrDefault(match => match.Id == XacmlRequestAttribute.AppAttribute)?.Value;
-                if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
+                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _))
                 {
-                    appIds.Add($"{org}/{app}");
+                    resourceIds.Add(resourceId);
                 }
             }
 
-            if (DelegationHelper.TryGetCoveredByPartyIdFromMatch(ruleQuery.CoveredBy, out int partyId))
+            if (DelegationHelper.TryGetPartyIdFromAttributeMatch(ruleQuery.CoveredBy, out int partyId))
             {
                 coveredByPartyIds.Add(partyId);
             }
-            else if (DelegationHelper.TryGetCoveredByUserIdFromMatch(ruleQuery.CoveredBy, out int userId))
+            else if (DelegationHelper.TryGetUserIdFromAttributeMatch(ruleQuery.CoveredBy, out int userId))
             {
                 coveredByUserIds.Add(userId);
             }
@@ -127,17 +139,15 @@ namespace Altinn.AccessManagement.Controllers
 
             if (offeredByPartyIds.Count == 0)
             {
-                _logger.LogInformation($"Unable to get the rules: Missing offeredbyPartyId value.");
                 return StatusCode(400, $"Unable to get the rules: Missing offeredbyPartyId value.");
             }
 
             if (offeredByPartyIds.Count == 0 && coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
             {
-                _logger.LogInformation($"Unable to get the rules: Missing offeredby and coveredby values.");
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
 
-            List<Rule> rulesList = await _pip.GetRulesAsync(appIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
+            List<Rule> rulesList = await _pip.GetRulesAsync(resourceIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
             DelegationHelper.SetRuleType(rulesList, ruleQuery.OfferedByPartyId, ruleQuery.KeyRolePartyIds, ruleQuery.CoveredBy, ruleQuery.ParentPartyId);
             return Ok(rulesList);
         }
@@ -224,33 +234,34 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("accessmanagement/api/v1/delegations/getalloffereddelegations")]
-        public async Task<ActionResult<List<OfferedDelegations>>> GetAllOfferedDelegations([FromQuery] int offeredbyPartyId, string resourceType)
+        [Authorize]
+        [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/outbound")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string who)
         {
-            if (offeredbyPartyId == 0)
+            if (string.IsNullOrEmpty(who))
             {
-                return BadRequest("Missing query parameter offeredbypartyid");
-            }
-
-            if (!Enum.TryParse(resourceType, out ResourceType resource))
-            {
-                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
+                return BadRequest("Missing who");
             }
 
             try
             {
-                List<OfferedDelegations> delegations = await _delegation.GetAllOfferedDelegations(offeredbyPartyId, resource);
-                if (delegations == null || delegations.Count == 0)
+                List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
+                if (delegationsExternal == null || delegationsExternal.Count == 0)
                 {
                     return Ok("No delegations found");
                 }
 
-                return delegations;
+                return delegationsExternal;
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
             }
             catch (Exception ex) 
             {
                 string errorMessage = ex.Message;
-                _logger.LogError("GetAllOfferedDelegations failed to fetch delegations, See the error message for more details {errorMessage}", errorMessage);
+                _logger.LogError("Failed to fetch outbound delegations, See the error message for more details {errorMessage}", errorMessage);
                 return StatusCode(500);
             }
         }
@@ -261,32 +272,76 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("accessmanagement/api/v1/delegations/getallreceiveddelegations")]
-        public async Task<ActionResult<List<ReceivedDelegation>>> GetAllReceivedDelegations([FromQuery] int coveredbyPartyId, string resourceType)
+        [Authorize]
+        [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/inbound")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string who)
         {
-            if (coveredbyPartyId == 0)
+            if (string.IsNullOrEmpty(who))
             {
-                return BadRequest("Missing query parameter coveredbyPartyId");
-            }
-
-            if (!Enum.TryParse(resourceType, out ResourceType resource))
-            {
-                return BadRequest("Missing query parameter resourcetype or invalid value for resourcetype");
+                return BadRequest("Missing who");
             }
 
             try
             {
-                List<ReceivedDelegation> delegations = await _delegation.GetReceivedDelegationsAsync(coveredbyPartyId, resource);
-                if (delegations == null || delegations.Count == 0)
+                List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
+                if (delegationsExternal == null || delegationsExternal.Count == 0)
                 {
                     return Ok("No delegations found");
                 }
 
-                return delegations;
+                return delegationsExternal;
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GetAllReceivedDelegations failed to fetch delegations");
+                _logger.LogError(ex, "GetAlInboundDelegations failed to fetch delegations");
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving delegated resources between parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
+        [Authorize]
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenSchemaDelegations([FromQuery] string? supplierOrg, string? consumerOrg, string scope)
+        {
+            if (!string.IsNullOrEmpty(supplierOrg) && !IdentificatorUtil.ValidateOrganizationNumber(supplierOrg))
+            {
+                return BadRequest("Supplierorg is not an valid organization number");
+            }
+
+            if (!string.IsNullOrEmpty(consumerOrg) && !IdentificatorUtil.ValidateOrganizationNumber(consumerOrg))
+            {
+                return BadRequest("Consumerorg is not an valid organization number");
+            }
+
+            if (string.IsNullOrEmpty(scope))
+            {
+                return BadRequest("Either the parameter scope has no value or the provided value is invalid");
+            }
+
+            try
+            {
+                List<Delegation> delegations = await _delegation.GetMaskinportenSchemaDelegations(supplierOrg, consumerOrg, scope);
+                List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
+
+                return delegationsExternal;
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllDelegationsForAdmin failed to fetch delegations");
                 return StatusCode(500);
             }
         }

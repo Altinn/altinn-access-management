@@ -1,0 +1,178 @@
+[
+  {
+    "rightKey": "app1,org1:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "read"
+    },
+    "canDelegate": true,
+    "rightSources": [
+      {
+        "rightSourceType": "AppPolicy",
+        "policyId": "urn:altinn:example:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "canDelegate": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "regna"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "dagl"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "priv"
+            }
+          ]
+        ]
+      },
+      {
+        "rightSourceType": "DelegationPolicy",
+        "policyId": "urn:altinn:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "57b3ee85-f932-42c6-9ab0-941eb6c96eb0",
+        "offeredByPartyId": 50001337,
+        "canDelegate": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:userid",
+            "value": "20001337"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:userid",
+              "value": "20001337"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,org1:write",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "write"
+    },
+    "canDelegate": false,
+    "rightSources": [
+      {
+        "rightSourceType": "AppPolicy",
+        "policyId": "urn:altinn:example:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "canDelegate": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "regna"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "dagl"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "priv"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,org1,task1:sign",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "task1"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "sign"
+    },
+    "canDelegate": false,
+    "rightSources": [
+      {
+        "rightSourceType": "AppPolicy",
+        "policyId": "urn:altinn:example:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:2",
+        "canDelegate": false,
+        "userSubjects": [
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "dagl"
+            }
+          ],
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "priv"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

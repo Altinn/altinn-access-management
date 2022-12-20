@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -14,16 +15,28 @@ namespace Altinn.AccessManagement.Core.Models
         public int DelegationChangeId { get; set; }
 
         /// <summary>
+        /// Gets or sets the resource registry delegation change id
+        /// </summary>
+        [JsonPropertyName("resourceregistrydelegationchangeid")]
+        public int ResourceRegistryDelegationChangeId { get; set; }
+
+        /// <summary>
         /// Gets or sets the delegation change type
         /// </summary>
         [JsonPropertyName("delegationchangetype")]
         public DelegationChangeType DelegationChangeType { get; set; }
 
         /// <summary>
-        /// Gets or sets the altinnappid. E.g. skd/skattemelding
+        /// Gets or sets the resource id.
         /// </summary>
-        [JsonPropertyName("altinnappid")]
-        public string? AltinnAppId { get; set; }
+        [JsonPropertyName("resourceid")]
+        public string ResourceId { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the resourcetype.
+        /// </summary>
+        [JsonPropertyName("resourcetype")]
+        public string ResourceType { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the offeredbypartyid, refering to the party id of the user or organization offering the delegation.
@@ -47,36 +60,30 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
-        public int PerformedByUserId { get; set; }
+        public int? PerformedByUserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+        /// </summary>
+        [JsonPropertyName("performedbypartyid")]
+        public int? PerformedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.
         /// </summary>
         [JsonPropertyName("blobstoragepolicypath")]
-        public string BlobStoragePolicyPath { get; set; }
+        public string BlobStoragePolicyPath { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the blobstorage versionid
         /// </summary>
         [JsonPropertyName("blobstorageversionid")]
-        public string BlobStorageVersionId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the resource id.
-        /// </summary>
-        [JsonPropertyName("resourceid")]
-        public string? ResourceId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the resourcetype.
-        /// </summary>
-        [JsonPropertyName("resourcetype")]
-        public string? ResourceType { get; set; }
+        public string BlobStorageVersionId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the created date and timestamp for the delegation change
         /// </summary>
         [JsonPropertyName("created")]
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
     }
 }

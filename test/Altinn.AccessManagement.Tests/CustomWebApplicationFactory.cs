@@ -18,10 +18,6 @@ namespace Altinn.AccessManagement.Tests
         /// <param name="builder">IWebHostBuilder</param>
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureTestServices((services) =>
-            {
-            });
-
             builder.ConfigureAppConfiguration(config =>
             {
                 config.AddConfiguration(new ConfigurationBuilder()

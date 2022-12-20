@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Repositories.Interface;
-using Altinn.AccessManagement.Core.Services.Interface;
-using Altinn.AccessManagement.Services.Implementation;
-using Altinn.AccessManagement.Services.Interface;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Utils;
 using Microsoft.Extensions.Caching.Memory;
@@ -32,7 +31,7 @@ namespace Altinn.AccessManagement.Tests
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly Mock<ILogger<IPolicyAdministrationPoint>> _logger;
         private DelegationMetadataRepositoryMock _delegationMetadataRepositoryMock;
-        private readonly ResourceRegistryClientMock _resourceRegistryClient;
+        private readonly ResourceRegistryClientMock _resourceRegistryClientMock = new ResourceRegistryClientMock();
 
         /// <summary>
         /// Constructor setting up dependencies
@@ -50,12 +49,12 @@ namespace Altinn.AccessManagement.Tests
             _prp = new PolicyRepositoryMock(new Mock<ILogger<PolicyRepositoryMock>>().Object);
             _eventQueue = new DelegationChangeEventQueueMock();
             _pap = new PolicyAdministrationPoint(
-                new PolicyRetrievalPoint(_prp, memoryCache, Options.Create(new GeneralSettings { PolicyCacheTimeout = 1 })),
+                new PolicyRetrievalPoint(_prp, memoryCache, Options.Create(new CacheConfig { PolicyCacheTimeout = 1 })),
                 _prp,
                 _delegationMetadataRepositoryMock,
                 _eventQueue,
                 _logger.Object,
-                _resourceRegistryClient);
+                _resourceRegistryClientMock);
         }
 
         /// <summary>
@@ -110,6 +109,17 @@ namespace Altinn.AccessManagement.Tests
         }
 
         /// <summary>
+        /// Test case: Write to storage a file that is null.
+        /// Expected: WritePolicyAsync throws ArgumentException.
+        /// </summary>
+        [Fact]
+        public async Task WritePolicy_TC05()
+        {
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => _pap.WritePolicyAsync("org", "app", null));
+        }
+
+        /// <summary>
         /// Scenario:
         /// Tests the TryWriteDelegationPolicyRules function, where all rules are deleted the db is updated with RevokeLast status
         /// Input:
@@ -146,9 +156,9 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
-                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
             };
 
             // Act
@@ -195,7 +205,7 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "error/delegationeventfail/50001337/u20001336", new List<DelegationChange> { TestDataUtil.GetDelegationChange("error/delegationeventfail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
+                { "error/delegationeventfail/50001337/u20001336", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("error/delegationeventfail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
             };
 
             // Act
@@ -251,8 +261,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
-                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
             };
 
             // Act
@@ -268,7 +278,7 @@ namespace Altinn.AccessManagement.Tests
                 x => x.Log(
                     LogLevel.Warning,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "The policy is already deleted for App: org1/app5 CoveredBy: 20001337 OfferedBy: 50001337"),
+                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "The policy is already deleted for: org1/app5 CoveredBy: 20001337 OfferedBy: 50001337"),
                     It.IsAny<Exception>(),
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
@@ -307,7 +317,7 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app1/50001337/p50001336", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app1", offeredByPartyId, performedByUserId: performedByUserId, coveredByPartyId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app1/50001337/p50001336", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app1", offeredByPartyId, performedByUserId: performedByUserId, coveredByPartyId: coveredBy, changeType: DelegationChangeType.Revoke) } },
             };
 
             // Act
@@ -357,8 +367,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
             };
 
             // Act
@@ -408,8 +418,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
             };
 
             // Act
@@ -467,8 +477,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
             };
 
             // Act
@@ -526,8 +536,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
             };
 
             // Act
@@ -543,7 +553,7 @@ namespace Altinn.AccessManagement.Tests
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "Not possible to build policy path App: org1/app4 CoveredBy: (null) OfferedBy: 50001337 RuleIds: ade3b138-7fa4-4c83-9306-8ec4a72c2daa" && @type.Name == "FormattedLogValues"),
+                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "Not possible to build policy path for: org1/app4 CoveredBy: (null) OfferedBy: 50001337 RuleIds: ade3b138-7fa4-4c83-9306-8ec4a72c2daa" && @type.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
@@ -585,9 +595,9 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
-                { "error/postgrewritechangefail/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("error/postgrewritechangefail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "error/postgrewritechangefail/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("error/postgrewritechangefail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
             };
 
             // Act
@@ -644,8 +654,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
-                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } },
+                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.Revoke) } }
             };
 
             // Act
@@ -698,9 +708,9 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app4/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app4", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
             };
 
             // Act
@@ -748,7 +758,7 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "error/delegationeventfail/50001337/u20001336", new List<DelegationChange> { TestDataUtil.GetDelegationChange("error/delegationeventfail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
+                { "error/delegationeventfail/50001337/u20001336", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("error/delegationeventfail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
             };
 
             // Act
@@ -806,8 +816,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
             };
 
             // Act
@@ -866,8 +876,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
             };
 
             // Act
@@ -918,8 +928,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
             };
 
             // Act
@@ -970,9 +980,9 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "error/postgrewritechangefail/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("error/postgrewritechangefail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "error/postgrewritechangefail/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("error/postgrewritechangefail", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
             };
 
             // Act
@@ -1031,8 +1041,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
             };
 
             // Act
@@ -1048,7 +1058,7 @@ namespace Altinn.AccessManagement.Tests
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "Not possible to build policy path App: org1/ CoveredBy: 20001337 OfferedBy: 50001337" && @type.Name == "FormattedLogValues"),
+                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "Not possible to build policy path for: org1/ CoveredBy: 20001337 OfferedBy: 50001337" && @type.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
@@ -1091,8 +1101,8 @@ namespace Altinn.AccessManagement.Tests
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
-                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
+                { "org1/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org1/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } },
+                { "org2/app3/50001337/u20001337", new List<DelegationChange> { TestDataUtil.GetAltinnAppDelegationChange("org2/app3", offeredByPartyId, performedByUserId: performedByUserId, coveredByUserId: coveredBy, changeType: DelegationChangeType.RevokeLast) } }
             };
 
             // Act
@@ -1108,7 +1118,7 @@ namespace Altinn.AccessManagement.Tests
                 x => x.Log(
                     LogLevel.Warning,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "The policy is already deleted for App: org1/app5 CoveredBy: 20001337 OfferedBy: 50001337" && @type.Name == "FormattedLogValues"),
+                    It.Is<It.IsAnyType>((@object, @type) => @object.ToString() == "The policy is already deleted for: org1/app5 CoveredBy: 20001337 OfferedBy: 50001337" && @type.Name == "FormattedLogValues"),
                     It.IsAny<Exception>(),
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);

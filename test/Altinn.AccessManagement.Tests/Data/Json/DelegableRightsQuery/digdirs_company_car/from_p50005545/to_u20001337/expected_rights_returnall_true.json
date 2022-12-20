@@ -1,0 +1,136 @@
+[
+  {
+    "rightKey": "digdirs_company_car:drive",
+    "resource": [
+      {
+        "id": "urn:altinn:resourceregistry",
+        "value": "digdirs_company_car"
+      }
+    ],
+    "action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "drive"
+    },
+    "canDelegate": true,
+    "rightSources": [
+      {
+        "rightSourceType": "ResourceRegistryPolicy",
+        "policyId": "urn:altinn:example:delegationscheme:policyid:1",
+        "policyVersion": "1.0",
+        "ruleId": "urn:altinn:example:ruleid:1",
+        "canDelegate": true,
+        "userSubjects": [
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "LOPER"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ADMAI"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "REGNA"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SISKD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UILUF"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTINN"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UTOMR"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KLADM"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ATTST"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "HVASK"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PAVAD"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "SIGNE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "UIHTL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "KOMAB"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "DAGL"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "ECKEYROLE"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "EKTJ"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "PASIG"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0278"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0236"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0212"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0286"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0293"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "A0294"
+          }
+        ],
+        "policySubjects": [
+          [
+            {
+              "matchFound": null,
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]

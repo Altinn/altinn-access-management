@@ -1,7 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 
-namespace Altinn.AccessManagement.Core.Services
+namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
     /// <summary>
     /// Interface for the delegation request service, defining operations for working with delegation requests

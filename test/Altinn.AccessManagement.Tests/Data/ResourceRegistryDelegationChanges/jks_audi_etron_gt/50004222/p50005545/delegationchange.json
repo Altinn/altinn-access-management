@@ -1,0 +1,15 @@
+{
+  "delegationchangeid": 0,
+  "resourceregistrydelegationchangeid": 42225545,
+  "delegationchangetype": 1,
+  "resourceid": "jks_audi_etron_gt",
+  "resourcetype": "MaskinportenSchema",
+  "offeredbypartyid": 50004222,
+  "coveredbypartyid": 50005545,
+  "coveredbyuserid": null,
+  "performedbyuserid": 20000095,
+  "performedbypartyid": null,
+  "blobstoragepolicypath": "resourceregistry/jks_audi_etron_gt/50004222/p50005545/delegationpolicy.xml",
+  "blobstorageversionid": "2022-11-29T09:19:52.1743413Z",
+  "created": "2022-11-29T10:19:45.336206+01"
+}

@@ -24,6 +24,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceAdministrationPoint"/> class.
         /// </summary>
+        /// <param name="resourceRepository">The data layer to handle Resource related persistence</param>
         /// <param name="logger">Logger instance.</param>
         /// <param name="contextRetrievalService">the handler for resource registry client</param>
         public ResourceAdministrationPoint(

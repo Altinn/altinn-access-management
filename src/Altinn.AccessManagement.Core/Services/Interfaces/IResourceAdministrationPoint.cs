@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -7,6 +8,13 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
     /// </summary>
     public interface IResourceAdministrationPoint
     {
+        /// <summary>
+        /// Creates or Updates a list of Resources from ResourceRegister
+        /// </summary>
+        /// <param name="resources">The resources to add or update</param>
+        /// <returns></returns>
+        Task<List<AccessManagementResource>> TryWriteResourceFromResourceRegister(List<AccessManagementResource> resources);
+
         /// <summary>
         /// Gets a list of Resources from ResourceRegister
         /// </summary>

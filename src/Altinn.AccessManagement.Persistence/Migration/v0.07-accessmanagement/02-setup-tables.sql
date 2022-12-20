@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS accessmanagement.Resource
   resourceId bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   resourceRegistryId text NOT NULL,
   resourceType text NOT NULL,
-  resourceStatus text NOT NULL,
   created timestamp with time zone NOT NULL,
   modified timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 )

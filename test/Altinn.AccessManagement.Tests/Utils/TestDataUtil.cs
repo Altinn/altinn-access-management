@@ -160,6 +160,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
         /// <param name="resourceId">resource identifier</param>
         /// <param name="resourceName">Resource name</param>
+        /// <param name="performedByUserId">who performed the delegation</param>
         /// <returns></returns>
         public static List<Delegation> GetDelegations(int offeredByPartyId, string resourceId, string resourceName, int performedByUserId)
         {

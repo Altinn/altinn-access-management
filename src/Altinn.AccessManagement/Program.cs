@@ -219,9 +219,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
+    services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+    services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
@@ -256,6 +258,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
+        options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();

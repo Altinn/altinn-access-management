@@ -405,6 +405,27 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Value, actual.Value);
         }
 
+        /// <summary>
+        /// Compares two list contains the same data 
+        /// </summary>
+        /// <param name="expected">the expected list</param>
+        /// <param name="actual">the actual list</param>
+        public static void ListAccessManagementResourceAreEqual(List<AccessManagementResource> expected, List<AccessManagementResource> actual)
+        {
+            Assert.Equal(expected.Count, actual.Count);
+            for (int i = 0; i < actual.Count; i++)
+            {
+                AccessManagementResource currentExpectedElement = expected[i];
+                AccessManagementResource currentActualElement = actual[i];
+
+                Assert.Equal(currentExpectedElement.Created, currentActualElement.Created);
+                Assert.Equal(currentExpectedElement.Modified, currentActualElement.Modified);
+                Assert.Equal(currentExpectedElement.ResourceRegistryId, currentActualElement.ResourceRegistryId);
+                Assert.Equal(currentExpectedElement.ResourceId, currentActualElement.ResourceId);
+                Assert.Equal(currentExpectedElement.ResourceType, currentActualElement.ResourceType);
+            }
+        }
+
         private static void AssertEqual(List<AttributeMatch> expected, List<AttributeMatch> actual)
         {
             if (expected == null)

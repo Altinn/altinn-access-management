@@ -11,11 +11,12 @@ using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Services;
+using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
+using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.PEP.Authorization;
-using AltinnCore.Authentication.Constants;
 using AltinnCore.Authentication.JwtCookie;
 
 using Azure.Identity;
@@ -34,6 +35,7 @@ using Npgsql.Logging;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
+using KeyVaultSettings = AltinnCore.Authentication.Constants.KeyVaultSettings;
 
 ILogger logger;
 
@@ -209,6 +211,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
+    services.AddHttpClient<IProfileClient, ProfileClient>();
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
 
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
@@ -229,6 +232,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
+    services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
     services.AddSingleton<IRegister, RegisterService>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();

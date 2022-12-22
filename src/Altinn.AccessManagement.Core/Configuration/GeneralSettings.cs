@@ -24,5 +24,10 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// Option to disable csrf check
         /// </summary>
         public bool DisableCsrfCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets the RuntimeCookieName
+        /// </summary>
+        public string RuntimeCookieName { get; set; }
     }
 }

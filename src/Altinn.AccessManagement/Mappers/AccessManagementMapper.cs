@@ -32,7 +32,12 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.ValidFrom, act => act.MapFrom(src => src.ValidFrom))
                 .ForMember(dest => dest.ValidTo, act => act.MapFrom(src => src.ValidTo))
                 .ForMember(dest => dest.Status, act => act.MapFrom(src => src.Status))
-                .ForMember(dest => dest.ResourceType, act => act.MapFrom(src => src.ResourceType));
+                .ForMember(dest => dest.ResourceType, act => act.MapFrom(src => src.ResourceType))
+                .ForMember(dest => dest.HasCompetentAuthority, act => act.MapFrom(src => src.HasCompetentAuthority));
+            CreateMap<CompetentAuthority, CompetentAuthorityExternal>()
+                .ForMember(dest => dest.Orgcode, act => act.MapFrom(src => src.Orgcode))
+                .ForMember(dest => dest.Organization, act => act.MapFrom(src => src.Organization))
+                .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Name));
         }
     }
 }

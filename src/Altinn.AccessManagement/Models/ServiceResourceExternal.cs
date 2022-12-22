@@ -45,5 +45,10 @@ namespace Altinn.AccessManagement.Models
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ResourceType ResourceType { get; set; }
+
+        /// <summary>
+        /// HasCompetentAuthority
+        /// </summary>
+        public CompetentAuthorityExternal HasCompetentAuthority { get; set; }
     }
 }

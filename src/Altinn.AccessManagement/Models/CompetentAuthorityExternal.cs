@@ -1,9 +1,9 @@
-﻿namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
+﻿namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// Model representation of Competent Authority part of the ServiceResource model
     /// </summary>
-    public class CompetentAuthority
+    public class CompetentAuthorityExternal
     {
         /// <summary>
         /// The organization number

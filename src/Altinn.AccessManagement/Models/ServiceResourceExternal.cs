@@ -40,6 +40,11 @@ namespace Altinn.AccessManagement.Models
         /// </summary>
         public DateTime ValidFrom { get; set; }
 
+            /// <summary>
+        /// ResourceReference
+        /// </summary>
+        public List<ResourceReferenceExternal> ResourceReferences { get; set; }
+
         /// <summary>
         /// When the resource is available to
         /// </summary>

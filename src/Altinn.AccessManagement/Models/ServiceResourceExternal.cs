@@ -26,6 +26,11 @@ namespace Altinn.AccessManagement.Models
         public Dictionary<string, string> Description { get; set; }
 
         /// <summary>
+        /// Rights Description
+        /// </summary>
+        public Dictionary<string, string> RightDescription { get; set; }
+
+        /// <summary>
         /// The status
         /// </summary>
         public string Status { get; set; }

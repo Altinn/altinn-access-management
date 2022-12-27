@@ -29,6 +29,7 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Identifier, act => act.MapFrom(src => src.Identifier))
                 .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(dest => dest.RightDescription, act => act.MapFrom(src => src.RightDescription))
                 .ForMember(dest => dest.ValidFrom, act => act.MapFrom(src => src.ValidFrom))
                 .ForMember(dest => dest.ValidTo, act => act.MapFrom(src => src.ValidTo))
                 .ForMember(dest => dest.Status, act => act.MapFrom(src => src.Status))

@@ -29,15 +29,21 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Identifier, act => act.MapFrom(src => src.Identifier))
                 .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Description))
+                .ForMember(dest => dest.RightDescription, act => act.MapFrom(src => src.RightDescription))
                 .ForMember(dest => dest.ValidFrom, act => act.MapFrom(src => src.ValidFrom))
                 .ForMember(dest => dest.ValidTo, act => act.MapFrom(src => src.ValidTo))
                 .ForMember(dest => dest.Status, act => act.MapFrom(src => src.Status))
                 .ForMember(dest => dest.ResourceType, act => act.MapFrom(src => src.ResourceType))
+                .ForMember(dest => dest.ResourceReferences, act => act.MapFrom(src => src.ResourceReferences))
                 .ForMember(dest => dest.HasCompetentAuthority, act => act.MapFrom(src => src.HasCompetentAuthority));
             CreateMap<CompetentAuthority, CompetentAuthorityExternal>()
                 .ForMember(dest => dest.Orgcode, act => act.MapFrom(src => src.Orgcode))
                 .ForMember(dest => dest.Organization, act => act.MapFrom(src => src.Organization))
                 .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Name));
+            CreateMap<ResourceReference, ResourceReferenceExternal>()
+                .ForMember(dest => dest.ReferenceType, act => act.MapFrom(src => src.ReferenceType))
+                .ForMember(dest => dest.ReferenceSource, act => act.MapFrom(src => src.ReferenceSource))
+                .ForMember(dest => dest.Reference, act => act.MapFrom(src => src.Reference));
         }
     }
 }

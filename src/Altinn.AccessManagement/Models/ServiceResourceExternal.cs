@@ -26,6 +26,11 @@ namespace Altinn.AccessManagement.Models
         public Dictionary<string, string> Description { get; set; }
 
         /// <summary>
+        /// Rights Description
+        /// </summary>
+        public Dictionary<string, string> RightDescription { get; set; }
+
+        /// <summary>
         /// The status
         /// </summary>
         public string Status { get; set; }
@@ -34,6 +39,11 @@ namespace Altinn.AccessManagement.Models
         /// When the resource is available from
         /// </summary>
         public DateTime ValidFrom { get; set; }
+
+            /// <summary>
+        /// ResourceReference
+        /// </summary>
+        public List<ResourceReferenceExternal> ResourceReferences { get; set; }
 
         /// <summary>
         /// When the resource is available to

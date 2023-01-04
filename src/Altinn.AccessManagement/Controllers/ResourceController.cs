@@ -41,7 +41,6 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
-        [Authorize(Policy = AuthzConstants.INTERNAL_AUTHORIZATION)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {
             if (resources.Count < 1)

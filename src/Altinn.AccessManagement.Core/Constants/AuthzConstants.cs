@@ -14,10 +14,5 @@
         /// Policy tag for authorizing Altinn.Platform.Authorization API access from AltinnII Authorization
         /// </summary>
         public const string ALTINNII_AUTHORIZATION = "AltinnIIAuthorizationAccess";
-
-        /// <summary>
-        /// Policy tag for authorizing internal Altinn.Platform.Authorization API access
-        /// </summary>
-        public const string INTERNAL_AUTHORIZATION = "InternalAuthorizationAccess";
     }
 }

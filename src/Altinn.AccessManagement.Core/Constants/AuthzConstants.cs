@@ -19,5 +19,10 @@
         /// Policy tag for authorizing internal Altinn.Platform.Authorization API access
         /// </summary>
         public const string INTERNAL_AUTHORIZATION = "InternalAuthorizationAccess";
+
+        /// <summary>
+        /// Policy tag for reading an instance
+        /// </summary>
+        public const string POLICY_INSTANCE_READ = "InstanceRead";
     }
 }

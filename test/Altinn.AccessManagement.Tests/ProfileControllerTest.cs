@@ -8,6 +8,7 @@ using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
+using Altinn.Common.PEP.Interfaces;
 using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
@@ -52,6 +53,7 @@ namespace Altinn.AccessManagement.Tests
                     services.AddSingleton<IProfileClient>(sp => _profileClient);
                     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPDP, PdpPermitMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             

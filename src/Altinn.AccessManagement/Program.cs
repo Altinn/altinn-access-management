@@ -17,6 +17,9 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.PEP.Authorization;
+using Altinn.Common.PEP.Clients;
+using Altinn.Common.PEP.Implementation;
+using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 
 using Azure.Identity;
@@ -213,7 +216,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddHttpClient<IPartiesClient, PartiesClient>();
     services.AddHttpClient<IProfileClient, ProfileClient>();
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
-
+    services.AddHttpClient<AuthorizationApiClient>();
+    
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -237,6 +241,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
     services.AddSingleton<IRegister, RegisterService>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
+    
+    services.AddSingleton<IPDP, PDPAppSI>();
 
     services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
@@ -264,10 +270,12 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
         options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
+        options.AddPolicy(AuthzConstants.POLICY_INSTANCE_READ, policy => policy.Requirements.Add(new AppAccessRequirement("read")));
     });
 
-    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
-
+    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
+    services.AddTransient<IAuthorizationHandler, AppAccessHandler>();
+    
     services.Configure<KestrelServerOptions>(options =>
     {
         options.AllowSynchronousIO = true;
@@ -287,7 +295,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
     }
-
+    
     services.AddAntiforgery(options =>
     {
         // asp .net core expects two types of tokens: One that is attached to the request as header, and the other one as cookie.

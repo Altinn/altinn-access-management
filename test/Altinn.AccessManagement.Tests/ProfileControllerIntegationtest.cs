@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.Common.AccessTokenClient.Services;
+using Altinn.Common.PEP.Interfaces;
 using Altinn.Platform.Profile.Models;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +62,7 @@ namespace Altinn.AccessManagement.Tests
                     services.AddSingleton(typeof(ILogger<ProfileClient>),  _logger.Object);
                     services.AddHttpClient<IProfileClient, ProfileClient>().AddHttpMessageHandler<MessageHandlerMock>();
                     services.AddSingleton<MessageHandlerMock>(handler);
+                    services.AddSingleton<IPDP, PdpPermitMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

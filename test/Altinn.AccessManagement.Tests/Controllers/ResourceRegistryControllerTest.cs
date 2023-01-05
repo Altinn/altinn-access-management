@@ -11,6 +11,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -57,6 +58,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
+                    services.AddSingleton<IPDP, PdpPermitMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

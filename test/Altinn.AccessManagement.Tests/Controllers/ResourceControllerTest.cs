@@ -82,7 +82,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test calling InsertAccessManagementResource with missing token
         /// </summary>
         /// <returns></returns>
-        [Fact]
+        [Fact(Skip = "Authorization turned off for now")]
         public async Task InsertAccessManagementResource_MissingBearerToken()
         {
             // Arrange
@@ -102,7 +102,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test calling InsertAccessManagementResource with invalid token
         /// </summary>
         /// <returns></returns>
-        [Fact]
+        [Fact(Skip = "Authorization turned off for now")]
         public async Task InsertAccessManagementResource_InvalidBearerToken()
         {
             // Arrange

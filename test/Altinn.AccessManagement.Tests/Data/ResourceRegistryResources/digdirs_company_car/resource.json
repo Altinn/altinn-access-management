@@ -18,7 +18,7 @@
   "homepage": "https://www.jksfirmabiler.no/",
   "status": "Active",
   "validFrom": "2022-09-20T06:46:07.598Z",
-  "validTo": "2022-12-24T23:59:59",
+  "validTo": "2099-12-24T23:59:59",
   "isPartOf": "jk_ressurser",
   "isPublicService": true,
   "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",

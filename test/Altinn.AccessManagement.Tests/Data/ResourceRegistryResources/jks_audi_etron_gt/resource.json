@@ -12,13 +12,13 @@
   },
   "rightDescription": {
     "en": "Permission to borrow the car",
-    "nb-no": "Gir mottaker lov til å låne bilen",
-    "nn-no": "Løyve til å ta ei rånerunde ned i vik"
+    "nb-no": "Gir mottaker lov til ï¿½ lï¿½ne bilen",
+    "nn-no": "Lï¿½yve til ï¿½ ta ei rï¿½nerunde ned i vik"
   },
   "homepage": "https://www.jksaudi.no/",
   "status": "Active",
   "validFrom": "2022-09-20T06:46:07.598Z",
-  "validTo": "2022-12-24T23:59:59",
+  "validTo": "2042-12-24T23:59:59",
   "isPartOf": "jk_ressurser",
   "isPublicService": true,
   "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",

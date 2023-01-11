@@ -21,6 +21,11 @@
         public string? ProfileApiEndpoint { get; set; }
 
         /// <summary>
+        /// Gets or sets the register api endpoint.
+        /// </summary>
+        public string? RegisterApiEndpoint { get; set; }
+
+        /// <summary>
         /// Gets or sets the subscriptionkey.
         /// </summary>
         public string? SubscriptionKey { get; set; }

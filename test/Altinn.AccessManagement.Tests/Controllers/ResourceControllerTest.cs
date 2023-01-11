@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Common.AccessToken.Services;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -49,9 +50,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _factory = factory;
             _client = GetTestClient();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            string token = PrincipalUtil.GetAccessToken("internal.authorization");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -70,8 +68,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expectedText = $"[{dataElement1},{dataElement2}]";
             List<AccessManagementResource> expected = JsonSerializer.Deserialize<List<AccessManagementResource>>(expectedText, options);
 
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<AccessManagementResource> actual = JsonSerializer.Deserialize<List<AccessManagementResource>>(responseContent, options);
             
@@ -84,7 +89,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test calling InsertAccessManagementResource with missing token
         /// </summary>
         /// <returns></returns>
-        [Fact(Skip = "Authorization turned off for now")]
+        [Fact]
         public async Task InsertAccessManagementResource_MissingBearerToken()
         {
             // Arrange
@@ -104,18 +109,21 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test calling InsertAccessManagementResource with invalid token
         /// </summary>
         /// <returns></returns>
-        [Fact(Skip = "Authorization turned off for now")]
+        [Fact]
         public async Task InsertAccessManagementResource_InvalidBearerToken()
         {
-            // Arrange
-            _client.DefaultRequestHeaders.Remove("Authorization");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
-            
             Stream dataStream = File.OpenRead("Data/Json/InsertAccessManagementResource/input1.json");
             StreamContent content = new StreamContent(dataStream);
 
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("UnitTest", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -134,8 +142,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             string expected = @"""Missing resources in body""";
 
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string actual = await response.Content.ReadAsStringAsync();
             
             // Assert
@@ -155,9 +170,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             string expectedErrorMessage = "The ResourceRegistryId field is required.";
-            
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
             string actualErrorMessage = actual.Errors.Values.FirstOrDefault()[0];
@@ -182,9 +203,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string dataElement2 = await File.OpenText("Data/Json/InsertAccessManagementResource/InsertData_string2.json").ReadToEndAsync();
             string expectedText = $"[{dataElement1},{dataElement2}]";
             List<AccessManagementResource> expected = JsonSerializer.Deserialize<List<AccessManagementResource>>(expectedText, options);
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<AccessManagementResource> actual = JsonSerializer.Deserialize<List<AccessManagementResource>>(responseContent, options);
 
@@ -206,8 +233,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             string expected = @"""Delegation could not be completed""";
 
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string actual = await response.Content.ReadAsStringAsync();
             
             // Assert
@@ -224,6 +258,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<ServiceResourceExternal> expectedResources = GetExpectedResources(ResourceType.MaskinportenSchema);
+
+            string token = PrincipalUtil.GetAccessToken("platform", "resourceregistry");
+            _client.DefaultRequestHeaders.Add("PlatformAccessToken", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/52004219/resources/maskinportenschema");
@@ -254,6 +291,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepositoryMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<ISigningKeysResolver, SigningKeyResolverMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });

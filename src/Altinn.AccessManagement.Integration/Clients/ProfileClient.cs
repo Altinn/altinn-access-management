@@ -58,7 +58,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             UserProfile userProfile = null;
 
-            string endpointUrl = $"profile/{userId}";
+            string endpointUrl = $"users/{userId}";
             string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _settings.RuntimeCookieName);
 
             var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");

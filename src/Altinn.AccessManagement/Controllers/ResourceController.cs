@@ -45,6 +45,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="resources">List of new Resources to add or update</param>
         /// <returns></returns>
+        [Authorize(Policy = "PlatformAccess")]
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
@@ -78,7 +79,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="party">the partyid</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "PlatformAccess")]
         [Route("accessmanagement/api/v1/{party}/resources/maskinportenschema")]
         public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party)
         {

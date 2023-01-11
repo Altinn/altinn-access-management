@@ -83,9 +83,7 @@ namespace Altinn.AccessManagement.Controllers
         [Route("accessmanagement/api/v1/{party}/resources/maskinportenschema")]
         public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party)
         {
-            List<ServiceResource> resources = new List<ServiceResource>();
-
-            resources = await _rap.GetResources(ResourceType.MaskinportenSchema);
+            List<ServiceResource> resources = await _rap.GetResources(ResourceType.MaskinportenSchema);
             return _mapper.Map<List<ServiceResourceExternal>>(resources);
         }
     }

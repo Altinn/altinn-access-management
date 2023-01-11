@@ -276,7 +276,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             AssertionUtil.AssertCollections(expectedResources, actualResources, AssertionUtil.AssertResourceExternalEqual);
         }
 
-        private List<ServiceResourceExternal> GetExpectedResources(ResourceType resourceType)
+        private static List<ServiceResourceExternal> GetExpectedResources(ResourceType resourceType)
         {
             List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
             resources = TestDataUtil.GetResources(resourceType);

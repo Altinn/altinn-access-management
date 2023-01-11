@@ -79,7 +79,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="party">the partyid</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Policy = "PlatformAccess")]
         [Route("accessmanagement/api/v1/{party}/resources/maskinportenschema")]
         public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party)
         {

@@ -120,7 +120,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("UnitTest", "resourceregistry"));
 
-
             // Act
             HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             

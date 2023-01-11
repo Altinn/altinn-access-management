@@ -1,8 +1,11 @@
 ﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
+using Altinn.AccessManagement.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,18 +22,22 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly ILogger _logger;
         private readonly IResourceAdministrationPoint _rap;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
         /// </summary>
         /// <param name="logger">the logger.</param>
         /// <param name="resourceAdministrationPoint">The resource administration point</param>
+        /// <param name="mapper">mapper handler</param>
         public ResourceController(
             ILogger<ResourceController> logger,
-            IResourceAdministrationPoint resourceAdministrationPoint)
+            IResourceAdministrationPoint resourceAdministrationPoint,
+            IMapper mapper)
         {
             _logger = logger;
             _rap = resourceAdministrationPoint;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -64,6 +71,22 @@ namespace Altinn.AccessManagement.Controllers
             string resourcesJson = JsonSerializer.Serialize(resources);
             _logger.LogInformation("Delegation could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{resourcesJson}", resourcesJson);
             return BadRequest("Delegation could not be completed");
+        }
+
+        /// <summary>
+        /// Get list of maskinprotenschema resources
+        /// </summary>
+        /// <param name="party">the partyid</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Policy = "PlatformAccess")]
+        [Route("accessmanagement/api/v1/{party}/resources/maskinportenschema")]
+        public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party)
+        {
+            List<ServiceResource> resources = new List<ServiceResource>();
+
+            resources = await _rap.GetResources(ResourceType.MaskinportenSchema);
+            return _mapper.Map<List<ServiceResourceExternal>>(resources);
         }
     }
 }

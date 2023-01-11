@@ -40,7 +40,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         private static SigningCredentials GetSigningCredentials(string issuer)
         {
             string certPath = "selfSignedTestCertificate.pfx";
-            if (!issuer.Equals("UnitTest"))
+            if (!issuer.Equals("sbl.authorization") && !issuer.Equals("www.altinn.no") && !issuer.Equals("UnitTest"))
             {
                 certPath = $"{issuer}-org.pfx";
 

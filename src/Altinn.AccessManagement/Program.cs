@@ -221,6 +221,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
     services.AddSingleton(config);
+    services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();

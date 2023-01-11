@@ -14,6 +14,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Common.AccessToken.Services;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -68,8 +69,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expectedText = $"[{dataElement1},{dataElement2}]";
             List<AccessManagementResource> expected = JsonSerializer.Deserialize<List<AccessManagementResource>>(expectedText, options);
 
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, $"accessmanagement/api/v1/internal/resources")
+            {
+                Content = content
+            };
+
+            httpRequestMessage.Headers.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken("platform", "resourceregistry"));
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/resources", content);
+            HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<AccessManagementResource> actual = JsonSerializer.Deserialize<List<AccessManagementResource>>(responseContent, options);
             
@@ -221,6 +229,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepositoryMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<ISigningKeysResolver, SigningKeyResolverMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

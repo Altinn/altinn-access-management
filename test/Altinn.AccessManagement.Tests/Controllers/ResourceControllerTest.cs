@@ -48,9 +48,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _factory = factory;
             _client = GetTestClient();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            string token = PrincipalUtil.GetAccessToken("internal.authorization");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>

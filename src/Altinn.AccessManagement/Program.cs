@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessToken;
+using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.PEP.Authorization;
 using AltinnCore.Authentication.JwtCookie;
@@ -221,7 +222,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
     services.AddSingleton(config);
-    services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPoint>();
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
@@ -235,6 +235,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
+    services.AddTransient<ISigningKeysResolver, SigningKeysResolver>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();

@@ -163,6 +163,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return Task.FromResult(mainUnits);
         }
 
+        /// <inheritdoc/>
+        public Task<List<Party>> GetPartiesForUserAsync(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
         private static string GetPartiesPaths()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);

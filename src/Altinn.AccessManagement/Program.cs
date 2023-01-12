@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessTokenClient.Services;
+using Altinn.Common.Authentication.Configuration;
 using Altinn.Common.PEP.Authorization;
 using AltinnCore.Authentication.JwtCookie;
 
@@ -208,6 +209,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
+    services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();

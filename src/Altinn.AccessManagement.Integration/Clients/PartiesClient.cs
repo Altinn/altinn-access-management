@@ -123,6 +123,35 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
+        public async Task<List<Party>> GetPartiesForUserAsync(int userId)
+        {
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userId={userId}");
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent);
+                    return partiesInfo;
+                }
+                else
+                {
+                    _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesForUserAsync // Exception");
+                throw;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc/>
         public async Task<List<int>> GetKeyRoleParties(int userId)
         {
             try

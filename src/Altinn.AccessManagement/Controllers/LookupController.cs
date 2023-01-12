@@ -1,4 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
@@ -60,6 +61,39 @@ namespace Altinn.AccessManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "GetOrganisation failed to fetch organisation information");
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving 
+        /// </summary>
+        /// <param name="partyId">The partyId for the reportee to look up</param>
+        /// <returns>Reportee if party is in authenticated users reporteelist</returns>
+        [HttpGet]
+        [Authorize]
+        [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
+        public async Task<ActionResult<PartyExternal>> GetParty(int partyId)
+        {
+            int userId = AuthenticationHelper.GetUserId(HttpContext);
+            try
+            {
+                List<Party> partyList = await _register.GetPartiesForUser(userId);
+               
+                foreach (Party party in partyList)
+                {
+                    if (party.PartyId == partyId)
+                    {
+                        party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                        return _mapper.Map<PartyExternal>(party);
+                    }
+                }
+
+                return StatusCode(404);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetReportee failed to fetch reportee information");
                 return StatusCode(500);
             }
         }

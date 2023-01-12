@@ -30,5 +30,18 @@ namespace Altinn.AccessManagement.Core.Services
         {
             return _partyClient.LookupPartyBySSNOrOrgNo(organisationNumber);
         }
+
+        /// <inheritdoc/>
+        public Task<Party> GetPartyForPartyId(int partyId, int userId)
+        {
+            Task<List<Party>> partiesForUser = _partyClient.GetPartiesForUserAsync(userId);
+            return _partyClient.GetPartyAsync(partyId);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<Party>> GetPartiesForUser(int userId)
+        {
+            return _partyClient.GetPartiesForUserAsync(userId);
+        }
     }
 }

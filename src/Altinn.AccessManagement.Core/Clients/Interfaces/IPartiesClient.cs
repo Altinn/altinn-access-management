@@ -21,6 +21,13 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         Task<List<Party>> GetPartiesAsync(List<int> parties);
 
         /// <summary>
+        /// Returns a list of parties for user
+        /// </summary>
+        /// <param name="userId">The user id</param>
+        /// <returns>List of parties</returns>
+        Task<List<Party>> GetPartiesForUserAsync(int userId);
+
+        /// <summary>
         /// Returns partyid for 
         /// </summary>
         /// <returns>List of parties</returns>

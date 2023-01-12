@@ -1,7 +1,7 @@
-{"resourceid":3,"resourceregistryid":"nav_aa_distribution","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:24:06.794707+01:00"}
-{"resourceid":4,"resourceregistryid":"ssb_1","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:25:19.113698+01:00"}
-{"resourceid":5,"resourceregistryid":"nav1_aa_distribution","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:26:30.164561+01:00"}
-{"resourceid":6,"resourceregistryid":"ttd_1","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:27:41.911018+01:00"}
-{"resourceid":7,"resourceregistryid":"acn_1","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:28:10.302053+01:00"}
-{"resourceid":8,"resourceregistryid":"appid-123","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:00:00+01:00"}
-{"resourceid":9,"resourceregistryid":"appid-43","resourcetype":"maskinportenschema","resourcestatus":"active","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:00:00+01:00"}
+{"resourceid":3,"resourceregistryid":"nav_aa_distribution","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:24:06.794707+01:00"}
+{"resourceid":4,"resourceregistryid":"ssb_1","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:25:19.113698+01:00"}
+{"resourceid":5,"resourceregistryid":"nav1_aa_distribution","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:26:30.164561+01:00"}
+{"resourceid":6,"resourceregistryid":"ttd_1","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:27:41.911018+01:00"}
+{"resourceid":7,"resourceregistryid":"acn_1","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:28:10.302053+01:00"}
+{"resourceid":8,"resourceregistryid":"appid-123","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:00:00+01:00"}
+{"resourceid":9,"resourceregistryid":"appid-43","resourcetype":"maskinportenschema","created":"2022-11-25T00:00:00+01:00","modified":"2022-11-25T00:00:00+01:00"}

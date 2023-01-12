@@ -15,6 +15,8 @@ using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
+using Altinn.Common.AccessToken;
+using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.Authentication.Configuration;
 using Altinn.Common.PEP.Authorization;
@@ -209,6 +211,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
+    services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
     services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
@@ -234,6 +237,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
+    services.AddTransient<ISigningKeysResolver, SigningKeysResolver>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
@@ -265,7 +270,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
-        options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
+        options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();

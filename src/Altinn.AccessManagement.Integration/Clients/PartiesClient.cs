@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -64,6 +65,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                     {
                         PropertyNameCaseInsensitive = true,
                     };
+                    options.Converters.Add(new JsonStringEnumConverter());
                     Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, options);
                     return partyInfo;
                 }
@@ -114,22 +116,32 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
+            List<Party> filteredList = new List<Party>();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}parties");
-
-                StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                foreach (int partyId in parties)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent);
-                    return partiesInfo;
-                }
-                else
-                {
-                    _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
+                    UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.RegisterApiEndpoint}parties/{partyId}");
+
+                    StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, options);
+                        filteredList.Add(partyInfo);
+                    }
+                    else
+                    {
+                        _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
+                    }
                 }
             }
             catch (Exception ex)
@@ -138,7 +150,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 throw;
             }
 
-            return null;
+            return filteredList;
         }
 
         /// <inheritdoc/>

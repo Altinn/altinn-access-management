@@ -91,11 +91,11 @@ namespace Altinn.AccessManagement.Controllers
                         }
                     }
 
-                    return StatusCode(404);
+                    return StatusCode(204);
                 }
                 else
                 {
-                    return StatusCode(404);
+                    return StatusCode(204);
                 }
             }
             catch (Exception ex)

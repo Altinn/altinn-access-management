@@ -273,7 +273,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50002182,
-    "UnitType": "",
+    "UnitType": null,
     "Name": "KARI GUNNERUD",
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,

@@ -34,7 +34,6 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public Task<Party> GetPartyForPartyId(int partyId, int userId)
         {
-            Task<List<Party>> partiesForUser = _partyClient.GetPartiesForUserAsync(userId);
             return _partyClient.GetPartyAsync(partyId);
         }
 

@@ -84,13 +84,10 @@ namespace Altinn.AccessManagement.Controllers
                 {
                     foreach (Party party in partyList)
                     {
-                        if (party != null)
+                        if (party != null && party.PartyId == partyId)
                         {
-                            if (party.PartyId == partyId)
-                            {
-                                party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
-                                return _mapper.Map<PartyExternal>(party);
-                            }
+                            party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                            return _mapper.Map<PartyExternal>(party);
                         }
                     }
 

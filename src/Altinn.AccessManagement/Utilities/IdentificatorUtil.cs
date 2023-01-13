@@ -66,7 +66,7 @@ namespace Altinn.AccessManagement.Utilities
         /// <returns>Masked SSN</returns>
         public static string MaskSSN(string input)
         {
-            return input.Substring(0, 6) + "*****";
+            return string.Concat(input.AsSpan(0, 6), "*****");
         }
     }
 }

@@ -129,7 +129,6 @@ namespace Altinn.AccessManagement.Integration.Clients
             {
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userId={userId}");
                 HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
-                string responseBody = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {

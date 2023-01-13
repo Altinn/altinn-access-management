@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -12,7 +10,6 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Authorization.ABAC.Constants;
-using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Utils
 {
@@ -459,6 +456,36 @@ namespace Altinn.AccessManagement.Tests.Utils
                 }
 
                 party = partyList.Find(p => p.Organization?.OrgNumber == orgNummer);
+            }
+
+            return party;
+        }
+
+        /// <summary>
+        /// Gets the party information
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestParty(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+            PartyExternal party = null;
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.PartyId == partyId);
             }
 
             return party;

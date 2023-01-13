@@ -250,5 +250,33 @@
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "01124621077",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "",
+      "Name": "KARI GUNNERUD",
+      "UnitType": "",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50002182,
+    "UnitType": "",
+    "Name": "KARI GUNNERUD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
   }
 ]

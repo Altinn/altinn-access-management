@@ -166,7 +166,32 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            List<Party> partyList = new List<Party>();
+            Party party = null;
+
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.PartyId == userId);
+            }
+
+            List<Party> returnedPartyList = new List<Party>
+            {
+                party
+            };
+
+            return Task.FromResult(returnedPartyList);
         }
 
         private static string GetPartiesPaths()

@@ -74,22 +74,32 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize]
         [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
         public async Task<ActionResult<PartyExternal>> GetParty(int partyId)
-        {
-            int userId = AuthenticationHelper.GetUserId(HttpContext);
+        {           
             try
             {
+                int userId = AuthenticationHelper.GetUserId(HttpContext);
                 List<Party> partyList = await _register.GetPartiesForUser(userId);
                
-                foreach (Party party in partyList)
+                if (partyList.Count > 0)
                 {
-                    if (party.PartyId == partyId)
+                    foreach (Party party in partyList)
                     {
-                        party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
-                        return _mapper.Map<PartyExternal>(party);
+                        if (party != null)
+                        {
+                            if (party.PartyId == partyId)
+                            {
+                                party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                                return _mapper.Map<PartyExternal>(party);
+                            }
+                        }
                     }
-                }
 
-                return StatusCode(404);
+                    return StatusCode(404);
+                }
+                else
+                {
+                    return StatusCode(404);
+                }
             }
             catch (Exception ex)
             {

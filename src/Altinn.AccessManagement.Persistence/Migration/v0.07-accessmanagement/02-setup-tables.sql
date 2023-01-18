@@ -13,7 +13,7 @@ TABLESPACE pg_default;
 CREATE INDEX IF NOT EXISTS idx_resource_resourcereferenceid
   ON accessmanagement.resource USING btree
   (resourceRegistryId COLLATE pg_catalog."default" ASC NULLS LAST)
-  INCLUDE(resourceType, resourceStatus)
+  INCLUDE(resourceType)
   TABLESPACE pg_default;
 
 -- Table: delegation.ResourceRegistryDelegationChanges

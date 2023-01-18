@@ -1,0 +1,62 @@
+{
+  "title": {
+    "en": "SKD 1",
+    "nb-no": "SKD 1",
+    "nn-no": "SKD 1"
+  },
+  "sector": [
+    "privat"
+  ],
+  "status": "Active",
+  "validTo": "2022-12-24T23:59:59",
+  "homepage": "https://www.nav.no/",
+  "isPartOf": "navportal",
+  "keywords": [
+    {
+      "word": "delegation",
+      "language": "nb"
+    }
+  ],
+  "validFrom": "2022-09-20T06:46:07.598Z",
+  "identifier": "skd_1",
+  "isComplete": true,
+  "description": {
+    "en": "Tax service",
+    "nb-no": "Skatt tjeneste",
+    "nn-no": "Skatt tjeneste"
+  },
+  "resourceType": "MaskinportenSchema",
+  "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+  "isPublicService": true,
+  "rightDescription": {
+    "en": "Gir mottaker lov til å bruke api",
+    "nb-no": "Gir mottaker lov til å bruke api",
+    "nn-no": "Gir mottaker lov til å bruke api"
+  },
+  "resourceReferences": [
+    {
+      "reference": "urn:altinn:resourceregistry:skd_1",
+      "referenceType": "Uri",
+      "referenceSource": "Altinn3"
+    },
+    {
+      "reference": "urn:altinn:maskinporten:skd_1",
+      "referenceType": "MaskinportenScope",
+      "referenceSource": "Altinn3"
+    },
+    {
+      "reference": "altinn:test/theworld.write",
+      "referenceType": "MaskinportenScope",
+      "referenceSource": "Altinn3"
+    }
+  ],
+  "hasCompetentAuthority": {
+    "orgcode": "SKD",
+    "organization": "974761076",
+    "name": {
+      "en": "The Norwegian Tax Administration",
+      "nb-no": "Skatteetaten",
+      "nn-no": "Skatteetaten"
+    }
+  }
+}

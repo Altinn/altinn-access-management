@@ -51,12 +51,23 @@ namespace Altinn.AccessManagement.Core.Services
                     }
                     else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
                     {
-                        foreach (var p in from Party childParty in party.ChildParties
-                                          where childParty.PartyId == partyId
-                                          select new { })
-                        {
-                            return party;
-                        }
+                        return GetChildPartyIfMatch(party, partyId);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private Party GetChildPartyIfMatch(Party party, int partyId)
+        {
+            if (party.ChildParties != null)
+            {
+                foreach (Party childParty in party.ChildParties)
+                {
+                    if (childParty.PartyId == partyId)
+                    {
+                        return childParty;
                     }
                 }
             }

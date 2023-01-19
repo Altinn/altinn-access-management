@@ -9,6 +9,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.AccessManagement.Utilities;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -117,6 +118,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             PartyExternal expectedParty = GetExpectedParty(50002182);
+            expectedParty.SSN = IdentificatorUtil.MaskSSN(expectedParty.SSN);
             int userId = 50002182;
             string token = PrincipalUtil.GetToken(userId, 50002182, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -130,6 +132,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             };
 
             PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
+            actualParty.SSN = IdentificatorUtil.MaskSSN(actualParty.SSN);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

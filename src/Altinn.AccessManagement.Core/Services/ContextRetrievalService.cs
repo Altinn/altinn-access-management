@@ -84,8 +84,8 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<Party> GetPartyAsync(int partyId)
         {
-            List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());
-            return result.FirstOrDefault();
+            Party result = await _partiesClient.GetPartyAsync(partyId);
+            return result;
         }
 
         /// <inheritdoc/>

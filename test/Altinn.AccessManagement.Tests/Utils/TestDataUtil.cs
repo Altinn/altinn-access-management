@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Authorization.ABAC.Constants;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Utils
 {
@@ -489,6 +490,51 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             return party;
+        }
+
+        /// <summary>
+        /// Gets the party information for a party with subunit
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestPartyWithSubUnit(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                foreach (PartyExternal party in partyList)
+                {
+                    if (party != null && party.PartyId == partyId)
+                    {
+                        return party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        foreach (Party childParty in party.ChildParties)
+                        {
+                            if (childParty.PartyId == partyId)
+                            {
+                                return party;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         private static string GetDelegationPath()

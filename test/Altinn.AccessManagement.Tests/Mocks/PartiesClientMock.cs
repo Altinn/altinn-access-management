@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -167,7 +168,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
             List<Party> partyList = new List<Party>();
-            Party party = null;
+            Party partyToReturn = null;
 
             string path = GetPartiesPaths();
             if (Directory.Exists(path))
@@ -183,12 +184,28 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     }
                 }
 
-                party = partyList.Find(p => p.PartyId == userId);
+                foreach (Party party in partyList)
+                {
+                    if (party != null && party.PartyId == userId)
+                    {
+                        partyToReturn = party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        foreach (Party childParty in party.ChildParties)
+                        {
+                            if (childParty.PartyId == userId)
+                            {
+                                partyToReturn = party;
+                            }
+                        }
+                    }
+                }
             }
 
             List<Party> returnedPartyList = new List<Party>
             {
-                party
+                partyToReturn
             };
 
             return Task.FromResult(returnedPartyList);

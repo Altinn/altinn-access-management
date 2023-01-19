@@ -113,12 +113,70 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task GetParty_Valid_input()
+        public async Task GetParty_Valid_PartyId_is_person()
         {
             // Arrange
             PartyExternal expectedParty = GetExpectedParty(50002182);
             int userId = 50002182;
             string token = PrincipalUtil.GetToken(userId, 50002182, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{expectedParty.PartyId}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertPartyEqual(expectedParty, actualParty);
+        }
+
+        /// <summary>
+        /// Test case: GetParty for partyId that corresponds to a party in partylist for authenticated user.
+        /// Expected: GetParty returns list with party.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetParty_Valid_PartyId_is_Org()
+        {
+            // Arrange
+            PartyExternal expectedParty = GetExpectedParty(50004226);
+            int userId = 50004226;
+            string token = PrincipalUtil.GetToken(userId, 50004226, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{expectedParty.PartyId}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertPartyEqual(expectedParty, actualParty);
+        }
+
+        /// <summary>
+        /// Test case: GetParty for partyId that corresponds to a party in partylist for authenticated user.
+        /// Expected: GetParty returns list with party.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetParty_Valid_PartyId_is_Subunit()
+        {
+            // Arrange
+            PartyExternal expectedParty = GetExpectedParty(50004646, true);
+            int userId = 50004646;
+            string token = PrincipalUtil.GetToken(userId, 50004646, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
@@ -162,10 +220,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return party;
         }
 
-        private static PartyExternal GetExpectedParty(int partyId)
+        private static PartyExternal GetExpectedParty(int partyId, bool isSubUnit = false)
         {
-            PartyExternal party = TestDataUtil.GetTestParty(partyId);
-            return party;
+            if (isSubUnit)
+            {
+                return TestDataUtil.GetTestPartyWithSubUnit(partyId);
+            }
+
+            return TestDataUtil.GetTestParty(partyId);
         }
     }
 }

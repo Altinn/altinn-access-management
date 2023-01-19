@@ -1,5 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Helpers;
+﻿using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
@@ -66,32 +65,28 @@ namespace Altinn.AccessManagement.Controllers
         }
 
         /// <summary>
-        /// Endpoint for retrieving 
+        /// Endpoint for retrieving party if party exists in the authenticated users reporteelist
         /// </summary>
         /// <param name="partyId">The partyId for the reportee to look up</param>
         /// <returns>Reportee if party is in authenticated users reporteelist</returns>
         [HttpGet]
         [Authorize]
         [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
-        public async Task<ActionResult<PartyExternal>> GetParty(int partyId)
+        public async Task<ActionResult<PartyExternal>> GetPartyFromReporteeListIfExists(int partyId)
         {           
             try
             {
                 int userId = AuthenticationHelper.GetUserId(HttpContext);
-                List<Party> partyList = await _register.GetPartiesForUser(userId);
-               
-                if (partyList.Count > 0)
-                {
-                    foreach (Party party in partyList)
-                    {
-                        if (party != null && party.PartyId == partyId)
-                        {
-                            party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
-                            return _mapper.Map<PartyExternal>(party);
-                        }
-                    }
+                Party party = await _register.GetPartiesForUser(userId, partyId);
 
-                    return StatusCode(204);
+                if (party != null)
+                {
+                    if (party.PartyTypeName == Platform.Register.Enums.PartyType.Person)
+                    {
+                        party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                    }
+                    
+                    return _mapper.Map<PartyExternal>(party);
                 }
                 else
                 {

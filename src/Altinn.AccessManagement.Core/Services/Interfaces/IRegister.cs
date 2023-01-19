@@ -23,10 +23,11 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         public Task<Party> GetPartyForPartyId(int partyId, int userId);
 
         /// <summary>
-        /// Gets a list of parties based on userId
+        /// Gets a Party based on userId
         /// </summary>
         /// <param name="userId">The id of the authenticated user</param>
-        /// <returns>List of parties for user</returns>
-        public Task<List<Party>> GetPartiesForUser(int userId);
+        /// <param name="partyId">The party Id of the party to retrieve</param>
+        /// <returns>Party that corresponds to partyId parameter if it's in the users reporteelist</returns>
+        public Task<Party> GetPartiesForUser(int userId, int partyId);
     }
 }

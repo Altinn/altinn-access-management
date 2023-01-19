@@ -108,7 +108,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache);
 
-            if (remainingParties != null)
+            if(remainingParties != null && remainingParties.Count > 0)
             {
                 foreach (Party party in remainingParties)
                 {

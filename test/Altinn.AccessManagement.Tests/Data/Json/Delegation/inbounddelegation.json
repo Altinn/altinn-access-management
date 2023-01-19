@@ -14,7 +14,27 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "NAV",
+      "organization": "991825827",
+      "name": {
+        "en": "The Norwegian Labour and Welfare Administration",
+        "nb-no": "Arbeids og velferdsetaten",
+        "nn-no": "Arbeids og velferdsetaten"
+      }
+    },
+    "description": {
+      "en": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nb-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nn-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
+
   },
   {
     "coveredbyname": null,
@@ -31,7 +51,26 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "SKD",
+      "organization": "974761076",
+      "name": {
+        "en": "The Norwegian Tax Administration",
+        "nb-no": "Skatteetaten",
+        "nn-no": "Skatteetaten"
+      }
+    },
+    "description": {
+      "en": "Tax service",
+      "nb-no": "Skatt tjeneste",
+      "nn-no": "Skatt tjeneste"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -48,7 +87,26 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "NAV",
+      "organization": "991825827",
+      "name": {
+        "en": "The Norwegian Labour and Welfare Administration",
+        "nb-no": "Arbeids og velferdsetaten",
+        "nn-no": "Arbeids og velferdsetaten"
+      }
+    },
+    "description": {
+      "en": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nb-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nn-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -65,7 +123,26 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "SKD",
+      "organization": "974761076",
+      "name": {
+        "en": "The Norwegian Tax Administration",
+        "nb-no": "Skatteetaten",
+        "nn-no": "Skatteetaten"
+      }
+    },
+    "description": {
+      "en": "Tax service",
+      "nb-no": "Skatt tjeneste",
+      "nn-no": "Skatt tjeneste"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -82,7 +159,26 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "NAV",
+      "organization": "991825827",
+      "name": {
+        "en": "The Norwegian Labour and Welfare Administration",
+        "nb-no": "Arbeids og velferdsetaten",
+        "nn-no": "Arbeids og velferdsetaten"
+      }
+    },
+    "description": {
+      "en": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nb-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nn-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -99,7 +195,26 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "SKD",
+      "organization": "974761076",
+      "name": {
+        "en": "The Norwegian Tax Administration",
+        "nb-no": "Skatteetaten",
+        "nn-no": "Skatteetaten"
+      }
+    },
+    "description": {
+      "en": "Tax service",
+      "nb-no": "Skatt tjeneste",
+      "nn-no": "Skatt tjeneste"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -116,7 +231,26 @@
       "nb-no": "NAV aa distribution",
       "nn-no": "NAV aa distribution"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "NAV",
+      "organization": "991825827",
+      "name": {
+        "en": "The Norwegian Labour and Welfare Administration",
+        "nb-no": "Arbeids og velferdsetaten",
+        "nn-no": "Arbeids og velferdsetaten"
+      }
+    },
+    "description": {
+      "en": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nb-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger",
+      "nn-no": "NAVs brukerstøtte for Aa-registerets distribusjonsløsninger"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -133,7 +267,26 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "SKD",
+      "organization": "974761076",
+      "name": {
+        "en": "The Norwegian Tax Administration",
+        "nb-no": "Skatteetaten",
+        "nn-no": "Skatteetaten"
+      }
+    },
+    "description": {
+      "en": "Tax service",
+      "nb-no": "Skatt tjeneste",
+      "nn-no": "Skatt tjeneste"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   },
   {
     "coveredbyname": null,
@@ -167,6 +320,25 @@
       "nb-no": "SKD 1",
       "nn-no": "SKD 1"
     },
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "MaskinportenSchema",
+    "hasCompetentAuthority": {
+      "orgcode": "SKD",
+      "organization": "974761076",
+      "name": {
+        "en": "The Norwegian Tax Administration",
+        "nb-no": "Skatteetaten",
+        "nn-no": "Skatteetaten"
+      }
+    },
+    "description": {
+      "en": "Tax service",
+      "nb-no": "Skatt tjeneste",
+      "nn-no": "Skatt tjeneste"
+    },
+    "rightDescription": {
+      "en": "Gir mottaker lov til å bruke api",
+      "nb-no": "Gir mottaker lov til å bruke api",
+      "nn-no": "Gir mottaker lov til å bruke api"
+    }
   }
 ]

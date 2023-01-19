@@ -25,39 +25,15 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId)
         {
-            string resourceTitle = string.Empty;
-            if (resourceId == "nav_aa_distribution")
+            ServiceResource resource = null;
+            string rolesPath = GetResourcePath(resourceId);
+            if (File.Exists(rolesPath))
             {
-                resourceTitle = "NAV aa distribution";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
+                string content = File.ReadAllText(rolesPath);
+                resource = (ServiceResource)JsonSerializer.Deserialize(content, typeof(ServiceResource), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-            else if (resourceId == "skd_1")
-            {
-                resourceTitle = "SKD 1";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
-            }
-            else if (resourceId == "resource1")
-            {
-                resourceTitle = "resource 1";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
-            }
-            else if (resourceId == "resource2")
-            {
-                resourceTitle = "resource 2";
-                return await Task.FromResult(TestDataUtil.GetResource(resourceId, resourceTitle, ResourceType.MaskinportenSchema));
-            }
-            else
-            {
-                ServiceResource resource = null;
-                string rolesPath = GetResourcePath(resourceId);
-                if (File.Exists(rolesPath))
-                {
-                    string content = File.ReadAllText(rolesPath);
-                    resource = (ServiceResource)JsonSerializer.Deserialize(content, typeof(ServiceResource), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
 
-                return await Task.FromResult(resource);
-            }
+            return await Task.FromResult(resource);
         }
 
         /// <inheritdoc/>

@@ -527,7 +527,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                         {
                             if (childParty.PartyId == partyId)
                             {
-                                return party;
+                                return MapPartyToPartyExternal(childParty);
                             }
                         }
                     }
@@ -535,6 +535,26 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             return null;
+        }
+
+        private static PartyExternal MapPartyToPartyExternal(Party party)
+        {
+            PartyExternal partyExternal = new PartyExternal
+            {
+                PartyId = party.PartyId,
+                PartyTypeName = party.PartyTypeName,
+                OrgNumber = party.OrgNumber,
+                SSN = party.SSN,
+                UnitType = party.UnitType,
+                Name = party.Name,
+                IsDeleted = party.IsDeleted,
+                OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess,
+                Person = party.Person,
+                Organization = party.Organization,
+                ChildParties = party.ChildParties
+            };
+
+            return partyExternal;
         }
 
         private static string GetDelegationPath()

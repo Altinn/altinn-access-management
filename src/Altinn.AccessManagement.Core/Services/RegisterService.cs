@@ -59,7 +59,7 @@ namespace Altinn.AccessManagement.Core.Services
             return null;
         }
 
-        private Party GetChildPartyIfMatch(Party party, int partyId)
+        private static Party GetChildPartyIfMatch(Party party, int partyId)
         {
             if (party.ChildParties != null)
             {

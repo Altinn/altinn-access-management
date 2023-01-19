@@ -10,12 +10,13 @@ using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.AccessManagement.Utilities;
+using Altinn.Platform.Register.Models;
 using AltinnCore.Authentication.JwtCookie;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -178,6 +179,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             PartyExternal expectedParty = GetExpectedParty(50004646, true);
+            
             int userId = 50004646;
             string token = PrincipalUtil.GetToken(userId, 50004646, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

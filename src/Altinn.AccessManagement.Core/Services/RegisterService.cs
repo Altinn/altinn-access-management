@@ -1,10 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Register.Models;
-using Azure.Core;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -54,7 +51,7 @@ namespace Altinn.AccessManagement.Core.Services
                     }
                     else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
                     {
-                        foreach (var _ in from Party childParty in party.ChildParties
+                        foreach (var p in from Party childParty in party.ChildParties
                                           where childParty.PartyId == partyId
                                           select new { })
                         {

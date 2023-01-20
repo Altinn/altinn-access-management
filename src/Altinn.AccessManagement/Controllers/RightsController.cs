@@ -2,6 +2,8 @@
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,7 @@ namespace Altinn.AccessManagement.Controllers
     public class RightsController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
         private readonly IPolicyInformationPoint _pip;
 
         /// <summary>
@@ -21,10 +24,11 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="logger">the logger</param>
         /// <param name="policyInformationPoint">The policy information point</param>
-        public RightsController(ILogger<RightsController> logger, IPolicyInformationPoint policyInformationPoint)
+        public RightsController(ILogger<RightsController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint)
         {
-            _pip = policyInformationPoint;
             _logger = logger;
+            _mapper = mapper;
+            _pip = policyInformationPoint;
         }
 
         /// <summary>
@@ -32,26 +36,29 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="rightsQuery">Query model for rights lookup</param>
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user have access to</param>
-        /// <response code="200" cref="List{Right}">Ok</response>
+        /// <response code="200" cref="List{RightExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/internal/rights")]
-        public async Task<ActionResult<List<Right>>> RightsQuery([FromBody] RightsQuery rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
+        public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
             try
             {
-                return await _pip.GetRights(rightsQuery, returnAllPolicyRights);
+                RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
+                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights);
+                return _mapper.Map<List<RightExternal>>(rightsInternal);
             }
             catch (ValidationException valEx)
             {
-                return BadRequest(valEx.Message);
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
             catch (Exception ex)
             {
                 _logger.LogError(500, ex, "Internal exception occurred during RightsQuery");
-                return StatusCode(500, "Internal Server Error");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }
 
@@ -61,26 +68,29 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="rightsQuery">Query model for rights lookup</param>
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user is allowed to delegate</param>
-        /// <response code="200" cref="List{Right}">Ok</response>
+        /// <response code="200" cref="List{DelegationRightExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/internal/delegablerights")]
-        public async Task<ActionResult<List<Right>>> DelegableRightsQuery([FromBody] RightsQuery rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
+        public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
             try
             {
-                return await _pip.GetRights(rightsQuery, returnAllPolicyRights, getDelegableRights: true);
+                RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
+                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, getDelegableRights: true);
+                return _mapper.Map<List<RightExternal>>(rightsInternal);
             }
             catch (ValidationException valEx)
             {
-                return BadRequest(valEx.Message);
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
             catch (Exception ex)
             {
                 _logger.LogError(500, ex, "Internal exception occurred during DelegableRightsQuery");
-                return StatusCode(500, "Internal Server Error");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }
     }

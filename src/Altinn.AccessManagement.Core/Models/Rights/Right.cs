@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -15,11 +16,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
         /// </summary>
+        [Required]
         public List<AttributeMatch> Resource { get; set; }
 
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for a specific action, to identify the action this right applies to
         /// </summary>
+        [Required]
         public AttributeMatch Action { get; set; }
 
         /// <summary>
@@ -37,6 +40,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the set of identified sources providing the right
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public List<RightSource> RightSources { get; set; }
     }
 }

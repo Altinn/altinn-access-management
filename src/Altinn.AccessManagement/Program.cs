@@ -264,9 +264,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
         options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
+        options.AddPolicy(AuthzConstants.MPSystemResource_Write, policy => policy.Requirements.Add(new ScopeAccessRequirement(AuthzConstants.MPSystemResource_Write)));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
+    services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
 
     services.Configure<KestrelServerOptions>(options =>
     {

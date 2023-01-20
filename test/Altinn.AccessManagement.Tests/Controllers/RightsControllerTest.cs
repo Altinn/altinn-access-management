@@ -11,6 +11,7 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
@@ -62,13 +63,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_UserDelegation_KeyRoleUnitDelegation_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", false);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", false);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -87,13 +88,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_UserDelegation_KeyRoleUnitDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", true);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", true);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -110,13 +111,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_DAGL_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", false);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", false);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -134,13 +135,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_DAGL_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", true);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", true);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -157,13 +158,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_HADM_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", false);
+            List<RightExternal> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", false);
             StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -181,13 +182,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_HADM_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", true);
+            List<RightExternal> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", true);
             StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -207,13 +208,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -234,13 +235,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
+            List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -258,13 +259,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", false);
+            List<RightExternal> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", false);
             StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -283,13 +284,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", true);
+            List<RightExternal> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", true);
             StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -306,13 +307,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_AppRight_DAGL_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", false);
+            List<RightExternal> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", false);
             StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -330,13 +331,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RightsQuery_AppRight_DAGL_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", true);
+            List<RightExternal> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", true);
             StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -353,13 +354,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_AppRight_DAGL_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", false);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", false);
             StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -377,13 +378,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_AppRight_DAGL_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", true);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", true);
             StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -403,13 +404,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -430,13 +431,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -453,13 +454,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_ResourceRight_HADM_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", false);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", false);
             StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -477,13 +478,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_ResourceRight_HADM_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", true);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", true);
             StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -501,13 +502,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_False()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", false);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", false);
             StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -526,13 +527,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task DelegableRightsQuery_AppRight_UserDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
-            List<Right> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", true);
+            List<RightExternal> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", true);
             StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            List<Right> actualRights = JsonSerializer.Deserialize<List<Right>>(responseContent, options);
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -558,18 +559,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return client;
         }
 
-        private static List<Right> GetExpectedRights(string resourceId, string from, string to, bool returnAllPolicyRights)
+        private static List<RightExternal> GetExpectedRights(string resourceId, string from, string to, bool returnAllPolicyRights)
         {
             string rightsPath = $"Data/Json/RightsQuery/{resourceId}/from_{from}/to_{to}/expected_rights_returnall_{returnAllPolicyRights.ToString().ToLower()}.json";
             string content = File.ReadAllText(rightsPath);
-            return (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return (List<RightExternal>)JsonSerializer.Deserialize(content, typeof(List<RightExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        private static List<Right> GetExpectedDelegableRights(string resourceId, string from, string to, bool returnAllPolicyRights)
+        private static List<RightExternal> GetExpectedDelegableRights(string resourceId, string from, string to, bool returnAllPolicyRights)
         {
             string rightsPath = $"Data/Json/DelegableRightsQuery/{resourceId}/from_{from}/to_{to}/expected_rights_returnall_{returnAllPolicyRights.ToString().ToLower()}.json";
             string content = File.ReadAllText(rightsPath);
-            return (List<Right>)JsonSerializer.Deserialize(content, typeof(List<Right>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return (List<RightExternal>)JsonSerializer.Deserialize(content, typeof(List<RightExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static StreamContent GetRequestContent(string resourceId, string from, string to)

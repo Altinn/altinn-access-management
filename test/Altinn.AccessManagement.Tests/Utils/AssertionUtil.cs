@@ -352,29 +352,29 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="Right"/> have the same property in the same positions.
+        /// Assert that two <see cref="RightExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightEqual(Right expected, Right actual)
+        public static void AssertRightEqual(RightExternal expected, RightExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
 
             Assert.Equal(expected.RightKey, actual.RightKey);
-            AssertEqual(expected.Resource, actual.Resource);
-            AssertEqual(expected.Action, actual.Action);
+            AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
+            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
             AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceEqual);
         }
 
         /// <summary>
-        /// Assert that two <see cref="RightSource"/> have the same property in the same positions.
+        /// Assert that two <see cref="RightSourceExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightSourceEqual(RightSource expected, RightSource actual)
+        public static void AssertRightSourceEqual(RightSourceExternal expected, RightSourceExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -386,21 +386,31 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            AssertEqual(expected.UserSubjects, actual.UserSubjects);
+
+            AssertCollections(expected.UserSubjects, actual.UserSubjects, AssertAttributeMatchExternalEqual);
             AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
         }
 
-        private static void AssertPolicySubjects(List<PolicyAttributeMatch> expected, List<PolicyAttributeMatch> actual)
+        private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)
         {
-            AssertCollections(expected, actual, AssertPolicyAttributeMatchEqual);
+            AssertCollections(expected, actual, AssertPolicyAttributeMatchExternalEqual);
         }
 
-        private static void AssertPolicyAttributeMatchEqual(PolicyAttributeMatch expected, PolicyAttributeMatch actual)
+        private static void AssertPolicyAttributeMatchExternalEqual(PolicyAttributeMatchExternal expected, PolicyAttributeMatchExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
 
             Assert.Equal(expected.MatchFound, actual.MatchFound);
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.Equal(expected.Value, actual.Value);
+        }
+
+        private static void AssertAttributeMatchExternalEqual(AttributeMatchExternal expected, AttributeMatchExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Value, actual.Value);
         }

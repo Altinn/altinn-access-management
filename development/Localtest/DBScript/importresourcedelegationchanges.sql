@@ -4,7 +4,7 @@ CREATE TEMPORARY TABLE temp_import_resourceregistrydelegationchanges (doc JSON);
 
 select * from temp_import_resourceregistrydelegationchanges;
 -- copy file content to newly created table
-COPY temp_import_resourceregistrydelegationchanges from '../testdata/resourcedelegationchangesnd.json';
+COPY temp_import_resourceregistrydelegationchanges from '/Users/albertlarsen/RiderProjects/altinn-access-management/development/Localtest/Testdata/resourcedelegationchangesnd.json';
 
 select * from temp_import_resourceregistrydelegationchanges;
 

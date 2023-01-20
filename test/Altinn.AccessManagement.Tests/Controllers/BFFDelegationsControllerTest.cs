@@ -61,7 +61,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004223/delegations/maskinportenschema/outbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -85,7 +85,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/810418982/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/810418982/delegations/maskinportenschema/outbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllOutboundDelegations_Notfound_MissingOfferedBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1//delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1//delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -120,7 +120,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllOutboundDelegations_BadRequest_InvalidOfferedBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/123/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/123/delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -137,7 +137,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004225/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004225/delegations/maskinportenschema/outbound");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -156,7 +156,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004226/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004226/delegations/maskinportenschema/outbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -179,7 +179,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004223/delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -197,7 +197,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004223/delegations/maskinportenschema/outbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -214,7 +214,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004219/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004219/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -238,7 +238,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/810418192/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/810418192/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -259,7 +259,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_Missing_CoveredBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1//delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1//delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -273,7 +273,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_Invalid_CoveredBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/1234/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/1234/delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -290,7 +290,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expected = "No delegations found";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004225/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004225/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -309,7 +309,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedInboundDelegationsForParty(50004216);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004216/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004216/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -332,7 +332,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004223/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004223/delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -349,7 +349,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/bffapi/v1/r50004223/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/bffv1/r50004223/delegations/maskinportenschema/inbound");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

@@ -7,10 +7,10 @@
 
   <ItemGroup>
     <PackageReference Include="JWTCookieAuthentication" Version="2.4.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.12" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="Moq" Version="4.18.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -52,7 +52,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Data\ResourceRegistryDelegationChanges\delegationchange.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Json\Delegation\delegationchange.json" />
+    <None Remove="Data\ResourceRegistryDelegationChanges\delegationchange.json" />
+    <None Remove="Data\ResourceRegistryResources\nav_aa_distribution\resource.json" />
+    <None Remove="Data\ResourceRegistryResources\resource1\resource.json" />
+    <None Remove="Data\ResourceRegistryResources\resource2\resource.json" />
+    <None Remove="Data\ResourceRegistryResources\skd_1\resource.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="platform-org.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="platform-org.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="selfSignedTestCertificate.pfx">

@@ -84,8 +84,8 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<Party> GetPartyAsync(int partyId)
         {
-            List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());
-            return result.FirstOrDefault();
+            Party result = await _partiesClient.GetPartyAsync(partyId);
+            return result;
         }
 
         /// <inheritdoc/>
@@ -108,14 +108,17 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache);
 
-            foreach (Party party in remainingParties)
+            if(remainingParties != null && remainingParties.Count > 0)
             {
-                parties.Add(party);
+                foreach (Party party in remainingParties)
+                {
+                    parties.Add(party);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
-                _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+                    _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                }
             }
 
             return parties;

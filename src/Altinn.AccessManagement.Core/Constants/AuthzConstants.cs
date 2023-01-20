@@ -16,11 +16,6 @@
         public const string ALTINNII_AUTHORIZATION = "AltinnIIAuthorizationAccess";
 
         /// <summary>
-        /// Policy tag for authorizing internal Altinn.Platform.Authorization API access
-        /// </summary>
-        public const string INTERNAL_AUTHORIZATION = "InternalAuthorizationAccess";
-
-        /// <summary>
         /// Policy tag for authorizing write access for Maskinporten delegation system resource
         /// </summary>
         public const string MPSystemResource_Write = "altinn:systemresource:mpdelegation.write";

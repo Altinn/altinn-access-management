@@ -1,12 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
-namespace Altinn.AccessManagement.Core.Models
+namespace Altinn.AccessManagement.Models.Bff
 {
     /// <summary>
     /// This model describes a delegation. A delegation is an action that says if a resource is delegated to you or you have delegated a resource to another person/org
     /// </summary>
-    public class Delegation
+    [ExcludeFromCodeCoverage]
+    public class DelegationBff
     {
         /// <summary>
         /// Gets or sets the name of the delegation receiver
@@ -31,14 +33,7 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
-        [JsonPropertyName("performedbyuserid")]
-        public int? PerformedByUserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
-        /// </summary>
-        [JsonPropertyName("performedbypartyid")]
-        public int? PerformedByPartyId { get; set; }
+        public int PerformedByUserId { get; set; }
 
         /// <summary>
         /// Gets or sets the userid that performed the delegation
@@ -56,7 +51,7 @@ namespace Altinn.AccessManagement.Core.Models
         public int CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource id that is delegated
+        /// Gets or sets the organization number that received the delegation
         /// </summary>
         public string ResourceId { get; set; }
 
@@ -66,20 +61,25 @@ namespace Altinn.AccessManagement.Core.Models
         public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of resource that is delegated
+        /// Gets or sets the resource type of the delegation
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ResourceType ResourceType { get; set; }
 
         /// <summary>
-        /// ResourceReference
+        /// Owner of resource
         /// </summary>
-        public List<ResourceReference> ResourceReferences { get; set; }
+        public string ResourceOwner { get; set; }
+
+        /// <summary>
+        /// Resource description
+        /// </summary>
+        public string ResourceDescription { get; set; }
 
         /// <summary>
         /// HasCompetentAuthority
         /// </summary>
-        public CompetentAuthority HasCompetentAuthority { get; set; }
+        public CompetentAuthorityExternal HasCompetentAuthority { get; set; }
 
         /// <summary>
         /// Description
@@ -90,6 +90,5 @@ namespace Altinn.AccessManagement.Core.Models
         /// Description explaining the rights a recipient will receive if given access to the resource
         /// </summary>
         public Dictionary<string, string> RightDescription { get; set; }
-
     }
 }

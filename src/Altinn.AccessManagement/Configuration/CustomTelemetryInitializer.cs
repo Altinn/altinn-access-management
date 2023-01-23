@@ -15,7 +15,7 @@ namespace Altinn.AccessManagement.Configuration
         {
             if (string.IsNullOrEmpty(telemetry.Context.Cloud.RoleName))
             {
-                telemetry.Context.Cloud.RoleName = "authorization-admin";
+                telemetry.Context.Cloud.RoleName = "accessmanagement";
             }
         }
     }

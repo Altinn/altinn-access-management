@@ -4,8 +4,7 @@ CREATE TEMPORARY TABLE temp_import_amresource (doc JSON);
 
 select * from temp_import_amresource;
 -- copy file content to newly created table
-COPY temp_import_amresource from '/Users/albertlarsen/RiderProjects/altinn-access-management/development/Localtest/Testdata/accessmanagementresourcend.json';
-
+COPY temp_import_amresource from '../testdata/accessmanagementresourcend.json';
 select * from temp_import_amresource;
 
 INSERT INTO accessmanagement.resource (resourceregistryid, resourcetype, created, modified)

@@ -166,6 +166,9 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceTitle = resource?.Title;
                 delegation.ResourceReferences = resource.ResourceReferences;
                 delegation.ResourceType = resource.ResourceType;
+                delegation.HasCompetentAuthority = resource.HasCompetentAuthority;
+                delegation.Description = resource.Description;
+                delegation.RightDescription = resource.RightDescription;
                 delegations.Add(delegation);
             }
 
@@ -201,6 +204,9 @@ namespace Altinn.AccessManagement.Core.Services
                 delegation.ResourceTitle = resource?.Title;
                 delegation.ResourceReferences = resource.ResourceReferences;
                 delegation.ResourceType = resource.ResourceType;
+                delegation.HasCompetentAuthority = resource.HasCompetentAuthority;
+                delegation.Description = resource.Description;
+                delegation.RightDescription = resource.RightDescription;
                 delegations.Add(delegation);
             }
 

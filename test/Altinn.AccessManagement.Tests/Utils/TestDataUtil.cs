@@ -9,6 +9,7 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Models.Bff;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Authorization.ABAC.Constants;
@@ -367,6 +368,70 @@ namespace Altinn.AccessManagement.Tests.Utils
                         }
                         catch (Exception ex)
                         { 
+                            Console.WriteLine(ex);
+                        }
+                    }
+                }
+
+                if (offeredByPartyId != 0 && coveredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations?.FindAll(od => od.OfferedByPartyId == offeredByPartyId && od.CoveredByPartyId == coveredByPartyId && resourceIds.Contains(od.ResourceId)));
+                }
+                else if (offeredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
+                }
+                else if (coveredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
+                }
+            }
+
+            return filteredDelegations;
+        }
+
+        /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="coveredByPartyId">partyid of the reportee that received the delegation</param>
+        /// <param name="resourceIds">resource id</param>
+        /// <returns>Received delegations</returns>
+        public static List<DelegationBff> GetBffDelegations(int offeredByPartyId, int coveredByPartyId, List<string> resourceIds = null)
+        {
+            List<DelegationBff> delegations = null;
+            List<DelegationBff> filteredDelegations = new List<DelegationBff>();
+            string fileName;
+
+            if (resourceIds != null)
+            {
+                fileName = "admindelegations";
+            }
+            else
+            {
+                fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
+            }
+
+            string path = GetDelegationPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains(fileName))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                        };
+                        try
+                        {
+                            delegations = JsonSerializer.Deserialize<List<DelegationBff>>(content, options);
+                        }
+                        catch (Exception ex)
+                        {
                             Console.WriteLine(ex);
                         }
                     }

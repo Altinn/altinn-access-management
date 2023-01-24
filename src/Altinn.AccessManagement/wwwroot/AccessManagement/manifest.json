@@ -1,0 +1,50 @@
+{
+  "src/assets/ShakeHands.svg": {
+    "file": "assets/ShakeHands-d5b71c00.svg",
+    "src": "src/assets/ShakeHands.svg"
+  },
+  "src/assets/Office1.svg": {
+    "file": "assets/Office1-2d98df91.svg",
+    "src": "src/assets/Office1.svg"
+  },
+  "src/assets/Error.svg": {
+    "file": "assets/Error-71df152d.svg",
+    "src": "src/assets/Error.svg"
+  },
+  "src/assets/Add.svg": {
+    "file": "assets/Add-705b0d97.svg",
+    "src": "src/assets/Add.svg"
+  },
+  "src/assets/Edit.svg": {
+    "file": "assets/Edit-30759bae.svg",
+    "src": "src/assets/Edit.svg"
+  },
+  "src/assets/Settings.svg": {
+    "file": "assets/Settings-bce57c17.svg",
+    "src": "src/assets/Settings.svg"
+  },
+  "src/assets/MinusCircle.svg": {
+    "file": "assets/MinusCircle-03060d2d.svg",
+    "src": "src/assets/MinusCircle.svg"
+  },
+  "src/assets/AddCircle.svg": {
+    "file": "assets/AddCircle-541c0677.svg",
+    "src": "src/assets/AddCircle.svg"
+  },
+  "src/assets/Cancel.svg": {
+    "file": "assets/Cancel-3094d527.svg",
+    "src": "src/assets/Cancel.svg"
+  },
+  "entrypoint.css": {
+    "file": "assets/entrypoint-08bb1510.css",
+    "src": "entrypoint.css"
+  },
+  "entrypoint.js": {
+    "file": "assets/entrypoint-104f0c69.js",
+    "src": "entrypoint.js",
+    "isEntry": true,
+    "css": [
+      "assets/entrypoint-08bb1510.css"
+    ]
+  }
+}

@@ -1815,6 +1815,32 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization 50004222
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        /// Expected: MaskinportenDelegation returns 201 Created with response body containing the expected delegated rights
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_Success()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            DelegationOutputExternal expectedResponse = GetExpectedResponse("jks_audi_etron_gt", $"p{fromParty}", "p50004222", true);
+            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1849,6 +1875,21 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<MPDelegationExternal> delegations = new List<MPDelegationExternal>();
             delegations = TestDataUtil.GetAdminDelegations(supplierOrg, consumerOrg, resourceIds);
             return delegations;
+        }
+
+        private static StreamContent GetRequestContent(string resourceId, string from, string to)
+        {
+            Stream dataStream = File.OpenRead($"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/delegation_input.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+        private static DelegationOutputExternal GetExpectedResponse(string resourceId, string from, string to, bool returnAllPolicyRights)
+        {
+            string responsePath = $"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/expected_response.json";
+            string content = File.ReadAllText(responsePath);
+            return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private HttpClient GetTestClient()

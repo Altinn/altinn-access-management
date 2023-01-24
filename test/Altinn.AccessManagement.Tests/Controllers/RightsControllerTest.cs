@@ -73,7 +73,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -388,7 +388,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -488,7 +488,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -512,7 +512,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         /// <summary>
@@ -537,7 +537,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightEqual);
+            AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
 
         private HttpClient GetTestClient()

@@ -38,9 +38,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// Performs the delegation on behalf of the from party
         /// </summary>
         /// <param name="delegatingUserId">The user id of the authenticated user performing the delegation</param>
+        /// <param name="delegatingUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="from">The offering party</param>
         /// <param name="delegation">The delegation</param>
         /// <returns>The result of the delegation</returns>
-        public Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, string from, DelegationInput delegation);
+        public Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, string from, DelegationInput delegation);
     }
 }

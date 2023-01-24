@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Response model for the result of a delegation of one or more rights to a recipient.

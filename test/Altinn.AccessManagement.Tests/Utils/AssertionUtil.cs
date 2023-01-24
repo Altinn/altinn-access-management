@@ -25,6 +25,12 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="assertMethod">The assertion method to be used</param>
         public static void AssertCollections<T>(ICollection<T> expected, ICollection<T> actual, Action<T, T> assertMethod)
         {
+            if (expected == null)
+            {
+                Assert.Null(actual);
+                return;
+            }
+
             Assert.Equal(expected.Count, actual.Count);
 
             Dictionary<int, T> expectedDict = new Dictionary<int, T>();
@@ -398,7 +404,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightEqual(RightExternal expected, RightExternal actual)
+        public static void AssertRightExternalEqual(RightExternal expected, RightExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -408,7 +414,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
-            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceEqual);
+            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
         }
 
         /// <summary>
@@ -416,7 +422,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightSourceEqual(RightSourceExternal expected, RightSourceExternal actual)
+        public static void AssertRightSourceExternalEqual(RightSourceExternal expected, RightSourceExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -431,6 +437,35 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             AssertCollections(expected.UserSubjects, actual.UserSubjects, AssertAttributeMatchExternalEqual);
             AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="BaseRightExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertBaseRightExternalEqual(BaseRightExternal expected, BaseRightExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
+            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="DelegationOutputExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationOutputExternalEqual(DelegationOutputExternal expected, DelegationOutputExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertCollections(expected.To, actual.To, AssertAttributeMatchExternalEqual);
+            AssertCollections(expected.RightDelegationResults, actual.RightDelegationResults, AssertBaseRightExternalEqual);
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

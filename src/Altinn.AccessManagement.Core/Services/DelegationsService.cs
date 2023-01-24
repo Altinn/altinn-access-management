@@ -1,18 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Core.Utilities;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -46,7 +45,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, string from, DelegationInput delegation)
+        public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, string from, DelegationInput delegation)
         {
             // Verify delegation for single resource registry id
             if (delegation.Rights?.Count != 1)
@@ -97,15 +96,14 @@ namespace Altinn.AccessManagement.Core.Services
                 Resource = right.Resource
             };
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
-            if (usersDelegableRights.IsNullOrEmpty())
+            if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
                 throw new ValidationException($"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
             }
 
-            if (usersDelegableRights.Any(r => !r.CanDelegate.Value)) 
+            if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > delegatingUserAuthlevel))) 
             {
-                // ToDo: include SecurityLevelInfo on delegable rights
-                throw new ValidationException($"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}. Current: N/A Required: N/A");
+                throw new ValidationException($"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
             }
 
             // Perform delegation
@@ -125,8 +123,11 @@ namespace Altinn.AccessManagement.Core.Services
             List<Rule> result = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
             if (result.All(r => r.CreatedSuccessfully))
             {
-                DelegationOutput output = GetOutputModel(delegation);
-                output.Rights = usersDelegableRights;
+                DelegationOutput output = new DelegationOutput
+                {
+                    To = delegation.To,
+                    Rights = usersDelegableRights
+                };
                 return await Task.FromResult(output);
             }
 
@@ -324,22 +325,6 @@ namespace Altinn.AccessManagement.Core.Services
                 _logger.LogError("//DelegationsService //GetParty failed to fetch partyid", ex);
                 throw;
             }            
-        }
-
-        private DelegationOutput GetOutputModel(DelegationInput delegation)
-        {
-            DelegationOutput result = new DelegationOutput
-            {
-                To = delegation.To,
-                Rights = new()
-            };
-
-            foreach (Right right in delegation.Rights)
-            {
-                result.Rights.Add(right);
-            }
-
-            return result;
         }
     }
 }

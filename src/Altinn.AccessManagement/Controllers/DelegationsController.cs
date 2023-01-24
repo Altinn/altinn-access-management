@@ -354,15 +354,16 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="422">Unprocessable Entity</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize(Policy = AuthzConstants.MPSystemResource_Write)]
+        [Authorize]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")]
-        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
+        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
             try
             {
                 DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
-                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, party, internalDelegation);
+                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, party, internalDelegation);
 
                 if (response.Rights != null && response.Rights.Count > 0)
                 {

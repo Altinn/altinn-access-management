@@ -62,5 +62,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
+  </ItemGroup>
   
 </Project>

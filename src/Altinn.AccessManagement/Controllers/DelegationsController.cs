@@ -235,6 +235,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/outbound")]
         public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string who)
         {

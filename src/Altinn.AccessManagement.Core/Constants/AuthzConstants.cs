@@ -23,6 +23,11 @@
         /// <summary>
         /// Policy tag for reading an instance
         /// </summary>
-        public const string POLICY_INSTANCE_READ = "InstanceRead";
+        public const string POLICY_MASKINPORTEN_DELEGATION_READ = "InstanceRead";
+        
+        /// <summary>
+        /// Policy tag for writing an instance
+        /// </summary>
+        public const string POLICY_MASKINPORTEN_DELEGATION_WRITE = "InstanceWrite";
     }
 }

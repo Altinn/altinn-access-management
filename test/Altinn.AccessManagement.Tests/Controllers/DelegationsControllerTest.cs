@@ -19,11 +19,13 @@ using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -35,7 +37,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     public class DelegationsControllerTest : IClassFixture<CustomWebApplicationFactory<DelegationsController>>
     {
         private readonly CustomWebApplicationFactory<DelegationsController> _factory;
-        private readonly HttpClient _client;
+        private HttpClient _client;
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -1360,6 +1362,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
@@ -1384,6 +1390,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418982/delegations/maskinportenschema/outbound");
@@ -1420,6 +1430,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllOutboundDelegations_BadRequest_InvalidOfferedBy()
         {
+            // Arrange
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/123/delegations/maskinportenschema/outbound");
 
@@ -1436,6 +1452,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string expected = "No delegations found";
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004225/delegations/maskinportenschema/outbound");
@@ -1455,6 +1475,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004226/delegations/maskinportenschema/outbound");
@@ -1477,6 +1501,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllOutboundDelegations_MissingBearerToken()
         {
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
@@ -1494,6 +1520,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllOutboundDelegations_InvalidBearerToken()
         {
             // Arrange
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
@@ -1816,6 +1844,56 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
+        /// <summary>
+        /// test permit
+        /// </summary>
+        [Fact]
+        public async Task GetAllOutboundDelegations_UserComplyingToPolicy()
+        {
+            // Arrage
+            var expected = HttpStatusCode.OK;
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12344321, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            
+            // Assert
+            Assert.Equal(expected, response.StatusCode);
+        }
+
+        private IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
+        {
+            HttpContext httpContext = new DefaultHttpContext();                       
+            httpContext.Request.RouteValues.Add(partytype, id);
+
+            var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            httpContextAccessorMock.Setup(h => h.HttpContext).Returns(httpContext);
+            return httpContextAccessorMock.Object;
+        }
+
+        /// <summary>
+        /// test permit
+        /// </summary>
+        [Fact]
+        public async Task GetAllOutboundDelegations_UserNotComplyingToPolicy()
+        {
+            // Arrange 
+            var expected = HttpStatusCode.Forbidden;
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            
+            // Assert
+            Assert.Equal(expected, response.StatusCode);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1852,8 +1930,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return delegations;
         }
 
-        private HttpClient GetTestClient()
+        private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null)
         {
+            pdpMock ??= new PdpPermitMock();
+            
+            // httpContextAccessor ??= new HttpContextAccessor();
             HttpClient client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -1864,8 +1945,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
-                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
-                    services.AddSingleton<IPDP, PdpPermitMock>();
+                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>(); 
+                    services.AddSingleton<IPDP>(pdpMock);
+                    if (httpContextAccessor != null)
+                    {
+                        services.AddSingleton(httpContextAccessor);
+                    }
+
+                    // services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
+
+                    // services.AddSingleton<IHttpContextAccessor>(httpContextAccessorMock.Object);
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

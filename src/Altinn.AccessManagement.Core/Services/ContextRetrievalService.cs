@@ -258,14 +258,14 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Party>> GetPartiesForUser(int userId)
         {
-            if (_memoryCache.TryGetValue($"userId:{userId}", out List<Party> partyListFromCache))
+            string cacheKey = $"userId:{userId}";
+
+            if (_memoryCache.TryGetValue(cacheKey, out List<Party> partyListFromCache))
             {
                 return partyListFromCache;
             }
 
             List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
-
-            string cacheKey = $"userId: {userId}";
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
               .SetPriority(CacheItemPriority.High)

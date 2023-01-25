@@ -1845,13 +1845,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// test permit
+        /// Test case: GetMaskinportenSchemaDelegations user with necessary rights
+        /// Expected: User is authorized
         /// </summary>
         [Fact]
         public async Task GetAllOutboundDelegations_UserComplyingToPolicy()
         {
-            // Arrage
-            var expected = HttpStatusCode.OK;
+            // Arrange
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12344321, 2);
@@ -1861,7 +1862,29 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
             
             // Assert
-            Assert.Equal(expected, response.StatusCode);
+            Assert.Equal(expectedStatusCode, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations user without necessary rights
+        /// Expected: Authorization is denied
+        /// Testing if user without necessary rights is denied access to 
+        /// </summary>
+        [Fact]
+        public async Task GetAllOutboundDelegations_UserNotComplyingToPolicy()
+        {
+            // Arrange 
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.Forbidden;
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            
+            // Assert
+            Assert.Equal(expectedStatusCode, response.StatusCode);
         }
 
         private IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
@@ -1872,26 +1895,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(h => h.HttpContext).Returns(httpContext);
             return httpContextAccessorMock.Object;
-        }
-
-        /// <summary>
-        /// test permit
-        /// </summary>
-        [Fact]
-        public async Task GetAllOutboundDelegations_UserNotComplyingToPolicy()
-        {
-            // Arrange 
-            var expected = HttpStatusCode.Forbidden;
-            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
-            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
-            
-            // Assert
-            Assert.Equal(expected, response.StatusCode);
         }
 
         private static List<Rule> GetExpectedRulesForUser()
@@ -1933,8 +1936,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null)
         {
             pdpMock ??= new PdpPermitMock();
+            httpContextAccessor ??= new HttpContextAccessor();
             
-            // httpContextAccessor ??= new HttpContextAccessor();
             HttpClient client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -1946,15 +1949,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>(); 
-                    services.AddSingleton<IPDP>(pdpMock);
-                    if (httpContextAccessor != null)
-                    {
-                        services.AddSingleton(httpContextAccessor);
-                    }
-
-                    // services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
-
-                    // services.AddSingleton<IHttpContextAccessor>(httpContextAccessorMock.Object);
+                    services.AddSingleton(pdpMock);
+                    services.AddSingleton(httpContextAccessor);
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

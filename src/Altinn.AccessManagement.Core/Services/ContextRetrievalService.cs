@@ -216,5 +216,44 @@ namespace Altinn.AccessManagement.Core.Services
 
             return resources;
         }
+
+        /// <inheritdoc/>
+        public async Task<Party> GetPartyForUser(int userId, int partyId)
+        {
+            List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
+
+            if (partyList.Count > 0)
+            {
+                foreach (Party party in partyList)
+                {
+                    if (party != null && party.PartyId == partyId)
+                    {
+                        return party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        return GetChildPartyIfMatch(party, partyId);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static Party GetChildPartyIfMatch(Party party, int partyId)
+        {
+            if (party.ChildParties != null)
+            {
+                foreach (Party childParty in party.ChildParties)
+                {
+                    if (childParty.PartyId == partyId)
+                    {
+                        return childParty;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

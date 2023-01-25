@@ -20,6 +20,7 @@ namespace Altinn.AccessManagement.Controllers
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IRegister _register;
+        private readonly IContextRetrievalService _contextRetrieval;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -27,14 +28,17 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="logger">the logger.</param>
         /// <param name="mapper">mapper handler</param>
         /// <param name="register">handler for register</param>
+        /// <param name="contextRetrieval">handler for context retrieval</param>
         public LookupController(
             ILogger<DelegationsController> logger,
             IMapper mapper,
-            IRegister register)
+            IRegister register,
+            IContextRetrievalService contextRetrieval)
         {
             _logger = logger;
             _mapper = mapper;
             _register = register;
+            _contextRetrieval = contextRetrieval;
         }
 
         /// <summary>
@@ -77,7 +81,7 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 int userId = AuthenticationHelper.GetUserId(HttpContext);
-                Party party = await _register.GetPartiesForUser(userId, partyId);
+                Party party = await _contextRetrieval.GetPartyForUser(userId, partyId);
 
                 if (party != null)
                 {

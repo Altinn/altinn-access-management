@@ -220,7 +220,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<Party> GetPartyForUser(int userId, int partyId)
         {
-            List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
+            List<Party> partyList = await GetPartiesForUser(userId);
 
             if (partyList.Count > 0)
             {
@@ -255,5 +255,25 @@ namespace Altinn.AccessManagement.Core.Services
 
             return null;
         }
+
+        private async Task<List<Party>> GetPartiesForUser(int userId)
+        {
+            if (_memoryCache.TryGetValue($"userId:{userId}", out List<Party> partyListFromCache))
+            {
+                return partyListFromCache;
+            }
+
+            List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
+
+            string cacheKey = $"userId: {userId}";
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+              .SetPriority(CacheItemPriority.High)
+              .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+
+            _memoryCache.Set(cacheKey, partyList, cacheEntryOptions);
+
+            return partyList;
+        } 
     }
 }

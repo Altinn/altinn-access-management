@@ -13,6 +13,5 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="organisationNumber">the organisation number</param>
         /// <returns>organisation information</returns>
         public Task<Party> GetOrganisation(string organisationNumber);
-
     }
 }

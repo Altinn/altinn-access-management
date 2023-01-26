@@ -214,7 +214,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{54321}");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         private static PartyExternal GetExpectedOrganisation(string orgNummer)

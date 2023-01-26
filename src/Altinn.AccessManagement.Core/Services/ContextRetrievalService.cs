@@ -269,7 +269,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
               .SetPriority(CacheItemPriority.High)
-              .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+              .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
 
             _memoryCache.Set(cacheKey, partyList, cacheEntryOptions);
 

@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Models.Bff;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Utils
@@ -466,6 +467,28 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             AssertCollections(expected.To, actual.To, AssertAttributeMatchExternalEqual);
             AssertCollections(expected.RightDelegationResults, actual.RightDelegationResults, AssertBaseRightExternalEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ValidationProblemDetails"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertValidationProblemDetailsEqual(ValidationProblemDetails expected, ValidationProblemDetails actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.Type, actual.Type);
+            Assert.Equal(expected.Title, actual.Title);
+            Assert.Equal(expected.Status, actual.Status);
+
+            Assert.Equal(expected.Errors.Keys.Count, actual.Errors.Keys.Count);
+            expected.Errors.Keys.All(expectedKey => actual.Errors.ContainsKey(expectedKey));
+            foreach (string expectedKey in expected.Errors.Keys)
+            {
+                Assert.Equal(actual.Errors[expectedKey], actual.Errors[expectedKey]);
+            }
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

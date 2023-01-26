@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Models
 {
@@ -10,6 +11,7 @@ namespace Altinn.AccessManagement.Models
         /// <summary>
         /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
         /// </summary>
+        [Required]
         public List<AttributeMatchExternal> Resource { get; set; }
 
         /// <summary>

@@ -47,45 +47,50 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, string from, DelegationInput delegation)
         {
+            DelegationOutput output = new DelegationOutput { To = delegation.To, Rights = delegation.Rights };
+
             // Verify delegation for single resource registry id
             if (delegation.Rights?.Count != 1)
             {
-                throw new ValidationException($"Maskinporten schema delegation only support delegation of a single right identifying the Maskinporten schema resource, registered in the Resource Registry");
+                output.Errors.Add("Rights", "Maskinporten schema delegation must specify only a single right identifying the Maskinporten schema resource, registered in the Resource Registry");
+                return output;
             }
 
-            Right right = delegation.Rights.FirstOrDefault();
-            if (right == null || !DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _))
-            {
-                throw new ValidationException($"The Right is missing a valid Resource specification");
-            }
+            Right right = delegation.Rights.First();
+            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _);
 
             if (resourceMatchType != ResourceAttributeMatchType.ResourceRegistry)
             {
-                throw new ValidationException($"Maskinporten schema delegation only support delegation of resources from the Resource Registry using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id");
+                output.Errors.Add("right[0].Resource", $"Maskinporten schema delegation only support delegation of resources from the Resource Registry using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id");
+                return output;
             }
 
             // Verify resource registry id is a valid MaskinportenSchema
             ServiceResource resource = await _contextRetrievalService.GetResource(resourceRegistryId);
             if (resource == null || (resource.IsComplete.HasValue && !resource.IsComplete.Value))
             {
-                throw new ValidationException($"The resource: {resourceRegistryId}, does not exist or is not complete and available for delegation");
+                output.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not complete and available for delegation");
+                return output;
             }
 
             if (resource.ResourceType != ResourceType.MaskinportenSchema)
             {
-                throw new ValidationException($"Maskinporten schema delegation can only be used to delegate maskinporten schemas. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                output.Errors.Add("right[0].Resource", $"Maskinporten schema delegation can only be used to delegate maskinporten schemas. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                return output;
             }
 
             // Verify To recipient of delegation
             if (!DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int partyId))
             {
-                throw new ValidationException($"Maskinporten schema delegation currently only support delegation To a PartyId (using {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Id}");
+                output.Errors.Add("To", $"Maskinporten schema delegation currently only support delegation To a PartyId (using {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Id}");
+                return output;
             }
 
             Party toParty = await _contextRetrievalService.GetPartyAsync(partyId);
             if (toParty == null || toParty.PartyTypeName != PartyType.Organisation)
             {
-                throw new ValidationException($"Maskinporten schema delegation can only be delegated To a valid PartyId belonging to an organization. Invalid value: {partyId}");
+                output.Errors.Add("To", $"Maskinporten schema delegation can only be delegated To a valid PartyId belonging to an organization. Invalid value: {partyId}");
+                return output;
             }
 
             // Verify authenticated users delegable rights
@@ -98,12 +103,14 @@ namespace Altinn.AccessManagement.Core.Services
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
-                throw new ValidationException($"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
+                output.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
+                return output;
             }
 
             if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > delegatingUserAuthlevel))) 
             {
-                throw new ValidationException($"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
+                output.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
+                return output;
             }
 
             // Perform delegation
@@ -123,11 +130,7 @@ namespace Altinn.AccessManagement.Core.Services
             List<Rule> result = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
             if (result.All(r => r.CreatedSuccessfully))
             {
-                DelegationOutput output = new DelegationOutput
-                {
-                    To = delegation.To,
-                    Rights = usersDelegableRights
-                };
+                output.Rights = usersDelegableRights;
                 return await Task.FromResult(output);
             }
 

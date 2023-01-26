@@ -3,7 +3,7 @@
     /// <summary>
     /// Response model for the result of a delegation of one or more rights to a recipient.
     /// </summary>
-    public class DelegationOutput
+    public class DelegationOutput : ValidationErrorResult
     {
         /// <summary>
         /// Gets or sets a set of Attribute Id and Attribute Value for the single entity receiving rights

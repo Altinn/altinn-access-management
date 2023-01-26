@@ -365,15 +365,19 @@ namespace Altinn.AccessManagement.Controllers
                 DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
                 DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, party, internalDelegation);
 
-                if (response.Rights != null && response.Rights.Count > 0)
+                if (!response.IsValid)
                 {
-                    DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
-                    DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
-                    DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
-                    return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
+                    foreach (string errorKey in response.Errors.Keys)
+                    {
+                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
+                        return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                    }
                 }
 
-                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, (int)HttpStatusCode.UnprocessableEntity, detail: "Delegation could not be completed"));
+                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
+                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
+                DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
+                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
             }
             catch (ValidationException valEx)
             {

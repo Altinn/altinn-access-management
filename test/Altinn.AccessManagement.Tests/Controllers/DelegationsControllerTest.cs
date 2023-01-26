@@ -1850,18 +1850,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string fromParty = "50005545";
-
-            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            HttpResponseMessage response = await GetTestClient().PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>

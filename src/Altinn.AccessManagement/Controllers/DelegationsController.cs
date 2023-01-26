@@ -351,7 +351,6 @@ namespace Altinn.AccessManagement.Controllers
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>
         /// <response code="400">Bad Request</response>
-        /// <response code="422">Unprocessable Entity</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize]

@@ -250,5 +250,90 @@
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "null",
+    "OrgNumber": "910493353",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "910493353",
+      "Name": "LEPSØY OG TONSTAD",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50006078,
+    "UnitType": "AS",
+    "Name": "LEPSØY OG TONSTAD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": [
+      {
+        "PartyTypeName": 2,
+        "SSN": "null",
+        "OrgNumber": "910422154",
+        "Person": null,
+        "Organization": {
+          "OrgNumber": "910422154",
+          "Name": "ROGNE OG HERØY",
+          "UnitType": "AS",
+          "TelephoneNumber": null,
+          "MobileNumber": null,
+          "FaxNumber": null,
+          "EMailAddress": "test@test.test",
+          "InternetAddress": null,
+          "MailingAddress": null,
+          "MailingPostalCode": null,
+          "MailingPostalCity": null,
+          "BusinessAddress": null,
+          "BusinessPostalCode": null,
+          "BusinessPostalCity": null
+        },
+        "PartyId": 50004646,
+        "UnitType": "AS",
+        "Name": "ROGNE OG HERØY",
+        "IsDeleted": false,
+        "OnlyHierarchyElementWithNoAccess": false,
+        "ChildParties": null
+      }
+    ]
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "01124621077",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "",
+      "Name": "KARI GUNNERUD",
+      "UnitType": "",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50002182,
+    "UnitType": null,
+    "Name": "KARI GUNNERUD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
   }
 ]

@@ -15,7 +15,6 @@ namespace Altinn.AccessManagement.Controllers.BFF
     /// </summary>
     [ApiController]
     [AutoValidateAntiforgeryTokenIfAuthCookie]
-    [ApiExplorerSettings(IgnoreApi = true)] 
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -53,7 +52,7 @@ namespace Altinn.AccessManagement.Controllers.BFF
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize]
-        [Route("accessmanagement/bffapi/v1/{who}/delegations/maskinportenschema/inbound")]
+        [Route("accessmanagement/api/v1/bff/{who}/delegations/maskinportenschema/inbound")]
         public async Task<ActionResult<List<DelegationBff>>> GetAlInboundDelegations([FromRoute] string who)
         {
             if (string.IsNullOrEmpty(who))
@@ -85,7 +84,7 @@ namespace Altinn.AccessManagement.Controllers.BFF
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize]
-        [Route("accessmanagement/bffapi/v1/{who}/delegations/maskinportenschema/outbound")]
+        [Route("accessmanagement/api/v1/bff/{who}/delegations/maskinportenschema/outbound")]
         public async Task<ActionResult<List<DelegationBff>>> GetAllOutboundDelegations([FromRoute] string who)
         {
             if (string.IsNullOrEmpty(who))

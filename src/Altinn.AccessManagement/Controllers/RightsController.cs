@@ -23,6 +23,7 @@ namespace Altinn.AccessManagement.Controllers
         /// Initializes a new instance of the <see cref="RightsController"/> class.
         /// </summary>
         /// <param name="logger">the logger</param>
+        /// <param name="mapper">handler for mapping between internal and external models</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         public RightsController(ILogger<RightsController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint)
         {

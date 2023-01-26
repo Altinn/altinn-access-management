@@ -370,8 +370,9 @@ namespace Altinn.AccessManagement.Controllers
                     foreach (string errorKey in response.Errors.Keys)
                     {
                         ModelState.AddModelError(errorKey, response.Errors[errorKey]);
-                        return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                     }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
                 DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);

@@ -452,7 +452,6 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
             AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
-            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
         }
 
         /// <summary>
@@ -484,7 +483,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Status, actual.Status);
 
             Assert.Equal(expected.Errors.Keys.Count, actual.Errors.Keys.Count);
-            expected.Errors.Keys.All(expectedKey => actual.Errors.ContainsKey(expectedKey));
+            Assert.True(expected.Errors.Keys.All(expectedKey => actual.Errors.ContainsKey(expectedKey)));
             foreach (string expectedKey in expected.Errors.Keys)
             {
                 Assert.Equal(actual.Errors[expectedKey], actual.Errors[expectedKey]);

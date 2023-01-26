@@ -4,7 +4,6 @@
     /// Enum for different the source types exist for a right in Altinn Authorization
     /// </summary>
     public enum RightSourceTypeExternal
-
     {
         /// <summary>
         /// Default value

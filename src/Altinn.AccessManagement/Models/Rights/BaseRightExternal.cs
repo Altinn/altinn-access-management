@@ -18,11 +18,5 @@ namespace Altinn.AccessManagement.Models
         /// Gets or sets the set of Attribute Id and Attribute Value for a specific action, to identify the action this right applies to
         /// </summary>
         public AttributeMatchExternal Action { get; set; }
-
-        /// <summary>
-        /// Gets or sets the set of identified sources providing the right
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<RightSourceExternal> RightSources { get; set; }
     }
 }

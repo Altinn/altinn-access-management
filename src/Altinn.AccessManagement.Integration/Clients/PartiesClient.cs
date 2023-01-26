@@ -131,6 +131,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
             List<Party> filteredList = new List<Party>();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
 
             try
             {

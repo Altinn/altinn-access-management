@@ -195,6 +195,11 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="resourceId">ResourceId.</param>
         /// <param name="resourceTitle">title of the resource</param>
+        /// <param name="resourceType">Type of the resource</param>
+        /// <param name="description">Description of the resource</param>
+        /// <param name="validFrom">The valid from date</param>
+        /// <param name="validTo">The valid to date</param>
+        /// <param name="status">The status of resource</param>
         /// <returns>Returns the newly created ServiceResource.</returns>
         public static ServiceResource GetResource(string resourceId, string resourceTitle, ResourceType resourceType, string description = "Test", DateTime? validFrom = null, DateTime? validTo = null, string status = "Active")
         {

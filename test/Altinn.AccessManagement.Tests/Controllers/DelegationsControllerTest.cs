@@ -2123,6 +2123,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
+                    services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

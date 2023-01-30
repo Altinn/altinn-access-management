@@ -336,17 +336,19 @@ export function delegateRuleToAUserAndOrg() {
 
   // Cleanup
   helper.deleteAllRules(altinnToken, performedByUserId, offeredByPartyId, coveredByUserId, 'userid', appOwner, appName);
+  helper.deleteAllRules(altinnToken, performedByUserId, offeredByPartyId, coveredByPartyId, 'partyid', appOwner, appName);
   res = delegation.getRules(altinnToken, policyMatchKeys, offeredByPartyId, coveredByUserId, resources, null, null);
   success = check(res, {
     'Delegate Rule To a User and Org - rules successfully deleted, status is 200': (r) => r.status == 200,
-    'Delegate Rule To a User and Org - rules successfully deleted, body is empty': (r) => r.body.includes('[]'),
+    'Delegate Rule To a User and Org - rules successfully deleted, body is empty (coveredByUserId)': (r) => r.body.includes('[]'),
   });
-  helper.deleteAllRules(altinnToken, performedByUserId, offeredByPartyId, coveredByPartyId, 'partyid', appOwner, appName);
+  policyMatchKeys.coveredBy = 'urn:altinn:partyid'
   res = delegation.getRules(altinnToken, policyMatchKeys, offeredByPartyId, coveredByPartyId, resources, null, null);
   success = check(res, {
     'Delegate Rule To a User and Org - rules successfully deleted, status is 200': (r) => r.status == 200,
-    'Delegate Rule To a User and Org - rules successfully deleted, body is empty': (r) => r.body.includes('[]'),
+    'Delegate Rule To a User and Org - rules successfully deleted, body is empty (coveredByPartyId)': (r) => r.body.includes('[]'),
   });
+  addErrorCount(success);
   if(showResults == 1) {console.log('delegateRuleToAUserAndOrg:' + success)}
   sleep(3);
 

@@ -1,0 +1,30 @@
+version: '3.4'
+
+networks:
+  k6:
+  grafana:
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    networks:
+      - grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    volumes:
+      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./performance-test-dashboard.json:/etc/grafana/provisioning/dashboards/performance-test-dashboard.json
+      - ./grafana-dashboard.yaml/:/etc/grafana/provisioning/dashboards/dashboard.yaml
+
+  k6:
+    image: loadimpact/k6:0.42.0
+    networks:
+      - k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - ./src:/src

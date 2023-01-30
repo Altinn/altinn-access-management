@@ -387,7 +387,7 @@ namespace Altinn.AccessManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Internal exception occurred during maskinportenschema delegation");
-                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: ex.Message));
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
     }

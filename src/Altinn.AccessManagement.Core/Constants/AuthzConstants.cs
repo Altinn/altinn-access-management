@@ -14,10 +14,5 @@
         /// Policy tag for authorizing Altinn.Platform.Authorization API access from AltinnII Authorization
         /// </summary>
         public const string ALTINNII_AUTHORIZATION = "AltinnIIAuthorizationAccess";
-
-        /// <summary>
-        /// Policy tag for authorizing write access for Maskinporten delegation system resource
-        /// </summary>
-        public const string MPSystemResource_Write = "altinn:systemresource:mpdelegation.write";
     }
 }

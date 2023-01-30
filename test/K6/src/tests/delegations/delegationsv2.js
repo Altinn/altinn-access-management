@@ -9,15 +9,15 @@
 
 */
 import { check, sleep, fail } from 'k6';
-import { addErrorCount, stopIterationOnFail } from '../../../../errorcounter.js';
-import { generateToken } from '../../../../api/altinn-testtools/token-generator.js';
-import { generateJUnitXML, reportPath } from '../../../../report.js';
-import * as delegation from '../../../../api/platform/authorization/delegations.js';
-import * as authorization from '../../../../api/platform/authorization/authorization.js';
-import * as setUpData from '../../../../setup.js';
-import * as helper from '../../../../Helpers/TestdataHelper.js';
+import { addErrorCount, stopIterationOnFail } from '../../errorcounter.js';
+import { generateToken } from '../../api/altinn-testtools/token-generator.js';
+import { generateJUnitXML, reportPath } from '../../report.js';
+import * as delegation from '../../api/platform/authorization/delegations.js';
+import * as authorization from '../../api/platform/authorization/authorization.js';
+import * as setUpData from '../../setup.js';
+import * as helper from '../../Helpers/TestdataHelper.js';
 
-let pdpInputJson = open('../../../../data/pdpinput.json');
+let pdpInputJson = open('../../data/pdpinput.json');
 
 const appOwner = __ENV.org;
 const appName = __ENV.app;

@@ -8,7 +8,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
     public interface IRegister
     {
         /// <summary>
-        /// Gets an organisaiton for an organisation number
+        /// Gets an organization for an organization number
         /// </summary>
         /// <param name="organisationNumber">the organisation number</param>
         /// <returns>organisation information</returns>

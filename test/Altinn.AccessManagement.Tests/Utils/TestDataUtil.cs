@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -198,6 +196,11 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="resourceId">ResourceId.</param>
         /// <param name="resourceTitle">title of the resource</param>
+        /// <param name="resourceType">Type of the resource</param>
+        /// <param name="description">Description of the resource</param>
+        /// <param name="validFrom">The valid from date</param>
+        /// <param name="validTo">The valid to date</param>
+        /// <param name="status">The status of resource</param>
         /// <returns>Returns the newly created ServiceResource.</returns>
         public static ServiceResource GetResource(string resourceId, string resourceTitle, ResourceType resourceType, string description = "Test", DateTime? validFrom = null, DateTime? validTo = null, string status = "Active")
         {
@@ -527,6 +530,101 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             return party;
+        }
+
+        /// <summary>
+        /// Gets the party information
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestParty(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+            PartyExternal party = null;
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.PartyId == partyId);
+            }
+
+            return party;
+        }
+
+        /// <summary>
+        /// Gets the party information for a party with subunit
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestPartyWithSubUnit(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                foreach (PartyExternal party in partyList)
+                {
+                    if (party != null && party.PartyId == partyId)
+                    {
+                        return party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        foreach (Party childParty in party.ChildParties)
+                        {
+                            if (childParty.PartyId == partyId)
+                            {
+                                return MapPartyToPartyExternal(childParty);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static PartyExternal MapPartyToPartyExternal(Party party)
+        {
+            PartyExternal partyExternal = new PartyExternal
+            {
+                PartyId = party.PartyId,
+                PartyTypeName = party.PartyTypeName,
+                OrgNumber = party.OrgNumber,
+                SSN = party.SSN,
+                UnitType = party.UnitType,
+                Name = party.Name,
+                IsDeleted = party.IsDeleted,
+                OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess,
+                Person = party.Person,
+                Organization = party.Organization,
+                ChildParties = party.ChildParties
+            };
+
+            return partyExternal;
         }
 
         private static string GetDelegationPath()

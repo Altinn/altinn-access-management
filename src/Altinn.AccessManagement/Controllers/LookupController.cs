@@ -1,4 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+﻿using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
@@ -20,6 +20,7 @@ namespace Altinn.AccessManagement.Controllers
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IRegister _register;
+        private readonly IContextRetrievalService _contextRetrieval;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -27,14 +28,17 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="logger">the logger.</param>
         /// <param name="mapper">mapper handler</param>
         /// <param name="register">handler for register</param>
+        /// <param name="contextRetrieval">handler for context retrieval</param>
         public LookupController(
             ILogger<DelegationsController> logger,
             IMapper mapper,
-            IRegister register)
+            IRegister register,
+            IContextRetrievalService contextRetrieval)
         {
             _logger = logger;
             _mapper = mapper;
             _register = register;
+            _contextRetrieval = contextRetrieval;
         }
 
         /// <summary>
@@ -60,6 +64,42 @@ namespace Altinn.AccessManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "GetOrganisation failed to fetch organisation information");
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for retrieving party if party exists in the authenticated users reporteelist
+        /// </summary>
+        /// <param name="partyId">The partyId for the reportee to look up</param>
+        /// <returns>Reportee if party is in authenticated users reporteelist</returns>
+        [HttpGet]
+        [Authorize]
+        [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
+        public async Task<ActionResult<PartyExternal>> GetPartyFromReporteeListIfExists(int partyId)
+        {           
+            try
+            {
+                int userId = AuthenticationHelper.GetUserId(HttpContext);
+                Party party = await _contextRetrieval.GetPartyForUser(userId, partyId);
+
+                if (party != null)
+                {
+                    if (party.PartyTypeName == Platform.Register.Enums.PartyType.Person)
+                    {
+                        party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                    }
+                    
+                    return _mapper.Map<PartyExternal>(party);
+                }
+                else
+                {
+                    return StatusCode(404);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetReportee failed to fetch reportee information");
                 return StatusCode(500);
             }
         }

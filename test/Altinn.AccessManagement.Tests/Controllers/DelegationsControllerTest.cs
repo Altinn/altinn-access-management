@@ -1541,7 +1541,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
-
+            
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004219/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -1565,7 +1570,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
-
+            
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -1601,6 +1611,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllInboundDelegations_Invalid_CoveredBy()
         {
+            // Arrange
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/1234/delegations/maskinportenschema/inbound");
 
@@ -1617,6 +1633,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string expected = "No delegations found";
+            
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004225/delegations/maskinportenschema/inbound");
@@ -1636,7 +1657,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004216);
-
+            
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004216/delegations/maskinportenschema/inbound");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -1658,6 +1684,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllInboundDelegations_MissingBearerToken()
         {
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
@@ -1674,6 +1702,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [Fact]
         public async Task GetAllInboundDelegations_InvalidBearerToken()
         {
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
@@ -1845,7 +1875,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations user with necessary rights
+        /// Test case: GetMaskinportenSchemaDelegations outbound, user with necessary rights
         /// Expected: User is authorized
         /// </summary>
         [Fact]
@@ -1866,7 +1896,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations user without necessary rights
+        /// Test case: Get Maskinporten Schema Delegations outbound, user without necessary rights
         /// Expected: Authorization is denied
         /// Testing if user without necessary rights is denied access to 
         /// </summary>
@@ -1882,6 +1912,49 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            
+            // Assert
+            Assert.Equal(expectedStatusCode, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Get MaskinportenSchemaDelegations inbound, user with necessary rights
+        /// Expected: User is authorized
+        /// </summary>
+        [Fact]
+        private async Task GetAlInboundDelegations_UserComplyingToPolicy()
+        {
+            // Arrange
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12344321, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
+            
+            // Assert
+            Assert.Equal(expectedStatusCode, response.StatusCode);
+        }
+        
+        /// <summary>
+        /// Test case: Get Maskinporten Schema Delegations outbound, user without necessary rights
+        /// Expected: Authorization is denied
+        /// Testing if user without necessary rights is denied access to 
+        /// </summary>
+        [Fact]
+        public async Task GetAllInboundDelegations_UserNotComplyingToPolicy()
+        {
+            // Arrange 
+            const HttpStatusCode expectedStatusCode = HttpStatusCode.Forbidden;
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
+            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
             
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);

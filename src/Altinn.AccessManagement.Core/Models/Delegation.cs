@@ -75,5 +75,21 @@ namespace Altinn.AccessManagement.Core.Models
         /// ResourceReference
         /// </summary>
         public List<ResourceReference> ResourceReferences { get; set; }
+
+        /// <summary>
+        /// HasCompetentAuthority
+        /// </summary>
+        public CompetentAuthority HasCompetentAuthority { get; set; }
+
+        /// <summary>
+        /// Description
+        /// </summary>
+        public Dictionary<string, string> Description { get; set; }
+
+        /// <summary>
+        /// Description explaining the rights a recipient will receive if given access to the resource
+        /// </summary>
+        public Dictionary<string, string> RightDescription { get; set; }
+
     }
 }

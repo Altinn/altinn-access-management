@@ -71,5 +71,13 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// </summary>
         /// <returns>The resource list if exists</returns>
         Task<List<ServiceResource>> GetResources();
+
+        /// <summary>
+        /// Gets a Party based on partyId if the party is in the users reporteelist
+        /// </summary>
+        /// <param name="userId">The id of the authenticated user</param>
+        /// <param name="partyId">The party Id of the party to retrieve</param>
+        /// <returns>Party that corresponds to partyId parameter if it's in the users reporteelist</returns>
+        public Task<Party> GetPartyForUser(int userId, int partyId);
     }
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Models.Bff;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Authorization.ABAC.Constants;
@@ -197,6 +196,11 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="resourceId">ResourceId.</param>
         /// <param name="resourceTitle">title of the resource</param>
+        /// <param name="resourceType">Type of the resource</param>
+        /// <param name="description">Description of the resource</param>
+        /// <param name="validFrom">The valid from date</param>
+        /// <param name="validTo">The valid to date</param>
+        /// <param name="status">The status of resource</param>
         /// <returns>Returns the newly created ServiceResource.</returns>
         public static ServiceResource GetResource(string resourceId, string resourceTitle, ResourceType resourceType, string description = "Test", DateTime? validFrom = null, DateTime? validTo = null, string status = "Active")
         {
@@ -390,6 +394,70 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
+        /// Sets up mock data for delegation list 
+        /// </summary>
+        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
+        /// <param name="coveredByPartyId">partyid of the reportee that received the delegation</param>
+        /// <param name="resourceIds">resource id</param>
+        /// <returns>Received delegations</returns>
+        public static List<DelegationBff> GetBffDelegations(int offeredByPartyId, int coveredByPartyId, List<string> resourceIds = null)
+        {
+            List<DelegationBff> delegations = null;
+            List<DelegationBff> filteredDelegations = new List<DelegationBff>();
+            string fileName;
+
+            if (resourceIds != null)
+            {
+                fileName = "admindelegations";
+            }
+            else
+            {
+                fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
+            }
+
+            string path = GetDelegationPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains(fileName))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                        };
+                        try
+                        {
+                            delegations = JsonSerializer.Deserialize<List<DelegationBff>>(content, options);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                    }
+                }
+
+                if (offeredByPartyId != 0 && coveredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations?.FindAll(od => od.OfferedByPartyId == offeredByPartyId && od.CoveredByPartyId == coveredByPartyId && resourceIds.Contains(od.ResourceId)));
+                }
+                else if (offeredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
+                }
+                else if (coveredByPartyId != 0)
+                {
+                    filteredDelegations.AddRange(delegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
+                }
+            }
+
+            return filteredDelegations;
+        }
+
+        /// <summary>
         /// Sets up mock data for admin delegation list 
         /// </summary>
         /// <param name="supplierOrg">partyid of the reportee that delegated the resource</param>
@@ -462,6 +530,101 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             return party;
+        }
+
+        /// <summary>
+        /// Gets the party information
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestParty(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+            PartyExternal party = null;
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                party = partyList.Find(p => p.PartyId == partyId);
+            }
+
+            return party;
+        }
+
+        /// <summary>
+        /// Gets the party information for a party with subunit
+        /// </summary>
+        /// <param name="partyId">The party id</param>
+        /// <returns>Party information</returns>
+        public static PartyExternal GetTestPartyWithSubUnit(int partyId)
+        {
+            List<PartyExternal> partyList = new List<PartyExternal>();
+
+            string path = GetPartiesPath();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<PartyExternal>>(content);
+                    }
+                }
+
+                foreach (PartyExternal party in partyList)
+                {
+                    if (party != null && party.PartyId == partyId)
+                    {
+                        return party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        foreach (Party childParty in party.ChildParties)
+                        {
+                            if (childParty.PartyId == partyId)
+                            {
+                                return MapPartyToPartyExternal(childParty);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static PartyExternal MapPartyToPartyExternal(Party party)
+        {
+            PartyExternal partyExternal = new PartyExternal
+            {
+                PartyId = party.PartyId,
+                PartyTypeName = party.PartyTypeName,
+                OrgNumber = party.OrgNumber,
+                SSN = party.SSN,
+                UnitType = party.UnitType,
+                Name = party.Name,
+                IsDeleted = party.IsDeleted,
+                OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess,
+                Person = party.Person,
+                Organization = party.Organization,
+                ChildParties = party.ChildParties
+            };
+
+            return partyExternal;
         }
 
         private static string GetDelegationPath()

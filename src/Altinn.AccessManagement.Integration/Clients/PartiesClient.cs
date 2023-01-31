@@ -1,10 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Extensions;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Integration.Configuration;
+using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Platform.Register.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -19,6 +24,13 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly SblBridgeSettings _sblBridgeSettings;
         private readonly ILogger _logger;
         private readonly HttpClient _client;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly PlatformSettings _platformSettings;
+        private readonly IAccessTokenGenerator _accessTokenGenerator;
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartiesClient"/> class
@@ -26,11 +38,25 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <param name="httpClient">HttpClient from default httpclientfactory</param>
         /// <param name="sblBridgeSettings">the sbl bridge settings</param>
         /// <param name="logger">the logger</param>
-        public PartiesClient(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, ILogger<PartiesClient> logger)
+        /// <param name="httpContextAccessor">handler for http context</param>
+        /// <param name="platformSettings">the platform setttings</param>
+        /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
+        public PartiesClient(
+            HttpClient httpClient, 
+            IOptions<SblBridgeSettings> sblBridgeSettings, 
+            ILogger<PartiesClient> logger, 
+            IHttpContextAccessor httpContextAccessor, 
+            IOptions<PlatformSettings> platformSettings,
+            IAccessTokenGenerator accessTokenGenerator)
         {
             _sblBridgeSettings = sblBridgeSettings.Value;
             _logger = logger;
+            httpClient.BaseAddress = new Uri(platformSettings.Value.RegisterApiEndpoint);
+            httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
             _client = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+            _platformSettings = platformSettings.Value;
+            _accessTokenGenerator = accessTokenGenerator;
         }
 
         /// <inheritdoc/>
@@ -38,14 +64,21 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/{partyId}");
-                
-                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+                string endpointUrl = $"parties/{partyId}";
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
+
+                HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    };
+                    options.Converters.Add(new JsonStringEnumConverter());
+                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, options);
                     return partyInfo;
                 }
                 else
@@ -68,9 +101,11 @@ namespace Altinn.AccessManagement.Integration.Clients
             int partyId = 0;
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookup");
+                string endpointUrl = $"register/api/parties/lookup";
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
+                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -95,12 +130,43 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
+            List<Party> filteredList = new List<Party>();
+
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties");
-
+                string endpointUrl = $"parties/partylist/";
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
+                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, options);
+                    return partiesInfo;
+                }
+                else
+                {
+                    _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
+                throw;
+            }
+
+            return filteredList;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<Party>> GetPartiesForUserAsync(int userId)
+        {
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userId={userId}");
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -115,7 +181,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesForUserAsync // Exception");
                 throw;
             }
 
@@ -184,9 +250,11 @@ namespace Altinn.AccessManagement.Integration.Clients
             Party party = null;
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}register/api/parties/lookupObject");
+                string endpointUrl = $"parties/lookup";
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(uriBuilder.Uri, requestBody);
+                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {

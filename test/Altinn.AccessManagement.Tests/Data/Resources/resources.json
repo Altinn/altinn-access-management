@@ -3645,8 +3645,13 @@
       }
     ],
     "hasCompetentAuthority": {
-      "orgcode": "DIGDIR",
-      "organization": "991825827"
+      "orgcode": "NAV",
+      "organization": "991825827",
+      "name": {
+        "en": "The Norwegian Labour and Welfare Administration",
+        "nb-no": "Arbeids og velferdsetaten",
+        "nn-no": "Arbeids og velferdsetaten"
+      }
     }
   },
     {
@@ -3702,8 +3707,13 @@
         }
       ],
       "hasCompetentAuthority": {
-        "orgcode": "DIGDIR",
-        "organization": "991825827"
+        "orgcode": "SKD",
+        "organization": "974761076",
+        "name": {
+          "en": "The Norwegian Tax Administration",
+          "nb-no": "Skatteetaten",
+          "nn-no": "Skatteetaten"
+        }
       }
     }
 ]

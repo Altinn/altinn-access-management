@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -161,6 +162,53 @@ namespace Altinn.AccessManagement.Tests.Mocks
             }
 
             return Task.FromResult(mainUnits);
+        }
+
+        /// <inheritdoc/>
+        public Task<List<Party>> GetPartiesForUserAsync(int userId)
+        {
+            List<Party> partyList = new List<Party>();
+            Party partyToReturn = null;
+
+            string path = GetPartiesPaths();
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string file in files)
+                {
+                    if (file.Contains("parties"))
+                    {
+                        string content = File.ReadAllText(Path.Combine(path, file));
+                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
+                    }
+                }
+
+                foreach (Party party in partyList)
+                {
+                    if (party != null && party.PartyId == userId)
+                    {
+                        partyToReturn = party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        foreach (Party childParty in party.ChildParties)
+                        {
+                            if (childParty.PartyId == userId)
+                            {
+                                partyToReturn = party;
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<Party> returnedPartyList = new List<Party>
+            {
+                partyToReturn
+            };
+
+            return Task.FromResult(returnedPartyList);
         }
 
         private static string GetPartiesPaths()

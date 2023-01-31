@@ -84,8 +84,8 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<Party> GetPartyAsync(int partyId)
         {
-            List<Party> result = await _partiesClient.GetPartiesAsync(partyId.SingleToList());
-            return result.FirstOrDefault();
+            Party result = await _partiesClient.GetPartyAsync(partyId);
+            return result;
         }
 
         /// <inheritdoc/>
@@ -108,14 +108,17 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache);
 
-            foreach (Party party in remainingParties)
+            if(remainingParties != null && remainingParties.Count > 0)
             {
-                parties.Add(party);
+                foreach (Party party in remainingParties)
+                {
+                    parties.Add(party);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
-                _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+                    _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                }
             }
 
             return parties;
@@ -216,5 +219,64 @@ namespace Altinn.AccessManagement.Core.Services
 
             return resources;
         }
+
+        /// <inheritdoc/>
+        public async Task<Party> GetPartyForUser(int userId, int partyId)
+        {
+            List<Party> partyList = await GetPartiesForUser(userId);
+
+            if (partyList.Count > 0)
+            {
+                foreach (Party party in partyList)
+                {
+                    if (party != null && party.PartyId == partyId)
+                    {
+                        return party;
+                    }
+                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
+                    {
+                        return GetChildPartyIfMatch(party, partyId);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static Party GetChildPartyIfMatch(Party party, int partyId)
+        {
+            if (party.ChildParties != null)
+            {
+                foreach (Party childParty in party.ChildParties)
+                {
+                    if (childParty.PartyId == partyId)
+                    {
+                        return childParty;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private async Task<List<Party>> GetPartiesForUser(int userId)
+        {
+            string cacheKey = $"userId:{userId}";
+
+            if (_memoryCache.TryGetValue(cacheKey, out List<Party> partyListFromCache))
+            {
+                return partyListFromCache;
+            }
+
+            List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+              .SetPriority(CacheItemPriority.High)
+              .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+
+            _memoryCache.Set(cacheKey, partyList, cacheEntryOptions);
+
+            return partyList;
+        } 
     }
 }

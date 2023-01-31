@@ -125,7 +125,7 @@ export function deleteAllRules(altinnToken, performedByUserId, offeredByPartyId,
 
 export function minimumSBLVersion(major, minor) {
   var altinnBuildVersion = setUpData.getSBLBuildVersion(); 
-  if (altinnBuildVersion.split('.')[0] >= major && altinnBuildVersion.split('.')[1] >= minor) {
+  if (altinnBuildVersion.split('.')[0] > major || altinnBuildVersion.split('.')[0] == major && altinnBuildVersion.split('.')[1] >= minor) {
     return true;
   }
   return false;

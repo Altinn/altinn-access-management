@@ -44,7 +44,7 @@ namespace Altinn.AccessManagement
         /// Gets the app frontend view for Accessmanagement
         /// </summary>
         /// <returns>View result</returns>
-        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
         public IActionResult Index()
         {
             // See comments in the configuration of Antiforgery in MvcConfiguration.cs.

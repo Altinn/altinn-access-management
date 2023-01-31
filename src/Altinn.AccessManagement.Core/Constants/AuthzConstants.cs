@@ -21,13 +21,13 @@
         public const string INTERNAL_AUTHORIZATION = "InternalAuthorizationAccess";
 
         /// <summary>
-        /// Policy tag for reading an instance
+        /// Policy tag for reading an maskinporten delegation
         /// </summary>
-        public const string POLICY_MASKINPORTEN_DELEGATION_READ = "InstanceRead";
+        public const string POLICY_MASKINPORTEN_DELEGATION_READ = "MaskinportenDelegationRead";
         
         /// <summary>
-        /// Policy tag for writing an instance
+        /// Policy tag for writing an maskinporten delegation
         /// </summary>
-        public const string POLICY_MASKINPORTEN_DELEGATION_WRITE = "InstanceWrite";
+        public const string POLICY_MASKINPORTEN_DELEGATION_WRITE = "MaskinportenDelegationWrite";
     }
 }

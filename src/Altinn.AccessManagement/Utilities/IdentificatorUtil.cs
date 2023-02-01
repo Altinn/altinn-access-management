@@ -58,5 +58,15 @@ namespace Altinn.AccessManagement.Utilities
                 return false;
             }
         }
+
+        /// <summary>
+        /// Masks an incoming SSN.
+        /// </summary>
+        /// <param name="input">SSN that should be masked</param>
+        /// <returns>Masked SSN</returns>
+        public static string MaskSSN(string input)
+        {
+            return string.Concat(input.AsSpan(0, 6), "*****");
+        }
     }
 }

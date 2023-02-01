@@ -12,10 +12,8 @@ namespace Altinn.AccessManagement
     /// <summary>
     /// HomeController
     /// </summary>
-    [Route("accessmanagement/")]
-    [Route("accessmanagement/ui")]
-    [Route("accessmanagement/ui/{*AnyValue}")]
-
+    [ApiController]
+    [Route("accessmanagement/api/v1/accessmanagement/ui/{*AnyValue}")]
     public class HomeController : Controller
     {
         private readonly IAntiforgery _antiforgery;

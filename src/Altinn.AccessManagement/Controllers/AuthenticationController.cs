@@ -12,7 +12,6 @@ namespace Altinn.AccessManagement.Controllers
     /// <summary>
     /// Exposes API endpoints related to authentication.
     /// </summary>
-    [Route("accessmanagement/")]
     [ApiController]
     [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class AuthenticationController : ControllerBase
@@ -43,7 +42,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <returns>Ok result with updated token.</returns>
         [Authorize]
-        [HttpGet("api/v1/authentication/refresh")]
+        [HttpGet("accessmanagement/api/v1/authentication/refresh")]
         public async Task<IActionResult> Refresh()
         {
             try

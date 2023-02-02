@@ -31,5 +31,28 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             return userId;
         }
+
+        /// <summary>
+        /// Gets the users authentication level
+        /// </summary>
+        /// <param name="context">the http context</param>
+        /// <returns>the logged in users authentication level</returns>
+        public static int GetUserAuthenticationLevel(HttpContext context)
+        {
+            int authenticationLevel = 0;
+
+            if (context.User != null)
+            {
+                foreach (Claim claim in context.User.Claims)
+                {
+                    if (claim.Type.Equals(AltinnCoreClaimTypes.AuthenticationLevel))
+                    {
+                        authenticationLevel = Convert.ToInt32(claim.Value);
+                    }
+                }
+            }
+
+            return authenticationLevel;
+        }
     }
 }

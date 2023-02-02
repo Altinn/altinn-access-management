@@ -274,6 +274,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
+    services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
 
     services.Configure<KestrelServerOptions>(options =>
     {

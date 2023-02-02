@@ -1432,7 +1432,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             

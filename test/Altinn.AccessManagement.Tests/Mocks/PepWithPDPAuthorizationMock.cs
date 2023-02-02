@@ -363,7 +363,13 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static XacmlPolicy ParsePolicy(string policyDocumentTitle, string policyPath)
         {
             XmlDocument policyDocument = new XmlDocument();
-            policyDocument.Load(Path.Combine(policyPath, policyDocumentTitle));
+            var fullPolicyPath = Path.Combine(policyPath, policyDocumentTitle);
+            if (!File.Exists(fullPolicyPath))
+            {
+                throw new Exception($"policy not found at path: {fullPolicyPath}");
+            }
+
+            policyDocument.Load(fullPolicyPath);
             XacmlPolicy policy;
             using (XmlReader reader = XmlReader.Create(new StringReader(policyDocument.OuterXml)))
             {
@@ -376,7 +382,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetResourceAccessPolicyPath(string resourcePartyId, string ressursid)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml","3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
         }
     }
     

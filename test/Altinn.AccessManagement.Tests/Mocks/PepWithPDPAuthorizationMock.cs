@@ -34,9 +34,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc />
         public async Task<XacmlJsonResponse> GetDecisionForRequest(XacmlJsonRequestRoot xacmlJsonRequest)
         {
-            var result = await Authorize(xacmlJsonRequest.Request);
-            Console.WriteLine("---AuthorizeResult----" + result.Response.First().Decision);
-            return result;
+            return await Authorize(xacmlJsonRequest.Request);
         }
 
         private async Task<XacmlJsonResponse> Authorize(XacmlJsonRequest decisionRequest)
@@ -111,14 +109,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private async Task<XacmlContextResponse> Authorize(XacmlContextRequest decisionRequest)
         {
-            Console.Write("---EKO---Authorize");
             decisionRequest = await Enrich(decisionRequest);
 
             XacmlPolicy policy = await GetPolicyAsync(decisionRequest);
 
             PolicyDecisionPoint pdp = new PolicyDecisionPoint();
             XacmlContextResponse xacmlContextResponse = pdp.Authorize(decisionRequest, policy);
-            Console.Write("---EKO---" + Environment.NewLine + "result:" + xacmlContextResponse.Results.First().Decision);
 
             return xacmlContextResponse;
         }
@@ -315,16 +311,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
             string rolesPath = GetRolesPath(coveredByUserId, offeredByPartyId);
 
             List<Role> roles = new List<Role>();
-
-            Console.WriteLine("---EKO Roles---");
             if (File.Exists(rolesPath))
             {
                 string content = File.ReadAllText(rolesPath);
-                Console.WriteLine(content);
                 roles = (List<Role>)JsonConvert.DeserializeObject(content, typeof(List<Role>));
             }
-
-            Console.WriteLine("---END EKO Roles---");
 
             return Task.FromResult(roles);
         }
@@ -332,8 +323,8 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetRolesPath(int userId, int resourcePartyId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            var fullRolePath = Path.Combine(unitTestFolder, "..", "..", "..", "Data", "roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
-            Console.WriteLine(fullRolePath + " - " + File.Exists(fullRolePath));
+            var fullRolePath = Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
+            Console.WriteLine("EKO:" + fullRolePath + " - " + File.Exists(fullRolePath));
             return fullRolePath;
         }
 
@@ -373,13 +364,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static XacmlPolicy ParsePolicy(string policyDocumentTitle, string policyPath)
         {
             XmlDocument policyDocument = new XmlDocument();
-            var fullPolicyPath = Path.Combine(policyPath, policyDocumentTitle);
-            Console.WriteLine("-------policy-------");
-            Console.WriteLine(fullPolicyPath + " - " + File.Exists(fullPolicyPath));
-
-            policyDocument.Load(fullPolicyPath);
-            Console.WriteLine(policyDocument.OuterXml); 
-            Console.WriteLine("-------policy end-------");
+            policyDocument.Load(Path.Combine(policyPath, policyDocumentTitle));
             XacmlPolicy policy;
             using (XmlReader reader = XmlReader.Create(new StringReader(policyDocument.OuterXml)))
             {

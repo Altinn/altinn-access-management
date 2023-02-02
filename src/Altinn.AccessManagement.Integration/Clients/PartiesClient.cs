@@ -27,10 +27,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PlatformSettings _platformSettings;
         private readonly IAccessTokenGenerator _accessTokenGenerator;
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartiesClient"/> class
@@ -131,6 +127,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
             List<Party> filteredList = new List<Party>();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
 
             try
             {

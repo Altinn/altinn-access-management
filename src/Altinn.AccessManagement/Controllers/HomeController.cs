@@ -70,9 +70,7 @@ namespace Altinn.AccessManagement
                 return View();
             }
 
-            string scheme = _env.IsDevelopment() ? "http" : "https";
-            string goToUrl = HttpUtility.UrlEncode($"{scheme}://{Request.Host}/accessmanagement");
-
+            string goToUrl = HttpUtility.UrlEncode($"{_platformSettings.AltinnPlatformBaseUrl}{Request.Path}");
             string redirectUrl = $"{_platformSettings.ApiAuthenticationEndpoint}authentication?goto={goToUrl}";
 
             return Redirect(redirectUrl);

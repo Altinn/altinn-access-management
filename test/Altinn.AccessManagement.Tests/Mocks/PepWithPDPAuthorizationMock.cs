@@ -364,10 +364,8 @@ namespace Altinn.AccessManagement.Tests.Mocks
         {
             XmlDocument policyDocument = new XmlDocument();
             var fullPolicyPath = Path.Combine(policyPath, policyDocumentTitle);
-            if (!File.Exists(fullPolicyPath))
-            {
-                throw new Exception($"policy not found at path: {fullPolicyPath}");
-            }
+            Console.WriteLine("-------policy path-------");
+            Console.WriteLine(fullPolicyPath + " - " + File.Exists(fullPolicyPath));
 
             policyDocument.Load(fullPolicyPath);
             XacmlPolicy policy;

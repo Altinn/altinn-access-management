@@ -1814,6 +1814,236 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
         }
 
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization 50004222
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        /// Expected: MaskinportenDelegation returns 201 Created with response body containing the expected delegated rights
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_Success()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            DelegationOutputExternal expectedResponse = GetExpectedResponse("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed without a user token
+        /// Expected: 401 Unauthorized
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_MissingToken_Unauthorized()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await GetTestClient().PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
+        ///            for the reportee party 1 to the recipient party 2
+        ///            In this case:
+        ///            - The request contains multiple rights
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_SingleRightOnly()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_SingleRightOnly");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_SingleRightOnly");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
+        ///            for the reportee party 1 to the recipient party 2
+        ///            In this case:
+        ///            - The request contains a resource specification using Org/App identifier
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_OrgAppResource()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_OrgAppResource");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_OrgAppResource");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
+        ///            for the reportee party 1 to the recipient party 2
+        ///            In this case:
+        ///            - The resource registry id does not exist
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidResourceRegistryId()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_InvalidResourceRegistryId");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_InvalidResourceRegistryId");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
+        ///            for the reportee party 1 to the recipient party 2
+        ///            In this case:
+        ///            - The resource registry id is not for a MaskinportenSchema 
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidResourceType()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_InvalidResourceType");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_InvalidResourceType");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
+        ///            for the reportee party 1 to the recipient party 2
+        ///            In this case:
+        ///            - The recipient (To) in the request is not a valid party id
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidTo()
+        {
+            // Arrange
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_Default");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_InvalidTo");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
+        ///            for the reportee party 50005545 of the non_delegable_maskinportenschema maskinporten schema resource from the resource registry to the organization 50004222
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The non_delegable_maskinportenschema resource has a role requirement (NOPE), which does not exist meaning the user will not have any delegable rights for the resource
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_NonDelegableResource()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            StreamContent requestContent = GetRequestContent("non_delegable_maskinportenschema", $"p{fromParty}", "p50004222");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("non_delegable_maskinportenschema", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
+        ///            for the reportee party 50005545 of the digdirs_company_car maskinporten schema resource from the resource registry to the organization 50004222
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The required minimum authentication level for digdirs_company_car
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_TooLowAuthenticationLevelForResource()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("digdirs_company_car", $"p{fromParty}", "p50004222");
+            StreamContent requestContent = GetRequestContent("digdirs_company_car", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
         private static List<Rule> GetExpectedRulesForUser()
         {
             List<Rule> list = new List<Rule>();
@@ -1850,6 +2080,35 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return delegations;
         }
 
+        private static StreamContent GetRequestContent(string resourceId, string from, string to, string inputFileName = "Input_Default")
+        {
+            Stream dataStream = File.OpenRead($"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/{inputFileName}.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+        private static DelegationOutputExternal GetExpectedResponse(string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
+        {
+            string responsePath = $"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string content = File.ReadAllText(responsePath);
+            return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static ValidationProblemDetails GetExpectedValidationProblemDetails(string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
+        {
+            string responsePath = $"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string content = File.ReadAllText(responsePath);
+            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static ValidationProblemDetails GetExpectedProblemDetails(string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
+        {
+            string responsePath = $"Data/Json/MaskinportenScopeDelegation/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string content = File.ReadAllText(responsePath);
+            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
         private HttpClient GetTestClient()
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
@@ -1863,6 +2122,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
+                    services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

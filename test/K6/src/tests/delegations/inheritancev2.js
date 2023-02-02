@@ -81,17 +81,11 @@ export function setup() {
   var altinnStudioRuntimeCookie3 = setUpData.getAltinnStudioRuntimeToken(aspxauthCookie3);
   var userData3 = setUpData.getUserData(altinnStudioRuntimeCookie3, appOwner, appName, user3OrgNo);
 
-  var ecUserData;
-  if(helper.minimumSBLVersion(22, 5) && environment != 'tt02') {
-    ecUserData = setUpData.authenticateECUser(ecUserName, ecUserPwd, ecUserOrgNo);
-  }
-  else if (environment == 'tt02') {
-    ecUserData = {
-      userName: ecUserName,
-      userId: ecUserUserId,
-      partyId: ecUserPartyId
-    };
-  }
+  var ecUserData = {
+    userName: ecUserName,
+    userId: ecUserUserId,
+    partyId: ecUserPartyId
+  };
 
   var tokenGenParams = {
     env: environment,
@@ -140,10 +134,8 @@ export default function (data) {
   user2_PartyId = data.user2Data['partyId'];
   user3_userId = data.user3Data['userId'];
   user3_PartyId = data.user3Data['partyId'];
-  if(helper.minimumSBLVersion(22, 5)) {
-    ecUser_userId = data.ecUserData['userId'];
-    ecUser_partyId = data.ecUserData['partyId'];
-  }
+  ecUser_userId = data.ecUserData['userId'];
+  ecUser_partyId = data.ecUserData['partyId'];
 
   CleanupBeforeTests();
 
@@ -386,11 +378,6 @@ export function directDelegationFromMainUnitToOrgInheritedByDAGLViaKeyRole() {
  * Verifies that when a delegation is made from one org (org1) to another (org2), the Enterprise Certificate user (ECUser) for that organization is also given access
  */
 export function delegationToOrgIsInheritedByECUserViaKeyrole() {
-
-  if(!helper.minimumSBLVersion(22, 5)) {
-    console.log('delegationToOrgIsInheritedByECUserViaKeyrole: skipped');
-    return;
-  }
   // Arrange
   const performedByUserId = user1_userId;
   const offeredByPartyId = org1_partyId;
@@ -405,7 +392,7 @@ export function delegationToOrgIsInheritedByECUserViaKeyrole() {
     resource: ['urn:altinn:app', 'urn:altinn:org'],
   };
   var res = delegation.getRules(altinnToken, policyMatchKeys, offeredByPartyId, ecUserIdForCoveredBy, resources, null, [coveredByPartyId]);
-  
+
   // Assert
   var success = check(res, {
     'Delegation to Org is inherited by ECUser via keyrole - status is 200': (r) => r.status === 200,

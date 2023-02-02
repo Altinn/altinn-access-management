@@ -209,6 +209,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));

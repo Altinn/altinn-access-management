@@ -236,17 +236,17 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Authorize]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/outbound")]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string who)
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/outbound")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(who))
+            if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing who");
+                return BadRequest("Missing part");
             }
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
                 List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
                 if (delegationsExternal == null || delegationsExternal.Count == 0)
                 {
@@ -275,17 +275,17 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Authorize]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        [Route("accessmanagement/api/v1/{who}/delegations/maskinportenschema/inbound")]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string who)
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/inbound")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(who))
+            if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing who");
+                return BadRequest("Missing party");
             }
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
                 List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
                 if (delegationsExternal == null || delegationsExternal.Count == 0)
                 {

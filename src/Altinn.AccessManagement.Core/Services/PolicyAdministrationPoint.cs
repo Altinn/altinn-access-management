@@ -1,10 +1,8 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Xacml;
@@ -25,7 +23,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly int delegationChangeEventQueueErrorId = 911;
-        private readonly IResourceRegistryClient _resourceRegistryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyAdministrationPoint"/> class.
@@ -35,15 +32,13 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="delegationRepository">The delegation change repository (postgresql).</param>
         /// <param name="eventQueue">The delegation change event queue service to post events for any delegation change.</param>
         /// <param name="logger">Logger instance.</param>
-        /// <param name="resourceRegistryClient">Client for accessing the resourceregistry.</param>
-        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyRepository policyRepository, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger, IResourceRegistryClient resourceRegistryClient)
+        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyRepository policyRepository, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger)
         {
             _prp = policyRetrievalPoint;
             _policyRepository = policyRepository;
             _delegationRepository = delegationRepository;
             _eventQueue = eventQueue;
             _logger = logger;
-            _resourceRegistryClient = resourceRegistryClient;
         }
 
         /// <inheritdoc/>
@@ -392,7 +387,6 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            ServiceResource resourceRegistryService = null;
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
             if (!DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app))

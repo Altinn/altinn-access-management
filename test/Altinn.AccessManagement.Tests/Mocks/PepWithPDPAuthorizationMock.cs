@@ -35,7 +35,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public async Task<XacmlJsonResponse> GetDecisionForRequest(XacmlJsonRequestRoot xacmlJsonRequest)
         {
             var result = await Authorize(xacmlJsonRequest.Request);
-            Console.WriteLine("---AuthorizeResult----" + result.ToString());
+            Console.WriteLine("---AuthorizeResult----" + result.Response.First().Decision);
             return result;
         }
 
@@ -316,11 +316,15 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
             List<Role> roles = new List<Role>();
 
+            Console.WriteLine("---EKO Roles---");
             if (File.Exists(rolesPath))
             {
                 string content = File.ReadAllText(rolesPath);
+                Console.WriteLine(content);
                 roles = (List<Role>)JsonConvert.DeserializeObject(content, typeof(List<Role>));
             }
+
+            Console.WriteLine("---END EKO Roles---");
 
             return Task.FromResult(roles);
         }
@@ -368,10 +372,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
         {
             XmlDocument policyDocument = new XmlDocument();
             var fullPolicyPath = Path.Combine(policyPath, policyDocumentTitle);
-            Console.WriteLine("-------policy path-------");
+            Console.WriteLine("-------policy-------");
             Console.WriteLine(fullPolicyPath + " - " + File.Exists(fullPolicyPath));
 
             policyDocument.Load(fullPolicyPath);
+            Console.WriteLine(policyDocument.OuterXml); 
+            Console.WriteLine("-------policy end-------");
             XacmlPolicy policy;
             using (XmlReader reader = XmlReader.Create(new StringReader(policyDocument.OuterXml)))
             {

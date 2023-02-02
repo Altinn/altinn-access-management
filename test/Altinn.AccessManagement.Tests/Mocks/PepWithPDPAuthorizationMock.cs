@@ -34,7 +34,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc />
         public async Task<XacmlJsonResponse> GetDecisionForRequest(XacmlJsonRequestRoot xacmlJsonRequest)
         {
-            return await Authorize(xacmlJsonRequest.Request);
+            var result = await Authorize(xacmlJsonRequest.Request);
+            Console.WriteLine("---AuthorizeResult----" + result.ToString());
+            return result;
         }
 
         private async Task<XacmlJsonResponse> Authorize(XacmlJsonRequest decisionRequest)
@@ -109,12 +111,14 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private async Task<XacmlContextResponse> Authorize(XacmlContextRequest decisionRequest)
         {
+            Console.Write("---EKO---Authorize");
             decisionRequest = await Enrich(decisionRequest);
 
             XacmlPolicy policy = await GetPolicyAsync(decisionRequest);
 
             PolicyDecisionPoint pdp = new PolicyDecisionPoint();
             XacmlContextResponse xacmlContextResponse = pdp.Authorize(decisionRequest, policy);
+            Console.Write("---EKO---" + Environment.NewLine + "result:" + xacmlContextResponse.Results.First().Decision);
 
             return xacmlContextResponse;
         }

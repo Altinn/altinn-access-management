@@ -1363,7 +1363,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -1391,7 +1391,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -1453,7 +1453,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             string expected = "No delegations found";
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -1476,7 +1476,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
+            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 

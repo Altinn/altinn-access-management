@@ -53,9 +53,9 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> InsertDelegation(DelegationChange delegationChange)
+        public async Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange)
         {
-            if (delegationChange.ResourceType == ResourceAttributeMatchType.AltinnAppId.ToString())
+            if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
                 return await InsertAppDelegation(delegationChange);
             }

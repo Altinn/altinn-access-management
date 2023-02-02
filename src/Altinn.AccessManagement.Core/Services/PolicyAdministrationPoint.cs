@@ -141,8 +141,6 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
-            ServiceResource resourceRegistryService = null;
-
             if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
@@ -156,13 +154,6 @@ namespace Altinn.AccessManagement.Core.Services
                 if (resourcePolicy == null)
                 {
                     _logger.LogWarning("No valid resource policy found for delegation policy path: {policyPath}", policyPath);
-                    return false;
-                }
-
-                resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
-                if (resourceRegistryService == null)
-                {
-                    _logger.LogWarning("The specified resource {resourceId} does not exist.", resourceId);
                     return false;
                 }
 
@@ -247,7 +238,6 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         DelegationChangeType = DelegationChangeType.Grant,
                         ResourceId = resourceId,
-                        ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService?.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                         OfferedByPartyId = offeredByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
@@ -258,7 +248,7 @@ namespace Altinn.AccessManagement.Core.Services
                         BlobStorageVersionId = blobResponse.Value.VersionId                        
                     };
 
-                    change = await _delegationRepository.InsertDelegation(change);
+                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
                     if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
@@ -356,7 +346,6 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         DelegationChangeType = isAllRulesDeleted ? DelegationChangeType.RevokeLast : DelegationChangeType.Revoke,
                         ResourceId = resourceId,
-                        ResourceType = currentChange.ResourceType,
                         OfferedByPartyId = deleteRequest.PolicyMatch.OfferedByPartyId,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
@@ -365,7 +354,7 @@ namespace Altinn.AccessManagement.Core.Services
                         BlobStorageVersionId = response.Value.VersionId
                     }; 
 
-                    change = await _delegationRepository.InsertDelegation(change);
+                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
                     if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
@@ -436,16 +425,6 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
-            {
-                resourceRegistryService = await _resourceRegistryClient.GetResource(resourceId);
-                if (resourceRegistryService == null)
-                {
-                    _logger.LogWarning("The specified resource {resourceId} does not exist.", resourceId);
-                    return null;
-                }
-            }
-
             try
             {
                 DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
@@ -481,7 +460,6 @@ namespace Altinn.AccessManagement.Core.Services
                 {
                     DelegationChangeType = DelegationChangeType.RevokeLast,
                     ResourceId = resourceId,
-                    ResourceType = resourceMatchType == ResourceAttributeMatchType.ResourceRegistry ? resourceRegistryService?.ResourceType.ToString() : ResourceAttributeMatchType.AltinnAppId.ToString(),
                     OfferedByPartyId = policyToDelete.PolicyMatch.OfferedByPartyId,
                     CoveredByPartyId = coveredByPartyId,
                     CoveredByUserId = coveredByUserId,
@@ -490,7 +468,7 @@ namespace Altinn.AccessManagement.Core.Services
                     BlobStorageVersionId = response.Value.VersionId                    
                 };
 
-                change = await _delegationRepository.InsertDelegation(change);
+                change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
                 if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                 {
                     // Comment:

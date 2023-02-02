@@ -1962,13 +1962,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
         {
-            HttpContext httpContext = new DefaultHttpContext();                       
+            HttpContext httpContext = new DefaultHttpContext();
             httpContext.Request.RouteValues.Add(partytype, id);
 
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.Setup(h => h.HttpContext).Returns(httpContext);
             return httpContextAccessorMock.Object;
+        }
 
+        /// <summary>
         /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization 50004222
         ///            In this case:
         ///            - The user 20000490 is DAGL for the From unit 50005545
@@ -2233,7 +2235,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             delegations = TestDataUtil.GetAdminDelegations(supplierOrg, consumerOrg, resourceIds);
             return delegations;
         }
-
 
         private static StreamContent GetRequestContent(string resourceId, string from, string to, string inputFileName = "Input_Default")
         {

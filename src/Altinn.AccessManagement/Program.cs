@@ -280,12 +280,10 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_maskinporten_scope_delegation")));
         options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
     });
-
-
+    
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
-
 
     services.Configure<KestrelServerOptions>(options =>
     {

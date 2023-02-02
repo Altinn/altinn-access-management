@@ -332,7 +332,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetRolesPath(int userId, int resourcePartyId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "data", "roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
+            var fullRolePath = Path.Combine(unitTestFolder, "..", "..", "..", "data", "roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
+            Console.WriteLine(fullRolePath + " - " + File.Exists(fullRolePath));
+            return fullRolePath;
         }
 
         private async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request)

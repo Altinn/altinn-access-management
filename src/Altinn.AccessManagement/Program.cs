@@ -281,9 +281,12 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
     });
 
+
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
-    
+    services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
+
+
     services.Configure<KestrelServerOptions>(options =>
     {
         options.AllowSynchronousIO = true;

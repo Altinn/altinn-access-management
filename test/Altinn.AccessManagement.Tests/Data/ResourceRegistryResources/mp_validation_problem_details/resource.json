@@ -1,0 +1,44 @@
+{
+  "title": {
+    "en": "MaskinportenSchema for ValidationProblemDetails responses",
+    "nb-no": "MaskinportenSchema for ValidationProblemDetails responses",
+    "nn-no": "MaskinportenSchema for ValidationProblemDetails responses"
+  },
+  "sector": [
+    "private",
+    "public"
+  ],
+  "status": "Active",
+  "validTo": "2099-12-24T23:59:59",
+  "homepage": "https://www.digdir.no/",
+  "isPartOf": "Altinn",
+  "keywords": [
+  ],
+  "validFrom": "2022-09-20T06:46:07.598Z",
+  "identifier": "mp_validation_problem_details",
+  "isComplete": true,
+  "description": {
+    "en": "A MaskinportenSchema to test ValidationProblemDetails responses",
+    "nb-no": "A MaskinportenSchema to test ValidationProblemDetails responses",
+    "nn-no": "A MaskinportenSchema to test ValidationProblemDetails responses"
+  },
+  "resourceType": "MaskinportenSchema",
+  "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+  "isPublicService": true,
+  "rightDescription": {
+    "en": "Acces to this MaskinportenSchema",
+    "nb-no": "Acces to this MaskinportenSchema",
+    "nn-no": "Acces to this MaskinportenSchema"
+  },
+  "resourceReferences": [
+  ],
+  "hasCompetentAuthority": {
+    "orgcode": "DIGDIR",
+    "organization": "991825827",
+    "name": {
+      "en": "DIGITALISERINGSDIREKTORATET",
+      "nb-no": "DIGITALISERINGSDIREKTORATET",
+      "nn-no": "DIGITALISERINGSDIREKTORATET"
+    }
+  }
+}

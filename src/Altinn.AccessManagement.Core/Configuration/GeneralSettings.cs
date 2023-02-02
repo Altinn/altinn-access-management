@@ -9,11 +9,6 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// Gets or sets the SBL base adress
         /// </summary>
         public string SBLBaseAdress { get; set; }
-
-        /// <summary>
-        /// Gets or sets the cache timeout
-        /// </summary>
-        public int PolicyCacheTimeout { get; set;  }
         
         /// <summary>
         /// Gets or sets the host name.
@@ -24,10 +19,5 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// Option to disable csrf check
         /// </summary>
         public bool DisableCsrfCheck { get; set; }
-
-        /// <summary>
-        /// Gets or sets the RuntimeCookieName
-        /// </summary>
-        public string RuntimeCookieName { get; set; }
     }
 }

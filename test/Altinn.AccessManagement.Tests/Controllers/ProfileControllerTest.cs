@@ -66,7 +66,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Mock.Get(_profileClient).Setup(m => m.GetUserProfile(It.IsAny<int>())).ReturnsAsync(userProfile);
         }
 
-        private UserProfile GetUserProfile(int id)
+        private static UserProfile GetUserProfile(int id)
         {
             return new UserProfile
             {

@@ -1960,7 +1960,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
 
-        private IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
+        private static IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
         {
             HttpContext httpContext = new DefaultHttpContext();
             httpContext.Request.RouteValues.Add(partytype, id);

@@ -225,28 +225,28 @@ namespace Altinn.AccessManagement.Tests.Mocks
         //         }
         //     }
         // }
-        private XacmlAttribute GetOrgAttribute(Instance instance)
+        private static XacmlAttribute GetOrgAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(OrgAttributeId), false);
             attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.Org));
             return attribute;
         }
 
-        private XacmlAttribute GetAppAttribute(Instance instance)
+        private static XacmlAttribute GetAppAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(AppAttributeId), false);
             attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.AppId.Split('/')[1]));
             return attribute;
         }
 
-        private XacmlAttribute GetProcessElementAttribute(Instance instance)
+        private static XacmlAttribute GetProcessElementAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(TaskAttributeId), false);
             attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.Process.CurrentTask.ElementId));
             return attribute;
         }
 
-        private XacmlAttribute GetPartyAttribute(Instance instance)
+        private static XacmlAttribute GetPartyAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(PartyAttributeId), false);
 
@@ -256,7 +256,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return attribute;
         }
 
-        private XacmlAttribute GetRoleAttribute(List<Role> roles)
+        private static XacmlAttribute GetRoleAttribute(List<Role> roles)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(AltinnRoleAttributeId), false);
             foreach (Role role in roles)
@@ -369,7 +369,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return resourceAttributes;
         }
 
-        private Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
+        private static Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
         {
             string rolesPath = GetRolesPath(coveredByUserId, offeredByPartyId);
 
@@ -397,7 +397,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return await Task.FromResult(xacmlPolicy);
         }
 
-        private string GetPolicyPath(XacmlContextRequest request)
+        private static string GetPolicyPath(XacmlContextRequest request)
         {
             var resourceId = string.Empty;
             var partyId = string.Empty;
@@ -443,7 +443,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
         }
 
-        private string GetInstancePath()
+        private static string GetInstancePath()
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Instances");

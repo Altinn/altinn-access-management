@@ -21,11 +21,6 @@ namespace Altinn.AccessManagement.Core.Configuration
         public bool DisableCsrfCheck { get; set; }
 
         /// <summary>
-        /// Gets or sets the RuntimeCookieName
-        /// </summary>
-        public string RuntimeCookieName { get; set; }
-
-        /// <summary>
         /// Gets or sets the cdn url for frontend
         /// </summary>
         public string FrontendBaseUrl { get; set; }

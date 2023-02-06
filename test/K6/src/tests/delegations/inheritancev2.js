@@ -404,11 +404,10 @@ export function delegationToOrgIsInheritedByECUserViaKeyrole() {
     'Delegation to Org is inherited by ECUser via keyrole - type is 2': (r) => r.json('0.type') === 2,
   });
   addErrorCount(success);
-  
-  // Cleanup
       
   // Cleanup
-  helper.deleteAllRules(altinnToken, performedByUserId, offeredByPartyId, coveredByPartyId, 'partyid', appOwner, appName);
+  policyMatchKeys.coveredBy = 'urn:altinn:partyid';
+  helper.deleteAllRules(altinnToken, user1_userId, org1_partyId, org2_partyId, 'partyid', appOwner, appName);
   res = delegation.getRules(altinnToken, policyMatchKeys, offeredByPartyId, ecUserIdForCoveredBy, resources, null, [coveredByPartyId]);
   success = check(res, {
     'Delegation to Org is inherited by ECUser via keyrole - rules successfully deleted, status is 200': (r) => r.status == 200,

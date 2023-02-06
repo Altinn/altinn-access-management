@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Models.Bff;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Utils
@@ -25,6 +26,12 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// <param name="assertMethod">The assertion method to be used</param>
         public static void AssertCollections<T>(ICollection<T> expected, ICollection<T> actual, Action<T, T> assertMethod)
         {
+            if (expected == null)
+            {
+                Assert.Null(actual);
+                return;
+            }
+
             Assert.Equal(expected.Count, actual.Count);
 
             Dictionary<int, T> expectedDict = new Dictionary<int, T>();
@@ -394,29 +401,29 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="Right"/> have the same property in the same positions.
+        /// Assert that two <see cref="RightExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightEqual(Right expected, Right actual)
+        public static void AssertRightExternalEqual(RightExternal expected, RightExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
 
             Assert.Equal(expected.RightKey, actual.RightKey);
-            AssertEqual(expected.Resource, actual.Resource);
-            AssertEqual(expected.Action, actual.Action);
+            AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
+            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
-            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceEqual);
+            AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
         }
 
         /// <summary>
-        /// Assert that two <see cref="RightSource"/> have the same property in the same positions.
+        /// Assert that two <see cref="RightSourceExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightSourceEqual(RightSource expected, RightSource actual)
+        public static void AssertRightSourceExternalEqual(RightSourceExternal expected, RightSourceExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -428,21 +435,81 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
             Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            AssertEqual(expected.UserSubjects, actual.UserSubjects);
+
+            AssertCollections(expected.UserSubjects, actual.UserSubjects, AssertAttributeMatchExternalEqual);
             AssertCollections(expected.PolicySubjects, actual.PolicySubjects, AssertPolicySubjects);
         }
 
-        private static void AssertPolicySubjects(List<PolicyAttributeMatch> expected, List<PolicyAttributeMatch> actual)
+        /// <summary>
+        /// Assert that two <see cref="BaseRightExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertBaseRightExternalEqual(BaseRightExternal expected, BaseRightExternal actual)
         {
-            AssertCollections(expected, actual, AssertPolicyAttributeMatchEqual);
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
+            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
         }
 
-        private static void AssertPolicyAttributeMatchEqual(PolicyAttributeMatch expected, PolicyAttributeMatch actual)
+        /// <summary>
+        /// Assert that two <see cref="DelegationOutputExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDelegationOutputExternalEqual(DelegationOutputExternal expected, DelegationOutputExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertCollections(expected.To, actual.To, AssertAttributeMatchExternalEqual);
+            AssertCollections(expected.RightDelegationResults, actual.RightDelegationResults, AssertBaseRightExternalEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ValidationProblemDetails"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertValidationProblemDetailsEqual(ValidationProblemDetails expected, ValidationProblemDetails actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.Type, actual.Type);
+            Assert.Equal(expected.Title, actual.Title);
+            Assert.Equal(expected.Status, actual.Status);
+
+            Assert.Equal(expected.Errors.Keys.Count, actual.Errors.Keys.Count);
+            Assert.True(expected.Errors.Keys.All(expectedKey => actual.Errors.ContainsKey(expectedKey)));
+            foreach (string expectedKey in expected.Errors.Keys)
+            {
+                Assert.Equal(actual.Errors[expectedKey], actual.Errors[expectedKey]);
+            }
+        }
+
+        private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)
+        {
+            AssertCollections(expected, actual, AssertPolicyAttributeMatchExternalEqual);
+        }
+
+        private static void AssertPolicyAttributeMatchExternalEqual(PolicyAttributeMatchExternal expected, PolicyAttributeMatchExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
 
             Assert.Equal(expected.MatchFound, actual.MatchFound);
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.Equal(expected.Value, actual.Value);
+        }
+
+        private static void AssertAttributeMatchExternalEqual(AttributeMatchExternal expected, AttributeMatchExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Value, actual.Value);
         }

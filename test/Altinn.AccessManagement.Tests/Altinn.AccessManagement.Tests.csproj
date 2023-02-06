@@ -56,15 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Data\Json\Delegation\delegationchange.json" />
-    <None Remove="Data\ResourceRegistryDelegationChanges\delegationchange.json" />
-    <None Remove="Data\ResourceRegistryResources\nav_aa_distribution\resource.json" />
-    <None Remove="Data\ResourceRegistryResources\resource1\resource.json" />
-    <None Remove="Data\ResourceRegistryResources\resource2\resource.json" />
-    <None Remove="Data\ResourceRegistryResources\skd_1\resource.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

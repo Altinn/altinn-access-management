@@ -14,6 +14,7 @@ using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Altinn.Common.PEP.Helpers;
 using Altinn.Common.PEP.Interfaces;
+using Altinn.Platform.Storage.Interface.Models;
 using Newtonsoft.Json;
 
 namespace Altinn.AccessManagement.Tests.Mocks
@@ -23,13 +24,17 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// </summary>
     public class PepWithPDPAuthorizationMock : IPDP
     {
-        private readonly string _orgAttributeId = "urn:altinn:org";
+        private const string OrgAttributeId = "urn:altinn:org";
 
-        private readonly string _appAttributeId = "urn:altinn:app";
+        private const string AppAttributeId = "urn:altinn:app";
 
-        private readonly string _userAttributeId = "urn:altinn:userid";
+        private const string UserAttributeId = "urn:altinn:userid";
 
-        private readonly string _altinnRoleAttributeId = "urn:altinn:rolecode";
+        private const string AltinnRoleAttributeId = "urn:altinn:rolecode";
+
+        private const string TaskAttributeId = "urn:altinn:task";
+
+        private const string PartyAttributeId = "urn:altinn:partyid";
 
         /// <inheritdoc />
         public async Task<XacmlJsonResponse> GetDecisionForRequest(XacmlJsonRequestRoot xacmlJsonRequest)
@@ -175,13 +180,40 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 // The resource attributes are complete
                 resourceAttributeComplete = true;
             }
+            
+            if (!resourceAttributeComplete)
+            {
+                Instance instanceData = GetTestInstance(resourceAttributes.InstanceValue);
+
+                if (string.IsNullOrEmpty(resourceAttributes.OrgValue))
+                {
+                    resourceContextAttributes.Attributes.Add(GetOrgAttribute(instanceData));
+                }
+
+                if (string.IsNullOrEmpty(resourceAttributes.AppValue))
+                {
+                    resourceContextAttributes.Attributes.Add(GetAppAttribute(instanceData));
+                }
+
+                if (string.IsNullOrEmpty(resourceAttributes.TaskValue))
+                {
+                    resourceContextAttributes.Attributes.Add(GetProcessElementAttribute(instanceData));
+                }
+
+                if (string.IsNullOrEmpty(resourceAttributes.ResourcePartyValue))
+                {
+                    resourceContextAttributes.Attributes.Add(GetPartyAttribute(instanceData));
+                }
+
+                resourceAttributes.ResourcePartyValue = instanceData.InstanceOwner.PartyId;
+            }
 
             await EnrichSubjectAttributes(request, resourceAttributes.ResourcePartyValue);
         }
         
-        // /// <summary>
-        // /// Method that adds information about the resource party 
-        // /// </summary>
+        /// <summary>
+        /// Method that adds information about the resource party 
+        /// </summary>
         // protected async Task EnrichResourceParty(XacmlResourceAttributes resourceAttributes)
         // {
         //     if (string.IsNullOrEmpty(resourceAttributes.ResourcePartyValue) && !string.IsNullOrEmpty(resourceAttributes.OrganizationNumber))
@@ -193,6 +225,48 @@ namespace Altinn.AccessManagement.Tests.Mocks
         //         }
         //     }
         // }
+        private static XacmlAttribute GetOrgAttribute(Instance instance)
+        {
+            XacmlAttribute attribute = new XacmlAttribute(new Uri(OrgAttributeId), false);
+            attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.Org));
+            return attribute;
+        }
+
+        private static XacmlAttribute GetAppAttribute(Instance instance)
+        {
+            XacmlAttribute attribute = new XacmlAttribute(new Uri(AppAttributeId), false);
+            attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.AppId.Split('/')[1]));
+            return attribute;
+        }
+
+        private static XacmlAttribute GetProcessElementAttribute(Instance instance)
+        {
+            XacmlAttribute attribute = new XacmlAttribute(new Uri(TaskAttributeId), false);
+            attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.Process.CurrentTask.ElementId));
+            return attribute;
+        }
+
+        private static XacmlAttribute GetPartyAttribute(Instance instance)
+        {
+            XacmlAttribute attribute = new XacmlAttribute(new Uri(PartyAttributeId), false);
+
+            // When Party attribute is missing from input it is good to return it so PEP can get this information
+            attribute.IncludeInResult = true;
+            attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), instance.InstanceOwner.PartyId));
+            return attribute;
+        }
+
+        private static XacmlAttribute GetRoleAttribute(List<Role> roles)
+        {
+            XacmlAttribute attribute = new XacmlAttribute(new Uri(AltinnRoleAttributeId), false);
+            foreach (Role role in roles)
+            {
+                attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), role.Value));
+            }
+
+            return attribute;
+        }
+
         private static void AddIfValueDoesNotExist(XacmlContextAttributes resourceAttributes, string attributeId, string attributeValue, string newAttributeValue)
         {
             if (string.IsNullOrEmpty(attributeValue))
@@ -229,7 +303,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
             foreach (XacmlAttribute xacmlAttribute in subjectContextAttributes.Attributes)
             {
-                if (xacmlAttribute.AttributeId.OriginalString.Equals(_userAttributeId))
+                if (xacmlAttribute.AttributeId.OriginalString.Equals(UserAttributeId))
                 {
                     subjectUserId = Convert.ToInt32(xacmlAttribute.AttributeValues.First().Value);
                 }
@@ -295,23 +369,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return resourceAttributes;
         }
 
-        private XacmlAttribute GetRoleAttribute(List<Role> roles)
-        {
-            XacmlAttribute attribute = new XacmlAttribute(new Uri(_altinnRoleAttributeId), false);
-            foreach (Role role in roles)
-            {
-                attribute.AttributeValues.Add(new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), role.Value));
-            }
-
-            return attribute;
-        }
-
-        private Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
+        private static Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
         {
             string rolesPath = GetRolesPath(coveredByUserId, offeredByPartyId);
 
             List<Role> roles = new List<Role>();
-
             if (File.Exists(rolesPath))
             {
                 string content = File.ReadAllText(rolesPath);
@@ -324,7 +386,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetRolesPath(int userId, int resourcePartyId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "data", "roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
+            var fullRolePath = Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
+            Console.WriteLine("EKO:" + fullRolePath + " - " + File.Exists(fullRolePath));
+            return fullRolePath;
         }
 
         private async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request)
@@ -333,7 +397,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return await Task.FromResult(xacmlPolicy);
         }
 
-        private string GetPolicyPath(XacmlContextRequest request)
+        private static string GetPolicyPath(XacmlContextRequest request)
         {
             var resourceId = string.Empty;
             var partyId = string.Empty;
@@ -376,7 +440,23 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetResourceAccessPolicyPath(string resourcePartyId, string ressursid)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml","3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
+        }
+
+        private static string GetInstancePath()
+        {
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Instances");
+        }
+        
+        private Instance GetTestInstance(string instanceId)
+        {
+            string partyPart = instanceId.Split('/')[0];
+            string instancePart = instanceId.Split('/')[1];
+
+            string content = File.ReadAllText(Path.Combine(GetInstancePath(), $"{partyPart}/{instancePart}.json"));
+            Instance instance = (Instance)JsonConvert.DeserializeObject(content, typeof(Instance));
+            return instance;
         }
     }
     

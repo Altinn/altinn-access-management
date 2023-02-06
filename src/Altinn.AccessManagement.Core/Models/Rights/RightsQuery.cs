@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Queries for a list of all rights between two parties for a specific resource.
@@ -12,19 +10,16 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for the entity having offered rights
         /// </summary>
-        [Required]
         public List<AttributeMatch> From { get; set; }
 
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for the entity having received rights
         /// </summary>
-        [Required]
         public List<AttributeMatch> To { get; set; }
 
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for identifying the resource the rights 
         /// </summary>
-        [Required]
         public List<AttributeMatch> Resource { get; set; }
     }
 }

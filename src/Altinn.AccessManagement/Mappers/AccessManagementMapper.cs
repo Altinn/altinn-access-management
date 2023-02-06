@@ -46,6 +46,24 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.ReferenceType, act => act.MapFrom(src => src.ReferenceType))
                 .ForMember(dest => dest.ReferenceSource, act => act.MapFrom(src => src.ReferenceSource))
                 .ForMember(dest => dest.Reference, act => act.MapFrom(src => src.Reference));
+            CreateMap<AttributeMatch, AttributeMatchExternal>();
+            CreateMap<AttributeMatchExternal, AttributeMatch>();
+            CreateMap<PolicyAttributeMatch, PolicyAttributeMatchExternal>();
+            CreateMap<PolicyAttributeMatchExternal, PolicyAttributeMatch>();
+
+            // Rights
+            CreateMap<RightsQueryExternal, RightsQuery>();
+            CreateMap<RightSource, RightSourceExternal>();
+            CreateMap<RightSourceExternal, RightSource>();
+            CreateMap<Right, RightExternal>();
+            CreateMap<BaseRightExternal, Right>();
+
+            // Delegation
+            CreateMap<DelegationInputExternal, DelegationInput>();
+            CreateMap<Right, BaseRightExternal>();
+            CreateMap<DelegationOutput, DelegationOutputExternal>()
+                .ForMember(dest => dest.To, act => act.MapFrom(src => src.To))
+                .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
@@ -9,7 +11,6 @@ using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
 using AutoMapper;
-using Azure.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -241,7 +242,7 @@ namespace Altinn.AccessManagement.Controllers
         {
             if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing part");
+                return BadRequest("Missing reportee party");
             }
 
             try
@@ -276,11 +277,11 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/inbound")]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAlInboundDelegations([FromRoute] string party)
+        public async Task<ActionResult<List<DelegationExternal>>> GetAllInboundDelegations([FromRoute] string party)
         {
             if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing party");
+                return BadRequest("Missing reportee party");
             }
 
             try
@@ -345,6 +346,50 @@ namespace Altinn.AccessManagement.Controllers
             {
                 _logger.LogError(ex, "GetAllDelegationsForAdmin failed to fetch delegations");
                 return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for delegating maskinporten scheme resources between two parties
+        /// </summary>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize]
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")]
+        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+            try
+            {
+                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, party, internalDelegation);
+
+                if (!response.IsValid)
+                {
+                    foreach (string errorKey in response.Errors.Keys)
+                    {
+                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
+                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
+                DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
+                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Internal exception occurred during maskinportenschema delegation");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
     }

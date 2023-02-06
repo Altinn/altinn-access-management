@@ -125,14 +125,14 @@ namespace Altinn.AccessManagement.Core.Helpers
             AttributeMatch orgMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
             AttributeMatch appMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
 
-            if (resourceRegistryMatch != null)
+            if (resourceRegistryMatch != null && orgMatch == null && appMatch == null)
             {
                 resourceMatchType = ResourceAttributeMatchType.ResourceRegistry;
                 resourceId = resourceRegistryMatch.Value;
                 return true;
             }
 
-            if (orgMatch != null && appMatch != null)
+            if (orgMatch != null && appMatch != null && resourceRegistryMatch == null)
             {
                 resourceMatchType = ResourceAttributeMatchType.AltinnAppId;
                 org = orgMatch.Value;

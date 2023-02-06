@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a single right
@@ -25,13 +23,11 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets a value indicating whether the user or party has the right
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? HasPermit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user or party is permitted to delegate the right to others
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool? CanDelegate { get; set; }
 
         /// <summary>

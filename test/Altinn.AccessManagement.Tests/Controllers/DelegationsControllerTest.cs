@@ -744,9 +744,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             Stream dataStream = File.OpenRead("Data/Json/AddRules/ReadWriteOrg1App1_50001337_20001336.json");
             StreamContent content = new StreamContent(dataStream);
+            _client.DefaultRequestHeaders.Remove("Authorization");
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "ThisIsNotAValidToken");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/addrules", content);

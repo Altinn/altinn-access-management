@@ -1,0 +1,44 @@
+{
+  "title": {
+    "en": "A System Resource",
+    "nb-no": "A System Resource",
+    "nn-no": "A System Resource"
+  },
+  "sector": [
+    "private",
+    "public"
+  ],
+  "status": "Active",
+  "validTo": "2099-12-24T23:59:59",
+  "homepage": "https://www.digdir.no/",
+  "isPartOf": "Altinn",
+  "keywords": [
+  ],
+  "validFrom": "2022-09-20T06:46:07.598Z",
+  "identifier": "system_resource",
+  "isComplete": true,
+  "description": {
+    "en": "Random System Resource",
+    "nb-no": "Random System Resource",
+    "nn-no": "Random System Resource"
+  },
+  "resourceType": "SystemResource",
+  "thematicArea": "http://publications.europa.eu/resource/authority/eurovoc/2468",
+  "isPublicService": true,
+  "rightDescription": {
+    "en": "Acces to this random system resource",
+    "nb-no": "Acces to this random system resource",
+    "nn-no": "Acces to this random system resource"
+  },
+  "resourceReferences": [
+  ],
+  "hasCompetentAuthority": {
+    "orgcode": "DIGDIR",
+    "organization": "991825827",
+    "name": {
+      "en": "DIGITALISERINGSDIREKTORATET",
+      "nb-no": "DIGITALISERINGSDIREKTORATET",
+      "nn-no": "DIGITALISERINGSDIREKTORATET"
+    }
+  }
+}

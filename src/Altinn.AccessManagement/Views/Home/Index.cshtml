@@ -1,19 +1,23 @@
 ﻿<!DOCTYPE html>
 <html lang="no" style="background-color: #1EADF7;">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <script type="module">
+import RefreshRuntime from "http://localhost:5173/@@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+    <script type="module" src="http://localhost:5173/@@vite/client"></script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/altinn-logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Altinn API Delegering">
     <meta name="keywords" content="Altinn Profil API Delegering">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <link rel="stylesheet" type="text/css" href="https://altinncdn.no/fonts/altinn-din/woff2/Altinn-DIN-Bold.woff2" />
-    <link rel="stylesheet" type="text/css" href="https://altinncdn.no/fonts/altinn-din/woff2/Altinn-DIN.woff2" />
-    <link rel="stylesheet" type="text/css" href="https://amcdntest.z16.web.core.windows.net/assets/entrypoint-08bb1510.css" />
-    <title>Profil</title>
-</head>
-<body>
+    <title>Altinn</title>
+  </head>
+  <body>
     <div id="root"></div>
-    <script type="module" src="https://amcdntest.z16.web.core.windows.net/assets/entrypoint-2f8c58c3.js"></script>
-</body>
+    <script type="module" src="http://localhost:5173/src/main.jsx"></script>
+  </body>
 </html>

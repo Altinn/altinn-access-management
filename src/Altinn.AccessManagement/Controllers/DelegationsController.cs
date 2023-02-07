@@ -248,10 +248,6 @@ namespace Altinn.AccessManagement.Controllers
             {
                 List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
                 List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
 
                 return delegationsExternal;
             }
@@ -286,10 +282,6 @@ namespace Altinn.AccessManagement.Controllers
             {
                 List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
                 List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
 
                 return delegationsExternal;
             }

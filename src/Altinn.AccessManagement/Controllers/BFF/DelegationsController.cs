@@ -64,10 +64,6 @@ namespace Altinn.AccessManagement.Controllers.BFF
             {
                 List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
                 List<DelegationBff> delegationsExternal = _mapper.Map<List<DelegationBff>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
 
                 return delegationsExternal;
             }
@@ -96,11 +92,6 @@ namespace Altinn.AccessManagement.Controllers.BFF
             {
                 List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
                 List<DelegationBff> delegationsExternal = _mapper.Map<List<DelegationBff>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
-
                 return delegationsExternal;
             }
             catch (ArgumentException)

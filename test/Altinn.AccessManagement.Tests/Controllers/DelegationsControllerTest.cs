@@ -1685,7 +1685,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_MissingBearerToken()
         {
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
-            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            _client = GetTestClient(null, httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
@@ -1703,7 +1703,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_InvalidBearerToken()
         {
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
-            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            _client = GetTestClient(null, httpContextAccessorMock);
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
@@ -2267,7 +2267,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null)
         {
-            pdpMock ??= new PdpPermitMock();
+            pdpMock ??= new PepWithPDPAuthorizationMock();
             httpContextAccessor ??= new HttpContextAccessor();
             
             HttpClient client = _factory.WithWebHostBuilder(builder =>

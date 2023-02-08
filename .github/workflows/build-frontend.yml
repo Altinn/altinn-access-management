@@ -1,8 +1,23 @@
 name: Build frontend and copy dist-files
 on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  pull_request_target:
   push:
-    branches:
-      -feat/build-frontend-github-action
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "The type of release (one of 'patch' or 'minor')"
+        required: true
+        default: patch
+        type: choice
+        options:
+        - patch
+        - minor
+
 jobs:
   build:
     name: Run frontend build

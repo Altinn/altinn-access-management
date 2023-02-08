@@ -1,0 +1,21 @@
+name: Build frontend and copy dist-files
+on:
+  push:
+    branches:
+      -feat/build-frontend-github-action
+jobs:
+  build:
+    name: Run frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+          owner: altinnadmin
+          repo: altinn-access-management-frontend
+          ref: main
+          github_token: ${{ secrets.GITHUB_PAT }}
+          workflow_file_name: build.yaml
+          wait_interval: 10
+          trigger_workflow: true
+          wait_workflow: true
+          propagate_failure: true

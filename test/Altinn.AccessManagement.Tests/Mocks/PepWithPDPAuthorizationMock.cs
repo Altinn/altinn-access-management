@@ -421,7 +421,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 }
             }
 
-            return GetResourceAccessPolicyPath(partyId, resourceId);
+            return GetResourceAccessPolicyPath(resourceId);
         }
 
         private static XacmlPolicy ParsePolicy(string policyDocumentTitle, string policyPath)
@@ -437,10 +437,10 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return policy;
         }
 
-        private static string GetResourceAccessPolicyPath(string resourcePartyId, string ressursid)
+        private static string GetResourceAccessPolicyPath(string ressursid)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", $"{ressursid}", "party_" + resourcePartyId);
+            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Xacml", "3.0", "ResourceRegistry", $"{ressursid}");
         }
 
         private static string GetInstancePath()

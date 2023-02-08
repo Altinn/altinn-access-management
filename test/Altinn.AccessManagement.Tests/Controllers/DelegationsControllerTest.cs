@@ -1542,8 +1542,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
             
-            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
-            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "50004219");
+            _client = GetTestClient(null, httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             

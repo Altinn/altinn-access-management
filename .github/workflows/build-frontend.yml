@@ -5,11 +5,11 @@ on:
       -feat/build-frontend-github-action
 jobs:
   build:
+    runs-on: ubuntu-latest
     name: Run frontend build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Trigger frontend-build and wait
-        uses: convictional/trigger-workflow-and-wait@v1.6.1
+    steps:
+      - name: Trigger frontend-build and wait
+      - uses: convictional/trigger-workflow-and-wait@v1.6.1
         with:
           owner: altinnadmin
           repo: altinn-access-management-frontend

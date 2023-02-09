@@ -1,21 +1,18 @@
+#nullable enable
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
-using Altinn.AccessManagement.Core.Configuration;
-using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Integration.Clients;
-using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.Common.AccessTokenClient.Services;
+using Altinn.Common.PEP.Interfaces;
 using Altinn.Platform.Profile.Models;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Http;
@@ -25,10 +22,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Moq.Protected;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Controllers
 {
     /// <summary>
     /// Integrationtests of ProfileController
@@ -61,6 +57,7 @@ namespace Altinn.AccessManagement.Tests
                     services.AddSingleton(typeof(ILogger<ProfileClient>),  _logger.Object);
                     services.AddHttpClient<IProfileClient, ProfileClient>().AddHttpMessageHandler<MessageHandlerMock>();
                     services.AddSingleton<MessageHandlerMock>(handler);
+                    services.AddSingleton<IPDP, PdpPermitMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

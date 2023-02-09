@@ -366,15 +366,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>Party ID extracted from 'who', or NULL if 'who' contains no party id.</returns>
         public static int? TryParsePartyId(string who)
         {
-            bool hasPrefix = who[0] == 'r';
-
-            if (!hasPrefix)
-            {
-                return null;
-            }
-
             int partyId;
-            if (!int.TryParse(who.AsSpan(1), out partyId))
+            if (!int.TryParse(who, out partyId))
             {
                 return 0;
             }

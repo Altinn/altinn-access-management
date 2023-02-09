@@ -237,7 +237,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")]
         public async Task<ActionResult<List<DelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
         {
@@ -266,7 +266,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")]
         public async Task<ActionResult<List<DelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
         {

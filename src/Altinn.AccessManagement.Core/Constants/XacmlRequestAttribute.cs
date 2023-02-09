@@ -41,6 +41,11 @@
         public const string PartyAttribute = "urn:altinn:partyid";
 
         /// <summary>
+        /// xacml string that represents organization number 
+        /// </summary>
+        public const string OrganizationNumberAttribute = "urn:altinn:organizationnumber";
+        
+        /// <summary>
         /// xacml string that represents user
         /// </summary>
         public const string UserAttribute = "urn:altinn:userid";
@@ -49,5 +54,10 @@
         /// xacml string that represents role
         /// </summary>
         public const string RoleAttribute = "urn:altinn:rolecode";
+        
+        /// <summary>
+        /// xacml string that represents resource
+        /// </summary>
+        public const string ResourceRegistryAttribute = "urn:altinn:resourceregistry";
     }
 }

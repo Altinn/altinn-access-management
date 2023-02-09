@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Helpers;
+﻿using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,6 @@
 ﻿namespace Altinn.AccessManagement.Integration.Configuration
 {
+#nullable enable
     /// <summary>
     /// General configuration settings
     /// </summary>

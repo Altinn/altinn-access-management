@@ -335,5 +335,33 @@
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "",
+    "OrgNumber": "50005545",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "910459880",
+      "Name": "ØRSTA OG HEGGEDAL REGNSKAP",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50005545,
+    "UnitType": "AS",
+    "Name": "ØRSTA OG HEGGEDAL REGNSKAP",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
   }
 ]

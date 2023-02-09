@@ -24,6 +24,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IResourceAdministrationPoint _resourceAdministrationPoint;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
+        private readonly IRegister _registerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
@@ -34,7 +35,8 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="resourceAdministrationPoint">handler for resource registry</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+        /// <param name="registerService">Service implementation for register lookup</param>
+        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IRegister registerService)
         {
             _logger = logger;
             _delegationRepository = delegationRepository;
@@ -42,10 +44,11 @@ namespace Altinn.AccessManagement.Core.Services
             _resourceAdministrationPoint = resourceAdministrationPoint;
             _pip = pip;
             _pap = pap;
+            _registerService = registerService;
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, string from, DelegationInput delegation)
+        public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, DelegationInput delegation)
         {
             DelegationOutput output = new DelegationOutput { To = delegation.To, Rights = delegation.Rights };
 
@@ -79,17 +82,37 @@ namespace Altinn.AccessManagement.Core.Services
                 return output;
             }
 
-            // Verify To recipient of delegation
-            if (!DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int partyId))
+            // Verify and get From reportee party of the delegation
+            Party fromParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
             {
-                output.Errors.Add("To", $"Maskinporten schema delegation currently only support delegation To a PartyId (using {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Id}");
+                fromParty = await _registerService.GetOrganisation(fromOrgNo);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
+            {
+                fromParty = await _contextRetrievalService.GetPartyAsync(fromPartyId);
+            }
+
+            if (fromParty == null || fromParty.PartyTypeName != PartyType.Organisation)
+            {
+                output.Errors.Add("From", $"Maskinporten schema delegation can only be delegated from a valid organization. Invalid value: {delegation.From.FirstOrDefault()?.Id}");
                 return output;
             }
 
-            Party toParty = await _contextRetrievalService.GetPartyAsync(partyId);
+            // Verify and get To recipient party of the delegation
+            Party toParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
+            {
+                toParty = await _registerService.GetOrganisation(toOrgNo);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
+            {
+                toParty = await _contextRetrievalService.GetPartyAsync(toPartyId);
+            }
+                        
             if (toParty == null || toParty.PartyTypeName != PartyType.Organisation)
             {
-                output.Errors.Add("To", $"Maskinporten schema delegation can only be delegated To a valid PartyId belonging to an organization. Invalid value: {partyId}");
+                output.Errors.Add("To", $"Maskinporten schema delegation can only be delegated To a valid organization (identified by either {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Id}");
                 return output;
             }
 
@@ -97,7 +120,7 @@ namespace Altinn.AccessManagement.Core.Services
             RightsQuery rightsQuery = new RightsQuery
             {
                 To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = delegatingUserId.ToString() } },
-                From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = from } },
+                From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromParty.PartyId.ToString() } },
                 Resource = right.Resource
             };
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
@@ -120,8 +143,8 @@ namespace Altinn.AccessManagement.Core.Services
                 rulesToDelegate.Add(new Rule
                 {
                     DelegatedByUserId = delegatingUserId,
-                    OfferedByPartyId = int.Parse(from),
-                    CoveredBy = delegation.To,
+                    OfferedByPartyId = fromParty.PartyId,
+                    CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toParty.PartyId.ToString() } },
                     Resource = rightToDelegate.Resource,
                     Action = rightToDelegate.Action
                 });
@@ -133,32 +156,58 @@ namespace Altinn.AccessManagement.Core.Services
                 output.Rights = usersDelegableRights;
                 return await Task.FromResult(output);
             }
+            else if (result.Any(r => r.CreatedSuccessfully))
+            {
+                // Partial delegation of rules should not really be possible. Return success but log error?
+                _logger.LogError("One or more rules could not be delegated.\n{result}", result);
+                output.Rights = usersDelegableRights;
+                return await Task.FromResult(output);
+            }
 
-            return null;
+            output.Errors.Add("Rights", "Delegation was not able complete");
+            return output;
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetAllOutboundDelegationsAsync(string party, ResourceType resourceType)
+        public async Task<List<Delegation>> GetOfferedMaskinportenSchemaDelegations(AttributeMatch party)
         {
-            int offeredByPartyId = await GetParty(party);
-            if (offeredByPartyId == 0)
+            if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
             {
-                throw new ArgumentException("OfferedByPartyId does not have a valid value");
+                throw new ArgumentException($"Maskinporten schema delegations is not supported between persons. Invalid argument: {party.Id}");
             }
 
-            return await GetOutboundDelegations(offeredByPartyId, resourceType);
+            int offeredByPartyId = 0;
+            if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+            {
+                offeredByPartyId = await _contextRetrievalService.GetPartyId(party.Value);
+            }
+            else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out offeredByPartyId) || offeredByPartyId == 0))
+            {
+                throw new ArgumentException($"The specified PartyId is not a valid. Invalid argument: {party.Value}");
+            }
+
+            return await GetOutboundDelegations(offeredByPartyId, ResourceType.MaskinportenSchema);
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetAllInboundDelegationsAsync(string party, ResourceType resourceType)
+        public async Task<List<Delegation>> GetReceivedMaskinportenSchemaDelegations(AttributeMatch party)
         {
-            int coveredByPartyId = await GetParty(party);
-            if (coveredByPartyId == 0)
+            if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
             {
-                throw new ArgumentException();
+                throw new ArgumentException($"Maskinporten schema delegations is not supported between persons. Invalid argument: {party.Id}");
             }
 
-            return await GetInboundDelegations(coveredByPartyId, resourceType);
+            int coveredByPartyId = 0;
+            if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+            {
+                coveredByPartyId = await _contextRetrievalService.GetPartyId(party.Value);
+            }
+            else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out coveredByPartyId) || coveredByPartyId == 0))
+            {
+                throw new ArgumentException($"The specified PartyId is not a valid. Invalid argument: {party.Value}");
+            }
+
+            return await GetInboundDelegations(coveredByPartyId, ResourceType.MaskinportenSchema);
         }
 
         /// <inheritdoc/>
@@ -174,7 +223,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);
         }
-        
+
         private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceTypes: resourceType.SingleToList());
@@ -294,40 +343,6 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             return delegations;
-        }
-
-        /// <summary>
-        /// Gets the party identified by <paramref name="who"/>.
-        /// </summary>
-        /// <param name="who">
-        /// Who, valid values are , an organization number, or a party ID (the letter r followed by 
-        /// the party ID).
-        /// </param>
-        /// <returns>The party identified by <paramref name="who"/>.</returns>
-        private async Task<int> GetParty(string who)
-        {
-            if (string.IsNullOrEmpty(who))
-            {
-                throw new ArgumentNullException("the parameter who does not have a value");
-            }
-
-            try
-            {
-                int? partyId = DelegationHelper.TryParsePartyId(who);
-                if (partyId.HasValue)
-                {
-                    Party party = await _contextRetrievalService.GetPartyAsync(partyId.Value);
-                    partyId = party != null ? party.PartyId : 0;
-                    return Convert.ToInt32(partyId);
-                }
-
-                return await _contextRetrievalService.GetPartyId(who);
-            }   
-            catch (Exception ex)
-            {
-                _logger.LogError("//DelegationsService //GetParty failed to fetch partyid", ex);
-                throw;
-            }            
         }
     }
 }

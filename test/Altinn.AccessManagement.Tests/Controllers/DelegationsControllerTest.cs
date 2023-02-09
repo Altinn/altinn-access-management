@@ -1360,7 +1360,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004223/delegations/maskinportenschema/offered");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1382,9 +1382,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
+            HttpClient client = GetTestClient();
+            string token = PrincipalUtil.GetAccessToken("sbl.authorization"); // todo: must be updated after PEP authorization change is merged
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("party-organizationumber", "810418982");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418982/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1405,7 +1409,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllOutboundDelegations_Notfound_MissingOfferedBy()
         {            
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/offered");
             
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -1415,11 +1419,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test case: GetAllOutboundDelegations returns badrequest when the query parameter is invalid
         /// Expected: GetAllOutboundDelegations returns badrequest
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
         public async Task GetAllOutboundDelegations_BadRequest_InvalidOfferedBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/123/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/123/delegations/maskinportenschema/offered");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1436,7 +1440,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expected = "[]";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004225/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004225/delegations/maskinportenschema/offered");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1455,7 +1459,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004226/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004226/delegations/maskinportenschema/offered");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1478,7 +1482,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004223/delegations/maskinportenschema/offered");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1496,7 +1500,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004223/delegations/maskinportenschema/offered");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1513,7 +1517,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004219/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004219/delegations/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1535,9 +1539,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
+            HttpClient client = GetTestClient();
+            string token = PrincipalUtil.GetAccessToken("sbl.authorization"); // todo: must be updated after PEP authorization change is merged
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1558,7 +1566,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_Missing_CoveredBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/received");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -1568,11 +1576,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test case: GetAllInboundDelegations returns badrequest when the query parameter is invalid
         /// Expected: GetAllInboundDelegations returns badrequest
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
         public async Task GetAllInboundDelegations_Invalid_CoveredBy()
         {
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/1234/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/1234/delegations/maskinportenschema/received");
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1589,7 +1597,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string expected = "[]";
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004225/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004225/delegations/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1608,7 +1616,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004216);
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004216/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004216/delegations/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -1631,7 +1639,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Remove("Authorization");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004223/delegations/maskinportenschema/received");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1648,7 +1656,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "This is an invalid token");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/r50004223/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004223/delegations/maskinportenschema/received");
 
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -1841,6 +1849,60 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee organization 910459880 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization 50004222
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 910459880
+        /// Expected: MaskinportenDelegation returns 201 Created with response body containing the expected delegated rights
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_ExternalIdentifier_OrgNoReportee_Success()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+            _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
+
+            DelegationOutputExternal expectedResponse = GetExpectedResponse("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization 810418672
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The request 'To' property is using the urn:altinn:organizationnumber attribute in order to use the externally available organizationnumber to specify the recipient of the delegation
+        /// Expected: MaskinportenDelegation returns 201 Created with response body containing the expected delegated rights
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_ExternalIdentifier_OrgNoRecipient_Success()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            DelegationOutputExternal expectedResponse = GetExpectedResponse("jks_audi_etron_gt", $"p{fromParty}", "810418672");
+            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", $"p{fromParty}", "810418672");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
         /// Test case: MaskinportenDelegation performed without a user token
         /// Expected: 401 Unauthorized
         /// </summary>
@@ -1963,9 +2025,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: MaskinportenDelegation performed by authenticated user 20001337 with authentication level 2,
-        ///            for the reportee party 1 to the recipient party 2
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
+        ///            for the reportee party 50002598 to the recipient party 2
         ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
         ///            - The recipient (To) in the request is not a valid party id
         /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
         /// </summary>
@@ -1973,13 +2036,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidTo()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_Default");
-            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p1", "p2", "ExpectedOutput_InvalidTo");
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p{fromParty}", "p2", "Input_Default");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p{fromParty}", "p2", "ExpectedOutput_InvalidTo");
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 

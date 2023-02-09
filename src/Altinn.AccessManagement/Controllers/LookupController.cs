@@ -53,7 +53,7 @@ namespace Altinn.AccessManagement.Controllers
         {
             try
             {
-                if (!IdentificatorUtil.ValidateOrganizationNumber(orgNummer))
+                if (!IdentifierUtil.IsValidOrganizationNumber(orgNummer))
                 {
                     return BadRequest("The organisation number is not valid");
                 }
@@ -87,7 +87,7 @@ namespace Altinn.AccessManagement.Controllers
                 {
                     if (party.PartyTypeName == Platform.Register.Enums.PartyType.Person)
                     {
-                        party.SSN = IdentificatorUtil.MaskSSN(party.SSN);
+                        party.SSN = IdentifierUtil.MaskSSN(party.SSN);
                     }
                     
                     return _mapper.Map<PartyExternal>(party);

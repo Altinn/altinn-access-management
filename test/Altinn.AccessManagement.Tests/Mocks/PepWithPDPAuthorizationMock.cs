@@ -143,7 +143,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
             XacmlContextAttributes resourceContextAttributes = request.GetResourceAttributes();
             XacmlResourceAttributes resourceAttributes = GetResourceAttributeValues(resourceContextAttributes);
 
-            // await EnrichResourceParty(resourceAttributes);
             bool resourceAttributeComplete = false;
 
             if (!string.IsNullOrEmpty(resourceAttributes.OrgValue) &&
@@ -211,20 +210,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
             await EnrichSubjectAttributes(request, resourceAttributes.ResourcePartyValue);
         }
         
-        /// <summary>
-        /// Method that adds information about the resource party 
-        /// </summary>
-        // protected async Task EnrichResourceParty(XacmlResourceAttributes resourceAttributes)
-        // {
-        //     if (string.IsNullOrEmpty(resourceAttributes.ResourcePartyValue) && !string.IsNullOrEmpty(resourceAttributes.OrganizationNumber))
-        //     {
-        //         int partyId = await _registerService.PartyLookup(resourceAttributes.OrganizationNumber, null);
-        //         if (partyId != 0)
-        //         {
-        //             resourceAttributes.ResourcePartyValue = partyId.ToString();
-        //         }
-        //     }
-        // }
         private static XacmlAttribute GetOrgAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(OrgAttributeId), false);

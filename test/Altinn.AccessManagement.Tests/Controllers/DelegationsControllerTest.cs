@@ -1353,11 +1353,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns a list of delegations offeredby has given coveredby
-        /// Expected: GetAllOutboundDelegations returns a list of delegations offeredby has given coveredby
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns a list of delegations offeredby has given coveredby
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns a list of delegations offeredby has given coveredby
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_Valid_OfferedByParty()
+        public async Task GetOfferedMaskinportenSchemaDelegations_Valid_OfferedByParty()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
@@ -1381,11 +1381,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns a list of delegations offeredby has given coveredby
-        /// Expected: GetAllOutboundDelegations returns a list of delegations offeredby has given coveredby
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns a list of delegations offeredby has given coveredby
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns a list of delegations offeredby has given coveredby
         /// </summary>
-        [Fact(Skip = "Fix for org support")]
-        public async Task GetAllOutboundDelegations_Valid_OfferedByOrg()
+        [Fact]
+        public async Task GetOfferedMaskinportenSchemaDelegations_Valid_OfferedByOrg()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
@@ -1410,11 +1410,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns notfound when the query parameter is missing
-        /// Expected: GetAllOutboundDelegations returns notfound
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns notfound when the query parameter is missing
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns notfound
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_Notfound_MissingOfferedBy()
+        public async Task GetOfferedMaskinportenSchemaDelegations_Notfound_MissingOfferedBy()
         {            
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/offered");
@@ -1424,11 +1424,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetAllOutboundDelegations returns badrequest
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
-        public async Task GetAllOutboundDelegations_BadRequest_InvalidOfferedBy()
+        public async Task GetOfferedMaskinportenSchemaDelegations_BadRequest_InvalidOfferedBy()
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
@@ -1444,11 +1444,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns 200 with response message empty array when there are no delegations for the reportee
-        /// Expected: GetAllOutboundDelegations returns 200 with response message empty array when there are no delegations for the reportee
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns 200 with response message empty array when there are no delegations for the reportee
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns 200 with response message empty array when there are no delegations for the reportee
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_OfferedBy_NoDelegations()
+        public async Task GetOfferedMaskinportenSchemaDelegations_OfferedBy_NoDelegations()
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
@@ -1467,11 +1467,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// Expected: GetAllOutboundDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_ResourceMetadataNotFound()
+        public async Task GetOfferedMaskinportenSchemaDelegations_ResourceMetadataNotFound()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
@@ -1495,11 +1495,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
-        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not set
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_MissingBearerToken()
+        public async Task GetOfferedMaskinportenSchemaDelegations_MissingBearerToken()
         {
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
@@ -1513,11 +1513,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
-        /// Expected: GetAllOutboundDelegations returns unauthorized when the bearer token is not valid
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not valid
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_InvalidBearerToken()
+        public async Task GetOfferedMaskinportenSchemaDelegations_InvalidBearerToken()
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
@@ -1533,11 +1533,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns a list of delegations received by coveredby
-        /// Expected: GetAllInboundDelegations returns a list of delegations received by coveredby
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns a list of delegations received by coveredby
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns a list of delegations received by coveredby
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_Valid_CoveredBy()
+        public async Task GetReceivedMaskinportenSchemaDelegations_Valid_CoveredBy()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
@@ -1562,11 +1562,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns a list of delegations received by coveredby when the coveredby is an organisation number
-        /// Expected: GetAllInboundDelegations returns a list of delegations received by coveredby
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns a list of delegations received by coveredby when the coveredby is an organisation number
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns a list of delegations received by coveredby
         /// </summary>
-        [Fact(Skip ="Fix for org support")]
-        public async Task GetAllInboundDelegations_Valid_CoveredByOrg()
+        [Fact]
+        public async Task GetReceivedMaskinportenSchemaDelegations_Valid_CoveredByOrg()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
@@ -1592,11 +1592,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns notfound when the query parameter is missing
-        /// Expected: GetAllInboundDelegations returns notfound when the query parameter is missing
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns notfound when the query parameter is missing
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns notfound when the query parameter is missing
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_Missing_CoveredBy()
+        public async Task GetReceivedMaskinportenSchemaDelegations_Missing_CoveredBy()
         {
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//delegations/maskinportenschema/received");
@@ -1606,11 +1606,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetAllInboundDelegations returns badrequest
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
-        public async Task GetAllInboundDelegations_Invalid_CoveredBy()
+        public async Task GetReceivedMaskinportenSchemaDelegations_Invalid_CoveredBy()
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
@@ -1626,11 +1626,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns 200 with empty array when there are no delegations received for the reportee
-        /// Expected: GetAllInboundDelegations returns 200 with rempty array when there are no delegations received for the reportee
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns 200 with empty array when there are no delegations received for the reportee
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns 200 with rempty array when there are no delegations received for the reportee
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_CoveredBy_NoDelegations()
+        public async Task GetReceivedMaskinportenSchemaDelegations_CoveredBy_NoDelegations()
         {
             // Arrange
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
@@ -1649,11 +1649,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// Expected: GetAllInboundDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_ResourceMetadataNotFound()
+        public async Task GetReceivedMaskinportenSchemaDelegations_ResourceMetadataNotFound()
         {
             // Arrange
             List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004216);
@@ -1678,11 +1678,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not set
-        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not set
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_MissingBearerToken()
+        public async Task GetReceivedMaskinportenSchemaDelegations_MissingBearerToken()
         {
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
             _client = GetTestClient(null, httpContextAccessorMock);
@@ -1696,11 +1696,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
-        /// Expected: GetAllInboundDelegations returns unauthorized when the bearer token is not valid
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not valid
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not valid
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_InvalidBearerToken()
+        public async Task GetReceivedMaskinportenSchemaDelegations_InvalidBearerToken()
         {
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
             _client = GetTestClient(null, httpContextAccessorMock);
@@ -1878,8 +1878,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test case: GetMaskinportenSchemaDelegations outbound, user with necessary rights
         /// Expected: User is authorized
         /// </summary>
-        [Fact(Skip = "Fix for org support")]
-        public async Task GetAllOutboundDelegations_UserComplyingToPolicy()
+        [Fact]
+        public async Task GetOfferedMaskinportenSchemaDelegations_UserComplyingToPolicy()
         {
             // Arrange
             const HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
@@ -1887,9 +1887,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12344321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
             
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
@@ -1901,7 +1902,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Testing if user without necessary rights is denied access to 
         /// </summary>
         [Fact]
-        public async Task GetAllOutboundDelegations_UserNotComplyingToPolicy()
+        public async Task GetOfferedMaskinportenSchemaDelegations_UserNotComplyingToPolicy()
         {
             // Arrange 
             const HttpStatusCode expectedStatusCode = HttpStatusCode.Forbidden;
@@ -1909,9 +1910,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/outbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
             
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
@@ -1921,7 +1923,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Test case: Get MaskinportenSchemaDelegations inbound, user with necessary rights
         /// Expected: User is authorized
         /// </summary>
-        [Fact(Skip = "Fix for org support")]
+        [Fact]
         private async Task GetAlInboundDelegations_UserComplyingToPolicy()
         {
             // Arrange
@@ -1930,9 +1932,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12344321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
             
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
@@ -1944,7 +1947,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Testing if user without necessary rights is denied access to 
         /// </summary>
         [Fact]
-        public async Task GetAllInboundDelegations_UserNotComplyingToPolicy()
+        public async Task GetReceivedMaskinportenSchemaDelegations_UserNotComplyingToPolicy()
         {
             // Arrange 
             const HttpStatusCode expectedStatusCode = HttpStatusCode.Forbidden;
@@ -1952,9 +1955,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
 
             // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/810418192/delegations/maskinportenschema/inbound");
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
             
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);

@@ -49,6 +49,6 @@
         /// <summary>
         /// Altinn Authorization base url
         /// </summary>
-        public string? ApiAuthorizationBaseUrl { get; set; }
+        public string? ApiAuthorizationEndpoint { get; set; }
     }
 }

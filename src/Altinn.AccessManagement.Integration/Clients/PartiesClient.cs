@@ -171,7 +171,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             options.Converters.Add(new JsonStringEnumConverter());
             try
             {
-                string endpointUrl = $"{_platformSettings.ApiAuthorizationBaseUrl}authorization/api/v1/parties?userId={userId}";
+                string endpointUrl = $"{_platformSettings.ApiAuthorizationEndpoint}parties?userId={userId}";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
 

@@ -135,7 +135,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllOutboundDelegations_OfferedBy_NoDelegations()
         {
             // Arrange
-            string expected = "No delegations found";
+            string expected = "[]";
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/50004225/delegations/maskinportenschema/outbound");
@@ -288,7 +288,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetAllInboundDelegations_CoveredBy_NoDelegations()
         {
             // Arrange
-            string expected = "No delegations found";
+            string expected = "[]";
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/50004225/delegations/maskinportenschema/inbound");

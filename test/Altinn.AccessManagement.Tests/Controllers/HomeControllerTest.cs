@@ -69,7 +69,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             HttpClient client = SetupUtils.GetTestClient(_factory, true);
-            string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%2faccessmanagement";
+            string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%3a5101%2faccessmanagement%2f";
 
             // Act
             HttpResponseMessage response = await client.GetAsync($"accessmanagement/");
@@ -120,7 +120,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             SetupUtils.AddAuthCookie(httpRequestMessage, token, "AltinnStudioRuntime");
 
             HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%2faccessmanagement";
+            string requestUrl = "http://localhost:5101/authentication/api/v1/authentication?goto=http%3a%2f%2flocalhost%3a5101%2faccessmanagement%2f";
 
             // Verify that 
             Assert.Equal(requestUrl, response.RequestMessage.RequestUri.ToString());

@@ -39,5 +39,10 @@
         /// Endpoint for authentication
         /// </summary>
         public string? ApiAuthenticationEndpoint { get; set; }
+
+        /// <summary>
+        /// Altinn platform base url
+        /// </summary>
+        public string? AltinnPlatformBaseUrl { get; set; }
     }
 }

@@ -747,9 +747,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             Stream dataStream = File.OpenRead("Data/Json/AddRules/ReadWriteOrg1App1_50001337_20001336.json");
             StreamContent content = new StreamContent(dataStream);
+            _client.DefaultRequestHeaders.Remove("Authorization");
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "ThisIsNotAValidToken");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/addrules", content);
@@ -1444,18 +1443,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllOutboundDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
-        /// Expected: GetAllOutboundDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
+        /// Test case: GetAllOutboundDelegations returns 200 with response message empty array when there are no delegations for the reportee
+        /// Expected: GetAllOutboundDelegations returns 200 with response message empty array when there are no delegations for the reportee
         /// </summary>
         [Fact]
         public async Task GetAllOutboundDelegations_OfferedBy_NoDelegations()
         {
             // Arrange
-            string expected = "No delegations found";
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
             _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string expected = "[]";
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004225/delegations/maskinportenschema/outbound");
@@ -1625,19 +1624,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetAllInboundDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
-        /// Expected: GetAllInboundDelegations returns 200 with response message "No delegations found" when there are no delegations received for the reportee
+        /// Test case: GetAllInboundDelegations returns 200 with empty array when there are no delegations received for the reportee
+        /// Expected: GetAllInboundDelegations returns 200 with rempty array when there are no delegations received for the reportee
         /// </summary>
         [Fact]
         public async Task GetAllInboundDelegations_CoveredBy_NoDelegations()
         {
             // Arrange
-            string expected = "No delegations found";
-            
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
             _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string expected = "[]";
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004225/delegations/maskinportenschema/inbound");

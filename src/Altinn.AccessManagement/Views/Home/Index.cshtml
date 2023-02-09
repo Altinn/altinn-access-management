@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Altinn.AccessManagement.Core.Configuration;
+@inject Microsoft.Extensions.Options.IOptions<GeneralSettings> generalSettings
+@{
+    var options = generalSettings.Value;
+}
+
+<!DOCTYPE html>
 <html lang="no" style="background-color: #1EADF7;">
 <head>
     <meta charset="utf-8">
@@ -9,11 +15,11 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <link rel="stylesheet" type="text/css" href="https://altinncdn.no/fonts/altinn-din/woff2/Altinn-DIN-Bold.woff2" />
     <link rel="stylesheet" type="text/css" href="https://altinncdn.no/fonts/altinn-din/woff2/Altinn-DIN.woff2" />
-    <link rel="stylesheet" type="text/css" href="https://amcdntest.z16.web.core.windows.net/assets/entrypoint-08bb1510.css" />
+    <link rel="stylesheet" type="text/css" href="@(options.FrontendBaseUrl)assets/entrypoint-08bb1510.css" />
     <title>Profil</title>
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="https://amcdntest.z16.web.core.windows.net/assets/entrypoint-2f8c58c3.js"></script>
+    <script type="module" src="@(options.FrontendBaseUrl)assets/entrypoint-2f8c58c3.js"></script>
 </body>
 </html>

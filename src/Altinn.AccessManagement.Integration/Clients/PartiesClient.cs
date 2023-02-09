@@ -166,8 +166,13 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             try
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userId={userId}");
-                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+                //UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.ApiAuthorizationBaseUrl}authorization/api/v1/parties?userId={userId}");
+                string endpointUrl = $"{_platformSettings.ApiAuthorizationBaseUrl}authorization/api/v1/parties?userId={userId}";
+                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
+
+                //HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+                HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -177,7 +182,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
+                    _logger.LogError("Getting parties information from authorization failed with {StatusCode}", response.StatusCode);
                 }
             }
             catch (Exception ex)

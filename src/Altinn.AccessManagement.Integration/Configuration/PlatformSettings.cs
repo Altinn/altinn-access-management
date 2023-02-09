@@ -44,5 +44,10 @@
         /// Altinn platform base url
         /// </summary>
         public string? AltinnPlatformBaseUrl { get; set; }
+
+        /// <summary>
+        /// Altinn Authorization base url
+        /// </summary>
+        public string? ApiAuthorizationBaseUrl { get; set; }
     }
 }

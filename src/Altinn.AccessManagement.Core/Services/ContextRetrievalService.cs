@@ -225,7 +225,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             List<Party> partyList = await GetPartiesForUser(userId);
 
-            if (partyList.Count > 0)
+            if (partyList != null && partyList.Count > 0)
             {
                 foreach (Party party in partyList)
                 {

@@ -31,13 +31,13 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<DelegationChange> InsertDelegation(DelegationChange delegationChange)
+        public Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange)
         {
             List<DelegationChange> current;
             string coveredBy = delegationChange.CoveredByPartyId != null ? $"p{delegationChange.CoveredByPartyId}" : $"u{delegationChange.CoveredByUserId}";
             string key = string.Empty;
 
-            if (delegationChange.ResourceType.Equals(ResourceAttributeMatchType.AltinnAppId.ToString()))
+            if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
                 key = $"{delegationChange.ResourceId}/{delegationChange.OfferedByPartyId}/{coveredBy}";
             }
@@ -61,7 +61,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 DelegationChangeId = 1337,
                 DelegationChangeType = delegationChange.DelegationChangeType,
                 ResourceId = delegationChange.ResourceId,
-                ResourceType = delegationChange.ResourceType,
+                ResourceType = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ? ResourceAttributeMatchType.AltinnAppId.ToString() : ResourceType.MaskinportenSchema.ToString(),
                 OfferedByPartyId = delegationChange.OfferedByPartyId,
                 CoveredByPartyId = delegationChange.CoveredByPartyId,
                 CoveredByUserId = delegationChange.CoveredByUserId,

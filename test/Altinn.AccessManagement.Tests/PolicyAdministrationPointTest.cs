@@ -31,7 +31,6 @@ namespace Altinn.AccessManagement.Tests
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly Mock<ILogger<IPolicyAdministrationPoint>> _logger;
         private DelegationMetadataRepositoryMock _delegationMetadataRepositoryMock;
-        private readonly ResourceRegistryClientMock _resourceRegistryClientMock = new ResourceRegistryClientMock();
 
         /// <summary>
         /// Constructor setting up dependencies
@@ -53,8 +52,7 @@ namespace Altinn.AccessManagement.Tests
                 _prp,
                 _delegationMetadataRepositoryMock,
                 _eventQueue,
-                _logger.Object,
-                _resourceRegistryClientMock);
+                _logger.Object);
         }
 
         /// <summary>

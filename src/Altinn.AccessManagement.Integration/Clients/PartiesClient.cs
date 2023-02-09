@@ -164,6 +164,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
             try
             {
                 //UriBuilder uriBuilder = new UriBuilder($"{_platformSettings.ApiAuthorizationBaseUrl}authorization/api/v1/parties?userId={userId}");
@@ -177,7 +182,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent);
+                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, options);
                     return partiesInfo;
                 }
                 else

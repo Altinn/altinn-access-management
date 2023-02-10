@@ -2219,6 +2219,95 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         /// <summary>
         /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
+        ///            for the reportee party 50002598 to the recipient userid 20001337
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The recipient (To) in the request is a userid which delegation of maskinporten schema to should not be possible
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidTo_UserId()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p{fromParty}", "u20001337", "Input_InvalidTo_UserId");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p{fromParty}", "u20001337", "ExpectedOutput_InvalidTo_UserId");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
+        ///            for the reportee party 50002598 to a recipient social security number
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The recipient (To) in the request is a social security number which delegation of maskinporten schema to should not be possible
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidTo_Ssn()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p{fromParty}", "u20001337", "Input_InvalidTo_Ssn");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p{fromParty}", "u20001337", "ExpectedOutput_InvalidTo_Ssn");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2, on behalf of himself.
+        ///            In this case:
+        ///            - The user 20000490 tries to perform maskinporten delegation from himself
+        ///            - This shouldn't really happen as long as the authorization requirement is done through roles tied to ER-roles,
+        ///              but this case mocks permit from PDP to test internal service validation
+        /// Expected: MaskinportenDelegation returns 400 Bad Request with a problem details respons body describing the error
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidFrom_Ssn()
+        {
+            // Arrange
+            string fromParty = "50002598";
+            _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "50002598"));
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+            _client.DefaultRequestHeaders.Add("party-ssn", "07124912037");
+
+            StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p{fromParty}", "p2", "Input_Default");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("mp_validation_problem_details", $"p{fromParty}", "p2", "ExpectedOutput_InvalidFrom_Ssn");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/person/delegations/maskinportenschema/", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 with authentication level 2,
         ///            for the reportee party 50005545 of the non_delegable_maskinportenschema maskinporten schema resource from the resource registry to the organization 50004222
         ///            In this case:
         ///            - The user 20000490 is DAGL for the From unit 50005545

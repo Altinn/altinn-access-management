@@ -1992,11 +1992,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
             AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
         }
 
@@ -2011,6 +2012,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string fromParty = "50005545";
+            _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", fromParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
             _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
 
@@ -2019,11 +2021,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
             AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
         }
 
@@ -2046,11 +2049,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
             AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
         }
 
@@ -2083,6 +2087,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task MaskinportenDelegation_ValidationProblemDetails_SingleRightOnly()
         {
             // Arrange
+            _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "1"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
 
             StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_SingleRightOnly");
@@ -2090,11 +2095,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2109,6 +2115,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task MaskinportenDelegation_ValidationProblemDetails_OrgAppResource()
         {
             // Arrange
+            _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "1"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
 
             StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_OrgAppResource");
@@ -2116,11 +2123,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2135,6 +2143,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidResourceRegistryId()
         {
             // Arrange
+            _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "1"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
 
             StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_InvalidResourceRegistryId");
@@ -2142,11 +2151,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2161,6 +2171,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task MaskinportenDelegation_ValidationProblemDetails_InvalidResourceType()
         {
             // Arrange
+            _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "1"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
 
             StreamContent requestContent = GetRequestContent("mp_validation_problem_details", $"p1", "p2", "Input_InvalidResourceType");
@@ -2168,11 +2179,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/1/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2196,11 +2208,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2224,11 +2237,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
@@ -2252,11 +2266,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 

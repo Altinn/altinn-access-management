@@ -338,7 +338,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")]
         public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
         {

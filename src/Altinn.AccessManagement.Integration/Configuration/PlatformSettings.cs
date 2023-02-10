@@ -1,5 +1,6 @@
 ﻿namespace Altinn.AccessManagement.Integration.Configuration
 {
+#nullable enable
     /// <summary>
     /// General configuration settings
     /// </summary>
@@ -44,5 +45,10 @@
         /// Altinn platform base url
         /// </summary>
         public string? AltinnPlatformBaseUrl { get; set; }
+
+        /// <summary>
+        /// Altinn Authorization base url
+        /// </summary>
+        public string? ApiAuthorizationEndpoint { get; set; }
     }
 }

@@ -1424,15 +1424,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetOfferedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetOfferedMaskinportenSchemaDelegations returns badrequest
+        /// Test case: GetOfferedMaskinportenSchemaDelegations returns Forbidden when the query parameter is invalid
+        /// Expected: GetOfferedMaskinportenSchemaDelegations returns Forbidden
         /// </summary>
-        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
-        public async Task GetOfferedMaskinportenSchemaDelegations_BadRequest_InvalidOfferedBy()
+        [Fact]
+        public async Task GetOfferedMaskinportenSchemaDelegations_Forbidden_InvalidOfferedBy()
         {
             // Arrange
-            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12344321");
-            _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
+            _client = GetTestClient(new PepWithPDPAuthorizationMock());
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
@@ -1440,7 +1439,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/123/delegations/maskinportenschema/offered");
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         /// <summary>
@@ -1606,15 +1605,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetReceivedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetReceivedMaskinportenSchemaDelegations returns badrequest
+        /// Test case: GetReceivedMaskinportenSchemaDelegations returns Forbidden when the query parameter is invalid
+        /// Expected: GetReceivedMaskinportenSchemaDelegations returns Forbidden
         /// </summary>
-        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
+        [Fact]
         public async Task GetReceivedMaskinportenSchemaDelegations_Invalid_CoveredBy()
         {
             // Arrange
-            var httpContextAccessorMock = GetHttpContextAccessorMock("party", "12345678");
-            _client = GetTestClient(new PdpPermitMock(), httpContextAccessorMock);
+            _client = GetTestClient(new PepWithPDPAuthorizationMock());
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
@@ -1622,7 +1620,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/1234/delegations/maskinportenschema/received");
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         /// <summary>

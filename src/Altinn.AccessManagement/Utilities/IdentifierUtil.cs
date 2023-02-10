@@ -6,7 +6,7 @@ namespace Altinn.AccessManagement.Utilities
     /// <summary>
     /// Utility class for working with internal and external identifiers
     /// </summary>
-    public class IdentifierUtil
+    public static class IdentifierUtil
     {
         private const string PersonHeaderTrigger = "person";
         private const string OrganizationHeaderTrigger = "organization";

@@ -117,20 +117,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetOfferedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetOfferedMaskinportenSchemaDelegations returns badrequest
-        /// </summary>
-        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
-        public async Task GetOfferedMaskinportenSchemaDelegations_BadRequest_InvalidOfferedBy()
-        {
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/123/delegations/maskinportenschema/offered");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        /// <summary>
         /// Test case: GetOfferedMaskinportenSchemaDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
         /// Expected: GetOfferedMaskinportenSchemaDelegations returns 200 with response message "No delegations found" when there are no delegations for the reportee
         /// </summary>
@@ -270,20 +256,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        /// <summary>
-        /// Test case: GetReceivedMaskinportenSchemaDelegations returns badrequest when the query parameter is invalid
-        /// Expected: GetReceivedMaskinportenSchemaDelegations returns badrequest
-        /// </summary>
-        [Fact(Skip = "Bad test scenario. Will give not authorized not bad request")]
-        public async Task GetReceivedMaskinportenSchemaDelegations_Invalid_CoveredBy()
-        {
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/1234/delegations/maskinportenschema/received");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         /// <summary>

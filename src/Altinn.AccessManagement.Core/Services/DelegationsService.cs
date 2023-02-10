@@ -48,7 +48,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, DelegationInput delegation)
+        public async Task<DelegationOutput> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationInput delegation)
         {
             DelegationOutput output = new DelegationOutput { To = delegation.To, Rights = delegation.Rights };
 
@@ -119,7 +119,7 @@ namespace Altinn.AccessManagement.Core.Services
             // Verify authenticated users delegable rights
             RightsQuery rightsQuery = new RightsQuery
             {
-                To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = delegatingUserId.ToString() } },
+                To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = authenticatedUserId.ToString() } },
                 From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromParty.PartyId.ToString() } },
                 Resource = right.Resource
             };
@@ -130,7 +130,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return output;
             }
 
-            if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > delegatingUserAuthlevel))) 
+            if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel))) 
             {
                 output.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
                 return output;
@@ -142,7 +142,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 rulesToDelegate.Add(new Rule
                 {
-                    DelegatedByUserId = delegatingUserId,
+                    DelegatedByUserId = authenticatedUserId,
                     OfferedByPartyId = fromParty.PartyId,
                     CoveredBy = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toParty.PartyId.ToString() } },
                     Resource = rightToDelegate.Resource,

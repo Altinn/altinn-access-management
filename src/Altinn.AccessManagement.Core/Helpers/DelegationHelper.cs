@@ -75,6 +75,38 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Trys to get the organization number attribute value from a list of AttributeMatch models
+        /// </summary>
+        /// <returns>The organization number if found as the single attribute in the collection</returns>
+        public static bool TryGetOrganizationNumberFromAttributeMatch(List<AttributeMatch> match, out string orgNo)
+        {
+            orgNo = string.Empty;
+            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+            {
+                orgNo = match.First().Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get the social security number attribute value from a list of AttributeMatch models
+        /// </summary>
+        /// <returns>The social security number if found as the single attribute in the collection</returns>
+        public static bool TryGetSocialSecurityNumberAttributeMatch(List<AttributeMatch> match, out string ssn)
+        {
+            ssn = string.Empty;
+            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+            {
+                ssn = match.First().Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets a int representation of the CoveredByUserId and CoverdByPartyId from an AttributeMatch list.
         /// This works under the asumptions that any valid search for å valid policy contains a CoveredBy and this must be in the form
         /// of a PartyId or a UserId. So any valid search containing a PartyId should not contain a USerId and vice versa.

@@ -2,8 +2,8 @@
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
-using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Models.Bff;
+using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,17 +52,18 @@ namespace Altinn.AccessManagement.Controllers.BFF
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize]
-        [Route("accessmanagement/api/v1/bff/{who}/delegations/maskinportenschema/inbound")]
-        public async Task<ActionResult<List<DelegationBff>>> GetAlInboundDelegations([FromRoute] string who)
+        [Route("accessmanagement/api/v1/bff/{party}/delegations/maskinportenschema/offered")]
+        public async Task<ActionResult<List<DelegationBff>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(who))
+            if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing who");
+                return BadRequest("Missing party");
             }
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                List<Delegation> delegations = await _delegation.GetOfferedMaskinportenSchemaDelegations(partyMatch);
                 List<DelegationBff> delegationsExternal = _mapper.Map<List<DelegationBff>>(delegations);
 
                 return delegationsExternal;
@@ -80,17 +81,18 @@ namespace Altinn.AccessManagement.Controllers.BFF
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize]
-        [Route("accessmanagement/api/v1/bff/{who}/delegations/maskinportenschema/outbound")]
-        public async Task<ActionResult<List<DelegationBff>>> GetAllOutboundDelegations([FromRoute] string who)
+        [Route("accessmanagement/api/v1/bff/{party}/delegations/maskinportenschema/received")]
+        public async Task<ActionResult<List<DelegationBff>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(who))
+            if (string.IsNullOrEmpty(party))
             {
-                return BadRequest("Missing who");
+                return BadRequest("Missing party");
             }
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(who, ResourceType.MaskinportenSchema);
+                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                List<Delegation> delegations = await _delegation.GetReceivedMaskinportenSchemaDelegations(partyMatch);
                 List<DelegationBff> delegationsExternal = _mapper.Map<List<DelegationBff>>(delegations);
                 return delegationsExternal;
             }

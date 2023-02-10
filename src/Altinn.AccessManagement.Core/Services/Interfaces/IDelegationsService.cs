@@ -1,6 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -10,20 +8,18 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
     public interface IDelegationsService
     {
         /// <summary>
-        /// Gets all delegated resources for a reportee
+        /// Gets all offered maskinporten schema delegations for a reportee
         /// </summary>
         /// <param name="party">reportee that delegated resources</param>
-        /// <param name="resourceType">the type of resource that was delegated</param>
-        /// <returns>list o delgations</returns>
-        public Task<List<Delegation>> GetAllOutboundDelegationsAsync(string party, ResourceType resourceType);
+        /// <returns>list of delgations</returns>
+        public Task<List<Delegation>> GetOfferedMaskinportenSchemaDelegations(AttributeMatch party);
 
         /// <summary>
-        /// Gets all the rceived delegations for a reportee
+        /// Gets all received maskinporten schema delegations for a reportee
         /// </summary>
         /// <param name="party">reportee that delegated resources</param>
-        /// <param name="resourceType">the type of resource that was delegated</param>
-        /// <returns>list o delgations</returns>
-        public Task<List<Delegation>> GetAllInboundDelegationsAsync(string party, ResourceType resourceType);
+        /// <returns>list of delgations</returns>
+        public Task<List<Delegation>> GetReceivedMaskinportenSchemaDelegations(AttributeMatch party);
 
         /// <summary> 
         /// Gets all the delegations for an admin or owner
@@ -37,11 +33,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Performs the delegation on behalf of the from party
         /// </summary>
-        /// <param name="delegatingUserId">The user id of the authenticated user performing the delegation</param>
-        /// <param name="delegatingUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
-        /// <param name="from">The offering party</param>
+        /// <param name="authenticatedUserId">The user id of the authenticated user performing the delegation</param>
+        /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="delegation">The delegation</param>
         /// <returns>The result of the delegation</returns>
-        public Task<DelegationOutput> MaskinportenDelegation(int delegatingUserId, int delegatingUserAuthlevel, string from, DelegationInput delegation);
+        public Task<DelegationOutput> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationInput delegation);
     }
 }

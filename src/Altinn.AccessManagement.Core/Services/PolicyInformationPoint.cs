@@ -77,7 +77,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 // ToDo: does resource existance matter?
                 ServiceResource registryResource = await _contextRetrievalService.GetResource(resourceId);
-                if (registryResource == null || !registryResource.IsComplete.HasValue || !registryResource.IsComplete.Value || DateTime.Now < registryResource.ValidFrom || DateTime.Now > registryResource.ValidTo)
+                if (registryResource == null || !registryResource.IsComplete.HasValue || !registryResource.IsComplete.Value)
                 {
                     throw new ValidationException($"The specified resource registry id: {resourceId} does not exist or is not active");
                 }

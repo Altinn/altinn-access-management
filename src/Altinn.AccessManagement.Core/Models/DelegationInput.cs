@@ -6,6 +6,11 @@
     public class DelegationInput
     {
         /// <summary>
+        /// Gets or sets a set of Attribute Id and Attribute Value for the reportee party offering rights
+        /// </summary>
+        public List<AttributeMatch> From { get; set; }
+
+        /// <summary>
         /// Gets or sets a set of Attribute Id and Attribute Value for the single entity receiving rights
         /// </summary>
         public List<AttributeMatch> To { get; set; }

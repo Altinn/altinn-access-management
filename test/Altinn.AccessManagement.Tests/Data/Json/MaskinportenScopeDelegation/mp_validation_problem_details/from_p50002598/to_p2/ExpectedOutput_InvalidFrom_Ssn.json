@@ -4,8 +4,8 @@
   "status": 400,
   "traceId": "00-27cf2819f526d884b56a1c8fd44a09ad-5fe2af21a90ad213-00",
   "errors": {
-    "To": [
-      "Maskinporten schema delegation currently only support delegation To a PartyId (using urn:altinn:party attribute id). Invalid value: 2"
+    "From": [
+      "Maskinporten schema delegation can only be delegated from a valid organization. Invalid value: 50002598"
     ]
   }
 }

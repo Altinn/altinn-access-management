@@ -1875,7 +1875,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations outbound, user with necessary rights
+        /// Test case: GetOfferedMaskinportenSchemaDelegations, user with necessary rights
         /// Expected: User is authorized
         /// </summary>
         [Fact]
@@ -1897,7 +1897,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: Get Maskinporten Schema Delegations outbound, user without necessary rights
+        /// Test case: GetOfferedMaskinportenSchemaDelegations, user without necessary rights
         /// Expected: Authorization is denied
         /// Testing if user without necessary rights is denied access to 
         /// </summary>
@@ -1920,11 +1920,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: Get MaskinportenSchemaDelegations inbound, user with necessary rights
+        /// Test case: GetReceivedMaskinportenSchemaDelegations, user with necessary rights
         /// Expected: User is authorized
         /// </summary>
         [Fact]
-        private async Task GetAlInboundDelegations_UserComplyingToPolicy()
+        public async Task GetReceivedMaskinportenSchemaDelegations_UserComplyingToPolicy()
         {
             // Arrange
             const HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
@@ -1940,9 +1940,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
-        
+
         /// <summary>
-        /// Test case: Get Maskinporten Schema Delegations outbound, user without necessary rights
+        /// Test case: GetReceivedMaskinportenSchemaDelegations, user without necessary rights
         /// Expected: Authorization is denied
         /// Testing if user without necessary rights is denied access to 
         /// </summary>

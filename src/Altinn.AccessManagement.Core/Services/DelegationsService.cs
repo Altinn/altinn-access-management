@@ -186,7 +186,7 @@ namespace Altinn.AccessManagement.Core.Services
                 throw new ArgumentException($"The specified PartyId is not a valid. Invalid argument: {party.Value}");
             }
 
-            return await GetOutboundDelegations(offeredByPartyId, ResourceType.MaskinportenSchema);
+            return await GetOfferedDelegations(offeredByPartyId, ResourceType.MaskinportenSchema);
         }
 
         /// <inheritdoc/>
@@ -207,7 +207,7 @@ namespace Altinn.AccessManagement.Core.Services
                 throw new ArgumentException($"The specified PartyId is not a valid. Invalid argument: {party.Value}");
             }
 
-            return await GetInboundDelegations(coveredByPartyId, ResourceType.MaskinportenSchema);
+            return await GetReceivedDelegations(coveredByPartyId, ResourceType.MaskinportenSchema);
         }
 
         /// <inheritdoc/>
@@ -224,7 +224,7 @@ namespace Altinn.AccessManagement.Core.Services
             return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);
         }
 
-        private async Task<List<Delegation>> GetOutboundDelegations(int offeredByPartyId, ResourceType resourceType)
+        private async Task<List<Delegation>> GetOfferedDelegations(int offeredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceTypes: resourceType.SingleToList());
             List<int> parties = new List<int>();
@@ -267,7 +267,7 @@ namespace Altinn.AccessManagement.Core.Services
             return delegations;
         }
 
-        private async Task<List<Delegation>> GetInboundDelegations(int coveredByPartyId, ResourceType resourceType)
+        private async Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId, ResourceType resourceType)
         {
             List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId.SingleToList(), resourceTypes: resourceType.SingleToList());
             List<int> parties = new List<int>();

@@ -12,9 +12,10 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <summary>
         /// Writes the delegation change metadata to the delegation database
         /// </summary>
+        /// <param name="resourceMatchType">The resource match type specifying whether the lookup is for an Altinn App delegation or a resource from the Resource Registry</param>
         /// <param name="delegationChange">The DelegationChange model describing the delegation, to insert in the database</param>
         /// <returns>The complete DelegationChange record stored in the database</returns>
-        Task<DelegationChange> InsertDelegation(DelegationChange delegationChange);
+        Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange);
 
         /// <summary>
         /// Gets the latest delegation change matching the filter values

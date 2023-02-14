@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -230,77 +232,60 @@ namespace Altinn.AccessManagement.Controllers
         }
 
         /// <summary>
-        /// Endpoint for retrieving delegated resources between parties
+        /// Endpoint for retrieving delegated Maskinporten resources offered by the reportee party to others
         /// </summary>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/outbound")]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAllOutboundDelegations([FromRoute] string party)
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(party))
-            {
-                return BadRequest("Missing reportee party");
-            }
-
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllOutboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
-                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
-
-                return delegationsExternal;
+                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                List<Delegation> delegations = await _delegation.GetOfferedMaskinportenSchemaDelegations(partyMatch);
+                return _mapper.Map<List<DelegationExternal>>(delegations);
             }
-            catch (ArgumentException)
+            catch (ArgumentException argEx)
             {
-                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
+                ModelState.AddModelError("Validation Error", argEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
             catch (Exception ex) 
             {
                 string errorMessage = ex.Message;
-                _logger.LogError("Failed to fetch outbound delegations, See the error message for more details {errorMessage}", errorMessage);
-                return StatusCode(500);
+                _logger.LogError(ex, "Failed to fetch offered delegations, See the error message for more details {errorMessage}", errorMessage);
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
 
         /// <summary>
-        /// Endpoint for retrieving delegated resources between parties
+        /// Endpoint for retrieving received Maskinporten resource delegation to the reportee party from others
         /// </summary>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/inbound")]
-        public async Task<ActionResult<List<DelegationExternal>>> GetAllInboundDelegations([FromRoute] string party)
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")]
+        public async Task<ActionResult<List<DelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
         {
-            if (string.IsNullOrEmpty(party))
-            {
-                return BadRequest("Missing reportee party");
-            }
-
             try
             {
-                List<Delegation> delegations = await _delegation.GetAllInboundDelegationsAsync(party, ResourceType.MaskinportenSchema);
-                List<DelegationExternal> delegationsExternal = _mapper.Map<List<DelegationExternal>>(delegations);
-                if (delegationsExternal == null || delegationsExternal.Count == 0)
-                {
-                    return Ok("No delegations found");
-                }
-
-                return delegationsExternal;
+                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                List<Delegation> delegations = await _delegation.GetReceivedMaskinportenSchemaDelegations(partyMatch);
+                return _mapper.Map<List<DelegationExternal>>(delegations);
             }
-            catch (ArgumentException)
+            catch (ArgumentException argEx)
             {
-                return BadRequest("Either the reportee is not found or the supplied value for who is not in a valid format");
+                ModelState.AddModelError("Validation Error", argEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GetAlInboundDelegations failed to fetch delegations");
-                return StatusCode(500);
+                string errorMessage = ex.Message;
+                _logger.LogError(ex, "Failed to fetch received delegations, See the error message for more details {errorMessage}", errorMessage);
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
 
@@ -314,12 +299,12 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize]
         public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenSchemaDelegations([FromQuery] string? supplierOrg, string? consumerOrg, string scope)
         {
-            if (!string.IsNullOrEmpty(supplierOrg) && !IdentificatorUtil.ValidateOrganizationNumber(supplierOrg))
+            if (!string.IsNullOrEmpty(supplierOrg) && !IdentifierUtil.IsValidOrganizationNumber(supplierOrg))
             {
                 return BadRequest("Supplierorg is not an valid organization number");
             }
 
-            if (!string.IsNullOrEmpty(consumerOrg) && !IdentificatorUtil.ValidateOrganizationNumber(consumerOrg))
+            if (!string.IsNullOrEmpty(consumerOrg) && !IdentifierUtil.IsValidOrganizationNumber(consumerOrg))
             {
                 return BadRequest("Consumerorg is not an valid organization number");
             }
@@ -353,16 +338,19 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")]
         public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+
             try
             {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
-                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, party, internalDelegation);
+                internalDelegation.From = reportee.SingleToList();
+                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -379,13 +367,14 @@ namespace Altinn.AccessManagement.Controllers
                 DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
                 return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
             }
-            catch (ValidationException valEx)
-            {
-                ModelState.AddModelError("Validation Error", valEx.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
             catch (Exception ex)
             {
+                if (ex is ValidationException || ex is ArgumentException)
+                {
+                    ModelState.AddModelError("Validation Error", ex.Message);
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
                 _logger.LogError(ex, "Internal exception occurred during maskinportenschema delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }

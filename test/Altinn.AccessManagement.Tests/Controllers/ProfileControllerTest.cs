@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
-using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
+using Altinn.Common.PEP.Interfaces;
 using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests
+namespace Altinn.AccessManagement.Tests.Controllers
 {
     /// <summary>
     /// Test class for <see cref="DelegationsController"/>
@@ -52,6 +52,7 @@ namespace Altinn.AccessManagement.Tests
                     services.AddSingleton<IProfileClient>(sp => _profileClient);
                     services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPDP, PdpPermitMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
             
@@ -65,7 +66,7 @@ namespace Altinn.AccessManagement.Tests
             Mock.Get(_profileClient).Setup(m => m.GetUserProfile(It.IsAny<int>())).ReturnsAsync(userProfile);
         }
 
-        private UserProfile GetUserProfile(int id)
+        private static UserProfile GetUserProfile(int id)
         {
             return new UserProfile
             {

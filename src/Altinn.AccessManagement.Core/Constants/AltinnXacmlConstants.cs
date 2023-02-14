@@ -80,6 +80,16 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Resource Registry attribute match indentifier 
             /// </summary>
             public const string ResourceRegistryAttribute = "urn:altinn:resourceregistry";
+
+            /// <summary>
+            /// Organization number attribute match indentifier 
+            /// </summary>
+            public const string OrganizationNumberAttribute = "urn:altinn:organizationnumber";
+
+            /// <summary>
+            /// Social security number attribute match indentifier 
+            /// </summary>
+            public const string SocialSecurityNumberAttribute = "urn:altinn:ssn";
         }
 
         /// <summary>

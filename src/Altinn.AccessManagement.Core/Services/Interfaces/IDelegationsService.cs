@@ -38,5 +38,13 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="delegation">The delegation</param>
         /// <returns>The result of the delegation</returns>
         public Task<DelegationOutput> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationInput delegation);
+
+        /// <summary>
+        /// Operation to revoke a maskinporten schema delegation
+        /// </summary>
+        /// <param name="authenticatedUserId">The user id of the authenticated user deleting the delegation</param>
+        /// <param name="delegation">The delegation lookup model</param>
+        /// <returns>The result of the deletion</returns>
+        public Task<DelegationOutput> RevokeMaskinportenDelegation(int authenticatedUserId, DelegationInput delegation);
     }
 }

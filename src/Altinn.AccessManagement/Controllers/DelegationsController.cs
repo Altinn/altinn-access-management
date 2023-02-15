@@ -239,6 +239,11 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<ActionResult<List<DelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
         {
             try
@@ -268,6 +273,11 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<ActionResult<List<DelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
         {
             try
@@ -335,11 +345,17 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>
+        /// <response code="201">Created</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
@@ -376,6 +392,104 @@ namespace Altinn.AccessManagement.Controllers
                 }
 
                 _logger.LogError(ex, "Internal exception occurred during maskinportenschema delegation");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for revoking a maskinporten scope delegation on behalf of the party having offered the delegation
+        /// </summary>
+        /// <response code="204">No Content</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered/revoke")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult> RevokeOfferedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeOfferedDelegationExternal delegation)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+
+            try
+            {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                internalDelegation.From = reportee.SingleToList();
+                DelegationOutput response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
+
+                if (!response.IsValid)
+                {
+                    foreach (string errorKey in response.Errors.Keys)
+                    {
+                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return NoContent();
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Internal exception occurred during deletion of maskinportenschema delegation");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for revoking a maskinporten scope delegation on behalf of the party having received the delegation
+        /// </summary>
+        /// <response code="204">No Content</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received/revoke")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult> RevokeReceivedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeReceivedDelegationExternal delegation)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+
+            try
+            {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                internalDelegation.To = reportee.SingleToList();
+                DelegationOutput response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
+
+                if (!response.IsValid)
+                {
+                    foreach (string errorKey in response.Errors.Keys)
+                    {
+                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return NoContent();
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Internal exception occurred during deletion of maskinportenschema delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }

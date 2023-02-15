@@ -1,9 +1,11 @@
 ﻿using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -385,6 +387,26 @@ namespace Altinn.AccessManagement.Core.Helpers
         {
             ResourceReference reference = resource.ResourceReferences.Find(rf => rf.ReferenceSource == referenceSource && rf.ReferenceType == referenceType);
             return reference.Reference;
+        }
+
+        /// <summary>
+        /// Builds a RequestToDelete request model for revoking all delegated rules for a resource registry service
+        /// </summary>
+        public static List<RequestToDelete> GetRequestToDeleteResourceRegistryService(int authenticatedUserId, string resourceRegistryId, int fromPartyId, int toPartyId)
+        {
+            return new List<RequestToDelete>
+            {
+                new RequestToDelete
+                {
+                    DeletedByUserId = authenticatedUserId,
+                    PolicyMatch = new PolicyMatch
+                    {
+                        OfferedByPartyId = fromPartyId,
+                        CoveredBy = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toPartyId.ToString() }.SingleToList(),
+                        Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
+                    }
+                }
+            };
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

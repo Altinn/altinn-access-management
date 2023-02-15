@@ -27,7 +27,12 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public Task<Party> GetOrganisation(string organisationNumber)
         {
-            return _partyClient.LookupPartyBySSNOrOrgNo(organisationNumber);
+            PartyLookup partyLookup = new PartyLookup
+            {
+                OrgNo = organisationNumber
+            };
+
+            return _partyClient.LookupPartyBySSNOrOrgNo(partyLookup);
         }
     }
 }

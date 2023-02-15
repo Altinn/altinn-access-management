@@ -273,7 +273,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError("Getting party information from lookup failed with {StatusCode}", response.StatusCode);
+                    _logger.LogError("Getting party information from register failed with {StatusCode}", response.StatusCode);
                 }
             }
             catch (Exception ex)

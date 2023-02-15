@@ -105,7 +105,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<Party> LookupPartyBySSNOrOrgNo(string orgnummer)
+        public Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup)
         {
             List<Party> partyList = new List<Party>();
             Party party = null;
@@ -124,7 +124,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     }
                 }
 
-                party = partyList.Find(p => p.Organization?.OrgNumber == orgnummer);
+                party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);
             }
 
             return Task.FromResult(party);

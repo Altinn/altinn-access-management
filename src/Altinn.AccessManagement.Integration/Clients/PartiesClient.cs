@@ -254,7 +254,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public async Task<Party> LookupPartyBySSNOrOrgNo(string id)
+        public async Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup)
         {
             Party party = null;
             try
@@ -262,7 +262,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 string endpointUrl = $"parties/lookup";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-                StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
+                StringContent requestBody = new StringContent(JsonSerializer.Serialize(partyLookup), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -273,7 +273,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
+                    _logger.LogError("Getting party information from register failed with {StatusCode}", response.StatusCode);
                 }
             }
             catch (Exception ex)

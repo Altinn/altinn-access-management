@@ -50,12 +50,12 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// <summary>
         /// Looks up a party based on SSN or OrgNumber.
         /// </summary>
-        /// <param name="id">
-        /// SSN or OrgNumber.
+        /// <param name="partyLookup">
+        /// SSN or OrgNumber as a PartyLookup object.
         /// </param>
         /// <returns>
         /// The party that represents the given SSN or OrgNumber.
         /// </returns>
-        Task<Party> LookupPartyBySSNOrOrgNo(string id);
+        Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup);
     }
 }

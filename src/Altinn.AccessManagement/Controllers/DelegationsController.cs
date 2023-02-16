@@ -364,9 +364,9 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationOutput response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, internalDelegation);
+                DelegationActionResult response = await _delegation.MaskinportenDelegation(authenticatedUserId, authenticationLevel, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -417,9 +417,9 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationOutput response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -433,13 +433,14 @@ namespace Altinn.AccessManagement.Controllers
 
                 return NoContent();
             }
-            catch (ValidationException valEx)
-            {
-                ModelState.AddModelError("Validation Error", valEx.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
             catch (Exception ex)
             {
+                if (ex is ValidationException || ex is ArgumentException)
+                {
+                    ModelState.AddModelError("Validation Error", ex.Message);
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
                 _logger.LogError(ex, "Internal exception occurred during deletion of maskinportenschema delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
@@ -466,9 +467,9 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                DelegationInput internalDelegation = _mapper.Map<DelegationInput>(delegation);
+                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.To = reportee.SingleToList();
-                DelegationOutput response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _delegation.RevokeMaskinportenDelegation(authenticatedUserId, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -482,13 +483,14 @@ namespace Altinn.AccessManagement.Controllers
 
                 return NoContent();
             }
-            catch (ValidationException valEx)
-            {
-                ModelState.AddModelError("Validation Error", valEx.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
             catch (Exception ex)
             {
+                if (ex is ValidationException || ex is ArgumentException)
+                {
+                    ModelState.AddModelError("Validation Error", ex.Message);
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
                 _logger.LogError(ex, "Internal exception occurred during deletion of maskinportenschema delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }

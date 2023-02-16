@@ -59,13 +59,13 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<BaseRightExternal, Right>();
 
             // Delegation
-            CreateMap<DelegationInputExternal, DelegationInput>();
+            CreateMap<DelegationInputExternal, DelegationLookup>();
             CreateMap<Right, BaseRightExternal>();
-            CreateMap<DelegationOutput, DelegationOutputExternal>()
+            CreateMap<DelegationActionResult, DelegationOutputExternal>()
                 .ForMember(dest => dest.To, act => act.MapFrom(src => src.To))
                 .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
-            CreateMap<RevokeOfferedDelegationExternal, DelegationInput>();
-            CreateMap<RevokeReceivedDelegationExternal, DelegationInput>();
+            CreateMap<RevokeOfferedDelegationExternal, DelegationLookup>();
+            CreateMap<RevokeReceivedDelegationExternal, DelegationLookup>();
         }
     }
 }

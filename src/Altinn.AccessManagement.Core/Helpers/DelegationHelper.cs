@@ -5,7 +5,6 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {

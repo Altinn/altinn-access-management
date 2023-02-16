@@ -11,6 +11,7 @@ using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -2343,8 +2344,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task RevokeOfferedMaskinportenScopeDelegation_DAGL_Success()
         {
             // Arrange
-            string fromParty = "50005545";
+            int fromParty = 50005545;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
+            {
+                { "resourceregistry/jks_audi_etron_gt/50005545/p50004221", new List<DelegationChange> { TestDataUtil.GetResourceRegistryDelegationChange("jks_audi_etron_gt", ResourceType.MaskinportenSchema, fromParty, Convert.ToDateTime("2022-09-27T13:02:23.786072Z"), coveredByPartyId: 50004221) } }
+            };
 
             StreamContent requestContent = GetRequestContent("RevokeOfferedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004221");
 
@@ -2424,6 +2430,35 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: RevokeOfferedMaskinportenScopeDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry,
+        ///            delegated to party 2
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The To party does not exist
+        /// Expected: RevokeOfferedMaskinportenScopeDelegation returns 400 Bad Request with ValidationProblemDetails body
+        /// </summary>
+        [Fact]
+        public async Task RevokeOfferedMaskinportenScopeDelegation_ValidationProblemDetails_InvalidTo()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            StreamContent requestContent = GetRequestContent("RevokeOfferedMaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("RevokeOfferedMaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2", "ExpectedOutput_InvalidTo");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/offered/revoke", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -2522,6 +2557,35 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
+        /// <summary>
+        /// Test case: RevokeReceivedMaskinportenScopeDelegation performed by authenticated user 20001337 for the reportee party 50004221 of the jks_audi_etron_gt maskinporten schema resource from the resource registry,
+        ///            which have received delegation from the party 2
+        ///            In this case:
+        ///            - The user 20001337 is DAGL for the To unit 50004221
+        ///            - The From party 2 is not a valid party
+        /// Expected: RevokeReceivedMaskinportenScopeDelegation returns 204 No Content
+        /// </summary>
+        [Fact]
+        public async Task RevokeReceivedMaskinportenScopeDelegation_ValidationProblemDetails_InvalidFrom()
+        {
+            // Arrange
+            string toParty = "50004221";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "mp_validation_problem_details", $"p2", $"p{toParty}");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("RevokeReceivedMaskinportenScopeDelegation", "mp_validation_problem_details", $"p2", $"p{toParty}", "ExpectedOutput_InvalidFrom");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{toParty}/delegations/maskinportenschema/received/revoke", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
         private static IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
         {
             HttpContext httpContext = new DefaultHttpContext();
@@ -2597,17 +2661,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null)
+        private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null, IDelegationMetadataRepository delegationMetadataRepositoryMock = null)
         {
             pdpMock ??= new PepWithPDPAuthorizationMock();
             httpContextAccessor ??= new HttpContextAccessor();
-            
+            delegationMetadataRepositoryMock ??= new DelegationMetadataRepositoryMock();
+
             HttpClient client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {
                     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
-                    services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepositoryMock>();
+                    services.AddSingleton(delegationMetadataRepositoryMock);
                     services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();

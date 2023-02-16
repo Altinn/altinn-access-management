@@ -1,8 +1,8 @@
 {
-  "to": [
+  "from": [
     {
       "id": "urn:altinn:partyid",
-      "value": "50004222"
+      "value": "2"
     }
   ],
   "rights": [
@@ -10,7 +10,7 @@
       "resource": [
         {
           "id": "urn:altinn:resourceregistry",
-          "value": "non_delegable_maskinportenschema"
+          "value": "mp_validation_problem_details"
         }
       ]
     }

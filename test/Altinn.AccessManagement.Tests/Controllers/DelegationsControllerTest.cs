@@ -2345,20 +2345,23 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             int fromParty = 50005545;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+            DelegationMetadataRepositoryMock delegationMetadataRepositoryMock = new DelegationMetadataRepositoryMock { MetadataChanges = new Dictionary<string, List<DelegationChange>>() };
+            HttpClient client = GetTestClient(delegationMetadataRepositoryMock: delegationMetadataRepositoryMock);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
             Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
             {
-                { "resourceregistry/jks_audi_etron_gt/50005545/p50004221", new List<DelegationChange> { TestDataUtil.GetResourceRegistryDelegationChange("jks_audi_etron_gt", ResourceType.MaskinportenSchema, fromParty, Convert.ToDateTime("2022-09-27T13:02:23.786072Z"), coveredByPartyId: 50004221) } }
+                { "resourceregistry/jks_audi_etron_gt/50005545/p50004221", new List<DelegationChange> { TestDataUtil.GetResourceRegistryDelegationChange("jks_audi_etron_gt", ResourceType.MaskinportenSchema, fromParty, Convert.ToDateTime("2022-09-27T13:02:23.786072Z"), coveredByPartyId: 50004221, performedByUserId: 20000490, changeType: DelegationChangeType.RevokeLast) } }
             };
 
             StreamContent requestContent = GetRequestContent("RevokeOfferedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004221");
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/offered/revoke", requestContent);
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/offered/revoke", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            AssertionUtil.AssertEqual(expectedDbUpdates, delegationMetadataRepositoryMock.MetadataChanges);
         }
 
         /// <summary>
@@ -2473,15 +2476,23 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string toParty = "50004221";
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+            DelegationMetadataRepositoryMock delegationMetadataRepositoryMock = new DelegationMetadataRepositoryMock { MetadataChanges = new Dictionary<string, List<DelegationChange>>() };
+            HttpClient client = GetTestClient(delegationMetadataRepositoryMock: delegationMetadataRepositoryMock);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            Dictionary<string, List<DelegationChange>> expectedDbUpdates = new Dictionary<string, List<DelegationChange>>
+            {
+                { "resourceregistry/jks_audi_etron_gt/50005545/p50004221", new List<DelegationChange> { TestDataUtil.GetResourceRegistryDelegationChange("jks_audi_etron_gt", ResourceType.MaskinportenSchema, 50005545, created: null, coveredByPartyId: 50004221, performedByUserId: 20001337, changeType: DelegationChangeType.RevokeLast) } }
+            };
 
             StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p50005545", $"p{toParty}");
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{toParty}/delegations/maskinportenschema/received/revoke", requestContent);
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{toParty}/delegations/maskinportenschema/received/revoke", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            AssertionUtil.AssertEqual(expectedDbUpdates, delegationMetadataRepositoryMock.MetadataChanges);
         }
 
         /// <summary>

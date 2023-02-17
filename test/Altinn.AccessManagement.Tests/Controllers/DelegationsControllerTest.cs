@@ -2550,7 +2550,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            which have received delegation from the party 50005545
         ///            In this case:
         ///            - The user 20000095 is ADMAI (Tilgangsstyrer) for the To party 50004221
-        /// Expected: RevokeReceivedMaskinportenScopeDelegation returns 204 No Content
+        /// Expected: RevokeReceivedMaskinportenScopeDelegation returns 403 Forbidden
         /// </summary>
         [Fact]
         public async Task RevokeReceivedMaskinportenScopeDelegation_ADMAI_Forbidden()
@@ -2574,7 +2574,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            In this case:
         ///            - The user 20001337 is DAGL for the To unit 50004221
         ///            - The From party 2 is not a valid party
-        /// Expected: RevokeReceivedMaskinportenScopeDelegation returns 204 No Content
+        /// Expected: RevokeReceivedMaskinportenScopeDelegation returns 400 Bad Request with ValidationProblemDetails body
         /// </summary>
         [Fact]
         public async Task RevokeReceivedMaskinportenScopeDelegation_ValidationProblemDetails_InvalidFrom()

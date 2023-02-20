@@ -486,7 +486,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.True(expected.Errors.Keys.All(expectedKey => actual.Errors.ContainsKey(expectedKey)));
             foreach (string expectedKey in expected.Errors.Keys)
             {
-                Assert.Equal(actual.Errors[expectedKey], actual.Errors[expectedKey]);
+                Assert.Equal(expected.Errors[expectedKey], actual.Errors[expectedKey]);
             }
         }
 

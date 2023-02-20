@@ -115,6 +115,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [
@@ -236,6 +240,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [
@@ -383,6 +391,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [
@@ -504,6 +516,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [
@@ -651,6 +667,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [
@@ -792,6 +812,10 @@
           {
             "id": "urn:altinn:rolecode",
             "value": "A0294"
+          },
+          {
+            "id": "urn:altinn:rolecode",
+            "value": "APIADM"
           }
         ],
         "policySubjects": [

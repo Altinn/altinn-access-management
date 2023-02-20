@@ -8,7 +8,7 @@
   <ItemGroup>
 	<PackageReference Include="JWTCookieAuthentication" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Altinn.Platform.Models" Version="1.1.2" />
+    <PackageReference Include="Altinn.Platform.Models" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -27,6 +28,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PlatformSettings _platformSettings;
         private readonly IAccessTokenGenerator _accessTokenGenerator;
+        private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartiesClient"/> class
@@ -53,6 +55,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             _httpContextAccessor = httpContextAccessor;
             _platformSettings = platformSettings.Value;
             _accessTokenGenerator = accessTokenGenerator;
+            _serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
         /// <inheritdoc/>
@@ -69,12 +72,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                    };
-                    options.Converters.Add(new JsonStringEnumConverter());
-                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, options);
+                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
                     return partyInfo;
                 }
                 else
@@ -127,11 +125,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
             List<Party> filteredList = new List<Party>();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            options.Converters.Add(new JsonStringEnumConverter());
 
             try
             {
@@ -144,7 +137,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, options);
+                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
                     return partiesInfo;
                 }
                 else
@@ -164,11 +157,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            options.Converters.Add(new JsonStringEnumConverter());
             try
             {
                 string endpointUrl = $"{_platformSettings.ApiAuthorizationEndpoint}parties?userId={userId}";
@@ -177,10 +165,10 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, options);
+                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
                     return partiesInfo;
                 }
                 else
@@ -262,7 +250,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 string endpointUrl = $"parties/lookup";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-                StringContent requestBody = new StringContent(JsonSerializer.Serialize(partyLookup), Encoding.UTF8, "application/json");
+                StringContent requestBody = new StringContent(JsonSerializer.Serialize(partyLookup, _serializerOptions), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)

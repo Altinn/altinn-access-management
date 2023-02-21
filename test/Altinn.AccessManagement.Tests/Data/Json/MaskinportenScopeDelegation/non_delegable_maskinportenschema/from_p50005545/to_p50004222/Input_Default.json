@@ -10,7 +10,7 @@
       "resource": [
         {
           "id": "urn:altinn:resourceregistry",
-          "value": "non_delegable_resource"
+          "value": "non_delegable_maskinportenschema"
         }
       ]
     }

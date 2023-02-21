@@ -48,92 +48,27 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationOutput> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationInput delegation)
+        public async Task<DelegationActionResult> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
         {
-            DelegationOutput output = new DelegationOutput { To = delegation.To, Rights = delegation.Rights };
-
-            // Verify delegation for single resource registry id
-            if (delegation.Rights?.Count != 1)
+            (DelegationActionResult result, string resourceRegistryId, Party fromParty, Party toParty) = await ValidateMaskinportenDelegationModel(DelegationActionType.Delegation, delegation);
+            if (!result.IsValid)
             {
-                output.Errors.Add("Rights", "Maskinporten schema delegation must specify only a single right identifying the Maskinporten schema resource, registered in the Resource Registry");
-                return output;
-            }
-
-            Right right = delegation.Rights.First();
-            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _);
-
-            if (resourceMatchType != ResourceAttributeMatchType.ResourceRegistry)
-            {
-                output.Errors.Add("right[0].Resource", $"Maskinporten schema delegation only support delegation of resources from the Resource Registry using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id");
-                return output;
-            }
-
-            // Verify resource registry id is a valid MaskinportenSchema
-            ServiceResource resource = await _contextRetrievalService.GetResource(resourceRegistryId);
-            if (resource == null || (resource.IsComplete.HasValue && !resource.IsComplete.Value))
-            {
-                output.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not complete and available for delegation");
-                return output;
-            }
-
-            if (resource.ResourceType != ResourceType.MaskinportenSchema)
-            {
-                output.Errors.Add("right[0].Resource", $"Maskinporten schema delegation can only be used to delegate maskinporten schemas. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
-                return output;
-            }
-
-            // Verify and get From reportee party of the delegation
-            Party fromParty = null;
-            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
-            {
-                fromParty = await _registerService.GetOrganisation(fromOrgNo);
-            }
-            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
-            {
-                fromParty = await _contextRetrievalService.GetPartyAsync(fromPartyId);
-            }
-
-            if (fromParty == null || fromParty.PartyTypeName != PartyType.Organisation)
-            {
-                output.Errors.Add("From", $"Maskinporten schema delegation can only be delegated from a valid organization. Invalid value: {delegation.From.FirstOrDefault()?.Id}");
-                return output;
-            }
-
-            // Verify and get To recipient party of the delegation
-            Party toParty = null;
-            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
-            {
-                toParty = await _registerService.GetOrganisation(toOrgNo);
-            }
-            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
-            {
-                toParty = await _contextRetrievalService.GetPartyAsync(toPartyId);
-            }
-                        
-            if (toParty == null || toParty.PartyTypeName != PartyType.Organisation)
-            {
-                output.Errors.Add("To", $"Maskinporten schema delegation can only be delegated To a valid organization (identified by either {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Id}");
-                return output;
+                return result;
             }
 
             // Verify authenticated users delegable rights
-            RightsQuery rightsQuery = new RightsQuery
-            {
-                To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = authenticatedUserId.ToString() } },
-                From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromParty.PartyId.ToString() } },
-                Resource = right.Resource
-            };
+            RightsQuery rightsQuery = RightsHelper.GetRightsQueryForResourceRegistryService(authenticatedUserId, resourceRegistryId, fromParty.PartyId);
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
-                output.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
-                return output;
+                result.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
+                return result;
             }
 
             if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel))) 
             {
-                output.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
-                return output;
+                result.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
+                return result;
             }
 
             // Perform delegation
@@ -150,22 +85,22 @@ namespace Altinn.AccessManagement.Core.Services
                 });
             }
 
-            List<Rule> result = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
-            if (result.All(r => r.CreatedSuccessfully))
+            List<Rule> delegationResult = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
+            if (delegationResult.All(r => r.CreatedSuccessfully))
             {
-                output.Rights = usersDelegableRights;
-                return await Task.FromResult(output);
+                result.Rights = usersDelegableRights;
+                return await Task.FromResult(result);
             }
-            else if (result.Any(r => r.CreatedSuccessfully))
+            else if (delegationResult.Any(r => r.CreatedSuccessfully))
             {
                 // Partial delegation of rules should not really be possible. Return success but log error?
-                _logger.LogError("One or more rules could not be delegated.\n{result}", result);
-                output.Rights = usersDelegableRights;
-                return await Task.FromResult(output);
+                _logger.LogError("One or more rules could not be delegated.\n{result}", delegationResult);
+                result.Rights = usersDelegableRights;
+                return await Task.FromResult(result);
             }
 
-            output.Errors.Add("Rights", "Delegation was not able complete");
-            return output;
+            result.Errors.Add("Rights", "Delegation was not able complete");
+            return result;
         }
 
         /// <inheritdoc/>
@@ -222,6 +157,92 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);
+        }
+
+        /// <inheritdoc/>
+        public async Task<DelegationActionResult> RevokeMaskinportenDelegation(int authenticatedUserId, DelegationLookup delegation)
+        {
+            (DelegationActionResult result, string resourceRegistryId, Party fromParty, Party toParty) = await ValidateMaskinportenDelegationModel(DelegationActionType.Revoke, delegation);
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserId, resourceRegistryId, fromParty.PartyId, toParty.PartyId);
+
+            await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            return result;
+        }
+
+        private async Task<(DelegationActionResult Result, string ResourceRegistryId, Party FromParty, Party ToParty)> ValidateMaskinportenDelegationModel(DelegationActionType delegationAction, DelegationLookup delegation)
+        {
+            DelegationActionResult result = new DelegationActionResult { To = delegation.To, Rights = delegation.Rights };
+
+            // Verify request is for single resource registry id
+            if (delegation.Rights?.Count != 1)
+            {
+                result.Errors.Add("Rights", "This operation only support requests specifying a single right identifying a Maskinporten schema resource registered in the Altinn Resource Registry");
+                return (result, string.Empty, null, null);
+            }
+
+            Right right = delegation.Rights.First();
+            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _);
+
+            if (resourceMatchType != ResourceAttributeMatchType.ResourceRegistry)
+            {
+                result.Errors.Add("right[0].Resource", $"This operation only support requests for resources from the Altinn Resource Registry using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            // Verify resource registry id is a valid MaskinportenSchema
+            ServiceResource resource = await _contextRetrievalService.GetResource(resourceRegistryId);
+            if (resource == null || (delegationAction == DelegationActionType.Delegation && resource.IsComplete.HasValue && !resource.IsComplete.Value))
+            {
+                result.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not complete and available for delegation");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            if (resource.ResourceType != ResourceType.MaskinportenSchema)
+            {
+                result.Errors.Add("right[0].Resource", $"This operation only support requests for Maskinporten schema resources. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            // Verify and get From reportee party of the delegation
+            Party fromParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
+            {
+                fromParty = await _registerService.GetOrganisation(fromOrgNo);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
+            {
+                fromParty = await _contextRetrievalService.GetPartyAsync(fromPartyId);
+            }
+
+            if (fromParty == null || fromParty.PartyTypeName != PartyType.Organisation)
+            {
+                result.Errors.Add("From", $"Maskinporten schema delegation can only be delegated from a valid organization (identified by either {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.From.FirstOrDefault()?.Value}");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            // Verify and get To recipient party of the delegation
+            Party toParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
+            {
+                toParty = await _registerService.GetOrganisation(toOrgNo);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
+            {
+                toParty = await _contextRetrievalService.GetPartyAsync(toPartyId);
+            }
+
+            if (toParty == null || toParty.PartyTypeName != PartyType.Organisation)
+            {
+                result.Errors.Add("To", $"Maskinporten schema delegation can only be delegated to a valid organization (identified by either {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute} attribute id). Invalid value: {delegation.To.FirstOrDefault()?.Value}");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            return (result, resourceRegistryId, fromParty, toParty);
         }
 
         private async Task<List<Delegation>> GetOfferedDelegations(int offeredByPartyId, ResourceType resourceType)

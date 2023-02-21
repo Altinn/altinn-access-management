@@ -59,7 +59,15 @@ namespace Altinn.AccessManagement.Controllers
                 }
 
                 Party party = await _register.GetOrganisation(orgNummer);
-                return _mapper.Map<PartyExternal>(party);
+
+                if (party == null)
+                {
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState, 400));
+                }
+                else
+                {
+                    return _mapper.Map<PartyExternal>(party);
+                }
             }
             catch (Exception ex)
             {

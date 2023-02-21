@@ -259,6 +259,11 @@ namespace Altinn.AccessManagement.Integration.Clients
             Party party = null;
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+                options.Converters.Add(new JsonStringEnumConverter());
                 string endpointUrl = $"parties/lookup";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
@@ -268,7 +273,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    party = JsonSerializer.Deserialize<Party>(responseContent);
+                    party = JsonSerializer.Deserialize<Party>(responseContent, options);
                     return party;
                 }
                 else

@@ -42,7 +42,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _settings = settings.CurrentValue;
-            httpClient.BaseAddress = new Uri(platformSettings.Value.ProfileApiEndpoint);
+            httpClient.BaseAddress = new Uri(platformSettings.Value.ApiProfileEndpoint);
             httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;

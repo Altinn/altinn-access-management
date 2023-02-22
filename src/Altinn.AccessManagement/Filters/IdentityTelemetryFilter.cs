@@ -33,7 +33,7 @@ namespace Altinn.AccessManagement.Filters
         {
             RequestTelemetry request = item as RequestTelemetry;
 
-            if (request != null && request.Url.ToString().Contains("authorization/api/"))
+            if (request != null && request.Url.ToString().Contains("accessmanagement/api/"))
             {
                 HttpContext ctx = _httpContextAccessor.HttpContext;
 

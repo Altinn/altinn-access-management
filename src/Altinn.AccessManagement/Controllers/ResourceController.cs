@@ -49,6 +49,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {
             if (resources.Count < 1)

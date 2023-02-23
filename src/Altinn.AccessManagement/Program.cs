@@ -213,7 +213,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
-    services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
     services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
     services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));

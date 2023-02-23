@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             _sblBridgeSettings = sblBridgeSettings.Value;
             _logger = logger;
-            httpClient.BaseAddress = new Uri(platformSettings.Value.RegisterApiEndpoint);
+            httpClient.BaseAddress = new Uri(platformSettings.Value.ApiRegisterEndpoint);
             httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
             _client = httpClient;
             _httpContextAccessor = httpContextAccessor;

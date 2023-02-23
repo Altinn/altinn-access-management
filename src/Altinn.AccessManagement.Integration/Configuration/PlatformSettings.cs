@@ -19,12 +19,17 @@
         /// <summary>
         /// Gets or sets the profile api endpoint.
         /// </summary>
-        public string? ProfileApiEndpoint { get; set; }
+        public string? ApiProfileEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the register api endpoint.
         /// </summary>
-        public string? RegisterApiEndpoint { get; set; }
+        public string? ApiRegisterEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource registry api endpoint.
+        /// </summary>
+        public string? ApiResourceRegistryEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the subscriptionkey.

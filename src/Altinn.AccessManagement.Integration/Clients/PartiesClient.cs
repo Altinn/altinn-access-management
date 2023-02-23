@@ -234,6 +234,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                     RequestUri = uriBuilder.Uri,
                     Content = requestBody
                 };
+                return new();
 
                 HttpResponseMessage response = await _client.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
@@ -244,7 +245,6 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
 
                 _logger.LogError("AccessManagement // PartiesClient // GetMainUnits // Failed // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseBody);
-                return new();
             }
             catch (Exception ex)
             {

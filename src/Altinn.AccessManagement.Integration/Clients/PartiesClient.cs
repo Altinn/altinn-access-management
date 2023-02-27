@@ -256,7 +256,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    party = JsonSerializer.Deserialize<Party>(responseContent);
+                    party = JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
                     return party;
                 }
                 else

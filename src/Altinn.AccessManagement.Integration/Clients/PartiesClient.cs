@@ -104,7 +104,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = response.Content.ReadAsStringAsync().Result;
-                    partyId = JsonSerializer.Deserialize<int>(responseContent);
+                    partyId = JsonSerializer.Deserialize<int>(responseContent, _serializerOptions);
                     return partyId;
                 }
                 else
@@ -196,7 +196,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<int>>(responseBody);
+                    return JsonSerializer.Deserialize<List<int>>(responseBody, _serializerOptions);
                 }
 
                 _logger.LogError("AccessManagement // PartiesClient // GetKeyRoleParties // Failed // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseBody);
@@ -228,7 +228,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<List<MainUnit>>(responseBody);
+                    return JsonSerializer.Deserialize<List<MainUnit>>(responseBody, _serializerOptions);
                 }
 
                 _logger.LogError("AccessManagement // PartiesClient // GetMainUnits // Failed // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseBody);
@@ -256,7 +256,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    party = JsonSerializer.Deserialize<Party>(responseContent);
+                    party = JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
                     return party;
                 }
                 else

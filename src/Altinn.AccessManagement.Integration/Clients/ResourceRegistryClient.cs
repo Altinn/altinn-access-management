@@ -58,11 +58,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<ServiceResource>> GetResources()
         {
-            List<ServiceResource> resources = null;
+            List<ServiceResource> resources = new();
 
             try
             {
-                string endpointUrl = $"resourceregistry/api/v1/resource/search";
+                string endpointUrl = $"resource/search";
 
                 HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -94,7 +94,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             List<ServiceResource> resources = new List<ServiceResource>();
             ResourceSearch resourceSearch = new ResourceSearch();
             resourceSearch.ResourceType = resourceType;
-            string endpointUrl = $"resourceregistry/api/v1/resource/search?ResourceType={(int)resourceType}";
+            string endpointUrl = $"resource/search?ResourceType={(int)resourceType}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)

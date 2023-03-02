@@ -77,5 +77,69 @@ namespace Altinn.AccessManagement.Tests.Util
 
             return token;
         }
+
+        /// <summary>
+        /// Builds a claims principal used to generate an Altinn-token for an organization with the provided scopes, essentially mocking a Maskinporten-token exchanged to an Altinn-token.
+        /// </summary>
+        /// <param name="org">Org code</param>
+        /// <param name="orgNumber">Organization number</param>
+        /// <param name="scope">Scopes to add to token</param>
+        /// <param name="consumerPrefix">If maskinporten token sets the scope prefixes the organization owns or authorized for</param>
+        /// <returns>Claims principal</returns>
+        public static ClaimsPrincipal GetClaimsPrincipal(string org, string orgNumber, string scope = null, string[] consumerPrefix = null)
+        {
+            string issuer = "https://platform.altinn.cloud/authentication/api/v1/openid/";
+
+            List<Claim> claims = new List<Claim>();
+            if (scope != null)
+            {
+                claims.Add(new Claim("scope", scope, ClaimValueTypes.String));
+            }
+
+            if (consumerPrefix != null)
+            {
+                foreach (string prefix in consumerPrefix)
+                {
+                    claims.Add(new Claim("consumer_prefix", prefix, ClaimValueTypes.String));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(org))
+            {
+                claims.Add(new Claim(AltinnCoreClaimTypes.Org, org, ClaimValueTypes.String, issuer));
+            }
+
+            claims.Add(new Claim("consumer", GetOrgNoObject(orgNumber)));
+            claims.Add(new Claim(AltinnCoreClaimTypes.OrgNumber, orgNumber.ToString(), ClaimValueTypes.Integer32, issuer));
+            claims.Add(new Claim(AltinnCoreClaimTypes.AuthenticateMethod, "IntegrationTestMock", ClaimValueTypes.String, issuer));
+            claims.Add(new Claim(AltinnCoreClaimTypes.AuthenticationLevel, "3", ClaimValueTypes.Integer32, issuer));
+
+            ClaimsIdentity identity = new ClaimsIdentity("mock-org");
+            identity.AddClaims(claims);
+
+            return new ClaimsPrincipal(identity);
+        }
+
+        /// <summary>
+        /// Generates an Altinn-token for an organization with the provided scopes, essentially mocking a Maskinporten-token exchanged to an Altinn-token.
+        /// </summary>
+        /// <param name="org">Org code</param>
+        /// <param name="orgNumber">Organization number</param>
+        /// <param name="scope">Scopes to add to token</param>
+        /// <param name="consumerPrefix">If maskinporten token sets the scope prefixes the organization owns or authorized for</param>
+        /// <returns>Altinn org-token</returns>
+        public static string GetOrgToken(string org, string orgNumber = "991825827", string scope = null, string[] consumerPrefix = null)
+        {
+            ClaimsPrincipal principal = GetClaimsPrincipal(org, orgNumber, scope, consumerPrefix);
+
+            string token = JwtTokenMock.GenerateToken(principal, new TimeSpan(0, 30, 0));
+
+            return token;
+        }
+
+        private static string GetOrgNoObject(string orgNo)
+        {
+            return $"{{ \"authority\":\"iso6523-actorid-upis\", \"ID\":\"0192:{orgNo}\"}}";
+        }
     }
 }

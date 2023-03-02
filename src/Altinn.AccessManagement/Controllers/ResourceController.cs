@@ -45,7 +45,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="resources">List of new Resources to add or update</param>
         /// <returns></returns>
-        ////[Authorize(Policy = "PlatformAccess")]
+        [Authorize(Policy = "PlatformAccess")]
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]

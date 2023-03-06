@@ -58,7 +58,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<ServiceResource>> GetResources()
         {
-            List<ServiceResource> resources = null;
+            List<ServiceResource> resources = new();
 
             try
             {

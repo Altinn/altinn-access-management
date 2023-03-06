@@ -42,7 +42,11 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
                 foreach (int partyId in parties.Distinct())
                 {
-                    filteredList.Add(partyList.Find(p => p.PartyId == partyId));
+                    Party party = partyList.Find(p => p.PartyId == partyId);
+                    if (party != null)
+                    {
+                        filteredList.Add(party);
+                    }
                 }
             }
 

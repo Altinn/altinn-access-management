@@ -19,6 +19,7 @@ using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.Authentication.Configuration;
+using Altinn.Common.Authentication.Models;
 using Altinn.Common.PEP.Authorization;
 using Altinn.Common.PEP.Clients;
 using Altinn.Common.PEP.Implementation;
@@ -250,13 +251,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
 
-    if (oidcProviders.ContainsKey("altinn"))
+    if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {
         services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
             options.JwtCookieName = platformSettings.JwtCookieName;
-            options.MetadataAddress = oidcProviders["altinn"].Issuer;
+            options.MetadataAddress = altinnOidcProvder.Issuer;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,

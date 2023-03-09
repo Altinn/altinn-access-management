@@ -206,6 +206,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
+    OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
@@ -249,11 +250,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
 
-    services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
+    if (oidcProviders.ContainsKey("altinn"))
+    {
+        services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
             options.JwtCookieName = platformSettings.JwtCookieName;
-            options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
+            options.MetadataAddress = oidcProviders["altinn"].Issuer;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -269,6 +272,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
                 options.RequireHttpsMetadata = false;
             }
         });
+    }
+    else
+    {
+        logger.LogError("Unable to setup authentication. Missing altinn OidcProvider config.");
+    }
 
     services.AddAuthorization(options =>
     {

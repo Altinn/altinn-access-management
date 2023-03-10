@@ -161,7 +161,7 @@ namespace Altinn.AccessManagement.Persistence
                 NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesOfferedByPartyId, conn);
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
                 pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
-                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
+                pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString()).ToList());
 
                 List<DelegationChange> delegatedResources = new List<DelegationChange>();
                 using NpgsqlDataReader reader = pgcom.ExecuteReader();

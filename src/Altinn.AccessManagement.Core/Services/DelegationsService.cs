@@ -216,7 +216,8 @@ namespace Altinn.AccessManagement.Core.Services
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
             {
-                fromParty = await _contextRetrievalService.GetPartyAsync(fromPartyId);
+                List<Party> fromPartyLookup = await _contextRetrievalService.GetPartiesAsync(fromPartyId.SingleToList());
+                fromParty = fromPartyLookup.FirstOrDefault();
             }
 
             if (fromParty == null || fromParty.PartyTypeName != PartyType.Organisation)
@@ -233,7 +234,8 @@ namespace Altinn.AccessManagement.Core.Services
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
             {
-                toParty = await _contextRetrievalService.GetPartyAsync(toPartyId);
+                List<Party> toPartyLookup = await _contextRetrievalService.GetPartiesAsync(toPartyId.SingleToList());
+                toParty = toPartyLookup.FirstOrDefault();
             }
 
             if (toParty == null || toParty.PartyTypeName != PartyType.Organisation)

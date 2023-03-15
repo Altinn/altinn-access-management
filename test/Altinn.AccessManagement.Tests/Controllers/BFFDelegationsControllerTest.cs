@@ -86,7 +86,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004223);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418982");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418982");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/organization/delegations/maskinportenschema/offered");
@@ -228,7 +228,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             List<DelegationBff> expectedDelegations = GetExpectedInboundDelegationsForParty(50004219);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/bff/organization/delegations/maskinportenschema/received");

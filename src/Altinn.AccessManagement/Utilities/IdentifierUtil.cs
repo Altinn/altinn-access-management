@@ -10,8 +10,8 @@ namespace Altinn.AccessManagement.Utilities
     {
         private const string PersonHeaderTrigger = "person";
         private const string OrganizationHeaderTrigger = "organization";
-        private const string PersonHeader = "party-ssn";
-        private const string OrganizationNumberHeader = "party-organizationumber";
+        private const string PersonHeader = "Altinn-Party-SocialSecurityNumber";
+        private const string OrganizationNumberHeader = "Altinn-Party-OrganizationNumber";
 
         /// <summary>
         /// Validates that a given organization number is valid.
@@ -137,7 +137,7 @@ namespace Altinn.AccessManagement.Utilities
         /// <summary>
         /// Route allowes for specifying the reportee party in the path.
         /// This value must either be a PartyId, or the placeholder values: "organization" or "person"
-        /// if the placeholder value is used the organization number or social security number must be specified in a corresponding header value: "party-organizationumber" or "party-ssn"
+        /// if the placeholder value is used the organization number or social security number must be specified in a corresponding header value: "Altinn-Party-OrganizationNumber" or "Altinn-Party-SocialSecurityNumber"
         /// </summary>
         /// <param name="party">The party value from route</param>
         /// <param name="context">The httpcontext for getting header values</param>

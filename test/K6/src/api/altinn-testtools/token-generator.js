@@ -29,6 +29,7 @@ export function generateToken(tokenFor, userName, userPwd, queryParams) {
       Authorization: `Basic ${encodedCredentials}`,
     },
   };
+  console.log(endpoint)
 
   var token = http.get(endpoint, params);
   check(token, {

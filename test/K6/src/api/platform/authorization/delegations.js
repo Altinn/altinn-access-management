@@ -158,6 +158,24 @@ export function deletePolicy(altinnToken, policyMatchKeys, deletedByUserId, offe
 }
 
 /**
+ * GET call to get rules that have been offered by the current party
+ */
+export function getMaskinportenOffered(altinnToken, partyid) {
+  var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'offered');
+  var params = header.buildHeaderWithRuntime(altinnToken, 'platform');
+  return http.get(endpoint, params);
+}
+
+/**
+ * GET call to get rules that have been received by the current party
+ */
+export function getMaskinportenReceived(altinnToken, partyid) {
+  var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'received');
+  var params = header.buildHeaderWithRuntime(altinnToken, 'platform');
+  return http.get(endpoint, params);
+}
+
+/**
  * function to build a policy match with action, user and resource details
  * @param {*} policyMatch Template
  * @param {*} policyMatchKeys keys to be populated in policy match

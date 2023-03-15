@@ -4,7 +4,6 @@ using System.Linq;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Models.Bff;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
 using Microsoft.AspNetCore.Mvc;
@@ -280,33 +279,6 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.ResourceType, actual.ResourceType);
-        }
-
-        /// <summary>
-        /// Assert that two <see cref="DelegationExternal"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(DelegationBff expected, DelegationBff actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
-            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            Assert.Equal(expected.OfferedByName, actual.OfferedByName);
-            Assert.Equal(expected.OfferedByOrganizationNumber, actual.OfferedByOrganizationNumber);
-            Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
-            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
-            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
-            Assert.Equal(expected.ResourceId, actual.ResourceId);
-            Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.RightDescription, actual.RightDescription);
-
-            Assert.Equal(expected.HasCompetentAuthority?.Orgcode, actual.HasCompetentAuthority?.Orgcode);
-            Assert.Equal(expected.HasCompetentAuthority?.Organization, actual.HasCompetentAuthority?.Organization);
-            Assert.Equal(expected.HasCompetentAuthority?.Name, actual.HasCompetentAuthority?.Name);
             Assert.Equal(expected.ResourceType, actual.ResourceType);
         }
 

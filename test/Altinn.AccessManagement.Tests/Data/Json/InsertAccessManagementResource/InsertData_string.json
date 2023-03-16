@@ -1,7 +1,7 @@
 {
 "resourceId": 5,
 "resourceRegistryId": "string",
-"resourceType": "MaskinportenSchema",
+"resourceType": "maskinportenschema",
 "created": "2022-12-01T12:53:18.910549Z",
 "modified": "2022-12-01T13:01:34.604744Z"
 }

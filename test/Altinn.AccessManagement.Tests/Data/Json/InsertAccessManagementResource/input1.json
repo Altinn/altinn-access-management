@@ -5,6 +5,6 @@
   },
   {
     "resourceregistryid": "string2",
-    "resourcetype": "MaskinportenSchema"
+    "resourcetype": "maskinportenschema"
   }
 ]

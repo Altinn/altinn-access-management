@@ -13,7 +13,7 @@ COPY src ./src
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0.3-alpine3.17 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0.4-alpine3.17 AS final
 EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .

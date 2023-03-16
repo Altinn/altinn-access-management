@@ -249,7 +249,14 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetOfferedDelegations(int offeredByPartyId, ResourceType resourceType)
         {
+            List<Delegation> delegations = new List<Delegation>();
             List<DelegationChange> delegationChanges = await _delegationRepository.GetOfferedResourceRegistryDelegations(offeredByPartyId, resourceTypes: resourceType.SingleToList());
+
+            if (delegationChanges?.Count == 0)
+            {
+                return delegations;
+            }
+
             List<int> parties = new List<int>();
             foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
             {
@@ -263,8 +270,7 @@ namespace Altinn.AccessManagement.Core.Services
             resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
             List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
-            List<Delegation> delegations = new List<Delegation>();
-
+            
             foreach (DelegationChange delegationChange in delegationChanges)
             {
                 Delegation delegation = new Delegation();
@@ -292,7 +298,14 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId, ResourceType resourceType)
         {
+            List<Delegation> delegations = new List<Delegation>();
             List<DelegationChange> delegationChanges = await _delegationRepository.GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyId.SingleToList(), resourceTypes: resourceType.SingleToList());
+
+            if (delegationChanges?.Count == 0)
+            {
+                return delegations;
+            }
+
             List<int> parties = new List<int>();
             parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
 
@@ -302,7 +315,6 @@ namespace Altinn.AccessManagement.Core.Services
             resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
             List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
-            List<Delegation> delegations = new List<Delegation>();
 
             foreach (DelegationChange delegationChange in delegationChanges)
             {

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.201-alpine3.17 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0.202-alpine3.17 AS build
 WORKDIR /app
 
 COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/

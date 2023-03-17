@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ namespace Altinn.AccessManagement.Persistence
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(insertResorceAccessManagment, conn);
                 pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
-                pgcom.Parameters.AddWithValue("_resourcetype", resource.ResourceType);
+                pgcom.Parameters.AddWithValue("_resourcetype", NpgsqlTypes.NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
                 
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())
@@ -70,11 +71,12 @@ namespace Altinn.AccessManagement.Persistence
 
         private static AccessManagementResource GetAccessManagementResource(NpgsqlDataReader reader)
         {
+            ResourceType resourceType;
             return new AccessManagementResource
             {
                 ResourceId = reader.GetFieldValue<int>("resourceid"),
                 ResourceRegistryId = reader.GetFieldValue<string>("resourceregistryid"),
-                ResourceType = reader.GetFieldValue<string>("resourcetype"),
+                ResourceType = Enum.TryParse(reader.GetFieldValue<string>("resourcetype"), out resourceType) ? resourceType : ResourceType.Default,
                 Created = reader.GetFieldValue<DateTime>("created"),
                 Modified = reader.GetFieldValue<DateTime>("modified")
             };

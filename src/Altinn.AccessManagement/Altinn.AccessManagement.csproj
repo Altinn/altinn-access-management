@@ -34,7 +34,6 @@
   
   <ItemGroup>
     <Folder Include="Configuration\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

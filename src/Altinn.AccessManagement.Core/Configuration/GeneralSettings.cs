@@ -9,10 +9,5 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// Gets or sets the host name.
         /// </summary>
         public string Hostname { get; set; }
-
-        /// <summary>
-        /// Option to disable csrf check
-        /// </summary>
-        public bool DisableCsrfCheck { get; set; }
     }
 }

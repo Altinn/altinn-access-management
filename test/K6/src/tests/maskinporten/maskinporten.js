@@ -102,10 +102,7 @@ export function setup() {
   return data;
 }
 
-//Tests for platform Authorization:Delegations:Inheritance
 export default function (data) {
-
-  // debug tokens here
   user1_personalToken = data.personalToken1;
   user2_personalToken = data.personalToken2;
   appOwner = data.org;
@@ -122,7 +119,6 @@ export default function (data) {
   org2_partyid = data.orgpartyid2;
 
   //tests
-  showTestData();
   postMaskinportenSchemaToOrgNumberTest();
   postMaskinportenSchemaToPartyIdTest();
   postMaskinportenSchemaNotReadyTest();
@@ -143,12 +139,18 @@ export function getMaskinPortenSchemaOfferedTest() {
 
   // Act
   var res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
-  console.log('get offered MaskinPortenSchemas');
-  console.log(res.body);
 
   // Assert
   var success = check(res, {
-    'get offered MaskinPortenSchema - status is 200': (r) => r.status === 200
+    'get offered MaskinPortenSchemas - status is 200': (r) => r.status === 200,
+    'get offered MaskinPortenSchemas - coveredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.coveredByName') === 'LARKOLLEN OG FAUSKE',
+    'get offered MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == offeredByPartyId,
+    'get offered MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org2_partyid,
+    'get offered MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == user1_userid,
+    'get offered MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2_number,
+    'get offered MaskinPortenSchemas - resourceId is appid-544': (r) => r.json('0.resourceId') == 'appid-544',
+    'get offered MaskinPortenSchemas - resourceTitle is Automation Regression': (r) => r.json('0.resourceTitle.en') == 'Automation Regression',
+    'get offered MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
   });
   addErrorCount(success);
 }
@@ -161,12 +163,19 @@ export function getMaskinPortenSchemaReceivedTest() {
 
   // Act
   var res = maskinporten.getMaskinportenSchemaReceived(offeredByToken, offeredByPartyId);
-  console.log('get Received MaskinPortenSchemas');
-  console.log(res.body);
   
   // Assert
   var success = check(res, {
-    'get Received MaskinPortenSchemas - status is 200': (r) => r.status === 200
+    'get Received MaskinPortenSchemas - status is 200': (r) => r.status === 200,
+    'get Received MaskinPortenSchemas - offeredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.offeredByName') === 'LARKOLLEN OG FAUSKE',
+    'get Received MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == org2_partyid,
+    'get Received MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org1_partyid,
+    'get Received MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == user2_userid,
+    'get Received MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org2_number,
+    'get Received MaskinPortenSchemas - resourceId is appid-544': (r) => r.json('0.resourceId') == 'appid-544',
+    'get Received MaskinPortenSchemas - resourceTitle is Automation Regression': (r) => r.json('0.resourceTitle.en') == 'Automation Regression',
+    'get Received MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
+    
   });
   addErrorCount(success);
 }
@@ -249,17 +258,24 @@ export function revokeOfferedMaskinPortenSchema() {
   const appid = 'appid-544';
   
   var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, toOrgNumber, appid, 'orgno');
+  res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
+  success = check(res, {
+    'revoke Offered MaskinPortenSchema - getMaskinPortenSchema was added': (r) => r.status === 200,
+  });
 
   // Act
   res = maskinporten.revokeOfferedMaskinportenSchema(offeredByToken, offeredByPartyId, toOrgNumber, appid, 'orgno');
-  // console.log('revoke body: ');
-  // console.log(res.body);
 
   // Assert
   var success = check(res, {
-    'revoke Offered MaskinPortenSchema - status is 200': (r) => r.status === 200,
+    'revoke Offered MaskinPortenSchema - revoke status is 204': (r) => r.status === 204,
   });
   addErrorCount(success);
+
+  res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
+  success = check(res, {
+    'revoke Offered MaskinPortenSchema - getMaskinPortenSchema returns empty list': (r) => r.body == '[]',
+  });
 }
 
 /** revoke a received maskinportenschema */
@@ -268,21 +284,27 @@ export function revokeReceivedMaskinPortenSchema() {
   const offeredByToken = user1_personalToken;
   const toToken = user2_personalToken;
   const offeredByPartyId = org1_partyid;
+  const offeredByOrgNumber = org1_number;
   const toOrgNumber = org2_number;
+  const toPartyId = org2_partyid;
   const appid = 'appid-544';
   
   var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, toOrgNumber, appid, 'orgno');
+  res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
 
   // Act
-  res = maskinporten.revokeOfferedMaskinportenSchema(toToken, offeredByPartyId, toOrgNumber, appid, 'orgno');
-  // console.log('revokeReceivedMaskinPortenSchema response: ');
-  // console.log(res.body);
+  res = maskinporten.revokeReceivedMaskinportenSchema(toToken, toPartyId, offeredByOrgNumber, appid, 'orgno');
 
   // Assert
   var success = check(res, {
-    'revoke Received MaskinPortenSchema - status is 200': (r) => r.status === 200,
+    'revoke Received MaskinPortenSchema - status is 204': (r) => r.status === 204,
   });
   addErrorCount(success);
+
+  res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
+  success = check(res, {
+    'revoke Received MaskinPortenSchema - getMaskinPortenSchema returns empty list': (r) => r.body == '[]',
+  });
 }
 
 /** try to revoke a non-existent offered maskinportenschema */
@@ -294,12 +316,9 @@ export function revokeNonExistentOfferedMaskinPortenSchema() {
   
   // Act
   var res = maskinporten.revokeOfferedMaskinportenSchema(offeredByToken, offeredByPartyId, toOrgNumber, 'nonexistent-maskinportenschema-1337', 'orgno');
-  // console.log('revoke body: ');
-  // console.log(res.body);
-
   // Assert
   var success = check(res, {
-    'revoke non-existent Offered MaskinPortenSchema - status is 404': (r) => r.status === 404,
+    'revoke non-existent Offered MaskinPortenSchema - status is 400': (r) => r.status === 400,
   });
   addErrorCount(success);
 }
@@ -308,17 +327,15 @@ export function revokeNonExistentOfferedMaskinPortenSchema() {
 export function revokeNonExistentReceivedMaskinPortenSchema() {
   // Arrange
   const toToken = user2_personalToken;
-  const offeredByPartyId = org1_partyid;
-  const toOrgNumber = org2_number;
+  const toPartyId = org2_partyid;
+  const offeredByOrgNumber = org1_number;
   
   // Act
-  var res = maskinporten.revokeOfferedMaskinportenSchema(toToken, offeredByPartyId, toOrgNumber, 'nonexistent-maskinportenschema-1337', 'orgno');
-  // console.log('revoke body: ');
-  // console.log(res.body);
-
+  var res = maskinporten.revokeReceivedMaskinportenSchema(toToken, toPartyId, offeredByOrgNumber, 'nonexistent-maskinportenschema-1337', 'orgno');
+  
   // Assert
   var success = check(res, {
-    'revoke non-existent Received MaskinPortenSchema - status is 404': (r) => r.status === 404,
+    'revoke non-existent Received MaskinPortenSchema - status is 400': (r) => r.status === 400,
   });
   addErrorCount(success);
 }

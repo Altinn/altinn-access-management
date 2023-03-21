@@ -10,7 +10,6 @@ import * as header from '../../../buildrequestheaders.js';
 export function getMaskinportenSchemaOffered(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'offered');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
-  console.log(`endpoint: ${endpoint}`);
   return http.get(endpoint, params);
 }
 
@@ -22,7 +21,6 @@ export function getMaskinportenSchemaOffered(altinnToken, partyid) {
 export function getMaskinportenSchemaReceived(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'received');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
-  console.log(`endpoint: ${endpoint}`);
   return http.get(endpoint, params);
 }
 
@@ -37,34 +35,28 @@ export function getMaskinportenSchemaReceived(altinnToken, partyid) {
 export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, to, resourceid, orgnoOrPartyId) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'revokeoffered');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
-  console.log(`endpoint: ${endpoint}`);
   var body = [];
   body.push(generatePolicyMatch(to, resourceid, orgnoOrPartyId));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
-  console.log('revokeReceivedMaskinportenSchema request:');
-  console.log(bodystring);
   return http.post(endpoint, bodystring, params);
 }
 
 /**
  * POST call to revoke maskinportenschemas that have been received by the current party
  * @param {*} altinnToken personal token for DAGL of receiver
- * @param {*} offeredByPartyId the offering party's partyid
- * @param {*} to the receiving organization's party id or organization number
+ * @param {*} coveredByPartyId the receiving party's partyid
+ * @param {*} from the offering organization's party id or organization number
  * @param {*} resourceid the id of the resource to delegate
  * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
  */
-export function revokeReceivedMaskinportenSchema(altinnToken, partyid) {
-  var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'revokereceived');
+export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, from, resourceid, orgnoOrPartyId) {
+  var endpoint = config.buildMaskinPorteSchemaUrls(coveredByPartyId, 'revokereceived');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
-  console.log(`endpoint: ${endpoint}`);
   var body = [];
-  body.push(generatePolicyMatch(to, resourceid, orgnoOrPartyId, 'from'));
+  body.push(generatePolicyMatch(from, resourceid, orgnoOrPartyId, true));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1);
-  console.log('revokeReceivedMaskinportenSchema request:');
-  console.log(bodystring);
   return http.post(endpoint, bodystring, params);
 }
 
@@ -81,11 +73,8 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, to, resour
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
   var body = [];
   body.push(generatePolicyMatch(to, resourceid, orgnoOrPartyId));
-  console.log(`endpoint: ${endpoint}`);
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
-  console.log('postMaskinportenSchema body: ');
-  console.log(bodystring);
   return http.post(endpoint, bodystring, params);
 }
 
@@ -94,10 +83,10 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, to, resour
  * @param {*} toPartyId party id or organization number of whom that receives the rule
  * @param {*} altinnAction read,write,sign
  * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
- * @param {*} toOrFrom 'to', 'from'. Decides whether to use "to" or "from" in the JSon
+ * @param {*} useFrom 'true', 'false'. If true, use 'from' in json, else use 'to'.
  * @returns json object of a completed policy match
  */
-function generatePolicyMatch(toPartyId, resourceid, orgnoOrPartyId, toOrFrom) {
+function generatePolicyMatch(toPartyId, resourceid, orgnoOrPartyId, useFrom) {
   var toId = 'urn:altinn:partyid';
   if (orgnoOrPartyId == 'orgno') {
     toId = 'urn:altinn:organizationnumber'
@@ -114,7 +103,7 @@ function generatePolicyMatch(toPartyId, resourceid, orgnoOrPartyId, toOrFrom) {
   }
   var policyMatch = {};
   
-  if(toOrFrom == 'from') {
+  if(useFrom) {
     policyMatch = {
       from: [],
       rights: []

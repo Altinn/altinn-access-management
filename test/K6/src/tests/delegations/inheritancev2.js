@@ -140,6 +140,7 @@ export default function (data) {
   CleanupBeforeTests();
 
   //tests
+  showTestData();
   directDelegationFromOrgToUser();
   directDelegationFromOrgToOrg();
   directDelegationFromMainUnitToUser();

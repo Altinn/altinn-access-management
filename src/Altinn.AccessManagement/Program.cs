@@ -49,9 +49,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
-string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AccessManagement/");
-builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
-
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
 
@@ -311,21 +308,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
-    }
-    
-    services.AddAntiforgery(options =>
-    {
-        // asp .net core expects two types of tokens: One that is attached to the request as header, and the other one as cookie.
-        // The values of the tokens are not the same and both need to be present and valid in a "unsafe" request.
-
-        // We use this for OIDC state validation. See authentication controller. 
-        // https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-6.0
-        // https://github.com/axios/axios/blob/master/lib/defaults.js
-        options.Cookie.Name = "AS-XSRF-TOKEN";
-        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
-        options.HeaderName = "X-XSRF-TOKEN";
-    });
-    services.TryAddSingleton<ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter>();
+    }    
 }
 
 void Configure()
@@ -364,7 +347,6 @@ void Configure()
     }
 
     app.UseCors();
-    app.UseStaticFiles();
     app.MapControllers();
 }
 

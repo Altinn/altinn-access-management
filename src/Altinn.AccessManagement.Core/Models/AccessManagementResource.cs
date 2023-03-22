@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Helpers;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -31,7 +26,8 @@ namespace Altinn.AccessManagement.Core.Models
         /// The type of resource
         /// </summary>
         [Required]
-        public string ResourceType { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ResourceType ResourceType { get; set; }
 
         /// <summary>
         /// When the resource was created in access management

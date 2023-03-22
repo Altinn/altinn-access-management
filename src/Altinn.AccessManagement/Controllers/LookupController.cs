@@ -14,7 +14,6 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for lookup
     /// </summary>
     [ApiController]
-    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class LookupController : ControllerBase
     {
         private readonly ILogger _logger;

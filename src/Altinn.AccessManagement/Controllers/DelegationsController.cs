@@ -19,7 +19,6 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
     [ApiController]
-    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;

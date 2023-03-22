@@ -53,6 +53,8 @@ export var platformAuthorization = {
   getRules: `https://platform.${baseUrl}/authorization/api/v1/delegations/GetRules`,
   deleteRules: `https://platform.${baseUrl}/authorization/api/v1/delegations/DeleteRules`,
   deletePolicy: `https://platform.${baseUrl}/authorization/api/v1/delegations/DeletePolicy`,
+  maskinPortenSchemaOffered: `https://platform.${baseUrl}/authorization/api/v1/delegations/AddRules`,
+  maskinPortenSchemaReceived: `https://platform.${baseUrl}/authorization/api/v1/delegations/AddRules`,
 };
 
 //PDF
@@ -94,6 +96,28 @@ export var sblBridge = {
 
 export var sbl = {
   altinnBuildVersion: `https://${baseUrl}/pages/logout/AltinnBuildVersion.txt` 
+}
+
+export function buildMaskinPorteSchemaUrls(party, type) {
+  var value = '';
+  switch (type) {
+    case 'offered':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/offered`;
+      break;
+    case 'received':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/received`;
+      break;
+    case 'revokeoffered':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/offered/revoke`;
+      break;
+    case 'revokereceived':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/received/revoke`;
+      break;
+    case 'maskinportenschema':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema`;
+      break;
+  }
+  return value;
 }
 
 //Function to build endpoints in storage with instanceOwnerId, instanceId, dataId, type

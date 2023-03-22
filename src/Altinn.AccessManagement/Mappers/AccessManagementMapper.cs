@@ -1,7 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Models.Bff;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Mappers
@@ -18,7 +17,6 @@ namespace Altinn.AccessManagement.Mappers
         {
             AllowNullCollections = true;
             CreateMap<Delegation, DelegationExternal>();
-            CreateMap<Delegation, DelegationBff>();
             CreateMap<Party, PartyExternal>();
             CreateMap<Delegation, MPDelegationExternal>()
                 .ForMember(dest => dest.SupplierOrg, act => act.MapFrom(src => src.OfferedByOrganizationNumber))

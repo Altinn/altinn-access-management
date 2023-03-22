@@ -17,7 +17,6 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller to update AccessManagement with resources existing i ResourceRegister.
     /// </summary>
     [ApiController]
-    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class ResourceController : ControllerBase
     {
         private readonly ILogger _logger;

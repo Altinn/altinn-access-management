@@ -8,7 +8,7 @@
       "offeredByPartyId": 50001337,
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "resource2"
         }
       ],

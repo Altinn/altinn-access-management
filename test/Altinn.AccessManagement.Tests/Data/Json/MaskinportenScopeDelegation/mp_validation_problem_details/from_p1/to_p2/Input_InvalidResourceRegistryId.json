@@ -9,7 +9,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "non_existing_id"
         }
       ]

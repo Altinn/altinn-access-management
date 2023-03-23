@@ -3629,7 +3629,7 @@
     },
     "resourceReferences": [
       {
-        "reference": "urn:altinn:resourceregistry:nav_aa",
+        "reference": "urn:altinn:resource:nav_aa",
         "referenceType": "Uri",
         "referenceSource": "Altinn3"
       },
@@ -3691,7 +3691,7 @@
       },
       "resourceReferences": [
         {
-          "reference": "urn:altinn:resourceregistry:skd_1",
+          "reference": "urn:altinn:resource:skd_1",
           "referenceType": "Uri",
           "referenceSource": "Altinn3"
         },

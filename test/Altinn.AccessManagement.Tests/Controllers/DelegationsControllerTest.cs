@@ -1392,7 +1392,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(4321, 87654321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418982");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418982");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1563,7 +1563,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -1944,7 +1944,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1967,7 +1967,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1989,7 +1989,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12344321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -2012,7 +2012,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(4321, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -2061,7 +2061,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", fromParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
             DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
@@ -2337,7 +2337,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50002598";
             _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "50002598"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-ssn", "07124912037");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-SocialSecurityNumber", "07124912037");
 
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2", "Input_Default");
             ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2", "ExpectedOutput_InvalidFrom_Ssn");
@@ -2479,7 +2479,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", fromParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
             StreamContent requestContent = GetRequestContent("RevokeOfferedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418532");
 
@@ -2587,7 +2587,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string toParty = "50004221";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", toParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418532");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418532");
 
             StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p50005545", $"p{toParty}");
 
@@ -2612,7 +2612,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string toParty = "50004221";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", toParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418532");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418532");
 
             StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"910459880", $"810418532");
 

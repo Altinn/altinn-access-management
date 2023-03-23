@@ -25,7 +25,7 @@
   "resourceReferences": [
     {
       "referenceSource": "Altinn3",
-      "reference": "urn:altinn:resourceregistry:digdirs_company_car",
+      "reference": "urn:altinn:resource:digdirs_company_car",
       "referenceType": "Uri"
     }
   ],

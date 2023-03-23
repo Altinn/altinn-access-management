@@ -9,7 +9,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "digdirs_company_car"
         }
       ]

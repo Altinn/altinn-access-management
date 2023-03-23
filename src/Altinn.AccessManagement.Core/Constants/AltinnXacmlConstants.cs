@@ -79,7 +79,7 @@ namespace Altinn.AccessManagement.Core.Constants
             /// <summary>
             /// Resource Registry attribute match indentifier 
             /// </summary>
-            public const string ResourceRegistryAttribute = "urn:altinn:resourceregistry";
+            public const string ResourceRegistryAttribute = "urn:altinn:resource";
 
             /// <summary>
             /// Organization number attribute match indentifier 

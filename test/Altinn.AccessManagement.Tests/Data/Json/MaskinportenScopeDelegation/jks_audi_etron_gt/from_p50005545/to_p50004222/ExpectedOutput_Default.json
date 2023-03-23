@@ -9,7 +9,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],
@@ -21,7 +21,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],
@@ -33,7 +33,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],

@@ -172,7 +172,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
             List<Party> partyList = new List<Party>();
-            Party partyToReturn = null;
 
             string path = GetPartiesPaths();
             if (Directory.Exists(path))
@@ -187,32 +186,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
                         partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
-
-                foreach (Party party in partyList)
-                {
-                    if (party != null && party.PartyId == userId)
-                    {
-                        partyToReturn = party;
-                    }
-                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
-                    {
-                        foreach (Party childParty in party.ChildParties)
-                        {
-                            if (childParty.PartyId == userId)
-                            {
-                                partyToReturn = party;
-                            }
-                        }
-                    }
-                }
             }
 
-            List<Party> returnedPartyList = new List<Party>
-            {
-                partyToReturn
-            };
-
-            return Task.FromResult(returnedPartyList);
+            return Task.FromResult(partyList);
         }
 
         private static string GetPartiesPaths()

@@ -68,90 +68,77 @@ namespace Altinn.AccessManagement.Integration.Clients
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
 
                 HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    Party partyInfo = JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
-                    return partyInfo;
+                    return JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
                 }
-                else
-                {
-                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
-                }
+                
+                _logger.LogError("AccessManagement // PartiesClient // GetPartyAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+                return null;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyAsync // Exception");
                 throw;
             }
-
-            return null;
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetPartyId(string id)
+        public async Task<int> GetPartyId(string ssnOrOrgNo)
         {
-            int partyId = 0;
             try
             {
                 string endpointUrl = $"register/api/parties/lookup";
-                StringContent requestBody = new StringContent(JsonSerializer.Serialize(id), Encoding.UTF8, "application/json");
+                StringContent requestBody = new StringContent(JsonSerializer.Serialize(ssnOrOrgNo), Encoding.UTF8, "application/json");
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    partyId = JsonSerializer.Deserialize<int>(responseContent, _serializerOptions);
-                    return partyId;
+                    return JsonSerializer.Deserialize<int>(responseContent, _serializerOptions);
                 }
-                else
-                {
-                    _logger.LogError("Getting party information from bridge failed with {StatusCode}", response.StatusCode);
-                }
+
+                _logger.LogError("AccessManagement // PartiesClient // GetPartyId // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+                return 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyAsync // Exception");
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyId // Exception");
                 throw;
             }
-
-            return partyId;
         }
 
         /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
-            List<Party> filteredList = new List<Party>();
-
             try
             {
                 string endpointUrl = $"parties/partylist/";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
+                
                 HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
-                    return partiesInfo;
+                    return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
                 }
-                else
-                {
-                    _logger.LogError("Getting parties information from bridge failed with {StatusCode}", response.StatusCode);
-                }
+
+                _logger.LogError("AccessManagement // PartiesClient // GetPartiesAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+                return new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
                 throw;
             }
-
-            return filteredList;
         }
 
         /// <inheritdoc/>
@@ -164,25 +151,21 @@ namespace Altinn.AccessManagement.Integration.Clients
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
 
                 HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    List<Party> partiesInfo = JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
-                    return partiesInfo;
+                    return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
                 }
-                else
-                {
-                    _logger.LogError("Getting parties information from authorization failed with {StatusCode}", response.StatusCode);
-                }
+
+                _logger.LogError("AccessManagement // PartiesClient // GetPartiesForUserAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+                return new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesForUserAsync // Exception");
                 throw;
             }
-
-            return null;
         }
 
         /// <inheritdoc/>
@@ -236,7 +219,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AccessManagement // PartiesClient // partyparents // Failed // Unexpected Exception");
+                _logger.LogError(ex, "AccessManagement // PartiesClient // GetMainUnits // Failed // Unexpected Exception");
                 throw;
             }
         }
@@ -244,33 +227,29 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup)
         {
-            Party party = null;
             try
             {
                 string endpointUrl = $"parties/lookup";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
                 StringContent requestBody = new StringContent(JsonSerializer.Serialize(partyLookup, _serializerOptions), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    party = JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
-                    return party;
+                    return JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
                 }
-                else
-                {
-                    _logger.LogError("Getting party information from register failed with {StatusCode}", response.StatusCode);
-                }
+
+                _logger.LogError("AccessManagement // PartiesClient // LookupPartyBySSNOrOrgNo // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseContent);
+                return null;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AccessManagement // PartiesClient // LookupPartyBySSNOrOrgNo // Exception");
                 throw;
             }
-
-            return party;
         }
     }
 }

@@ -6,23 +6,8 @@ namespace Altinn.AccessManagement.Core.Configuration
     public class GeneralSettings
     {
         /// <summary>
-        /// Gets or sets the SBL base adress
-        /// </summary>
-        public string SBLBaseAdress { get; set; }
-        
-        /// <summary>
         /// Gets or sets the host name.
         /// </summary>
-        public string AccessManagementApplicationHostName { get; set; }
-
-        /// <summary>
-        /// Option to disable csrf check
-        /// </summary>
-        public bool DisableCsrfCheck { get; set; }
-
-        /// <summary>
-        /// Gets or sets the cdn url for frontend
-        /// </summary>
-        public string FrontendBaseUrl { get; set; }
+        public string Hostname { get; set; }
     }
 }

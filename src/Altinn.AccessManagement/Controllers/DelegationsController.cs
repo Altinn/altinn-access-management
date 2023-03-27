@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
@@ -22,7 +19,6 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
     [ApiController]
-    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class DelegationsController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -306,9 +302,19 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]
-        [Authorize]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenSchemaDelegations([FromQuery] string? supplierOrg, string? consumerOrg, string scope)
         {
+            if (string.IsNullOrEmpty(scope))
+            {
+                return BadRequest("Either the parameter scope has no value or the provided value is invalid");
+            }
+
+            if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
+            {
+                return StatusCode(403, $"Not authorized for lookup of delegations for the scope: {scope}");
+            }
+
             if (!string.IsNullOrEmpty(supplierOrg) && !IdentifierUtil.IsValidOrganizationNumber(supplierOrg))
             {
                 return BadRequest("Supplierorg is not an valid organization number");
@@ -317,12 +323,7 @@ namespace Altinn.AccessManagement.Controllers
             if (!string.IsNullOrEmpty(consumerOrg) && !IdentifierUtil.IsValidOrganizationNumber(consumerOrg))
             {
                 return BadRequest("Consumerorg is not an valid organization number");
-            }
-
-            if (string.IsNullOrEmpty(scope))
-            {
-                return BadRequest("Either the parameter scope has no value or the provided value is invalid");
-            }
+            }            
 
             try
             {

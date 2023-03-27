@@ -19,12 +19,12 @@ using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.Authentication.Configuration;
+using Altinn.Common.Authentication.Models;
 using Altinn.Common.PEP.Authorization;
 using Altinn.Common.PEP.Clients;
 using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
-
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
@@ -48,9 +48,6 @@ ILogger logger;
 var builder = WebApplication.CreateBuilder(args);
 
 NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
-
-string frontendProdFolder = AppEnvironment.GetVariable("FRONTEND_PROD_FOLDER", "wwwroot/AccessManagement/");
-builder.Configuration.AddJsonFile(frontendProdFolder + "manifest.json", optional: true, reloadOnChange: true);
 
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
@@ -207,13 +204,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
     GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
+    OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
     services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
-    services.Configure<ResourceRegistrySettings>(config.GetSection("ResourceRegistrySettings"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
     services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
     services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
@@ -251,11 +248,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
 
-    services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
+    if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
+    {
+        services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
         .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
         {
             options.JwtCookieName = platformSettings.JwtCookieName;
-            options.MetadataAddress = platformSettings.OpenIdWellKnownEndpoint;
+            options.MetadataAddress = altinnOidcProvder.Issuer;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -271,15 +270,20 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
                 options.RequireHttpsMetadata = false;
             }
         });
+    }
+    else
+    {
+        logger.LogError("Unable to setup authentication. Missing altinn OidcProvider config.");
+    }
 
     services.AddAuthorization(options =>
     {
-        options.AddPolicy(AuthzConstants.POLICY_STUDIO_DESIGNER, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "studio.designer")));
+        options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
         options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_maskinporten_scope_delegation")));
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_maskinporten_scope_delegation")));
-        options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
+        options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { "altinn:maskinporten/delegations", "altinn:maskinporten/delegations.admin" })));
     });
     
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
@@ -304,21 +308,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
-    }
-    
-    services.AddAntiforgery(options =>
-    {
-        // asp .net core expects two types of tokens: One that is attached to the request as header, and the other one as cookie.
-        // The values of the tokens are not the same and both need to be present and valid in a "unsafe" request.
-
-        // We use this for OIDC state validation. See authentication controller. 
-        // https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-6.0
-        // https://github.com/axios/axios/blob/master/lib/defaults.js
-        options.Cookie.Name = "AS-XSRF-TOKEN";
-        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
-        options.HeaderName = "X-XSRF-TOKEN";
-    });
-    services.TryAddSingleton<ValidateAntiforgeryTokenIfAuthCookieAuthorizationFilter>();
+    }    
 }
 
 void Configure()
@@ -357,7 +347,6 @@ void Configure()
     }
 
     app.UseCors();
-    app.UseStaticFiles();
     app.MapControllers();
 }
 

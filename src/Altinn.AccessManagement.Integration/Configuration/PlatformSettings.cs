@@ -19,12 +19,17 @@
         /// <summary>
         /// Gets or sets the profile api endpoint.
         /// </summary>
-        public string? ProfileApiEndpoint { get; set; }
+        public string? ApiProfileEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the register api endpoint.
         /// </summary>
-        public string? RegisterApiEndpoint { get; set; }
+        public string? ApiRegisterEndpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource registry api endpoint.
+        /// </summary>
+        public string? ApiResourceRegistryEndpoint { get; set; }
 
         /// <summary>
         /// Gets or sets the subscriptionkey.
@@ -40,11 +45,6 @@
         /// Endpoint for authentication
         /// </summary>
         public string? ApiAuthenticationEndpoint { get; set; }
-
-        /// <summary>
-        /// Altinn platform base url
-        /// </summary>
-        public string? AltinnPlatformBaseUrl { get; set; }
 
         /// <summary>
         /// Altinn Authorization base url

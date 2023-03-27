@@ -9,7 +9,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "mp_validation_problem_details1"
         }
       ]
@@ -17,7 +17,7 @@
     {
       "resource": [
         {
-          "id": "urn:altinn:resourceregistry",
+          "id": "urn:altinn:resource",
           "value": "mp_validation_problem_details2"
         }
       ]

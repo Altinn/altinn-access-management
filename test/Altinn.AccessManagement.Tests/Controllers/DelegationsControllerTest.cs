@@ -1392,7 +1392,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(httpContextAccessor: httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(4321, 87654321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418982");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418982");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1563,7 +1563,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -1694,19 +1694,22 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations returns a list of delegations between supplier and consumer for a given scope
+        /// Test case: GetMaskinportenSchemaDelegations returns a list of delegations between supplier and consumer for a given scope.
+        ///            Token is authorized for admin scope and and can lookup delegations even when scope is not in the consumers owned scope-prefixes (consumer_prefix)
         /// Expected: GetMaskinportenSchemaDelegations returns a list of delegations offered by supplier to consumer for a given scope
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_Valid_input()
+        public async Task GetMaskinportenSchemaDelegations_Admin_Valid()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             List<string> resourceIds = new List<string>
             {
                 "nav_aa_distribution",
                 "appid-123"
             };
-
             List<MPDelegationExternal> expectedDelegations = GetExpectedMaskinportenSchemaDelegations("810418672", "810418192", resourceIds);
 
             // Act
@@ -1723,13 +1726,73 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations returns a list of delegations between supplier and consumer for a given scope.
+        ///            Token is authorized for admin scope and and can lookup delegations even when scope is not in the consumers owned scope-prefixes (consumer_prefix)
+        /// Expected: GetMaskinportenSchemaDelegations returns a list of delegations offered by supplier to consumer for a given scope
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_ServiceOwnerLookup_Valid()
+        {
+            // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<string> resourceIds = new List<string>
+            {
+                "nav_aa_distribution",
+                "appid-123"
+            };
+            List<MPDelegationExternal> expectedDelegations = GetExpectedMaskinportenSchemaDelegations("810418672", "810418192", resourceIds);
+
+            // Act
+            int supplierOrg = 810418672;
+            int consumerOrg = 810418192;
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<MPDelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
+        /// Test case: GetMaskinportenSchemaDelegations with a scope with altinn prefix, which the serviceowner skd is not authorized for
+        /// Expected: GetMaskinportenSchemaDelegations returns forbidden
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenSchemaDelegations_ServiceOwnerLookup_UnauthorizedScope()
+        {
+            // Arrange
+            string token = PrincipalUtil.GetOrgToken("SKD", "974761076", "altinn:maskinporten/delegations", new[] { "skd" });
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            string expected = "Not authorized for lookup of delegations for the scope: altinn:instances.read";
+
+            // Act
+            int supplierOrg = 810418362;
+            int consumerOrg = 810418532;
+            string scope = "altinn:instances.read";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+        }
+
+        /// <summary>
         /// Test case: GetMaskinportenSchemaDelegations for orgnummer that does not have any delegations
         /// Expected: GetMaskinportenSchemaDelegations returns ok, no delegations found
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_Valid_input_nodelegations()
+        public async Task GetMaskinportenSchemaDelegations_Admin_Valid_DelegationsEmpty()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "[]";
 
             // Act
@@ -1749,9 +1812,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Expected: GetMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_missing_scopes()
+        public async Task GetMaskinportenSchemaDelegations_Admin_MissingScope()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "Either the parameter scope has no value or the provided value is invalid";
 
             // Act
@@ -1770,9 +1836,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Expected: GetMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_invalid_supplierorgnummer()
+        public async Task GetMaskinportenSchemaDelegations_Admin_InvalidSupplier()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "Supplierorg is not an valid organization number";
 
             // Act
@@ -1788,13 +1857,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations for invalid  consumer orgnummer
+        /// Test case: GetMaskinportenSchemaDelegations for invalid consumer orgnummer
         /// Expected: GetMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_invalid_consumerorgnummer()
+        public async Task GetMaskinportenSchemaDelegations_Admin_InvalidConsumer()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "Consumerorg is not an valid organization number";
 
             // Act
@@ -1810,13 +1882,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer
-        /// Expected: GetMaskinportenSchemaDelegations returns badrequest
+        /// Test case: GetMaskinportenSchemaDelegations for a scope which is not a registered reference on any resources
+        /// Expected: GetMaskinportenSchemaDelegations returns ok, no delegations found
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_scopes_notexist()
+        public async Task GetMaskinportenSchemaDelegations_Admin_ScopesNotRegisteredOnResource()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "[]";
 
             // Act
@@ -1832,13 +1907,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetMaskinportenSchemaDelegations for invalid orgnummer
+        /// Test case: GetMaskinportenSchemaDelegations for an invalid scope format
         /// Expected: GetMaskinportenSchemaDelegations returns badrequest
         /// </summary>
         [Fact]
-        public async Task GetMaskinportenSchemaDelegations_invalidscope()
+        public async Task GetMaskinportenSchemaDelegations_Admin_InvalidScopeFormat()
         {
             // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             string expected = "Scope is not well formatted";
 
             // Act
@@ -1866,7 +1944,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1889,7 +1967,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/offered");
@@ -1911,7 +1989,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12344321, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -1934,7 +2012,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(4321, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418192");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418192");
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/delegations/maskinportenschema/received");
@@ -1983,7 +2061,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", fromParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
             DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
@@ -2259,7 +2337,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50002598";
             _client = GetTestClient(new PdpPermitMock(), GetHttpContextAccessorMock("party", "50002598"));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-ssn", "07124912037");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-SocialSecurityNumber", "07124912037");
 
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2", "Input_Default");
             ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "mp_validation_problem_details", $"p{fromParty}", "p2", "ExpectedOutput_InvalidFrom_Ssn");
@@ -2401,7 +2479,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", fromParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "910459880");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
             StreamContent requestContent = GetRequestContent("RevokeOfferedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418532");
 
@@ -2509,7 +2587,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string toParty = "50004221";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", toParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418532");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418532");
 
             StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"p50005545", $"p{toParty}");
 
@@ -2534,7 +2612,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string toParty = "50004221";
             _client = GetTestClient(httpContextAccessor: GetHttpContextAccessorMock("party", toParty));
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
-            _client.DefaultRequestHeaders.Add("party-organizationumber", "810418532");
+            _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "810418532");
 
             StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_audi_etron_gt", $"910459880", $"810418532");
 

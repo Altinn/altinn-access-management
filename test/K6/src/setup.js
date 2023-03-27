@@ -100,7 +100,8 @@ export function getUserData(altinnStudioRuntimeCookie, appOwner, appName, orgNo)
     ssn: res.party.ssn,
     partyId: res.partyId,
     orgNumber: orgNo,
-    orgNumberPartyId: null
+    orgNumberPartyId: null,
+    personalToken: null,
   };
 
   //get parties and find an Org that an user can represent

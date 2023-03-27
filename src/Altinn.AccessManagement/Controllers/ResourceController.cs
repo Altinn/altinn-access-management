@@ -17,7 +17,6 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller to update AccessManagement with resources existing i ResourceRegister.
     /// </summary>
     [ApiController]
-    [AutoValidateAntiforgeryTokenIfAuthCookie]
     public class ResourceController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -49,6 +48,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {
             if (resources.Count < 1)

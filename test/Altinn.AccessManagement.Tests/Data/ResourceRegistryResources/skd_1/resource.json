@@ -35,7 +35,7 @@
   },
   "resourceReferences": [
     {
-      "reference": "urn:altinn:resourceregistry:skd_1",
+      "reference": "urn:altinn:resource:skd_1",
       "referenceType": "Uri",
       "referenceSource": "Altinn3"
     },

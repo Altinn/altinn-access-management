@@ -29,10 +29,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         private readonly CustomWebApplicationFactory<LookupController> _factory;
         private readonly HttpClient _client;
 
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-        };
+        private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         /// <summary>
         /// Constructor setting up factory, test client and dependencies
@@ -61,12 +58,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/org/{810418192}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             
-            PartyExternal actualOrganisation = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
+            PartyExternal actualOrganisation = JsonSerializer.Deserialize<PartyExternal>(responseContent, serializerOptions);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -127,16 +120,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{expectedParty.PartyId}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-
-            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
-            actualParty.SSN = IdentifierUtil.MaskSSN(actualParty.SSN);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, serializerOptions);
             AssertionUtil.AssertPartyEqual(expectedParty, actualParty);
         }
 
@@ -157,15 +145,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{expectedParty.PartyId}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-
-            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, serializerOptions);
             AssertionUtil.AssertPartyEqual(expectedParty, actualParty);
         }
 
@@ -187,15 +171,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/reportee/{expectedParty.PartyId}");
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-
-            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, options);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            PartyExternal actualParty = JsonSerializer.Deserialize<PartyExternal>(responseContent, serializerOptions);
             AssertionUtil.AssertPartyEqual(expectedParty, actualParty);
         }
 

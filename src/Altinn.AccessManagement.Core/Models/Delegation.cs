@@ -90,6 +90,5 @@ namespace Altinn.AccessManagement.Core.Models
         /// Description explaining the rights a recipient will receive if given access to the resource
         /// </summary>
         public Dictionary<string, string> RightDescription { get; set; }
-
     }
 }

@@ -108,16 +108,19 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache);
 
-            if(remainingParties != null && remainingParties.Count > 0)
+            if (remainingParties.Count > 0)
             {
                 foreach (Party party in remainingParties)
                 {
-                    parties.Add(party);
+                    if (party?.PartyId != 0)
+                    {
+                        parties.Add(party);
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions()
-                   .SetPriority(CacheItemPriority.High)
-                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
-                    _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                        var cacheEntryOptions = new MemoryCacheEntryOptions()
+                       .SetPriority(CacheItemPriority.High)
+                       .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+                        _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                    }                    
                 }
             }
 
@@ -133,11 +136,14 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 partyId = await _partiesClient.GetPartyId(ssnOrOrgno);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+                if (partyId != 0)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
 
-                _memoryCache.Set(cacheKey, partyId, cacheEntryOptions);
+                    _memoryCache.Set(cacheKey, partyId, cacheEntryOptions);
+                }                
             }
 
             return partyId;
@@ -169,7 +175,6 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (!_memoryCache.TryGetValue(cacheKey, out List<MainUnit> mainUnits))
             {
-                // Key not in cache, so get data.
                 mainUnits = await _partiesClient.GetMainUnits(new MainUnitQuery { PartyIds = new List<int> { subunitPartyId } });
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -191,11 +196,14 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+                if (resource != null)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
-                _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
+                    _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
+                }                
             }
 
             return resource;
@@ -225,34 +233,17 @@ namespace Altinn.AccessManagement.Core.Services
         {
             List<Party> partyList = await GetPartiesForUser(userId);
 
-            if (partyList != null && partyList.Count > 0)
+            foreach (Party party in partyList)
             {
-                foreach (Party party in partyList)
+                if (party?.PartyId == partyId)
                 {
-                    if (party != null && party.PartyId == partyId)
-                    {
-                        return party;
-                    }
-                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
-                    {
-                        return GetChildPartyIfMatch(party, partyId);
-                    }
+                    return party;
                 }
-            }
 
-            return null;
-        }
-
-        private static Party GetChildPartyIfMatch(Party party, int partyId)
-        {
-            if (party.ChildParties != null)
-            {
-                foreach (Party childParty in party.ChildParties)
+                Party childParty = party?.ChildParties?.FirstOrDefault(p => p.PartyId == partyId);
+                if (childParty != null)
                 {
-                    if (childParty.PartyId == partyId)
-                    {
-                        return childParty;
-                    }
+                    return childParty;
                 }
             }
 

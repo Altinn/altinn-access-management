@@ -86,34 +86,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetPartyId(string ssnOrOrgNo)
-        {
-            try
-            {
-                string endpointUrl = $"register/api/parties/lookup";
-                StringContent requestBody = new StringContent(JsonSerializer.Serialize(ssnOrOrgNo), Encoding.UTF8, "application/json");
-                string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
-                var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-
-                HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken);
-                string responseContent = await response.Content.ReadAsStringAsync();
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return JsonSerializer.Deserialize<int>(responseContent, _serializerOptions);
-                }
-
-                _logger.LogError("AccessManagement // PartiesClient // GetPartyId // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyId // Exception");
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task<List<Party>> GetPartiesAsync(List<int> parties)
         {
             try

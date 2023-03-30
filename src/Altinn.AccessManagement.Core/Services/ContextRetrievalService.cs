@@ -1,6 +1,5 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -128,25 +127,25 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetPartyId(string ssnOrOrgno)
+        public async Task<Party> GetParty(string organizationNumber)
         {
-            string cacheKey = $"ssnOrgno:{ssnOrOrgno}";
+            string cacheKey = $"orgNo:{organizationNumber}";
 
-            if (!_memoryCache.TryGetValue(cacheKey, out int partyId))
+            if (!_memoryCache.TryGetValue(cacheKey, out Party party))
             {
-                partyId = await _partiesClient.GetPartyId(ssnOrOrgno);
+                party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { OrgNo = organizationNumber });
 
-                if (partyId != 0)
+                if (party != null)
                 {
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                    .SetPriority(CacheItemPriority.High)
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
 
-                    _memoryCache.Set(cacheKey, partyId, cacheEntryOptions);
-                }                
+                    _memoryCache.Set(cacheKey, party, cacheEntryOptions);
+                }
             }
 
-            return partyId;
+            return party;
         }
 
         /// <inheritdoc/>

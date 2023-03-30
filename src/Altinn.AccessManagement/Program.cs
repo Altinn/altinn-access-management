@@ -244,8 +244,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
-    services.AddSingleton<IRegister, RegisterService>();
-    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))

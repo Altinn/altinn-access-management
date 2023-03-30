@@ -22,7 +22,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IResourceAdministrationPoint _resourceAdministrationPoint;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
-        private readonly IRegister _registerService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsService"/> class.
@@ -33,8 +32,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="resourceAdministrationPoint">handler for resource registry</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        /// <param name="registerService">Service implementation for register lookup</param>
-        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IRegister registerService)
+        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
         {
             _logger = logger;
             _delegationRepository = delegationRepository;
@@ -42,7 +40,6 @@ namespace Altinn.AccessManagement.Core.Services
             _resourceAdministrationPoint = resourceAdministrationPoint;
             _pip = pip;
             _pap = pap;
-            _registerService = registerService;
         }
 
         /// <inheritdoc/>
@@ -112,7 +109,8 @@ namespace Altinn.AccessManagement.Core.Services
             int offeredByPartyId = 0;
             if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                offeredByPartyId = await _contextRetrievalService.GetPartyId(party.Value);
+                Party offeredByParty = await _contextRetrievalService.GetParty(party.Value);
+                offeredByPartyId = offeredByParty.PartyId;
             }
             else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out offeredByPartyId) || offeredByPartyId == 0))
             {
@@ -133,7 +131,8 @@ namespace Altinn.AccessManagement.Core.Services
             int coveredByPartyId = 0;
             if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                coveredByPartyId = await _contextRetrievalService.GetPartyId(party.Value);
+                Party coveredByParty = await _contextRetrievalService.GetParty(party.Value);
+                coveredByPartyId = coveredByParty.PartyId;
             }
             else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out coveredByPartyId) || coveredByPartyId == 0))
             {
@@ -146,8 +145,29 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<List<Delegation>> GetMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, string scope)
         {
-            int consumerPartyId = string.IsNullOrEmpty(consumerOrg) ? 0 : await _contextRetrievalService.GetPartyId(consumerOrg);
-            int supplierPartyId = string.IsNullOrEmpty(supplierOrg) ? 0 : await _contextRetrievalService.GetPartyId(supplierOrg);
+            int consumerPartyId = 0;
+            if (!string.IsNullOrEmpty(consumerOrg))
+            {
+                Party consumerParty = await _contextRetrievalService.GetParty(consumerOrg);
+                if (consumerParty == null)
+                {
+                    throw new ArgumentException($"The specified consumerOrg: {consumerOrg}, is not a valid organization number");
+                }
+
+                consumerPartyId = consumerParty.PartyId;
+            }
+
+            int supplierPartyId = 0;
+            if (!string.IsNullOrEmpty(supplierOrg))
+            {
+                Party supplierParty = string.IsNullOrEmpty(supplierOrg) ? null : await _contextRetrievalService.GetParty(supplierOrg);
+                if (supplierParty == null)
+                {
+                    throw new ArgumentException($"The specified supplierOrg: {supplierOrg}, is not a valid organization number");
+                }
+
+                supplierPartyId = supplierParty.PartyId;
+            }            
 
             if (!RegexUtil.IsValidMaskinportenScope(scope))
             {
@@ -210,7 +230,7 @@ namespace Altinn.AccessManagement.Core.Services
             Party fromParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
             {
-                fromParty = await _registerService.GetOrganisation(fromOrgNo);
+                fromParty = await _contextRetrievalService.GetParty(fromOrgNo);
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
             {
@@ -228,7 +248,7 @@ namespace Altinn.AccessManagement.Core.Services
             Party toParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
             {
-                toParty = await _registerService.GetOrganisation(toOrgNo);
+                toParty = await _contextRetrievalService.GetParty(toOrgNo);
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
             {

@@ -168,7 +168,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "KOLSAAS OG FLAAM",
-                CoveredByOrganizationNumber = 810418192,
+                CoveredByOrganizationNumber = "810418192",
                 CoveredByPartyId = 50004219,
             });
             delegations.Add(new Delegation
@@ -176,7 +176,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "NORDRE FROGN OG MORTENHALS",
-                CoveredByOrganizationNumber = 810418362,
+                CoveredByOrganizationNumber = "810418362",
                 CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
@@ -184,7 +184,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "LUNDAMO OG FLEINVAR",
-                CoveredByOrganizationNumber = 810418532,
+                CoveredByOrganizationNumber = "810418532",
                 CoveredByPartyId = 50004221,
             });
             return delegations;

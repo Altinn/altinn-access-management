@@ -16,7 +16,6 @@ namespace Altinn.AccessManagement.Core.Services
     /// </summary>
     public class ContextRetrievalService : IContextRetrievalService
     {
-        private readonly ILogger _logger;
         private readonly CacheConfig _cacheConfig;
         private readonly IMemoryCache _memoryCache;
         private readonly IResourceRegistryClient _resourceRegistryClient;
@@ -26,15 +25,13 @@ namespace Altinn.AccessManagement.Core.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextRetrievalService"/> class
         /// </summary>
-        /// <param name="logger">Logger</param>
         /// <param name="cacheConfig">Cache config</param>
         /// <param name="memoryCache">The cache handler </param>
         /// <param name="resourceRegistryClient">The client for integration with the ResourceRegistry</param>
         /// <param name="altinnRolesClient">The client for integration with the SBL Bridge for role information</param>
         /// <param name="partiesClient">The client for integration </param>
-        public ContextRetrievalService(ILogger<IContextRetrievalService> logger, IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
+        public ContextRetrievalService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
         {
-            _logger = logger;
             _cacheConfig = cacheConfig.Value;
             _memoryCache = memoryCache;
             _resourceRegistryClient = resourceRegistryClient;

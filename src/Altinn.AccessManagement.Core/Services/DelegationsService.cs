@@ -160,7 +160,7 @@ namespace Altinn.AccessManagement.Core.Services
             int supplierPartyId = 0;
             if (!string.IsNullOrEmpty(supplierOrg))
             {
-                Party supplierParty = string.IsNullOrEmpty(supplierOrg) ? null : await _contextRetrievalService.GetParty(supplierOrg);
+                Party supplierParty = await _contextRetrievalService.GetParty(supplierOrg);
                 if (supplierParty == null)
                 {
                     throw new ArgumentException($"The specified supplierOrg: {supplierOrg}, is not a valid organization number");
@@ -275,19 +275,11 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
-            List<int> parties = new List<int>();
-            foreach (int party in delegationChanges.Select(d => d.CoveredByPartyId).Where(c => c != null).OfType<int>())
-            {
-                parties.Add(party);
-            }
-
-            List<ServiceResource> resources = new List<ServiceResource>();
-            List<Tuple<string, string>> resourceIds;
-            resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
-
-            resources = await _resourceAdministrationPoint.GetResources(resourceIds);
-
+            List<int> parties = delegationChanges.Where(d => d.CoveredByPartyId.HasValue).Select(d => d.CoveredByPartyId.Value).ToList();
             List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
+
+            List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
+            List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);            
             
             foreach (DelegationChange delegationChange in delegationChanges)
             {
@@ -324,14 +316,10 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
-            List<int> parties = new List<int>();
-            parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
+            List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
+            List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
-            List<ServiceResource> resources = new List<ServiceResource>();
-            List<Tuple<string, string>> resourceIds;
-            resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
-            resources = await _resourceAdministrationPoint.GetResources(resourceIds);
-
+            List<int> parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
             List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
 
             foreach (DelegationChange delegationChange in delegationChanges)

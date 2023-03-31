@@ -278,20 +278,7 @@ namespace Altinn.AccessManagement.Core.Services
             List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
             List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
-            List<int> parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
-            parties.AddRange(delegationChanges.Select(d => d.CoveredByPartyId).Select(ds => Convert.ToInt32(ds)).ToList());
-
-            List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
-
-            foreach (DelegationChange delegationChange in delegationChanges)
-            {
-                Party offeredByParty = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
-                Party coveredByParty = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
-                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
-                delegations.Add(BuildDelegationModel(delegationChange, offeredByParty, coveredByParty, resource));
-            }
-
-            return delegations;
+            return await BuildDelegationsResponse(delegationChanges, resources);
         }
 
         private async Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId, ResourceType resourceType)
@@ -307,20 +294,7 @@ namespace Altinn.AccessManagement.Core.Services
             List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
             List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);
 
-            List<int> parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
-            parties.AddRange(delegationChanges.Select(d => d.CoveredByPartyId).Select(ds => Convert.ToInt32(ds)).ToList());
-
-            List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
-
-            foreach (DelegationChange delegationChange in delegationChanges)
-            {
-                Party offeredByParty = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
-                Party coveredByParty = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
-                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
-                delegations.Add(BuildDelegationModel(delegationChange, offeredByParty, coveredByParty, resource));
-            }
-
-            return delegations;
+            return await BuildDelegationsResponse(delegationChanges, resources);
         }
 
         private async Task<List<Delegation>> GetAllMaskinportenSchemaDelegations(int supplierPartyId, int consumerPartyId, string scopes)
@@ -339,11 +313,17 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
+            return await BuildDelegationsResponse(delegationChanges, resources);
+        }
+
+        private async Task<List<Delegation>> BuildDelegationsResponse(List<DelegationChange> delegationChanges, List<ServiceResource> resources)
+        {
+            List<Delegation> delegations = new List<Delegation>();
             List<int> parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
             parties.AddRange(delegationChanges.Select(d => d.CoveredByPartyId).Select(ds => Convert.ToInt32(ds)).ToList());
 
             List<Party> partyList = await _contextRetrievalService.GetPartiesAsync(parties);
-            
+
             foreach (DelegationChange delegationChange in delegationChanges)
             {
                 Party offeredByParty = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
@@ -355,7 +335,7 @@ namespace Altinn.AccessManagement.Core.Services
             return delegations;
         }
 
-        private Delegation BuildDelegationModel(DelegationChange delegationChange, Party offeredByParty, Party coveredByParty, ServiceResource resource)
+        private static Delegation BuildDelegationModel(DelegationChange delegationChange, Party offeredByParty, Party coveredByParty, ServiceResource resource)
         {
             return new Delegation
             {

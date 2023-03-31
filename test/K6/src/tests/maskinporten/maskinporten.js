@@ -277,6 +277,8 @@ export function postMaskinportenSchemaNotReadyTest() {
   var success = check(res, {
     'post MaskinportenSchema that is Not Ready - status is 400': (r) => r.status === 400,
     'post MaskinportenSchema that is Not Ready - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'post MaskinportenSchema that is Not Ready - errors is not null': (r) => r.json('errors') != null,
+    'post MaskinportenSchema that is Not Ready - resource is incomplete or not found': (r) => r.body.includes('The resource: appid-302, does not exist or is not complete and available for delegation'),
   });
 
   addErrorCount(success);
@@ -415,12 +417,14 @@ export function revokeNonExistentOfferedMaskinPortenSchema() {
   const toOrgNumber = org2_number;
   
   // Act
-  // var res = maskinporten.revokeOfferedMaskinportenSchema(offeredByToken, offeredByPartyId, toOrgNumber, 'digdir-maskinportenschemaid-570', 'orgno');
   var res = maskinporten.revokeOfferedMaskinportenSchema(offeredByToken, offeredByPartyId, 'nonexistentmaskinportenschema', 'urn:altinn:organizationnumber', toOrgNumber);  
+  console.log(res.body)
   // Assert
   var success = check(res, {
     'revoke non-existent Offered MaskinPortenSchema - status is 400': (r) => r.status === 400,
     'revoke non-existent Offered MaskinPortenSchema - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'revoke non-existent Offered MaskinPortenSchema - errors is not null': (r) => r.json('errors') != null,
+    'revoke non-existent Offered MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not complete and available for delegation'),
   });
   addErrorCount(success);
 }
@@ -433,13 +437,14 @@ export function revokeNonExistentReceivedMaskinPortenSchema() {
   const offeredByOrgNumber = org1_number;
   
   // Act
-  // var res = maskinporten.revokeReceivedMaskinportenSchema(toToken, toPartyId, offeredByOrgNumber, 'digdir-maskinportenschemaid-570', 'orgno');
   var res = maskinporten.revokeReceivedMaskinportenSchema(toToken, toPartyId, 'nonexistentmaskinportenschema', 'urn:altinn:organizationnumber', offeredByOrgNumber); 
 
   // Assert
   var success = check(res, {
     'revoke non-existent Received MaskinPortenSchema - status is 400': (r) => r.status === 400,
     'revoke non-existent Received MaskinPortenSchema - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'revoke non-existent Received MaskinPortenSchema - errors is not null': (r) => r.json('errors') != null,
+    'revoke non-existent Received MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not complete and available for delegation'),
   });
   addErrorCount(success);
 }

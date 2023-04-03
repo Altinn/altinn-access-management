@@ -32,11 +32,11 @@ export function getMaskinportenSchemaReceived(altinnToken, partyid) {
  * @param {*} resourceid the id of the resource to delegate
  * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
  */
-export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, to, resourceid, orgnoOrPartyId) {
+export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'revokeoffered');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
   var body = [];
-  body.push(generatePolicyMatch(to, resourceid, orgnoOrPartyId));
+  body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
   return http.post(endpoint, bodystring, params);
@@ -46,15 +46,15 @@ export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, t
  * POST call to revoke maskinportenschemas that have been received by the current party
  * @param {*} altinnToken personal token for DAGL of receiver
  * @param {*} coveredByPartyId the receiving party's partyid
- * @param {*} from the offering organization's party id or organization number
  * @param {*} resourceid the id of the resource to delegate
- * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
+ * @param {*} attributeId the attribute id for the offerer of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} attributeValue the offerer's partyid or organization number
  */
-export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, from, resourceid, orgnoOrPartyId) {
+export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(coveredByPartyId, 'revokereceived');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
   var body = [];
-  body.push(generatePolicyMatch(from, resourceid, orgnoOrPartyId, true));
+  body.push(makeRequestBody(resourceid, null, null, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1);
   return http.post(endpoint, bodystring, params);
@@ -64,59 +64,54 @@ export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, 
  * GET call to get maskinportenschemas that have been received by the current party
  * @param {*} altinnToken personal token for DAGL
  * @param {*} toPartyId party id or organization number of whom that offers the rule
- * @param {*} to the receiving organization's party id or organization number
  * @param {*} resourceid the id of the resource to delegate
- * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
+ * @param {*} attributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} attributeValue the receiver's partyid or organization number
  */
-export function postMaskinportenSchema(altinnToken, offeredByPartyId, to, resourceid, orgnoOrPartyId) {
+export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'maskinportenschema');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
   var body = [];
-  body.push(generatePolicyMatch(to, resourceid, orgnoOrPartyId));
+  body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
   return http.post(endpoint, bodystring, params);
 }
 
 /**
- * function to build a policy match with action, user and resource details
- * @param {*} toPartyId party id or organization number of whom that receives the rule
- * @param {*} altinnAction read,write,sign
- * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
- * @param {*} useFrom 'true', 'false'. If true, use 'from' in json, else use 'to'.
- * @returns json object of a completed policy match
+ * function to build the request body for maskinportenschema
+ * @param {*} resourceid the resourceid for the schema
+ * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} toAttributeValue the receiver's partyid or organization number
+ * @param {*} fromAttributeId the attribute id for the sender of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} fromAttributeValue the sender's partyid or organization number
+ * @returns request body json object
  */
-function generatePolicyMatch(toPartyId, resourceid, orgnoOrPartyId, useFrom) {
-  var toId = 'urn:altinn:partyid';
-  if (orgnoOrPartyId == 'orgno') {
-    toId = 'urn:altinn:organizationnumber'
-  }
-  var toOrFrom = {
-    id: toId,
-    value: toPartyId
-  }
+function makeRequestBody(resourceid, toAttributeId, toAttributeValue, fromAttributeId, fromAttributeValue) {
   var rights = {
     resource: [{
-      id: 'urn:altinn:resourceregistry',
+      id: 'urn:altinn:resource',
       value: resourceid
     }],
   }
-  var policyMatch = {};
+  var requestBody = {};
   
-  if(useFrom) {
-    policyMatch = {
-      from: [],
-      rights: []
-    };
-    policyMatch.from.push(toOrFrom);
-  }
-  else {
-    policyMatch = {
+  if (toAttributeId != null && toAttributeValue != null) {
+    requestBody = {
       to: [],
       rights: []
     };
-    policyMatch.to.push(toOrFrom);
+    requestBody.to.push({id: toAttributeId, value: toAttributeValue});
   }
-  policyMatch.rights.push(rights);
-  return policyMatch;
+
+  else {
+    requestBody = {
+      from: [],
+      rights: []
+    };
+    requestBody.from.push({id: fromAttributeId, value: fromAttributeValue});
+  }
+
+  requestBody.rights.push(rights);
+  return requestBody;
 }

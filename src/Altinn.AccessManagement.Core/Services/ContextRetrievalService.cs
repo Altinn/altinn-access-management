@@ -1,6 +1,5 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -17,7 +16,6 @@ namespace Altinn.AccessManagement.Core.Services
     /// </summary>
     public class ContextRetrievalService : IContextRetrievalService
     {
-        private readonly ILogger _logger;
         private readonly CacheConfig _cacheConfig;
         private readonly IMemoryCache _memoryCache;
         private readonly IResourceRegistryClient _resourceRegistryClient;
@@ -27,15 +25,13 @@ namespace Altinn.AccessManagement.Core.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ContextRetrievalService"/> class
         /// </summary>
-        /// <param name="logger">Logger</param>
         /// <param name="cacheConfig">Cache config</param>
         /// <param name="memoryCache">The cache handler </param>
         /// <param name="resourceRegistryClient">The client for integration with the ResourceRegistry</param>
         /// <param name="altinnRolesClient">The client for integration with the SBL Bridge for role information</param>
         /// <param name="partiesClient">The client for integration </param>
-        public ContextRetrievalService(ILogger<IContextRetrievalService> logger, IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
+        public ContextRetrievalService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
         {
-            _logger = logger;
             _cacheConfig = cacheConfig.Value;
             _memoryCache = memoryCache;
             _resourceRegistryClient = resourceRegistryClient;
@@ -128,25 +124,25 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetPartyId(string ssnOrOrgno)
+        public async Task<Party> GetParty(string organizationNumber)
         {
-            string cacheKey = $"ssnOrgno:{ssnOrOrgno}";
+            string cacheKey = $"orgNo:{organizationNumber}";
 
-            if (!_memoryCache.TryGetValue(cacheKey, out int partyId))
+            if (!_memoryCache.TryGetValue(cacheKey, out Party party))
             {
-                partyId = await _partiesClient.GetPartyId(ssnOrOrgno);
+                party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { OrgNo = organizationNumber });
 
-                if (partyId != 0)
+                if (party != null)
                 {
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                    .SetPriority(CacheItemPriority.High)
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
 
-                    _memoryCache.Set(cacheKey, partyId, cacheEntryOptions);
-                }                
+                    _memoryCache.Set(cacheKey, party, cacheEntryOptions);
+                }
             }
 
-            return partyId;
+            return party;
         }
 
         /// <inheritdoc/>

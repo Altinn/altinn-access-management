@@ -48,12 +48,12 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the organization number that offered the delegation
         /// </summary>
-        public int OfferedByOrganizationNumber { get; set; }
+        public string OfferedByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the organization number that received the delegation
         /// </summary>
-        public int CoveredByOrganizationNumber { get; set; }
+        public string CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the resource id that is delegated

@@ -2,7 +2,6 @@ using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -59,15 +58,6 @@ await SetConfigurationProviders(builder.Configuration);
 ConfigureLogging(builder.Logging);
 
 ConfigureServices(builder.Services, builder.Configuration);
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000", "http://devenv.altinn.no");
-        });
-});
 
 var app = builder.Build();
 ConfigurePostgreSql();
@@ -126,12 +116,12 @@ async Task SetConfigurationProviders(ConfigurationManager config)
 {
     string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
-    logger.LogInformation($"Program // Loading Configuration from basePath={basePath}");
+    logger.LogInformation("Program // Loading Configuration from basePath={basePath}", basePath);
 
     config.SetBasePath(basePath);
     string configJsonFile1 = $"{basePath}/altinn-appsettings/altinn-dbsettings-secret.json";
 
-    logger.LogInformation($"Loading configuration file: '{configJsonFile1}'");
+    logger.LogInformation("Loading configuration file: '{configJsonFile1}'", configJsonFile1);
     config.AddJsonFile(configJsonFile1, optional: true, reloadOnChange: true);
 
     config.AddEnvironmentVariables();
@@ -202,7 +192,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     });
     services.AddMvc();
 
-    GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
@@ -244,8 +233,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
-    services.AddSingleton<IRegister, RegisterService>();
-    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
@@ -330,14 +317,11 @@ void Configure()
     }
 
     app.UseRouting();
-
     app.UseAuthentication();
     app.UseAuthorization();
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-        endpoints.MapHealthChecks("/health");
-    });
+    app.MapControllers();
+    app.MapHealthChecks("/health");
+    app.UseCors();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
@@ -345,9 +329,6 @@ void Configure()
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-
-    app.UseCors();
-    app.MapControllers();
 }
 
 void ConfigurePostgreSql()
@@ -370,7 +351,7 @@ void ConfigurePostgreSql()
             new PostgreSqlDataService(traceService),
             new PostgreSqlBulkImportService(traceService),
             traceService,
-            new Yuniql.AspNetCore.Configuration
+            new Configuration
             {
                 Workspace = workspacePath,
                 ConnectionString = connectionString,

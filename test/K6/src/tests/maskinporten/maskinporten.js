@@ -54,6 +54,11 @@ export const options = {
 };
 
 export function setup() {
+  // Only run tests in AT23
+  if (environment.toLowerCase() != 'at23') {
+    return;
+  }
+
   //generate personal token for user 1
   var tokenGenParams = {
     env: environment,
@@ -97,6 +102,9 @@ export function setup() {
 }
 
 export default function (data) {
+  if (!data) {
+    return;
+  }
   user1_personalToken = data.personalToken1;
   user2_personalToken = data.personalToken2;
   appOwner = data.org;
@@ -418,7 +426,7 @@ export function revokeNonExistentOfferedMaskinPortenSchema() {
   
   // Act
   var res = maskinporten.revokeOfferedMaskinportenSchema(offeredByToken, offeredByPartyId, 'nonexistentmaskinportenschema', 'urn:altinn:organizationnumber', toOrgNumber);  
-  console.log(res.body)
+
   // Assert
   var success = check(res, {
     'revoke non-existent Offered MaskinPortenSchema - status is 400': (r) => r.status === 400,

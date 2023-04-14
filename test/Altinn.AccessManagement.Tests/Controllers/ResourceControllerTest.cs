@@ -12,6 +12,7 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
@@ -258,7 +259,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetResources_valid_resourcetype()
         {
             // Arrange
-            List<ServiceResourceExternal> expectedResources = GetExpectedResources(ResourceType.MaskinportenSchema);
+            List<ServiceResourceExternal> expectedResources = GetExpectedResources(ResourceTypeExternal.MaskinportenSchema);
 
             string token = PrincipalUtil.GetAccessToken("platform", "resourceregistry");
             _client.DefaultRequestHeaders.Add("PlatformAccessToken", token);
@@ -277,7 +278,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             AssertionUtil.AssertCollections(expectedResources, actualResources, AssertionUtil.AssertResourceExternalEqual);
         }
 
-        private static List<ServiceResourceExternal> GetExpectedResources(ResourceType resourceType)
+        private static List<ServiceResourceExternal> GetExpectedResources(ResourceTypeExternal resourceType)
         {
             List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
             resources = TestDataUtil.GetResources(resourceType);

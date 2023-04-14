@@ -2723,7 +2723,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private static StreamContent GetRequestContent(string operation, string resourceId, string from, string to, string inputFileName = "Input_Default")
         {
-            Stream dataStream = File.OpenRead($"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{inputFileName}.json");
+            Stream dataStream = File.OpenRead($"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{inputFileName}.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return content;
@@ -2731,21 +2731,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private static DelegationOutputExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
             return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static ValidationProblemDetails GetExpectedValidationProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
-            string content = File.ReadAllText(responsePath);
-            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        }
-
-        private static ValidationProblemDetails GetExpectedProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
-        {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
             return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }

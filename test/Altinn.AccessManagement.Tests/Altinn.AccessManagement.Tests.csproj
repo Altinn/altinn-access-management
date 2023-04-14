@@ -76,5 +76,10 @@
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Json\MaskinportenSchema\Offered.json" />
+    <None Remove="Data\Json\MaskinportenSchema\Received.json" />
+  </ItemGroup>
   
 </Project>

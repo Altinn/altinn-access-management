@@ -14,9 +14,9 @@ using Microsoft.Extensions.Logging;
 namespace Altinn.AccessManagement.Core.Services
 {
     /// <inheritdoc/>
-    public class DelegationsService : IDelegationsService
+    public class MaskinportenSchemaService : IMaskinportenSchemaService
     {
-        private readonly ILogger<IDelegationsService> _logger;
+        private readonly ILogger<IMaskinportenSchemaService> _logger;
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IContextRetrievalService _contextRetrievalService;
         private readonly IResourceAdministrationPoint _resourceAdministrationPoint;
@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IPolicyAdministrationPoint _pap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationsService"/> class.
+        /// Initializes a new instance of the <see cref="MaskinportenSchemaService"/> class.
         /// </summary>
         /// <param name="logger">handler for logger</param>
         /// <param name="delegationRepository">delegation change handler</param>
@@ -32,7 +32,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="resourceAdministrationPoint">handler for resource registry</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        public DelegationsService(ILogger<IDelegationsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+        public MaskinportenSchemaService(ILogger<IMaskinportenSchemaService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
         {
             _logger = logger;
             _delegationRepository = delegationRepository;
@@ -43,7 +43,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationActionResult> MaskinportenDelegation(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
+        public async Task<DelegationActionResult> DelegateMaskinportenSchema(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
         {
             (DelegationActionResult result, string resourceRegistryId, Party fromParty, Party toParty) = await ValidateMaskinportenDelegationModel(DelegationActionType.Delegation, delegation);
             if (!result.IsValid)
@@ -143,7 +143,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Delegation>> GetMaskinportenSchemaDelegations(string supplierOrg, string consumerOrg, string scope)
+        public async Task<List<Delegation>> GetMaskinportenDelegations(string supplierOrg, string consumerOrg, string scope)
         {
             int consumerPartyId = 0;
             if (!string.IsNullOrEmpty(consumerOrg))
@@ -178,7 +178,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationActionResult> RevokeMaskinportenDelegation(int authenticatedUserId, DelegationLookup delegation)
+        public async Task<DelegationActionResult> RevokeMaskinportenSchemaDelegation(int authenticatedUserId, DelegationLookup delegation)
         {
             (DelegationActionResult result, string resourceRegistryId, Party fromParty, Party toParty) = await ValidateMaskinportenDelegationModel(DelegationActionType.Revoke, delegation);
             if (!result.IsValid)

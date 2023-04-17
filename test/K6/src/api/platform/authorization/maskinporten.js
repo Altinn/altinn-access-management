@@ -88,7 +88,6 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
  */
 export function postMaskinportenSchemaOrgNoInHeader(altinnToken, offeredByOrganizationNumber, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls('organization', 'maskinportenschema');
-  console.log(endpoint)
   var params = header.buildHeaderWithRuntimeOrgNumberAndJson(altinnToken, 'personal', offeredByOrganizationNumber);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));

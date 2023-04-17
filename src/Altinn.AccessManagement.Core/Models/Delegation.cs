@@ -9,9 +9,9 @@ namespace Altinn.AccessManagement.Core.Models
     public class Delegation
     {
         /// <summary>
-        /// Gets or sets the name of the delegation receiver
+        /// Gets or sets the userid id for the delegation
         /// </summary>
-        public string CoveredByName { get; set; }
+        public int OfferedByPartyId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the delegator
@@ -19,14 +19,24 @@ namespace Altinn.AccessManagement.Core.Models
         public string OfferedByName { get; set; }
 
         /// <summary>
-        /// Gets or sets the userid id for the delegation
+        /// Gets or sets the organization number that offered the delegation
         /// </summary>
-        public int OfferedByPartyId { get; set; }
+        public string OfferedByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the reportee that received the delegation
         /// </summary>
         public int? CoveredByPartyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the delegation receiver
+        /// </summary>
+        public string CoveredByName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the organization number that received the delegation
+        /// </summary>
+        public string CoveredByOrganizationNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
@@ -46,30 +56,20 @@ namespace Altinn.AccessManagement.Core.Models
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Gets or sets the organization number that offered the delegation
-        /// </summary>
-        public string OfferedByOrganizationNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets the organization number that received the delegation
-        /// </summary>
-        public string CoveredByOrganizationNumber { get; set; }
-
-        /// <summary>
         /// Gets or sets the resource id that is delegated
         /// </summary>
         public string ResourceId { get; set; }
-
-        /// <summary>
-        /// The title of resource
-        /// </summary>
-        public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
         /// Gets or sets the type of resource that is delegated
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ResourceType ResourceType { get; set; }
+
+        /// <summary>
+        /// The title of resource
+        /// </summary>
+        public Dictionary<string, string> ResourceTitle { get; set; }
 
         /// <summary>
         /// ResourceReference

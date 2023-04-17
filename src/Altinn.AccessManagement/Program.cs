@@ -227,7 +227,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
-    services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IMaskinportenSchemaService, MaskinportenSchemaService>();
     services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
     services.AddTransient<ISigningKeysResolver, SigningKeysResolver>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();

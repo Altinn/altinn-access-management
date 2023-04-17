@@ -66,6 +66,19 @@ export function buildHeaderWithRuntimeAndJson(altinnStudioRuntimeCookie, api) {
   return params;
 }
 
+//Function to build headers with altinnStudioRuntimeCookie, JSON content-type, and offeredby's org number and returns a json object
+export function buildHeaderWithRuntimeOrgNumberAndJson(altinnStudioRuntimeCookie, api, organizationNumber) {
+  var params = {
+    headers: {
+      Authorization: 'Bearer ' + altinnStudioRuntimeCookie,
+      'Content-Type': 'application/json',
+      'Altinn-Party-OrganizationNumber': organizationNumber,
+    },
+  };
+  params = addSubscriptionKey(params, appsAccessSubscriptionKey, api);
+  return params;
+}
+
 //Function to build headers with .aspxauth cookie
 export function buildHeaderWithAspxAuth(aspxauthCookie, api) {
   var params = {

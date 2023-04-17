@@ -79,6 +79,25 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
 }
 
 /**
+ * GET call to get maskinportenschemas that have been received by the current party
+ * @param {*} altinnToken personal token for DAGL
+ * @param {*} offeredByOrganizationNumber the organization number for the offeredby party
+ * @param {*} resourceid the id of the resource to delegate
+ * @param {*} attributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} attributeValue the receiver's partyid or organization number
+ */
+export function postMaskinportenSchemaOrgNoInHeader(altinnToken, offeredByOrganizationNumber, resourceid, attributeId, attributeValue) {
+  var endpoint = config.buildMaskinPorteSchemaUrls('organization', 'maskinportenschema');
+  console.log(endpoint)
+  var params = header.buildHeaderWithRuntimeOrgNumberAndJson(altinnToken, 'personal', offeredByOrganizationNumber);
+  var body = [];
+  body.push(makeRequestBody(resourceid, attributeId, attributeValue));
+  var bodystring = JSON.stringify(body);
+  bodystring = bodystring.substring(1, bodystring.length-1)
+  return http.post(endpoint, bodystring, params);
+}
+
+/**
  * function to build the request body for maskinportenschema
  * @param {*} resourceid the resourceid for the schema
  * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'

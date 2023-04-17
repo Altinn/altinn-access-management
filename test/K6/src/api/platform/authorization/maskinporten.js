@@ -61,9 +61,9 @@ export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, 
 }
 
 /**
- * GET call to get maskinportenschemas that have been received by the current party
+ * POST call to delegate a maskinportenschema where the offeredby's partyid is in the path
  * @param {*} altinnToken personal token for DAGL
- * @param {*} toPartyId party id or organization number of whom that offers the rule
+ * @param {*} offeredByPartyId the offeredby's party id
  * @param {*} resourceid the id of the resource to delegate
  * @param {*} attributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
  * @param {*} attributeValue the receiver's partyid or organization number
@@ -79,7 +79,7 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
 }
 
 /**
- * GET call to get maskinportenschemas that have been received by the current party
+ * POST call to delegate a maskinportenschema where the offeredby's organization number is in the header
  * @param {*} altinnToken personal token for DAGL
  * @param {*} offeredByOrganizationNumber the organization number for the offeredby party
  * @param {*} resourceid the id of the resource to delegate

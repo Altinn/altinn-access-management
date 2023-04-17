@@ -67,7 +67,7 @@ export function buildHeaderWithRuntimeAndJson(altinnStudioRuntimeCookie, api) {
 }
 
 //Function to build headers with altinnStudioRuntimeCookie, JSON content-type, and offeredby's org number and returns a json object
-export function buildHeaderWithRuntimeOrgNumberAndJson(altinnStudioRuntimeCookie, api, organizationNumber) {
+export function buildHeaderWithRuntimeOrgNumberAndJson(altinnStudioRuntimeCookie, organizationNumber) {
   var params = {
     headers: {
       Authorization: 'Bearer ' + altinnStudioRuntimeCookie,
@@ -75,7 +75,7 @@ export function buildHeaderWithRuntimeOrgNumberAndJson(altinnStudioRuntimeCookie
       'Altinn-Party-OrganizationNumber': organizationNumber,
     },
   };
-  params = addSubscriptionKey(params, appsAccessSubscriptionKey, api);
+  params = addSubscriptionKey(params, appsAccessSubscriptionKey);
   return params;
 }
 

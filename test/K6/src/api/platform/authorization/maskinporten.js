@@ -9,7 +9,7 @@ import * as header from '../../../buildrequestheaders.js';
  */
 export function getMaskinportenSchemaOffered(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'offered');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   return http.get(endpoint, params);
 }
 
@@ -20,7 +20,7 @@ export function getMaskinportenSchemaOffered(altinnToken, partyid) {
  */
 export function getMaskinportenSchemaReceived(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'received');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   return http.get(endpoint, params);
 }
 
@@ -34,7 +34,7 @@ export function getMaskinportenSchemaReceived(altinnToken, partyid) {
  */
 export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'revokeoffered');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
@@ -52,7 +52,7 @@ export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, r
  */
 export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(coveredByPartyId, 'revokereceived');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeRequestBody(resourceid, null, null, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
@@ -70,7 +70,7 @@ export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, 
  */
 export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'maskinportenschema');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
@@ -88,7 +88,7 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
  */
 export function postMaskinportenSchemaOrgNoInHeader(altinnToken, offeredByOrganizationNumber, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls('organization', 'maskinportenschema');
-  var params = header.buildHeaderWithRuntimeOrgNumberAndJson(altinnToken, 'personal', offeredByOrganizationNumber);
+  var params = header.buildHeaderWithRuntimeOrgNumberAndJson(altinnToken, offeredByOrganizationNumber);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);

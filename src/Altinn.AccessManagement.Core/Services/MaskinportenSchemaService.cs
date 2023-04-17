@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Utilities;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest.Azure;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -275,10 +276,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
-            List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
-            List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);
-
-            return await BuildDelegationsResponse(delegationChanges, resources);
+            return await BuildDelegationsResponse(delegationChanges);
         }
 
         private async Task<List<Delegation>> GetReceivedDelegations(int coveredByPartyId, ResourceType resourceType)
@@ -291,10 +289,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
-            List<Tuple<string, string>> resourceIds = delegationChanges.Select(d => Tuple.Create(d.ResourceId, d.ResourceType)).ToList();
-            List<ServiceResource> resources = await _resourceAdministrationPoint.GetResources(resourceIds);
-
-            return await BuildDelegationsResponse(delegationChanges, resources);
+            return await BuildDelegationsResponse(delegationChanges);
         }
 
         private async Task<List<Delegation>> GetAllMaskinportenSchemaDelegations(int supplierPartyId, int consumerPartyId, string scopes)
@@ -316,7 +311,7 @@ namespace Altinn.AccessManagement.Core.Services
             return await BuildDelegationsResponse(delegationChanges, resources);
         }
 
-        private async Task<List<Delegation>> BuildDelegationsResponse(List<DelegationChange> delegationChanges, List<ServiceResource> resources)
+        private async Task<List<Delegation>> BuildDelegationsResponse(List<DelegationChange> delegationChanges, List<ServiceResource> resources = null)
         {
             List<Delegation> delegations = new List<Delegation>();
             List<int> parties = delegationChanges.Select(d => d.OfferedByPartyId).ToList();
@@ -328,7 +323,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 Party offeredByParty = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
                 Party coveredByParty = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
-                ServiceResource resource = resources.Find(r => r.Identifier == delegationChange.ResourceId);
+                ServiceResource resource = resources?.FirstOrDefault(r => r.Identifier == delegationChange.ResourceId);
                 delegations.Add(BuildDelegationModel(delegationChange, offeredByParty, coveredByParty, resource));
             }
 
@@ -337,7 +332,8 @@ namespace Altinn.AccessManagement.Core.Services
 
         private static Delegation BuildDelegationModel(DelegationChange delegationChange, Party offeredByParty, Party coveredByParty, ServiceResource resource)
         {
-            return new Delegation
+            ResourceType resourceType = Enum.TryParse(delegationChange.ResourceType, true, out ResourceType type) ? type : ResourceType.Default;
+            Delegation delegation = new Delegation
             {
                 OfferedByPartyId = delegationChange.OfferedByPartyId,
                 OfferedByName = offeredByParty?.Name,
@@ -349,13 +345,19 @@ namespace Altinn.AccessManagement.Core.Services
                 PerformedByPartyId = delegationChange.PerformedByPartyId,
                 Created = delegationChange.Created ?? DateTime.MinValue,
                 ResourceId = delegationChange.ResourceId,
-                ResourceType = resource?.ResourceType ?? ResourceType.Default,
-                ResourceTitle = resource?.Title,
-                Description = resource?.Description,
-                RightDescription = resource?.RightDescription,
-                ResourceReferences = resource?.ResourceReferences,
-                HasCompetentAuthority = resource?.HasCompetentAuthority
+                ResourceType = resourceType
             };
+
+            if (resource != null)
+            {
+                delegation.ResourceTitle = resource?.Title;
+                delegation.Description = resource?.Description;
+                delegation.RightDescription = resource?.RightDescription;
+                delegation.ResourceReferences = resource?.ResourceReferences;
+                delegation.HasCompetentAuthority = resource?.HasCompetentAuthority;
+            }
+
+            return delegation;
         }
     }
 }

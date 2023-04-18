@@ -72,18 +72,5 @@ namespace Altinn.AccessManagement.Controllers
             _logger.LogInformation("Delegation could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{resourcesJson}", resourcesJson);
             return BadRequest("Delegation could not be completed");
         }
-
-        /// <summary>
-        /// Get list of maskinprotenschema resources
-        /// </summary>
-        /// <param name="party">the partyid</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("accessmanagement/api/v1/{party}/resources/maskinportenschema")]
-        public async Task<ActionResult<List<ServiceResourceExternal>>> Get([FromRoute] int party)
-        {
-            List<ServiceResource> resources = await _rap.GetResources(ResourceType.MaskinportenSchema);
-            return _mapper.Map<List<ServiceResourceExternal>>(resources);
-        }
     }
 }

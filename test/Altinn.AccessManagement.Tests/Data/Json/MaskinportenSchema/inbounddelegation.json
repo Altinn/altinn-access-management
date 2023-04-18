@@ -1,0 +1,122 @@
+[
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "KARLSTAD OG ULOYBUKT",
+    "offeredbypartyid": 50004222,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "nav_aa_distribution",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "KARLSTAD OG ULOYBUKT",
+    "offeredbypartyid": 50004222,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "skd_1",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "NORDRE FROGN OG MORTENHALS",
+    "offeredbypartyid": 50004220,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "offeredbyorganizationNumber": 810418362,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "nav_aa_distribution",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "NORDRE FROGN OG MORTENHALS",
+    "offeredbypartyid": 50004220,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "offeredbyorganizationNumber": 810418362,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "skd_1",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "LUNDAMO OG FLEINVAR",
+    "offeredbypartyid": 50004221,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810418532,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "nav_aa_distribution",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "offeredbyname": "LUNDAMO OG FLEINVAR",
+    "offeredbypartyid": 50004221,
+    "coveredbypartyid": 50004219,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810418532,
+    "CoveredByOrganizationNumber": 810418192,
+    "resourceid": "skd_1",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "TYNSET OG OPPDAL",
+    "offeredbyname": "KARLSTAD OG ULOYBUKT",
+    "offeredbypartyid": 50004222,
+    "coveredbypartyid": 50004216,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 10008387,
+    "resourceid": "nav_aa_distribution",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "TYNSET OG OPPDAL",
+    "offeredbyname": "KARLSTAD OG ULOYBUKT",
+    "offeredbypartyid": 50004222,
+    "coveredbypartyid": 50004216,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810418672,
+    "CoveredByOrganizationNumber": 10008387,
+    "resourceid": "skd_1",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "TYNSET OG OPPDAL",
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbypartyid": 50004226,
+    "coveredbypartyid": 50004216,
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "offeredbyorganizationNumber": 810419342,
+    "CoveredByOrganizationNumber": 10008387,
+    "resourceid": "nav1_aa_distribution",
+    "resourcetype": "MaskinportenSchema"
+  },
+  {
+    "coveredbyname": "TYNSET OG OPPDAL",
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbypartyid": 50004226,
+    "coveredbypartyid": 50004216,
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "offeredbyorganizationNumber": 810419342,
+    "CoveredByOrganizationNumber": 10008387,
+    "resourceid": "skd_1",
+    "resourcetype": "MaskinportenSchema"
+  }
+]

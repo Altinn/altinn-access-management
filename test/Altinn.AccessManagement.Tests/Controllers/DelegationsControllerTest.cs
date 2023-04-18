@@ -1463,32 +1463,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetOfferedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// Expected: GetOfferedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// </summary>
-        [Fact]
-        public async Task GetOfferedMaskinportenSchemaDelegations_ResourceMetadataNotFound()
-        {
-            // Arrange
-            List<DelegationExternal> expectedDelegations = GetExpectedOutboundDelegationsForParty(50004226);
-            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004226/delegations/maskinportenschema/offered");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<DelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<DelegationExternal>>(responseContent, options);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
-        }
-
-        /// <summary>
         /// Test case: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
         /// Expected: GetOfferedMaskinportenSchemaDelegations returns unauthorized when the bearer token is not set
         /// </summary>
@@ -1631,33 +1605,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains(expected, responseContent);
-        }
-
-        /// <summary>
-        /// Test case: GetReceivedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// Expected: GetReceivedMaskinportenSchemaDelegations returns list of resources that were delegated. The resource metadata is set to not available if the resource in a delegation for some reason is  not found in resource registry
-        /// </summary>
-        [Fact]
-        public async Task GetReceivedMaskinportenSchemaDelegations_ResourceMetadataNotFound()
-        {
-            // Arrange
-            List<DelegationExternal> expectedDelegations = GetExpectedInboundDelegationsForParty(50004216);
-            
-            var token = PrincipalUtil.GetToken(1234, 12345678, 2);
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004216/delegations/maskinportenschema/received");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<DelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<DelegationExternal>>(responseContent, options);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
         }
 
         /// <summary>
@@ -2723,7 +2670,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private static StreamContent GetRequestContent(string operation, string resourceId, string from, string to, string inputFileName = "Input_Default")
         {
-            Stream dataStream = File.OpenRead($"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{inputFileName}.json");
+            Stream dataStream = File.OpenRead($"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{inputFileName}.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return content;
@@ -2731,21 +2678,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private static DelegationOutputExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
             return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static ValidationProblemDetails GetExpectedValidationProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
-            string content = File.ReadAllText(responsePath);
-            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        }
-
-        private static ValidationProblemDetails GetExpectedProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
-        {
-            string responsePath = $"Data/Json/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
+            string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
             return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }

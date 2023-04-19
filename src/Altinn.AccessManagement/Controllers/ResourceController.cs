@@ -1,14 +1,7 @@
 ﻿using System.Text.Json;
-using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Filters;
-using Altinn.AccessManagement.Models;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
@@ -21,22 +14,18 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly ILogger _logger;
         private readonly IResourceAdministrationPoint _rap;
-        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
         /// </summary>
         /// <param name="logger">the logger.</param>
         /// <param name="resourceAdministrationPoint">The resource administration point</param>
-        /// <param name="mapper">mapper handler</param>
         public ResourceController(
             ILogger<ResourceController> logger,
-            IResourceAdministrationPoint resourceAdministrationPoint,
-            IMapper mapper)
+            IResourceAdministrationPoint resourceAdministrationPoint)
         {
             _logger = logger;
             _rap = resourceAdministrationPoint;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -44,10 +33,10 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="resources">List of new Resources to add or update</param>
         /// <returns></returns>
-        [Authorize(Policy = "PlatformAccess")]
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
+        [Authorize(Policy = "PlatformAccess")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {

@@ -565,7 +565,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected , errorResponse.Errors["consumerOrg"][0]);
+            Assert.Equal(expected, errorResponse.Errors["consumerOrg"][0]);
         }
 
         /// <summary>

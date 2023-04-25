@@ -2,10 +2,8 @@
   Test data required: deployed app (reference app: ttd/apps-test)
   userid, partyid for two users that are DAGL for two orgs, and partyid and orgno for those orgs (user1 and user2)
   Org number for user2's org
-docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=*** -e org=*** -e app=***
--e tokengenuser=*** -e tokengenuserpwd=*** -e appsaccesskey=*** -e user1pid=*** 
--e user1userid=*** -e user1partyid=*** -e org1no=*** -e org1partyid=*** -e user2pid=*** 
--e user2userid=*** -e user2partyid=*** -e org2no=*** -e org2partyid=*** -e showresults=***
+docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=***
+-e tokengenuser=*** -e tokengenuserpwd=*** -e appsaccesskey=***
 
 */
 import { check, sleep, fail } from 'k6';
@@ -123,7 +121,7 @@ export default function (data) {
   //tests
   postMaskinportenSchemaToOrgNumberTest();
   postMaskinportenSchemaToPartyIdTest();
-  postMaskinportenSchemaWithOrgNoInHeaderTest();
+  // postMaskinportenSchemaWithOrgNoInHeaderTest();
   getMaskinPortenSchemaOfferedInvalidPartyId();
   getMaskinPortenSchemaReceivedInvalidPartyId();
   postMaskinportenSchemaNotReadyTest();

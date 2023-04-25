@@ -9,7 +9,7 @@ import * as header from '../../../buildrequestheaders.js';
  */
 export function getMaskinportenSchemaOffered(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'offered');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   return http.get(endpoint, params);
 }
 
@@ -20,7 +20,7 @@ export function getMaskinportenSchemaOffered(altinnToken, partyid) {
  */
 export function getMaskinportenSchemaReceived(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'received');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   return http.get(endpoint, params);
 }
 
@@ -29,12 +29,12 @@ export function getMaskinportenSchemaReceived(altinnToken, partyid) {
  * @param {*} altinnToken personal token for DAGL of offeredby
  * @param {*} offeredByPartyId the offering party's partyid
  * @param {*} to the receiving organization's party id or organization number
- * @param {*} resourceid the id of the resource to delegate
- * @param {*} orgnoOrPartyId 'orgno' to set id to urn:altinn:organizationnumber
+ * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} toAttributeValue the receiver's partyid or organization number
  */
 export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'revokeoffered');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
@@ -47,12 +47,12 @@ export function revokeOfferedMaskinportenSchema(altinnToken, offeredByPartyId, r
  * @param {*} altinnToken personal token for DAGL of receiver
  * @param {*} coveredByPartyId the receiving party's partyid
  * @param {*} resourceid the id of the resource to delegate
- * @param {*} attributeId the attribute id for the offerer of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
- * @param {*} attributeValue the offerer's partyid or organization number
+ * @param {*} fromAttributeId the attribute id for the offerer of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} fromAttributeValue the offerer's partyid or organization number
  */
 export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(coveredByPartyId, 'revokereceived');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeRequestBody(resourceid, null, null, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
@@ -61,16 +61,34 @@ export function revokeReceivedMaskinportenSchema(altinnToken, coveredByPartyId, 
 }
 
 /**
- * GET call to get maskinportenschemas that have been received by the current party
+ * POST call to delegate a maskinportenschema where the offeredby's partyid is in the path
  * @param {*} altinnToken personal token for DAGL
- * @param {*} toPartyId party id or organization number of whom that offers the rule
+ * @param {*} offeredByPartyId the offeredby's party id
  * @param {*} resourceid the id of the resource to delegate
- * @param {*} attributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
- * @param {*} attributeValue the receiver's partyid or organization number
+ * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} toAttributeValue the receiver's partyid or organization number
  */
 export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid, attributeId, attributeValue) {
   var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'maskinportenschema');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken, 'personal');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
+  var body = [];
+  body.push(makeRequestBody(resourceid, attributeId, attributeValue));
+  var bodystring = JSON.stringify(body);
+  bodystring = bodystring.substring(1, bodystring.length-1)
+  return http.post(endpoint, bodystring, params);
+}
+
+/**
+ * POST call to delegate a maskinportenschema where the offeredby's organization number is in the header
+ * @param {*} altinnToken personal token for DAGL
+ * @param {*} offeredByOrganizationNumber the organization number for the offeredby party
+ * @param {*} resourceid the id of the resource to delegate
+ * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
+ * @param {*} toAttributeValue the receiver's partyid or organization number
+ */
+export function postMaskinportenSchemaOrgNoInHeader(altinnToken, offeredByOrganizationNumber, resourceid, attributeId, attributeValue) {
+  var endpoint = config.buildMaskinPorteSchemaUrls('organization', 'maskinportenschema');
+  var params = header.buildHeaderWithRuntimeOrgNumberAndJson(altinnToken, offeredByOrganizationNumber);
   var body = [];
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);

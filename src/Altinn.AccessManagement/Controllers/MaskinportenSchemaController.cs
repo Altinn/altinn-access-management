@@ -83,6 +83,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 List<Delegation> delegations = await _delegation.GetMaskinportenDelegations(supplierOrg, consumerOrg, scope);
                 List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
+
                 return delegationsExternal;
             }
             catch (ArgumentException ex)

@@ -123,6 +123,7 @@ export default function (data) {
   //tests
   postMaskinportenSchemaToOrgNumberTest();
   postMaskinportenSchemaToPartyIdTest();
+  postMaskinportenSchemaWithOrgNoInHeaderTest();
   getMaskinPortenSchemaOfferedInvalidPartyId();
   getMaskinPortenSchemaReceivedInvalidPartyId();
   postMaskinportenSchemaNotReadyTest();
@@ -265,6 +266,32 @@ export function postMaskinportenSchemaToOrgNumberTest() {
     'post MaskinportenSchema To Org Number - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
     'post MaskinportenSchema To Org Number - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
     'post MaskinportenSchema To Org Number - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+  });
+
+  addErrorCount(success);
+}
+
+/** offer a maskinportenschema using the offeredby's organization number in the header */
+export function postMaskinportenSchemaWithOrgNoInHeaderTest() {
+  // Arrange
+  const offeredByToken = user1_personalToken;
+  const offeredByPartyId = org1_partyid;
+  const offeredByOrganizationNumber = org1_number;
+  const toPartyId = org2_partyid;
+  const appid = 'ttd-am-k6';
+
+  // Act
+  var res = maskinporten.postMaskinportenSchemaOrgNoInHeader(offeredByToken, offeredByOrganizationNumber, appid, 'urn:altinn:partyid', toPartyId);
+
+  // Assert
+  var success = check(res, {
+    'post MaskinportenSchema with offeredbys orgno in header - status is 201': (r) => r.status === 201,
+    'post MaskinportenSchema with offeredbys orgno in header - to id is partyid': (r) => r.json('to.0.id') === 'urn:altinn:partyid',
+    'post MaskinportenSchema with offeredbys orgno in header - organization number matches': (r) => r.json('to.0.value') === toPartyId,
+    'post MaskinportenSchema with offeredbys orgno in header - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
+    'post MaskinportenSchema with offeredbys orgno in header - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
+    'post MaskinportenSchema with offeredbys orgno in header - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+    'post MaskinportenSchema with offeredbys orgno in header - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
   });
 
   addErrorCount(success);

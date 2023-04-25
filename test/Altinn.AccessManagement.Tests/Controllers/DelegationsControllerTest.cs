@@ -1766,7 +1766,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            string expected = "Either the parameter scope has no value or the provided value is invalid";
+            string expected = "The scope field is required.";
 
             // Act
             int supplierOrg = 810418362;

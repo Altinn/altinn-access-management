@@ -441,6 +441,36 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
+        /// Test case: GetMaskinportenDelegations returns a list of delegations for a given scope.
+        ///            Token is authorized for admin scope and and can lookup delegations even when scope is not in the consumers owned scope-prefixes (consumer_prefix)
+        /// Expected: GetMaskinportenDelegations returns a list of delegations for a given scope
+        /// </summary>
+        [Fact]
+        public async Task GetMaskinportenDelegations_ServiceOwnerLookup_NoSupplerConsumer_Valid()
+        {
+            // Arrange
+            string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<string> resourceIds = new List<string>
+            {
+                "nav_aa_distribution",
+                "appid-123"
+            };
+            List<MPDelegationExternal> expectedDelegations = GetExpectedMaskinportenSchemaDelegations(null, null, resourceIds);
+
+            // Act
+            string scope = "altinn:test/theworld.write";
+            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/maskinporten/delegations/?scope={scope}");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<MPDelegationExternal> actualDelegations = JsonSerializer.Deserialize<List<MPDelegationExternal>>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            AssertionUtil.AssertCollections(expectedDelegations, actualDelegations, AssertionUtil.AssertDelegationEqual);
+        }
+
+        /// <summary>
         /// Test case: GetMaskinportenDelegations with a scope with altinn prefix, which the serviceowner skd is not authorized for
         /// Expected: GetMaskinportenDelegations returns forbidden
         /// </summary>
@@ -502,7 +532,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            string expected = "Either the parameter scope has no value or the provided value is invalid";
+            string expected = "The scope field is required.";
 
             // Act
             int supplierOrg = 810418362;

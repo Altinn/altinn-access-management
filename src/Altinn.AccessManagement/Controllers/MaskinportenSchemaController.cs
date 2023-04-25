@@ -45,7 +45,8 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
+        [Route(
+            "accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
         [Route("accessmanagement/api/v1/maskinporten/delegations/")]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         [Produces("application/json")]
@@ -53,14 +54,9 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations(
+            [FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
         {
-            if (string.IsNullOrEmpty(scope))
-            {
-                ModelState.AddModelError(nameof(scope), "Either the parameter scope has no value or the provided value is invalid");
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
-
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
                 ProblemDetails result = new() { Title = $"Not authorized for lookup of delegations for the scope: {scope}", Status = StatusCodes.Status403Forbidden, Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3" };
@@ -97,7 +93,7 @@ namespace Altinn.AccessManagement.Controllers
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
-        
+
         /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>

@@ -2,13 +2,8 @@
   Test data required: deployed app (reference app: ttd/apps-test)
   userid, partyid for two users that are DAGL for two orgs, and partyid and orgno for those orgs (user1 and user2)
   Org number for user2's org
-<<<<<<< ours
-docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=***
--e tokengenuser=*** -e tokengenuserpwd=*** -e appsaccesskey=***
-=======
-
 docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=*** -e tokengenuser=*** -e tokengenuserpwd=*** -e appsaccesskey=***
->>>>>>> theirs
+
 
 */
 import { check, sleep, fail } from 'k6';

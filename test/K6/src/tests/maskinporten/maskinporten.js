@@ -30,6 +30,7 @@ export const options = {
 export function setup() {
   // Only run tests in AT23
   if (environment.toLowerCase() != 'at23') {
+    console.log('Skipping tests because environment is not AT23')
     return;
   }
 

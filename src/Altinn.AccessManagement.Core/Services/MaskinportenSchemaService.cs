@@ -302,7 +302,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return delegations;
             }
 
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetResourceRegistryDelegationChanges(resources.Select(d => d.Identifier).ToList(), supplierPartyId, consumerPartyId, ResourceType.MaskinportenSchema);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetResourceRegistryDelegationChanges(resources.Select(d => d.Identifier).ToList(), consumerPartyId, supplierPartyId, ResourceType.MaskinportenSchema);
             if (delegationChanges.Count == 0)
             {
                 return delegations;

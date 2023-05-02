@@ -1,7 +1,7 @@
 [
   {
-    "consumer_org": "810418192",
-    "supplier_org": "810418672",
+    "consumer_org": "810418672",
+    "supplier_org": "810418192",
     "delegation_scheme_Id": null,
     "scopes": [
       "altinn:test/theworld.write",
@@ -11,8 +11,8 @@
     "resourceid": "nav_aa_distribution"
   },
   {
-    "consumer_org": "810418192",
-    "supplier_org": "810418672",
+    "consumer_org": "810418672",
+    "supplier_org": "810418192",
     "delegation_scheme_Id": "3cb27d7b-9e2c-475c-ba91-e1fc359bc717",
     "scopes": [
       "altinn:test/theworld.write",

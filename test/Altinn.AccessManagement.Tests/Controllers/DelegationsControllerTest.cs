@@ -1723,10 +1723,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string scope = "altinn:instances.read";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
-
+            ProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            
             // Assert
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+            Assert.Equal(expected, errorResponse.Title);
         }
 
         /// <summary>
@@ -1765,17 +1766,18 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            string expected = "Either the parameter scope has no value or the provided value is invalid";
+            string expected = "The scope field is required.";
 
             // Act
             int supplierOrg = 810418362;
             int consumerOrg = 810418532;
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope=");
             string responseContent = await response.Content.ReadAsStringAsync();
-
+            ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+            Assert.Equal(expected, errorResponse.Errors["scope"][0]);
         }
 
         /// <summary>
@@ -1797,10 +1799,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string scope = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
-
+            ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+            Assert.Equal(expected, errorResponse.Errors["supplierOrg"][0]);
         }
 
         /// <summary>
@@ -1822,10 +1825,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string scope = "altinn:test/theworld.write";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
-
+            ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+            Assert.Equal(expected, errorResponse.Errors["consumerOrg"][0]);
         }
 
         /// <summary>
@@ -1864,7 +1868,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string token = PrincipalUtil.GetOrgToken("DIGDIR", "991825827", "altinn:maskinporten/delegations.admin");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            string expected = "Scope is not well formatted";
+            string expected = "Is not well formatted: test invalid scope (Parameter 'scope')";
 
             // Act
             int supplierOrg = 810418672;
@@ -1872,10 +1876,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string scope = "test invalid scope";
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
-
+            ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
+            Assert.Equal(expected, errorResponse.Errors["scope"][0]);
         }
 
         /// <summary>

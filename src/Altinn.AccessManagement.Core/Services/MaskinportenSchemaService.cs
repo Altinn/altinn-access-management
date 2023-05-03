@@ -152,7 +152,7 @@ namespace Altinn.AccessManagement.Core.Services
                 Party consumerParty = await _contextRetrievalService.GetParty(consumerOrg);
                 if (consumerParty == null)
                 {
-                    throw new ArgumentException($"The specified consumerOrg: {consumerOrg}, is not a valid organization number");
+                    throw new ArgumentException($"The specified consumerOrg: {consumerOrg}, is not a valid organization number", nameof(consumerOrg));
                 }
 
                 consumerPartyId = consumerParty.PartyId;
@@ -164,7 +164,7 @@ namespace Altinn.AccessManagement.Core.Services
                 Party supplierParty = await _contextRetrievalService.GetParty(supplierOrg);
                 if (supplierParty == null)
                 {
-                    throw new ArgumentException($"The specified supplierOrg: {supplierOrg}, is not a valid organization number");
+                    throw new ArgumentException($"The specified supplierOrg: {supplierOrg}, is not a valid organization number", nameof(supplierOrg));
                 }
 
                 supplierPartyId = supplierParty.PartyId;
@@ -172,7 +172,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (!RegexUtil.IsValidMaskinportenScope(scope))
             {
-                throw new ArgumentException("Scope is not well formatted");
+                throw new ArgumentException($"Is not well formatted: {scope}", nameof(scope));
             }
 
             return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);

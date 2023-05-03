@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable enable
+using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -44,33 +45,34 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
+        [Route(
+            "accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
         [Route("accessmanagement/api/v1/maskinporten/delegations/")]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         [Produces("application/json")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations(
+            [FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
         {
-            if (string.IsNullOrEmpty(scope))
-            {
-                return BadRequest("Either the parameter scope has no value or the provided value is invalid");
-            }
-
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
-                return StatusCode(403, $"Not authorized for lookup of delegations for the scope: {scope}");
+                ProblemDetails result = new() { Title = $"Not authorized for lookup of delegations for the scope: {scope}", Status = StatusCodes.Status403Forbidden, Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3" };
+                return StatusCode(StatusCodes.Status403Forbidden, result);
             }
 
             if (!string.IsNullOrEmpty(supplierOrg) && !IdentifierUtil.IsValidOrganizationNumber(supplierOrg))
             {
-                return BadRequest("Supplierorg is not an valid organization number");
+                ModelState.AddModelError(nameof(supplierOrg), "Supplierorg is not an valid organization number");
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
 
             if (!string.IsNullOrEmpty(consumerOrg) && !IdentifierUtil.IsValidOrganizationNumber(consumerOrg))
             {
-                return BadRequest("Consumerorg is not an valid organization number");
+                ModelState.AddModelError(nameof(consumerOrg), "Consumerorg is not an valid organization number");
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
 
             try
@@ -82,15 +84,16 @@ namespace Altinn.AccessManagement.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                ModelState.AddModelError(ex.ParamName ?? "Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GetAllDelegationsForAdmin failed to fetch delegations");
-                return StatusCode(500);
+                _logger.LogError(ex, "GetMaskinportenDelegation failed to fetch delegations");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
-        
+
         /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>

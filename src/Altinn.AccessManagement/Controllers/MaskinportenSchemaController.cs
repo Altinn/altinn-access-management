@@ -89,7 +89,7 @@ namespace Altinn.AccessManagement.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "GetAllDelegationsForAdmin failed to fetch delegations");
+                _logger.LogError(ex, "GetMaskinportenDelegation failed to fetch delegations");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }

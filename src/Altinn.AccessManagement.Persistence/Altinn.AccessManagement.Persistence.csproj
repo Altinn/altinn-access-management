@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Altinn.Platform.Storage.Interface" Version="3.16.0" />
+    <PackageReference Include="JWTCookieAuthentication" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
   </ItemGroup>
 

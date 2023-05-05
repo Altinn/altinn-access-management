@@ -28,11 +28,6 @@ export const options = {
 };
 
 export function setup() {
-  // Only run tests in AT23
-  if (environment.toLowerCase() != 'at23') {
-    console.log('Skipping tests because environment is not AT23')
-    return;
-  }
 
   //generate personal token for user 1 (DAGL for org1)
   var tokenGenParams = {
@@ -471,6 +466,7 @@ export function handleSummary(data) {
 }
 
 export function showTestdata() {
+  console.log(environment)
   console.log('personalToken1: ' + org1.dagl.token);
   console.log('personalToken2: ' + org2.dagl.token);
   console.log('org: ' + testdata.org);
@@ -480,6 +476,8 @@ export function showTestdata() {
   console.log('user1partyid: ' + org1.dagl.partyid);
   console.log('orgno1: ' + org1.orgno);
   console.log('orgpartyid1: ' + org1.partyid);
+  console.log('hadm1userid: ' + org1.hadm.userid);
+  console.log('hadm1partyid: ' + org1.hadm.partyid);
   console.log('user2pid: ' + org2.dagl.pid);
   console.log('user2userid: ' + org2.dagl.userid);
   console.log('user2partyid: ' + org2.dagl.partyid);

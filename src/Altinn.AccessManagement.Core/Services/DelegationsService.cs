@@ -244,6 +244,12 @@ namespace Altinn.AccessManagement.Core.Services
                 return (result, resourceRegistryId, null, null);
             }
 
+            if (fromParty.PartyId.Equals(toParty.PartyId))
+            {
+                result.Errors.Add("To", $"Maskinporten schema delegation can not have the same party in the From and To Attributes: {delegation.To.FirstOrDefault()?.Value}");
+                return (result, resourceRegistryId, null, null);
+            }
+
             return (result, resourceRegistryId, fromParty, toParty);
         }
 

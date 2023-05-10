@@ -3,7 +3,7 @@
     "rightKey": "jks_audi_etron_gt:drive",
     "resource": [
       {
-        "id": "urn:altinn:resourceregistry",
+        "id": "urn:altinn:resource",
         "value": "jks_audi_etron_gt"
       }
     ],
@@ -144,7 +144,7 @@
     "rightKey": "jks_audi_etron_gt:park",
     "resource": [
       {
-        "id": "urn:altinn:resourceregistry",
+        "id": "urn:altinn:resource",
         "value": "jks_audi_etron_gt"
       }
     ],
@@ -285,7 +285,7 @@
     "rightKey": "jks_audi_etron_gt:race",
     "resource": [
       {
-        "id": "urn:altinn:resourceregistry",
+        "id": "urn:altinn:resource",
         "value": "jks_audi_etron_gt"
       }
     ],

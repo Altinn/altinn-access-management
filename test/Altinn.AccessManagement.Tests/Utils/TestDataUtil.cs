@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
@@ -168,7 +169,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "KOLSAAS OG FLAAM",
-                CoveredByOrganizationNumber = 810418192,
+                CoveredByOrganizationNumber = "810418192",
                 CoveredByPartyId = 50004219,
             });
             delegations.Add(new Delegation
@@ -176,7 +177,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "NORDRE FROGN OG MORTENHALS",
-                CoveredByOrganizationNumber = 810418362,
+                CoveredByOrganizationNumber = "810418362",
                 CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
@@ -184,7 +185,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "LUNDAMO OG FLEINVAR",
-                CoveredByOrganizationNumber = 810418532,
+                CoveredByOrganizationNumber = "810418532",
                 CoveredByPartyId = 50004221,
             });
             return delegations;
@@ -254,7 +255,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="resourceType">the resource type.</param>
         /// <returns>Returns thelist of service resources.</returns>
-        public static List<ServiceResourceExternal> GetResources(ResourceType resourceType)
+        public static List<ServiceResourceExternal> GetResources(ResourceTypeExternal resourceType)
         {
             List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
             List<ServiceResourceExternal> filteredResources = null;
@@ -390,6 +391,74 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             return filteredDelegations;
+        }
+
+        /// <summary>
+        /// Sets up mock data for offered maskinporten schema delegations
+        /// </summary>
+        /// <param name="offeredByPartyId">The party id of the reportee to retrieve offered delegations for</param>
+        /// <returns>Offered maskinporten schema delegations</returns>
+        public static List<MaskinportenSchemaDelegationExternal> GetOfferedMaskinportenSchemaDelegations(int offeredByPartyId)
+        {
+            List<MaskinportenSchemaDelegationExternal> delegations = null;
+            
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string path = Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema", "Offered.json");
+            if (File.Exists(path))
+            {
+                string content = File.ReadAllText(path);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                try
+                {
+                    delegations = JsonSerializer.Deserialize<List<MaskinportenSchemaDelegationExternal>>(content, options);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                if (offeredByPartyId != 0)
+                {
+                    return delegations.FindAll(d => d.OfferedByPartyId == offeredByPartyId);
+                }
+            }
+
+            return delegations;
+        }
+
+        /// <summary>
+        /// Sets up mock data for received maskinporten schema delegations
+        /// </summary>
+        /// <param name="coveredByPartyId">The party id of the reportee to retrieve received delegations for</param>
+        /// <returns>Received maskinporten schema delegations</returns>
+        public static List<MaskinportenSchemaDelegationExternal> GetReceivedMaskinportenSchemaDelegations(int coveredByPartyId)
+        {
+            List<MaskinportenSchemaDelegationExternal> delegations = null;
+
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string path = Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema", "Received.json");
+            if (File.Exists(path))
+            {
+                string content = File.ReadAllText(path);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                try
+                {
+                    delegations = JsonSerializer.Deserialize<List<MaskinportenSchemaDelegationExternal>>(content, options);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                if (coveredByPartyId != 0)
+                {
+                    return delegations.FindAll(d => d.CoveredByPartyId == coveredByPartyId);
+                }
+            }
+
+            return delegations;
         }
 
         /// <summary>
@@ -565,7 +634,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         private static string GetDelegationPath()
         {
             string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Json", "Delegation");
+            return Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema");
         }
 
         private static string GetPartiesPath()

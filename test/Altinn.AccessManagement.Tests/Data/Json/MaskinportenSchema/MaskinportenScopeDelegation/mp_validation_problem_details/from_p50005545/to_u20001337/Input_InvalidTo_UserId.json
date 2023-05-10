@@ -1,0 +1,18 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:userid",
+      "value": "20001337"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "mp_validation_problem_details"
+        }
+      ]
+    }
+  ]
+}

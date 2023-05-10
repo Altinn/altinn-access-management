@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {

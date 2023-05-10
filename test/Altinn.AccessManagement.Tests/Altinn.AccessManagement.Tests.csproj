@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JWTCookieAuthentication" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
@@ -75,6 +74,11 @@
 
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Json\MaskinportenSchema\Offered.json" />
+    <None Remove="Data\Json\MaskinportenSchema\Received.json" />
   </ItemGroup>
   
 </Project>

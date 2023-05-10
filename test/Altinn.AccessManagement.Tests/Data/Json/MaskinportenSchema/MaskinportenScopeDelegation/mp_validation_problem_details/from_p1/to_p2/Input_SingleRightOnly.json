@@ -1,0 +1,26 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:partyid",
+      "value": "2"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "mp_validation_problem_details1"
+        }
+      ]
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "mp_validation_problem_details2"
+        }
+      ]
+    }
+  ]
+}

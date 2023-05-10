@@ -1,0 +1,46 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organizationnumber",
+      "value": "810418672"
+    }
+  ],
+  "rightDelegationResults": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt"
+        }
+      ],
+      "action": {
+        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+        "value": "drive"
+      }
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt"
+        }
+      ],
+      "action": {
+        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+        "value": "park"
+      }
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt"
+        }
+      ],
+      "action": {
+        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+        "value": "race"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:socialsecuritynumber",
+      "value": "02056260016"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "mp_validation_problem_details"
+        }
+      ]
+    }
+  ]
+}

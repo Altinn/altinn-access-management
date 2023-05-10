@@ -10,7 +10,7 @@
     ],
     "resource": [
       {
-        "id": "urn:altinn:resourceregistry",
+        "id": "urn:altinn:resource",
         "value": "resource1"
       }
     ],
@@ -30,7 +30,7 @@
     ],
     "resource": [
       {
-        "id": "urn:altinn:resourceregistry",
+        "id": "urn:altinn:resource",
         "value": "resource1"
       }
     ],

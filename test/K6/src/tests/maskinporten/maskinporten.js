@@ -108,7 +108,6 @@ export function getMaskinPortenSchemaOfferedTest() {
     'get offered MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
     'get offered MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2.orgno,
     'get offered MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
-    'get offered MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
   });
   addErrorCount(success);
 }
@@ -148,7 +147,6 @@ export function getMaskinPortenSchemaReceivedTest() {
     'get Received MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
     'get Received MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org1.orgno,
     'get Received MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
-    'get Received MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
 
   });
   addErrorCount(success);

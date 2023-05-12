@@ -103,9 +103,11 @@ export function getMaskinPortenSchemaOfferedTest() {
   var success = check(res, {
     'get offered MaskinPortenSchemas - status is 200': (r) => r.status === 200,
     'get offered MaskinPortenSchemas - coveredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.coveredByName') === 'LARKOLLEN OG FAUSKE',
+    'get offered MaskinPortenSchemas - offeredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
     'get offered MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == offeredByPartyId,
     'get offered MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org2.partyid,
     'get offered MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
+    'get offered MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org1.orgno,
     'get offered MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2.orgno,
     'get offered MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
   });
@@ -141,11 +143,13 @@ export function getMaskinPortenSchemaReceivedTest() {
   // Assert
   var success = check(res, {
     'get Received MaskinPortenSchemas - status is 200': (r) => r.status === 200,
-    'get Received MaskinPortenSchemas - offeredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
+    'get Received MaskinPortenSchemas - offeredByName is ALDRA OG FORTUN': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
+    'get Received MaskinPortenSchemas - coveredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.coveredByName') === 'LARKOLLEN OG FAUSKE',
     'get Received MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == org1.partyid,
     'get Received MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org2.partyid,
     'get Received MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
     'get Received MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org1.orgno,
+    'get Received MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2.orgno,
     'get Received MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
 
   });

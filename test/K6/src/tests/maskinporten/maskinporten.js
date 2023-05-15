@@ -96,8 +96,8 @@ export function getMaskinPortenSchemaOfferedTest() {
   const offeredByPartyId = org1.partyid;
   const appid = 'ttd-am-k6-nuf';
 
-  // Act
-  var res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
+  var res = maskinporten.revokeOfferedMaskinportenSchema(org1.dagl.token, org1.partyid, 'ttd-am-k6', 'urn:altinn:organizationnumber', org2.orgno);
+  res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
 
   // Assert
   var success = check(res, {
@@ -138,7 +138,8 @@ export function getMaskinPortenSchemaReceivedTest() {
   const appid = 'ttd-am-k6-nuf';
 
   // Act
-  var res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
+  var res = maskinporten.revokeOfferedMaskinportenSchema(org1.dagl.token, org1.partyid, 'ttd-am-k6', 'urn:altinn:organizationnumber', org2.orgno);
+  res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
 
   // Assert
   var success = check(res, {

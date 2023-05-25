@@ -1,15 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Filters;
-using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Utilities;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +18,6 @@ namespace Altinn.AccessManagement.Controllers
         private readonly ILogger _logger;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
-        private readonly IMaskinportenSchemaService _maskinportenSchemaSvc;
-        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -33,20 +25,14 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="logger">the logger.</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="policyAdministrationPoint">The policy administration point</param>
-        /// <param name="maskinportenSchemaSvc">Handler for the maskinporten schema service</param>
-        /// <param name="mapper">mapper handler</param>
         public DelegationsController(
             ILogger<DelegationsController> logger, 
             IPolicyInformationPoint policyInformationPoint, 
-            IPolicyAdministrationPoint policyAdministrationPoint,
-            IMaskinportenSchemaService maskinportenSchemaSvc,
-            IMapper mapper)
+            IPolicyAdministrationPoint policyAdministrationPoint)
         {
             _logger = logger;
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
-            _maskinportenSchemaSvc = maskinportenSchemaSvc;
-            _mapper = mapper;
         }
 
         /// <summary>

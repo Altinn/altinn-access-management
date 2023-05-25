@@ -102,7 +102,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")] // Old path to be removed later (after BFF update)
         [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -156,7 +155,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        ////[Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")] // Old path to be removed later (after BFF update)
         [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -192,7 +190,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered/revoke")] // Old path to be removed later (after BFF update)
         [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered/revoke")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -242,7 +239,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        ////[Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")] // Old path to be removed later (after BFF update)
         [Route("accessmanagement/api/v1/{party}/maskinportenschema/received")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -278,7 +274,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received/revoke")] // Old path to be removed later (after BFF update)
         [Route("accessmanagement/api/v1/{party}/maskinportenschema/received/revoke")]
         [Consumes("application/json")]
         [Produces("application/json")]

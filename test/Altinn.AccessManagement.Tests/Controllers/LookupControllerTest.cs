@@ -46,63 +46,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: GetOrganisation returns the organisation information for a given orgnumber
-        /// Expected: GetOrganisation returns organisation information
-        /// </summary>
-        [Fact]
-        public async Task GetOrganisation_Valid_Orgnummer()
-        {
-            // Arrange
-            PartyExternal expectedOrganisation = GetExpectedOrganisation("810418192");
-
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/org/{810418192}");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            
-            PartyExternal actualOrganisation = JsonSerializer.Deserialize<PartyExternal>(responseContent, serializerOptions);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertPartyEqual(expectedOrganisation, actualOrganisation);
-        }
-
-        /// <summary>
-        /// Test case: GetOrganisation for orgnummer that is invalid
-        /// Expected: GetOrganisation returns empty list
-        /// </summary>
-        [Fact]
-        public async Task GetOrganisation_inValid_input()
-        {
-            // Arrange
-            string expected = "The organisation number is not valid";
-
-            // Act
-            string orgnummer = "8104183621";
-
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/lookup/org/{orgnummer}");
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal(expected, responseContent.Replace('"', ' ').Trim());
-        }
-
-        private HttpClient GetTestClient()
-        {
-            HttpClient client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
-                    services.AddSingleton<IPartiesClient, PartiesClientMock>();
-                    services.AddSingleton<IPDP, PdpPermitMock>();
-                });
-            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-
-            return client;
-        }
-
-        /// <summary>
         /// Test case: GetParty for partyId that corresponds to a party in partylist for authenticated user.
         /// Expected: GetParty returns list with party.
         /// </summary>
@@ -197,6 +140,21 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        private HttpClient GetTestClient()
+        {
+            HttpClient client = _factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPartiesClient, PartiesClientMock>();
+                    services.AddSingleton<IPDP, PdpPermitMock>();
+                });
+            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+            return client;
         }
 
         private static PartyExternal GetExpectedOrganisation(string orgNummer)

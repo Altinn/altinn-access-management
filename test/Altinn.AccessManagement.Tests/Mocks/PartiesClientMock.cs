@@ -80,35 +80,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<int> GetPartyId(string ssnOrOrgno)
-        {
-            List<Party> partyList = new List<Party>();
-            Party party = null;
-            int partyId = 0;
-
-            string path = GetPartiesPaths();
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
-
-                foreach (string file in files)
-                {
-                    if (file.Contains("parties"))
-                    {
-                        string content = File.ReadAllText(Path.Combine(path, file));
-                        partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                    }
-                }
-
-                party = partyList.Find(p => p.SSN.Equals(ssnOrOrgno.ToString()) || p.OrgNumber.Equals(ssnOrOrgno.ToString()));
-
-                partyId = party != null ? party.PartyId : 0; 
-            }
-
-            return Task.FromResult(partyId);
-        }
-
-        /// <inheritdoc/>
         public Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup)
         {
             List<Party> partyList = new List<Party>();
@@ -172,7 +143,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<Party>> GetPartiesForUserAsync(int userId)
         {
             List<Party> partyList = new List<Party>();
-            Party partyToReturn = null;
 
             string path = GetPartiesPaths();
             if (Directory.Exists(path))
@@ -187,32 +157,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
                         partyList = JsonSerializer.Deserialize<List<Party>>(content);
                     }
                 }
-
-                foreach (Party party in partyList)
-                {
-                    if (party != null && party.PartyId == userId)
-                    {
-                        partyToReturn = party;
-                    }
-                    else if (party != null && party.ChildParties != null && party.ChildParties.Count > 0)
-                    {
-                        foreach (Party childParty in party.ChildParties)
-                        {
-                            if (childParty.PartyId == userId)
-                            {
-                                partyToReturn = party;
-                            }
-                        }
-                    }
-                }
             }
 
-            List<Party> returnedPartyList = new List<Party>
-            {
-                partyToReturn
-            };
-
-            return Task.FromResult(returnedPartyList);
+            return Task.FromResult(partyList);
         }
 
         private static string GetPartiesPaths()

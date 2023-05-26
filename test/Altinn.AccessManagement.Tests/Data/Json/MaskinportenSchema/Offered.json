@@ -1,0 +1,134 @@
+[
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004219,
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "coveredbyorganizationnumber": "810418192",
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "resourceid": "nav_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004220,
+    "coveredbyname": "NORDRE FROGN OG MORTENHALS",
+    "coveredbyorganizationnumber": "810418362",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "nav_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004221,
+    "coveredbyname": "LUNDAMO OG FLEINVAR",
+    "coveredbyorganizationnumber": "810418532",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "nav_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004219,
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "coveredbyorganizationnumber": "810418192",
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "resourceid": "skd_1"
+  },
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004220,
+    "coveredbyname": "NORDRE FROGN OG MORTENHALS",
+    "coveredbyorganizationnumber": "810418362",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "skd_1"
+  },
+  {
+    "offeredbypartyid": 50004223,
+    "offeredbyname": "HAMAR OG GJESVÆR",
+    "offeredbyorganizationNumber": "810418982",
+    "coveredbypartyid": 50004221,
+    "coveredbyname": "LUNDAMO OG FLEINVAR",
+    "coveredbyorganizationnumber": "810418532",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "skd_1"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004219,
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "coveredbyorganizationnumber": "810418192",
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "resourceid": "nav1_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004220,
+    "coveredbyname": "NORDRE FROGN OG MORTENHALS",
+    "coveredbyorganizationnumber": "810418362",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "nav1_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004221,
+    "coveredbyname": "LUNDAMO OG FLEINVAR",
+    "coveredbyorganizationnumber": "810418532",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "nav1_aa_distribution"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004219,
+    "coveredbyname": "KOLSAAS OG FLAAM",
+    "coveredbyorganizationnumber": "810418192",
+    "performedbyuserid": 20000002,
+    "created": "2022-10-17T11:37:58.053427Z",
+    "resourceid": "skd_1"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004220,
+    "coveredbyname": "NORDRE FROGN OG MORTENHALS",
+    "coveredbyorganizationnumber": "810418362",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "skd_1"
+  },
+  {
+    "offeredbypartyid": 50004226,
+    "offeredbyname": "KOLBJORNSVIK OG ROAN",
+    "offeredbyorganizationNumber": "810419342",
+    "coveredbypartyid": 50004221,
+    "coveredbyname": "LUNDAMO OG FLEINVAR",
+    "coveredbyorganizationnumber": "810418532",
+    "performedbyuserid": 20000002,
+    "created": "2022-09-24T22:00:00Z",
+    "resourceid": "skd_1"
+  }
+]

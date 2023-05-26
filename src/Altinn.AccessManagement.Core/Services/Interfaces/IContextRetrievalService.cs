@@ -40,10 +40,11 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         Task<List<Party>> GetPartiesAsync(List<int> partyIds);
 
         /// <summary>
-        /// Returns looks up a PartyId for an organization number or ssn
+        /// Returns looks up the party of an organization
         /// </summary>
-        /// <returns>PartyId if exists</returns>
-        Task<int> GetPartyId(string ssnOrOrgno);
+        /// <param name="organizationNumber">The organization number to lookup party</param>
+        /// <returns>Party</returns>
+        Task<Party> GetParty(string organizationNumber);
 
         /// <summary>
         /// Method that fetches a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)

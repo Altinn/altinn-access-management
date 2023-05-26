@@ -17,7 +17,7 @@ public class MessageHandlerMock : DelegatingHandler
     /// Initializes a new instance of the <see cref="MessageHandlerMock"/> class.
     /// </summary>
     /// <param name="expectedResponseStatus">Expected HttpStatusCode</param>
-    /// <param name="jsonContent">Expected response content</param>
+    /// <param name="httpContent">Expected response content</param>
     public MessageHandlerMock(HttpStatusCode expectedResponseStatus, HttpContent httpContent)
     {
         _expectedResponseStatus = expectedResponseStatus;

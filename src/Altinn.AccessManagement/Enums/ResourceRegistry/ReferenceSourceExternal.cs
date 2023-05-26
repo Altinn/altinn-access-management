@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
+namespace Altinn.AccessManagement.Enums.ResourceRegistry
 {
     /// <summary>
     /// Enum for the different reference sources for resources in the resource registry

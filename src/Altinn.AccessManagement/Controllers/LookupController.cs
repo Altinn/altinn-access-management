@@ -1,6 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
 using Altinn.Platform.Register.Models;
@@ -18,7 +17,6 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IRegister _register;
         private readonly IContextRetrievalService _contextRetrieval;
 
         /// <summary>
@@ -26,22 +24,19 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="logger">the logger.</param>
         /// <param name="mapper">mapper handler</param>
-        /// <param name="register">handler for register</param>
         /// <param name="contextRetrieval">handler for context retrieval</param>
         public LookupController(
             ILogger<DelegationsController> logger,
             IMapper mapper,
-            IRegister register,
             IContextRetrievalService contextRetrieval)
         {
             _logger = logger;
             _mapper = mapper;
-            _register = register;
             _contextRetrieval = contextRetrieval;
         }
 
         /// <summary>
-        /// Endpoint for retrieving delegated rules between parties
+        /// Endpoint for retrieving the party of an organization
         /// </summary>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
@@ -57,7 +52,7 @@ namespace Altinn.AccessManagement.Controllers
                     return BadRequest("The organisation number is not valid");
                 }
 
-                Party party = await _register.GetOrganisation(orgNummer);
+                Party party = await _contextRetrieval.GetParty(orgNummer);
 
                 if (party == null)
                 {

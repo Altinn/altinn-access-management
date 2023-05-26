@@ -28,12 +28,6 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         Task<List<Party>> GetPartiesForUserAsync(int userId);
 
         /// <summary>
-        /// Returns partyid for 
-        /// </summary>
-        /// <returns>List of parties</returns>
-        Task<int> GetPartyId(string id);
-
-        /// <summary>
         /// Method that fetches a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)
         /// </summary>
         /// <param name="userId">The user id</param>

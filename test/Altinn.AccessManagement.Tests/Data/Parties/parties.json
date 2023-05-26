@@ -1,6 +1,63 @@
 [
   {
     "PartyTypeName": 2,
+    "SSN": "null",
+    "OrgNumber": "910493353",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "910493353",
+      "Name": "LEPSØY OG TONSTAD",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50006078,
+    "UnitType": "AS",
+    "Name": "LEPSØY OG TONSTAD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": [
+      {
+        "PartyTypeName": 2,
+        "SSN": "null",
+        "OrgNumber": "910422154",
+        "Person": null,
+        "Organization": {
+          "OrgNumber": "910422154",
+          "Name": "ROGNE OG HERØY",
+          "UnitType": "AS",
+          "TelephoneNumber": null,
+          "MobileNumber": null,
+          "FaxNumber": null,
+          "EMailAddress": "test@test.test",
+          "InternetAddress": null,
+          "MailingAddress": null,
+          "MailingPostalCode": null,
+          "MailingPostalCity": null,
+          "BusinessAddress": null,
+          "BusinessPostalCode": null,
+          "BusinessPostalCity": null
+        },
+        "PartyId": 50004646,
+        "UnitType": "AS",
+        "Name": "ROGNE OG HERØY",
+        "IsDeleted": false,
+        "OnlyHierarchyElementWithNoAccess": false,
+        "ChildParties": null
+      }
+    ]
+  },
+  {
+    "PartyTypeName": 2,
     "SSN": "",
     "OrgNumber": "10008387",
     "Person": null,
@@ -162,7 +219,7 @@
     },
     "PartyId": 50004223,
     "UnitType": "AS",
-    "Name": "HAMAR OG GJESVÆR ",
+    "Name": "HAMAR OG GJESVÆR",
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
@@ -250,63 +307,6 @@
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
-  },
-  {
-    "PartyTypeName": 2,
-    "SSN": "null",
-    "OrgNumber": "910493353",
-    "Person": null,
-    "Organization": {
-      "OrgNumber": "910493353",
-      "Name": "LEPSØY OG TONSTAD",
-      "UnitType": "AS",
-      "TelephoneNumber": null,
-      "MobileNumber": null,
-      "FaxNumber": null,
-      "EMailAddress": "test@test.test",
-      "InternetAddress": null,
-      "MailingAddress": null,
-      "MailingPostalCode": null,
-      "MailingPostalCity": null,
-      "BusinessAddress": null,
-      "BusinessPostalCode": null,
-      "BusinessPostalCity": null
-    },
-    "PartyId": 50006078,
-    "UnitType": "AS",
-    "Name": "LEPSØY OG TONSTAD",
-    "IsDeleted": false,
-    "OnlyHierarchyElementWithNoAccess": false,
-    "ChildParties": [
-      {
-        "PartyTypeName": 2,
-        "SSN": "null",
-        "OrgNumber": "910422154",
-        "Person": null,
-        "Organization": {
-          "OrgNumber": "910422154",
-          "Name": "ROGNE OG HERØY",
-          "UnitType": "AS",
-          "TelephoneNumber": null,
-          "MobileNumber": null,
-          "FaxNumber": null,
-          "EMailAddress": "test@test.test",
-          "InternetAddress": null,
-          "MailingAddress": null,
-          "MailingPostalCode": null,
-          "MailingPostalCity": null,
-          "BusinessAddress": null,
-          "BusinessPostalCode": null,
-          "BusinessPostalCity": null
-        },
-        "PartyId": 50004646,
-        "UnitType": "AS",
-        "Name": "ROGNE OG HERØY",
-        "IsDeleted": false,
-        "OnlyHierarchyElementWithNoAccess": false,
-        "ChildParties": null
-      }
-    ]
   },
   {
     "PartyTypeName": 2,

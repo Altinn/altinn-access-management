@@ -43,6 +43,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/internal/rights")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
             try
@@ -75,6 +76,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/internal/delegablerights")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
             try

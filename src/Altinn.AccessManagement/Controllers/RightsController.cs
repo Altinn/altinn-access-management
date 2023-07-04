@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -13,11 +14,13 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations regarding rights retrieval
     /// </summary>
     [ApiController]
+    [Route("accessmanagement/api/v1/")]
     public class RightsController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IPolicyInformationPoint _pip;
+        private readonly ISingleRightsService _rights;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RightsController"/> class.
@@ -25,11 +28,13 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="logger">the logger</param>
         /// <param name="mapper">handler for mapping between internal and external models</param>
         /// <param name="policyInformationPoint">The policy information point</param>
-        public RightsController(ILogger<RightsController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint)
+        /// <param name="singleRightsService">Service implementation for single rights operations</param>
+        public RightsController(ILogger<RightsController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint, ISingleRightsService singleRightsService)
         {
             _logger = logger;
             _mapper = mapper;
             _pip = policyInformationPoint;
+            _rights = singleRightsService;
         }
 
         /// <summary>
@@ -42,7 +47,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("accessmanagement/api/v1/internal/rights")]
+        [Route("internal/rights")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
@@ -75,7 +80,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("accessmanagement/api/v1/internal/delegablerights")]
+        [Route("internal/delegablerights")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
@@ -93,6 +98,41 @@ namespace Altinn.AccessManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(500, ex, "Internal exception occurred during DelegableRightsQuery");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for performing a query of what rights a user can delegate to others on behalf of a specified reportee and resource.
+        /// </summary>
+        /// <param name="party">The reportee party</param>
+        /// <param name="userDelegationCheckRequest">Request model for user rights delegation check</param>
+        /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [Route("{party}/rights/delegation/userdelegationcheck")]
+        [ApiExplorerSettings(IgnoreApi = false)]
+        public async Task<ActionResult<List<RightDelegationStatusExternal>>> UserDelegationCheck([FromRoute] string party, [FromBody] RightDelegationStatusRequestExternal userDelegationCheckRequest)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+
+            try
+            {
+                RightDelegationStatusRequest rightDelegationStatusRequestInternal = _mapper.Map<RightDelegationStatusRequest>(userDelegationCheckRequest);
+                List<RightDelegationStatus> delegationStatusInternal = await _rights.RightsDelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                return _mapper.Map<List<RightDelegationStatusExternal>>(delegationStatusInternal);
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(500, ex, "Internal exception occurred during UserDelegationCheck");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }

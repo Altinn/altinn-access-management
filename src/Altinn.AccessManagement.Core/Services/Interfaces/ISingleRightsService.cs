@@ -14,7 +14,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="request">The model describing the right delegation check to perform</param>
         /// <returns>The result of the delegation status check</returns>
-        public Task<List<RightDelegationStatus>> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightDelegationStatusRequest request);
+        public Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightDelegationStatusRequest request);
 
         /// <summary>
         /// Performs the delegation on behalf of the from party

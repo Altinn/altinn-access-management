@@ -62,6 +62,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return Task.FromResult(resources);
         }
 
+        /// <inheritdoc/>
+        public Task<List<ServiceResource>> GetResourceList()
+        {
+            throw new NotImplementedException();
+        }
+
         private static string GetResourcePath(string resourceRegistryId)
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);

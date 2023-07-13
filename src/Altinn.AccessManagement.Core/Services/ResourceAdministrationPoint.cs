@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -68,49 +60,6 @@ namespace Altinn.AccessManagement.Core.Services
                         filteredResources.Add(resource);
                     }
                 }
-            }
-
-            return filteredResources;
-        }
-
-        /// <inheritdoc />
-        public async Task<List<ServiceResource>> GetResources(List<Tuple<string, string>> resourceIds)
-        {
-            List<ServiceResource> filteredResources = new List<ServiceResource>();
-
-            try
-            {
-                foreach (Tuple<string, string> id in resourceIds)
-                {
-                    ServiceResource resource = null;
-
-                    resource = await GetResource(id.Item1);
-
-                    if (resource == null)
-                    {
-                        ServiceResource unavailableResource = new ServiceResource
-                        {
-                            Identifier = id.Item1,
-                            Title = new Dictionary<string, string>
-                        {
-                            { "en", "Not Available" },
-                            { "nb-no", "ikke tilgjengelig" },
-                            { "nn-no", "ikkje tilgjengelig" }
-                        },
-                            ResourceType = Enum.TryParse<ResourceType>(id.Item2, out ResourceType resourceType) ? resourceType : ResourceType.Default
-                        };
-                        filteredResources.Add(unavailableResource);
-                    }
-                    else
-                    {
-                        filteredResources.Add(resource);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("//ResourceAdministrationPoint //GetResources by resource id failed to fetch resources", ex);
-                throw;
             }
 
             return filteredResources;

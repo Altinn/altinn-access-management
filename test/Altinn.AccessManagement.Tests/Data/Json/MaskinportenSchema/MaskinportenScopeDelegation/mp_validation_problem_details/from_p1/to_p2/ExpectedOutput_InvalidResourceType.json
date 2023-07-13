@@ -5,7 +5,7 @@
   "traceId": "00-27cf2819f526d884b56a1c8fd44a09ad-5fe2af21a90ad213-00",
   "errors": {
     "right[0].Resource": [
-      "This operation only support requests for Maskinporten schema resources. Invalid resource: system_resource. Invalid resource type: SystemResource"
+      "This operation only support requests for Maskinporten schema resources. Invalid resource: Identifier: system_resource, ResourceType: SystemResource"
     ]
-  }
+  }  
 }

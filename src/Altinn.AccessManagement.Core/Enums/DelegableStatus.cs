@@ -8,16 +8,11 @@
         /// <summary>
         /// User is not able to delegate the right
         /// </summary>
-        NotDelegable = 1,
+        NotDelegable = 0,
 
         /// <summary>
         /// User is able to delegate the right
         /// </summary>
-        Delegable = 2,
-
-        /// <summary>
-        /// Right is already delegated to the recipient
-        /// </summary>
-        AlreadyDelegated = 3
+        Delegable = 1
     }
 }

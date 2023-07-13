@@ -18,5 +18,14 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [Required]
         public string Value { get; set; }
+
+        /// <summary>
+        /// String representation of the attribute
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"{Id}:{Value}";
+        }
     }
 }

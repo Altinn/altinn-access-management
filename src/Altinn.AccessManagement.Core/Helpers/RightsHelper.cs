@@ -64,5 +64,85 @@ namespace Altinn.AccessManagement.Core.Helpers
                 Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
             };
         }
+
+        /// <summary>
+        /// Analyses a Right model for a reason for the rights delegation access status
+        /// </summary>
+        public static List<RightReason> AnalyzeDelegationAccessReason(Right right)
+        {
+            List<RightReason> reasons = new();
+
+            // Analyse why able to delegate
+            if (right.CanDelegate.HasValue && right.CanDelegate.Value)
+            {
+                // Analyze for role access
+                List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
+                if (roleAccessSources.Any())
+                {
+                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+
+                    reasons.Add(new RightReason
+                    {
+                        ReasonCode = "RoleAccess",
+                        Reason = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                        ReasonParams = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
+                    });
+                }
+
+                // Analyze for delegation policy access
+                List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
+                if (delegationPolicySources.Any())
+                {
+                    string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+
+                    reasons.Add(new RightReason
+                    {
+                        ReasonCode = "DelegationAccess",
+                        Reason = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
+                        ReasonParams = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
+                    });
+                }
+            }
+
+            // Analyse why not allowed to delegate
+            if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
+            {
+                // Analyze for role access failure
+                List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
+                if (roleAccessSources.Any())
+                {
+                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+
+                    reasons.Add(new RightReason
+                    {
+                        ReasonCode = "MissingRoleAccess",
+                        Reason = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
+                        ReasonParams = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
+                    });
+                }
+
+                // Analyze for delegation policy failure
+                List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy).ToList();
+                if (!delegationPolicySources.Any())
+                {
+                    reasons.Add(new RightReason
+                    {
+                        ReasonCode = "MissingDelegationAccess",
+                        Reason = $"The user does not have access through delegation(s) of the right"
+                    });
+                }
+            }
+
+            if (reasons.Count == 0)
+            {
+                reasons.Add(new RightReason
+                {
+                    ReasonCode = "Unknown",
+                    Reason = $"Unknown reason"
+                });
+            }
+
+            return reasons;
+        }
     }
 }

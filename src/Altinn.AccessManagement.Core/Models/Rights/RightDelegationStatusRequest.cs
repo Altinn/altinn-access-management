@@ -8,10 +8,10 @@ namespace Altinn.AccessManagement.Core.Models
     public class RightDelegationStatusRequest
     {
         /// <summary>
-        /// Gets or sets the set of Attribute Id and Attribute Value for the entity which are to receive the rights
+        /// Gets or sets the set of Attribute Id and Attribute Value for the reportee party to delegate rights on behalf of
         /// </summary>
         [Required]
-        public List<AttributeMatch> To { get; set; }
+        public List<AttributeMatch> From { get; set; }
 
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for identifying the resource of the rights to be checked

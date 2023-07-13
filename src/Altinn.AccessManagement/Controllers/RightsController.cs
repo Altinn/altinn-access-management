@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -118,12 +120,26 @@ namespace Altinn.AccessManagement.Controllers
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
-
+            
             try
             {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+
                 RightDelegationStatusRequest rightDelegationStatusRequestInternal = _mapper.Map<RightDelegationStatusRequest>(userDelegationCheckRequest);
-                List<RightDelegationStatus> delegationStatusInternal = await _rights.RightsDelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
-                return _mapper.Map<List<RightDelegationStatusExternal>>(delegationStatusInternal);
+                rightDelegationStatusRequestInternal.From = reportee.SingleToList();
+
+                DelegationCheckResult delegationCheckResultInternal = await _rights.RightsDelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                if (!delegationCheckResultInternal.IsValid)
+                {
+                    foreach (var error in delegationCheckResultInternal.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return _mapper.Map<List<RightDelegationStatusExternal>>(delegationCheckResultInternal.RightsStatus);
             }
             catch (ValidationException valEx)
             {

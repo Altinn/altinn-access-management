@@ -131,7 +131,7 @@ namespace Altinn.AccessManagement.Controllers
                 }
 
                 DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
-                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
+                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out _, out string resourceId, out _, out _, out _, out _);
                 DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
                 return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
             }

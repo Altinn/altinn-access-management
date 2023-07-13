@@ -146,17 +146,23 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="resourceId">the resource id. Either a resource registry id or org/app</param>
         /// <param name="org">the org part of the resource</param>
         /// <param name="app">the app part of the resource</param>
+        /// <param name="serviceCode">altinn 2 service code</param>
+        /// <param name="serviceEditionCode">altinn 2 service edition code</param>
         /// <returns>A bool indicating whether params where found</returns>
-        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app)
+        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
         {
             resourceMatchType = ResourceAttributeMatchType.None;
             resourceId = null;
             org = null;
             app = null;
+            serviceCode = null;
+            serviceEditionCode = null;
 
             AttributeMatch resourceRegistryMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
             AttributeMatch orgMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
             AttributeMatch appMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            AttributeMatch serviceCodeMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            AttributeMatch serviceEditionMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
 
             if (resourceRegistryMatch != null && orgMatch == null && appMatch == null)
             {
@@ -172,7 +178,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 app = appMatch.Value;
                 resourceId = $"{org}/{app}";
                 return true;
-            }            
+            }
 
             return false;
         }
@@ -196,7 +202,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             try
             {
-                TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app);
+                TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app, out string _, out string _);
                 offeredByPartyId = rule.OfferedByPartyId;
                 coveredByPartyId = TryGetPartyIdFromAttributeMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
                 coveredByUserId = TryGetUserIdFromAttributeMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;

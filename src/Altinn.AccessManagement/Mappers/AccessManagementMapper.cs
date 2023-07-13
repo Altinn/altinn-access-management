@@ -58,6 +58,7 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<BaseRightExternal, Right>();
             CreateMap<RightDelegationStatusRequestExternal, RightDelegationStatusRequest>();
             CreateMap<RightDelegationStatus, RightDelegationStatusExternal>();
+            CreateMap<RightReason, RightReasonExternal>();
 
             // Delegation
             CreateMap<DelegationInputExternal, DelegationLookup>();

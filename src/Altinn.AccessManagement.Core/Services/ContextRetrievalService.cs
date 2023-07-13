@@ -128,13 +128,35 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Party> GetParty(string organizationNumber)
+        public async Task<Party> GetPartyForOrganization(string organizationNumber)
         {
             string cacheKey = $"orgNo:{organizationNumber}";
 
             if (!_memoryCache.TryGetValue(cacheKey, out Party party))
             {
                 party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { OrgNo = organizationNumber });
+
+                if (party != null)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+
+                    _memoryCache.Set(cacheKey, party, cacheEntryOptions);
+                }
+            }
+
+            return party;
+        }
+
+        /// <inheritdoc/>
+        public async Task<Party> GetPartyForPerson(string ssn)
+        {
+            string cacheKey = $"ssn:{ssn}";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out Party party))
+            {
+                party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { Ssn = ssn });
 
                 if (party != null)
                 {
@@ -218,14 +240,85 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 resources = await _resourceRegistryClient.GetResources();
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
-
-                _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
+                if (resources?.Count > 0)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+                
+                    _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
+                }
             }
 
             return resources;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetResourceList()
+        {
+            string cacheKey = $"resources:resourceList";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out List<ServiceResource> resources))
+            {
+                resources = await _resourceRegistryClient.GetResourceList();
+
+                if (resources?.Count > 0)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+
+                    _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
+                }
+            }
+
+            return resources;
+        }
+
+        /// <inheritdoc/>
+        public async Task<ServiceResource> GetResourceFromResourceList(string resourceId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null)
+        {
+            string cacheKey = $"r:{resourceId},o:{org},a:{app},sc:{serviceCode},sec:{serviceEditionCode}";
+
+            if (!_memoryCache.TryGetValue(cacheKey, out ServiceResource resource))
+            {
+                List<ServiceResource> resources = await GetResourceList();
+                foreach (ServiceResource serviceResource in resources)
+                {
+                    if (resourceId != null && (serviceResource.ResourceType != ResourceType.Altinn2Service || serviceResource.ResourceType != ResourceType.Altinn2Service) &&
+                        serviceResource.Identifier == resourceId)
+                    {
+                        resource = serviceResource;
+                        break;
+                    }
+
+                    if (org != null && app != null && serviceResource.ResourceType == ResourceType.AltinnApp &&
+                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ApplicationId && rf.Reference.Equals($"{org.ToLower()}/{app.ToLower()}")))
+                    {
+                        resource = serviceResource;
+                        break;
+                    }
+
+                    if (serviceCode != null && serviceEditionCode != null && serviceResource.ResourceType == ResourceType.Altinn2Service &&
+                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ServiceCode && rf.Reference.Equals($"{serviceCode.ToLower()}")) &&
+                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ServiceEditionCode && rf.Reference.Equals($"{serviceEditionCode.ToLower()}")))
+                    { 
+                        resource = serviceResource;
+                        break;
+                    }
+                }
+
+                if (resource != null)
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
+
+                    _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
+                }                    
+            }
+
+            return resource;
         }
 
         /// <inheritdoc/>
@@ -268,6 +361,6 @@ namespace Altinn.AccessManagement.Core.Services
             _memoryCache.Set(cacheKey, partyList, cacheEntryOptions);
 
             return partyList;
-        } 
+        }
     }
 }

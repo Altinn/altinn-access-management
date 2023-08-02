@@ -54,7 +54,12 @@
         /// xacml string that represents role
         /// </summary>
         public const string RoleAttribute = "urn:altinn:rolecode";
-        
+
+        /// <summary>
+        /// xacml string that represents OED role
+        /// </summary>
+        public const string OEDRoleAttribute = "urn:oed:rolecode";
+
         /// <summary>
         /// xacml string that represents resource
         /// </summary>

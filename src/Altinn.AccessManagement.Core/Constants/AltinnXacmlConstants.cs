@@ -77,6 +77,11 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string RoleAttribute = "urn:altinn:rolecode";
 
             /// <summary>
+            /// OED Role Code Attribute match identifier
+            /// </summary>
+            public const string OEDRoleAttribute = "urn:oed:rolecode";
+
+            /// <summary>
             /// Resource Registry attribute match indentifier 
             /// </summary>
             public const string ResourceRegistryAttribute = "urn:altinn:resource";

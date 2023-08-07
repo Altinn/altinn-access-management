@@ -68,9 +68,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Analyses a Right model for a reason for the rights delegation access status
         /// </summary>
-        public static List<RightReason> AnalyzeDelegationAccessReason(Right right)
+        public static List<Detail> AnalyzeDelegationAccessReason(Right right)
         {
-            List<RightReason> reasons = new();
+            List<Detail> reasons = new();
 
             // Analyse why able to delegate
             if (right.CanDelegate.HasValue && right.CanDelegate.Value)
@@ -81,11 +81,11 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
 
-                    reasons.Add(new RightReason
+                    reasons.Add(new Detail
                     {
-                        ReasonCode = "RoleAccess",
-                        Reason = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
-                        ReasonParams = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
+                        Code = "RoleAccess",
+                        Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                        Params = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
                     });
                 }
 
@@ -95,11 +95,11 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
 
-                    reasons.Add(new RightReason
+                    reasons.Add(new Detail
                     {
-                        ReasonCode = "DelegationAccess",
-                        Reason = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
-                        ReasonParams = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
+                        Code = "DelegationAccess",
+                        Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
+                        Params = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
                     });
                 }
             }
@@ -113,11 +113,11 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
 
-                    reasons.Add(new RightReason
+                    reasons.Add(new Detail
                     {
-                        ReasonCode = "MissingRoleAccess",
-                        Reason = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        ReasonParams = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
+                        Code = "MissingRoleAccess",
+                        Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
+                        Params = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
                     });
                 }
 
@@ -125,20 +125,20 @@ namespace Altinn.AccessManagement.Core.Helpers
                 List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy).ToList();
                 if (!delegationPolicySources.Any())
                 {
-                    reasons.Add(new RightReason
+                    reasons.Add(new Detail
                     {
-                        ReasonCode = "MissingDelegationAccess",
-                        Reason = $"The user does not have access through delegation(s) of the right"
+                        Code = "MissingDelegationAccess",
+                        Description = $"The user does not have access through delegation(s) of the right"
                     });
                 }
             }
 
             if (reasons.Count == 0)
             {
-                reasons.Add(new RightReason
+                reasons.Add(new Detail
                 {
-                    ReasonCode = "Unknown",
-                    Reason = $"Unknown reason"
+                    Code = "Unknown",
+                    Description = $"Unknown"
                 });
             }
 

@@ -33,8 +33,8 @@ namespace Altinn.AccessManagement.Core.Models
         public DelegableStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of reasons why or why not the right is valid in the current user and reportee party context
+        /// Gets or sets a list of details describing the reasons why or why not the right is valid in the current user and reportee party context
         /// </summary>
-        public List<RightReason> Reasons { get; set; }
+        public List<Detail> Details { get; set; }
     }
 }

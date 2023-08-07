@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Models
@@ -35,9 +36,9 @@ namespace Altinn.AccessManagement.Models
         public DelegableStatusExternal Status { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of reasons why or why not the right is valid in the current user and reportee party context
+        /// Gets or sets a list of details describing why or why not the right is valid in the current user and reportee party context
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public List<RightReasonExternal> Reasons { get; set; }
+        public List<DetailExternal> Details { get; set; }
     }
 }

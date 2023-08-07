@@ -82,7 +82,7 @@ namespace Altinn.AccessManagement.Core.Services
                     Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable
                 };
 
-                rightDelegationStatus.Reasons = RightsHelper.AnalyzeDelegationAccessReason(right);
+                rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
 
                 result.RightsStatus.Add(rightDelegationStatus);
             }

@@ -53,10 +53,20 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Builds a RightsQuery request model for lookup of a users rights for a given resource registry service on behalf of the given reportee party
+        /// Builds a RightsQuery request model for lookup of a users rights for a given service resource on behalf of the given reportee party
         /// </summary>
-        public static RightsQuery GetRightsQueryForResourceRegistryService(int userId, string resourceRegistryId, int fromPartyId)
+        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, string resourceRegistryId = null, string org = null, string app = null)
         {
+            if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
+            {
+                return new RightsQuery
+                {
+                    To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
+                    From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } }
+                };
+            }
+
             return new RightsQuery
             {
                 To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },

@@ -50,16 +50,17 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            if (resource.ResourceType == ResourceType.Altinn2Service || resource.ResourceType == ResourceType.AltinnApp) //// ToDo: Remove when support exists
+            DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+            if (resource.ResourceType == ResourceType.Altinn2Service)
             {
-                result.Errors.Add("right[0].Resource", $"Altinn apps and Altinn 2 services are not yet supported. {resource}");
+                result.Errors.Add("right[0].Resource", $"Altinn apps and Altinn 2 services are not yet supported. {resource}"); //// ToDo: Update when support exists
                 return result;
             }
 
             // Get all delegable rights
-            RightsQuery rightsQuery = RightsHelper.GetRightsQueryForResourceRegistryService(authenticatedUserId, resource.Identifier, fromParty.PartyId);
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
             List<Right> allDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, returnAllPolicyRights: true);
-            if (allDelegableRights == null || allDelegableRights.Count == 0)
+            if (allDelegableRights == null || allDelegableRights.Count == 0)    
             {
                 result.Errors.Add("right[0].Resource", $"No delegable rights could be found for the resource: {resource}");
                 return result;
@@ -102,7 +103,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Verify authenticated users delegable rights
-            RightsQuery rightsQuery = RightsHelper.GetRightsQueryForResourceRegistryService(authenticatedUserId, resourceRegistryId, fromParty.PartyId);
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId);
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {

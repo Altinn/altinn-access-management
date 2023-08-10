@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Clients;
-using Altinn.AccessManagement.Tests.Utils;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -65,7 +64,10 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public Task<List<ServiceResource>> GetResourceList()
         {
-            throw new NotImplementedException();
+            string content = File.ReadAllText($"Data/Resources/resourceList.json");
+            List<ServiceResource> resources = (List<ServiceResource>)JsonSerializer.Deserialize(content, typeof(List<ServiceResource>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return Task.FromResult(resources);
         }
 
         private static string GetResourcePath(string resourceRegistryId)

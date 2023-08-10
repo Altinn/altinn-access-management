@@ -65,7 +65,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", false);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -90,7 +90,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000095", true);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -113,7 +113,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", false);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -137,7 +137,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50005545", "u20000490", true);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -160,7 +160,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", false);
-            StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -184,7 +184,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("digdirs_company_car", "p50005545", "u20001337", true);
-            StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -210,7 +210,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -237,7 +237,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -261,7 +261,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", false);
-            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -286,7 +286,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("org1_app1", "p50001337", "u20001337", true);
-            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -309,7 +309,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", false);
-            StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
@@ -333,7 +333,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedRights("ttd_rf-0002", "p50005545", "u20000490", true);
-            StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
@@ -356,7 +356,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", false);
-            StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
@@ -380,7 +380,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("ttd_rf-0002", "p50005545", "u20000490", true);
-            StreamContent requestContent = GetRequestContent("ttd_rf-0002", "p50005545", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
@@ -406,7 +406,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", false);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
@@ -433,7 +433,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("jks_audi_etron_gt", "p50004221", "u20000490", true);
-            StreamContent requestContent = GetRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
+            StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
@@ -456,7 +456,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", false);
-            StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
@@ -480,7 +480,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("digdirs_company_car", "p50005545", "u20001337", true);
-            StreamContent requestContent = GetRequestContent("digdirs_company_car", "p50005545", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
@@ -504,7 +504,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", false);
-            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
@@ -529,7 +529,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<RightExternal> expectedRights = GetExpectedDelegableRights("org1_app1", "p50001337", "u20001337", true);
-            StreamContent requestContent = GetRequestContent("org1_app1", "p50001337", "u20001337");
+            StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
@@ -539,6 +539,70 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having DAGL
+        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// </summary>
+        [Fact]
+        public async Task UserDelegationCheck_ResourceRight_DAGL_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005545;
+            string resourceId = "jks_audi_etron_gt";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20001337 is HADM for the From unit 50005545
+        ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having HADM (same as DAGL)
+        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// </summary>
+        [Fact]
+        public async Task UserDelegationCheck_ResourceRight_HADM_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50005545;
+            string resourceId = "jks_audi_etron_gt";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
         }
 
         private HttpClient GetTestClient()
@@ -575,9 +639,23 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return (List<RightExternal>)JsonSerializer.Deserialize(content, typeof(List<RightExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        private static StreamContent GetRequestContent(string resourceId, string from, string to)
+        private static List<RightDelegationStatusExternal> GetExpectedRightDelegationStatus(string user, string from, string resourceId)
+        {
+            string content = File.ReadAllText($"Data/Json/UserDelegationCheck/{resourceId}/from_{from}/authn_{user}.json");
+            return (List<RightDelegationStatusExternal>)JsonSerializer.Deserialize(content, typeof(List<RightDelegationStatusExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static StreamContent GetRightsQueryRequestContent(string resourceId, string from, string to)
         {
             Stream dataStream = File.OpenRead($"Data/Json/RightsQuery/{resourceId}/from_{from}/to_{to}/RightsQuery.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
+        }
+
+        private static StreamContent GetUserDelegationCheckContent(string resourceId)
+        {
+            Stream dataStream = File.OpenRead($"Data/Json/UserDelegationCheck/{resourceId}/request.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return content;

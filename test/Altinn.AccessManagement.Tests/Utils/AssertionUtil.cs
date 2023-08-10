@@ -482,6 +482,37 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
         }
 
+        /// <summary>
+        /// Assert that two <see cref="RightDelegationStatusExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRightDelegationStatusExternalEqual(RightDelegationStatusExternal expected, RightDelegationStatusExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightKey, actual.RightKey);
+            AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
+            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Status, actual.Status);
+            AssertCollections(expected.Details, actual.Details, AssertDetailExternalEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="DetailExternal"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDetailExternalEqual(DetailExternal expected, DetailExternal actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.Code, actual.Code);
+            Assert.Equal(expected.Description, actual.Description);
+        }
+
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)
         {
             AssertCollections(expected, actual, AssertPolicyAttributeMatchExternalEqual);

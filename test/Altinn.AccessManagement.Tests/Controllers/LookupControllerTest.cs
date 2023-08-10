@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.AccessManagement.Utilities;
+using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -151,6 +152,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IPDP, PdpPermitMock>();
+                    services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

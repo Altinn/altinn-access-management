@@ -12,7 +12,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// <summary>
     /// Mock for finding signing key on disck
     /// </summary>
-    public class SigningKeyResolverMock : ISigningKeysResolver
+    public class SigningKeyResolverMock : IPublicSigningKeyProvider
     {
         /// <summary>
         /// Not implemented

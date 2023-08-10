@@ -259,7 +259,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepositoryMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
-                    services.AddSingleton<ISigningKeysResolver, SigningKeyResolverMock>();
+                    services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton<IPDP, PdpPermitMock>();
                 });

@@ -18,6 +18,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Http;
@@ -1638,6 +1639,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton(pdpMock);
                     services.AddSingleton(httpContextAccessor);
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
+                    services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

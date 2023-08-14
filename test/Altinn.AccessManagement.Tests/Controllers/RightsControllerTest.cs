@@ -15,6 +15,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -615,6 +616,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepositoryMock>();
                     services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
+                    services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -8,7 +7,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -575,7 +573,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
         ///            In this case:
         ///            - The user 20001337 is HADM for the From unit 50005545
         ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having HADM (same as DAGL)
@@ -590,6 +588,73 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string resourceId = "jks_audi_etron_gt";
 
             var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20000490 is authorized to delegate on behalf of the reportee party 50004221 for the jks_audi_etron_gt resource from the resource registry.
+        ///            In this case:
+        ///            - The From unit (50004221) is a subunit of 500042222.
+        ///            - The From unit (50004221) has delegated the "Race" action directly to the user.
+        ///            - The main unit (50004222) has delegated the "Park" action to the user.
+        ///            - The main unit (50004222) has delegated the "Drive" action to the party 50005545 where the user is DAGL and have keyrole privileges.
+        ///            - 3 out of 4 rights are thus delegable and should contain the information of the actual recipient of the delegation
+        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// </summary>
+        [Fact]
+        public async Task UserDelegationCheck_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50004221;
+            string resourceId = "jks_audi_etron_gt";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the org1_app1 Altinn App.
+        ///            In this case:
+        ///            - The test scenario is setup using existing test data for Org1/App1, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
+        ///                 ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
+        /// Expected: GetRights returns a list of right matching expected
+        /// </summary>
+        [Fact]
+        public async Task UserDelegationCheck_AppRight_UserDelegation_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50001337;
+            string resourceId = "org1_app1";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);

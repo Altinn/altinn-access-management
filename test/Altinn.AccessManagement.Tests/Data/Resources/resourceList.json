@@ -285,5 +285,31 @@
     ],
     "resourceType": "MaskinportenSchema",
     "mainLanguage": "nb"
+  },
+  {
+    "title": {
+      "nb": "org1 app1"
+    },
+    "validFrom": "0001-01-01T00:00:00",
+    "validTo": "9999-12-31T23:59:59.9999999",
+    "isPublicService": false,
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "org1/app1",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "org1",
+      "name": {
+        "nb": "Testorganisasjon1"
+      }
+    },
+    "resourceType": "AltinnApp",
+    "mainLanguage": "nb"
   }
 ]

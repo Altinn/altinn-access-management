@@ -71,6 +71,5 @@
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
   </ItemGroup>
-
   
 </Project>

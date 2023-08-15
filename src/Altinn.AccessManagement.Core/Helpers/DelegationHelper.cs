@@ -139,7 +139,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Gets the resource attributes as out params from a single Resource
+        /// Gets the resource attribute values as out params from a Resource specified as a List of AttributeMatches
         /// </summary>
         /// <param name="input">The resource to fetch org and app from</param>
         /// <param name="resourceMatchType">the resource match type</param>
@@ -158,11 +158,11 @@ namespace Altinn.AccessManagement.Core.Helpers
             serviceCode = null;
             serviceEditionCode = null;
 
-            AttributeMatch resourceRegistryMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
-            AttributeMatch orgMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
-            AttributeMatch appMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
-            AttributeMatch serviceCodeMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
-            AttributeMatch serviceEditionMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            AttributeMatch resourceRegistryMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
+            AttributeMatch orgMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            AttributeMatch appMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            AttributeMatch serviceCodeMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            AttributeMatch serviceEditionMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
 
             if (resourceRegistryMatch != null && orgMatch == null && appMatch == null)
             {
@@ -177,6 +177,14 @@ namespace Altinn.AccessManagement.Core.Helpers
                 org = orgMatch.Value;
                 app = appMatch.Value;
                 resourceId = $"{org}/{app}";
+                return true;
+            }
+
+            if (serviceCodeMatch != null && serviceEditionMatch != null && resourceRegistryMatch == null && orgMatch == null && appMatch == null)
+            {
+                resourceMatchType = ResourceAttributeMatchType.Altinn2Service;
+                serviceCode = serviceCodeMatch.Value;
+                serviceEditionCode = serviceEditionMatch.Value;
                 return true;
             }
 

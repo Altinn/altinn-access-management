@@ -90,7 +90,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// Gets a single resource from the list of all available resources including Altinn Apps, Altinn 2 services and resources from the Resource Registry, if it exists.
         /// </summary>
         /// <returns>The resource if exists</returns>
-        Task<ServiceResource> GetResourceFromResourceList(string resourceId, string org, string app, string serviceCode, string serviceEditionCode);
+        Task<ServiceResource> GetResourceFromResourceList(string resourceId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null);
 
         /// <summary>
         /// Gets a Party based on partyId if the party is in the users reporteelist

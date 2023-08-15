@@ -285,7 +285,7 @@ namespace Altinn.AccessManagement.Core.Services
                 List<ServiceResource> resources = await GetResourceList();
                 foreach (ServiceResource serviceResource in resources)
                 {
-                    if (resourceId != null && (serviceResource.ResourceType != ResourceType.Altinn2Service || serviceResource.ResourceType != ResourceType.Altinn2Service) &&
+                    if (resourceId != null && (serviceResource.ResourceType != ResourceType.Altinn2Service || serviceResource.ResourceType != ResourceType.AltinnApp) &&
                         serviceResource.Identifier == resourceId)
                     {
                         resource = serviceResource;
@@ -293,15 +293,15 @@ namespace Altinn.AccessManagement.Core.Services
                     }
 
                     if (org != null && app != null && serviceResource.ResourceType == ResourceType.AltinnApp &&
-                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ApplicationId && rf.Reference.Equals($"{org.ToLower()}/{app.ToLower()}")))
+                        serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ApplicationId && string.Equals(rf.Reference, $"{org}/{app}", StringComparison.OrdinalIgnoreCase)))
                     {
                         resource = serviceResource;
                         break;
                     }
 
                     if (serviceCode != null && serviceEditionCode != null && serviceResource.ResourceType == ResourceType.Altinn2Service &&
-                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ServiceCode && rf.Reference.Equals($"{serviceCode.ToLower()}")) &&
-                        serviceResource.ResourceReferences.Any(rf => rf.ReferenceType == ReferenceType.ServiceEditionCode && rf.Reference.Equals($"{serviceEditionCode.ToLower()}")))
+                        serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceCode && string.Equals(rf.Reference, $"{serviceCode}", StringComparison.OrdinalIgnoreCase)) &&
+                        serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceEditionCode && string.Equals(rf.Reference, $"{serviceEditionCode}", StringComparison.OrdinalIgnoreCase)))
                     { 
                         resource = serviceResource;
                         break;

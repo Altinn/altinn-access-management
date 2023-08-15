@@ -18,7 +18,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly ILogger<ISingleRightsService> _logger;
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IContextRetrievalService _contextRetrievalService;
-        private readonly IResourceAdministrationPoint _resourceAdministrationPoint;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
 
@@ -28,15 +27,13 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="logger">handler for logger</param>
         /// <param name="delegationRepository">delegation change handler</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
-        /// <param name="resourceAdministrationPoint">handler for resource registry</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        public SingleRightsService(ILogger<ISingleRightsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IResourceAdministrationPoint resourceAdministrationPoint, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+        public SingleRightsService(ILogger<ISingleRightsService> logger, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
         {
             _logger = logger;
             _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
-            _resourceAdministrationPoint = resourceAdministrationPoint;
             _pip = pip;
             _pap = pap;
         }
@@ -66,7 +63,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            if (allDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
+            if (allDelegableRights.Exists(r => r.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
             {
                 result.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resource}"); //// ToDo: convert to status?
                 return result;
@@ -111,7 +108,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            if (usersDelegableRights.Any(r => r.RightSources.Any(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
+            if (usersDelegableRights.Exists(r => r.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
             {
                 result.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resourceRegistryId}");
                 return result;
@@ -132,12 +129,12 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             List<Rule> delegationResult = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
-            if (delegationResult.All(r => r.CreatedSuccessfully))
+            if (delegationResult.TrueForAll(r => r.CreatedSuccessfully))
             {
                 result.Rights = usersDelegableRights;
                 return await Task.FromResult(result);
             }
-            else if (delegationResult.Any(r => r.CreatedSuccessfully))
+            else if (delegationResult.Exists(r => r.CreatedSuccessfully))
             {
                 // Partial delegation of rules should not really be possible. Return success but log error?
                 _logger.LogError("One or more rules could not be delegated.\n{result}", delegationResult);
@@ -372,7 +369,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 Party offeredByParty = partyList.Find(p => p.PartyId == delegationChange.OfferedByPartyId);
                 Party coveredByParty = partyList.Find(p => p.PartyId == delegationChange.CoveredByPartyId);
-                ServiceResource resource = resources?.FirstOrDefault(r => r.Identifier == delegationChange.ResourceId);
+                ServiceResource resource = resources?.Find(r => r.Identifier == delegationChange.ResourceId);
                 delegations.Add(BuildDelegationModel(delegationChange, offeredByParty, coveredByParty, resource));
             }
 

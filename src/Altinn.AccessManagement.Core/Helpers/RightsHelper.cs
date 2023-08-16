@@ -95,7 +95,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = "RoleAccess",
                         Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
-                        Params = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
+                        Parameters = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
                     });
                 }
 
@@ -109,7 +109,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = "DelegationAccess",
                         Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
-                        Params = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
+                        Parameters = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
                     });
                 }
             }
@@ -127,7 +127,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = "MissingRoleAccess",
                         Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        Params = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
+                        Parameters = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
                     });
                 }
 

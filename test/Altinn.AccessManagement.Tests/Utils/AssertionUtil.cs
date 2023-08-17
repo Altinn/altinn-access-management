@@ -262,27 +262,6 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="DelegationExternal"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertDelegationEqual(DelegationExternal expected, DelegationExternal actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
-            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
-            Assert.Equal(expected.OfferedByName, actual.OfferedByName);
-            Assert.Equal(expected.OfferedByOrganizationNumber, actual.OfferedByOrganizationNumber);
-            Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
-            Assert.Equal(expected.CoveredByName, actual.CoveredByName);
-            Assert.Equal(expected.CoveredByOrganizationNumber, actual.CoveredByOrganizationNumber);
-            Assert.Equal(expected.ResourceId, actual.ResourceId);
-            Assert.Equal(expected.ResourceTitle, actual.ResourceTitle);
-            Assert.Equal(expected.ResourceType, actual.ResourceType);
-        }
-
-        /// <summary>
         /// Assert that two <see cref="MaskinportenSchemaDelegationExternal"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>

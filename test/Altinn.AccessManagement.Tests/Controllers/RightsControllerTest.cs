@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -545,7 +546,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            In this case:
         ///            - The user 20000490 is DAGL for the From unit 50005545
         ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having DAGL
-        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
         public async Task UserDelegationCheck_ResourceRight_DAGL_HasDelegableRights()
@@ -577,7 +578,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            In this case:
         ///            - The user 20001337 is HADM for the From unit 50005545
         ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having HADM (same as DAGL)
-        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
         public async Task UserDelegationCheck_ResourceRight_HADM_HasDelegableRights()
@@ -612,7 +613,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            - The main unit (50004222) has delegated the "Park" action to the user.
         ///            - The main unit (50004222) has delegated the "Drive" action to the party 50005545 where the user is DAGL and have keyrole privileges.
         ///            - 3 out of 4 rights are thus delegable and should contain the information of the actual recipient of the delegation
-        /// Expected: UserDelegationCheck returns a list of rights matching expected
+        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
         public async Task UserDelegationCheck_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
@@ -644,7 +645,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            In this case:
         ///            - The test scenario is setup using existing test data for Org1/App1, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
         ///                 ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
-        /// Expected: GetRights returns a list of right matching expected
+        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
         public async Task UserDelegationCheck_AppRight_UserDelegation_HasDelegableRights()
@@ -669,6 +670,37 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id
+        ///            In this case:
+        ///            - Since the resource is invalid a BadRequest response with a ValidationProblemDetails model response should be returned
+        /// Expected: Responce error model is matching expected
+        /// </summary>
+        [Fact]
+        public async Task UserDelegationCheck_InvalidResource_BadRequest()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50001337;
+            string resourceId = "non_existing_id";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError("UserDelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
         private HttpClient GetTestClient()
@@ -710,6 +742,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             string content = File.ReadAllText($"Data/Json/UserDelegationCheck/{resourceId}/from_{from}/authn_{user}.json");
             return (List<RightDelegationStatusExternal>)JsonSerializer.Deserialize(content, typeof(List<RightDelegationStatusExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static ValidationProblemDetails GetExpectedValidationError(string operation, string user, string from, string resourceId)
+        {
+            string content = File.ReadAllText($"Data/Json/{operation}/{resourceId}/from_{from}/authn_{user}.json");
+            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static StreamContent GetRightsQueryRequestContent(string resourceId, string from, string to)

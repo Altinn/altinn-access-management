@@ -14,6 +14,8 @@
 
         Altinn2Service = 4,
 
-        AltinnApp = 8
+        AltinnApp = 8,
+
+        GenericAccessResource = 16
     }
 }

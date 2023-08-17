@@ -23,8 +23,8 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         [PgName("altinnapp")]
         AltinnApp = 8,
 
-        [PgName("migratedlinkservice")] //// Todo: Temp value
-        MigratedLinkService = 16,
+        [PgName("genericaccessresource")]
+        GenericAccessResource = 16,
 
         All = ~Default
     }

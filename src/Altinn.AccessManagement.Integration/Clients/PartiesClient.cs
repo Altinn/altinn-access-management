@@ -177,6 +177,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                     RequestUri = uriBuilder.Uri,
                     Content = requestBody
                 };
+                return new();
 
                 HttpResponseMessage response = await _client.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
@@ -201,6 +202,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+                options.Converters.Add(new JsonStringEnumConverter());
                 string endpointUrl = $"parties/lookup";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");

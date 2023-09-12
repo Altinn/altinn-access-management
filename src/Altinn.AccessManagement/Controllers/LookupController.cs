@@ -41,7 +41,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize]
         [Route("accessmanagement/api/v1/lookup/org/{orgNummer}")]
         public async Task<ActionResult<PartyExternal>> GetOrganisation(string orgNummer)
         {
@@ -76,7 +75,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="partyId">The partyId for the reportee to look up</param>
         /// <returns>Reportee if party is in authenticated users reporteelist</returns>
         [HttpGet]
-        [Authorize]
         [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
         public async Task<ActionResult<PartyExternal>> GetPartyFromReporteeListIfExists(int partyId)
         {           

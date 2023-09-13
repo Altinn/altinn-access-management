@@ -2,6 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Models
 {

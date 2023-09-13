@@ -45,8 +45,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route(
-            "accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
+        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]// Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
         [Route("accessmanagement/api/v1/maskinporten/delegations/")]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         [Produces("application/json")]
@@ -54,8 +53,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations(
-            [FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
         {
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
@@ -113,10 +111,42 @@ namespace Altinn.AccessManagement.Controllers
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
 
+            var delegationInputExternal = new DelegationInputExternal
+            {
+                To = new List<AttributeMatchExternal>
+                {
+                    // Create an AttributeMatchExternal object for the 'To' property
+                    new AttributeMatchExternal
+                    {
+                        // Set properties of AttributeMatchExternal as needed
+                        // For example:
+                        Id = delegation.To.FirstOrDefault().Id,
+                        Value = delegation.To.FirstOrDefault().Value
+                    }
+                },
+                Rights = new List<BaseRightExternal>()
+            };
+            
+            var baseRightExternal = delegation.Rights.Select(right => new BaseRightExternal
+            {
+                Resource = right.Resource.Select(resource => new AttributeMatchExternal
+                {
+                    Id = resource.Id,
+                    Value = resource.Value,
+                }).ToList(),
+                Action = new AttributeMatchExternal
+                {
+                    Id = right.Action,
+                    Value = right.Action
+                }
+            }).ToList();
+
+            delegationInputExternal.Rights = baseRightExternal;
+
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
+                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegationInputExternal);
                 internalDelegation.From = reportee.SingleToList();
                 DelegationActionResult response = await _delegation.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation);
 
@@ -135,7 +165,8 @@ namespace Altinn.AccessManagement.Controllers
                 DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
                 return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
             }
-            catch (Exception ex)
+            catch
+                (Exception ex)
             {
                 if (ex is ValidationException || ex is ArgumentException)
                 {

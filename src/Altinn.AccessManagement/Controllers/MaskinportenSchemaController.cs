@@ -134,11 +134,7 @@ namespace Altinn.AccessManagement.Controllers
                     Id = resource.Id,
                     Value = resource.Value,
                 }).ToList(),
-                Action = new AttributeMatchExternal
-                {
-                    Id = right.Action,
-                    Value = right.Action
-                }
+                Action = null
             }).ToList();
 
             delegationInputExternal.Rights = baseRightExternal;

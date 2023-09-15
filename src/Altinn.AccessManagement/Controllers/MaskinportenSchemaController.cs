@@ -91,7 +91,7 @@ namespace Altinn.AccessManagement.Controllers
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
-
+  
         /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>
@@ -106,43 +106,15 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInput delegation)
+        public async Task<ActionResult<DelegationDto>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationDto delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
 
-            var delegationInputExternal = new DelegationInputExternal
-            {
-                To = new List<AttributeMatchExternal>
-                {
-                    // Create an AttributeMatchExternal object for the 'To' property
-                    new AttributeMatchExternal
-                    {
-                        // Set properties of AttributeMatchExternal as needed
-                        // For example:
-                        Id = delegation.To.FirstOrDefault().Id,
-                        Value = delegation.To.FirstOrDefault().Value
-                    }
-                },
-                Rights = new List<BaseRightExternal>()
-            };
-            
-            var baseRightExternal = delegation.Rights.Select(right => new BaseRightExternal
-            {
-                Resource = right.Resource.Select(resource => new AttributeMatchExternal
-                {
-                    Id = resource.Id,
-                    Value = resource.Value,
-                }).ToList(),
-                Action = null
-            }).ToList();
-
-            delegationInputExternal.Rights = baseRightExternal;
-
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegationInputExternal);
+                DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
                 DelegationActionResult response = await _delegation.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation);
 
@@ -156,10 +128,9 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
-                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
-                DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
-                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
+                DelegationDto delegationOutput = _mapper.Map<DelegationDto>(response);
+                
+                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={delegationOutput.To.First().Value}&resourceId={delegationOutput.Rights.First().Resource.First().Value}"), delegationOutput);
             }
             catch
                 (Exception ex)

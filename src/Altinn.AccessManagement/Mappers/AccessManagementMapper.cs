@@ -13,7 +13,7 @@ namespace Altinn.AccessManagement.Mappers
         /// <summary>
         /// Configuration for accessmanagement mapper
         /// </summary>
-        public AccessManagementMapper() 
+        public AccessManagementMapper()
         {
             AllowNullCollections = true;
             CreateMap<Party, PartyExternal>();
@@ -58,7 +58,28 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<BaseRightExternal, Right>();
 
             // Delegation
-            CreateMap<DelegationInput, DelegationLookup>();
+            CreateMap<DelegationDto, DelegationLookup>()
+                .ForMember(dest => dest.Rights, opt => opt.MapFrom(src =>
+                    src.Rights.Select(sourceRight => new Right
+                    {
+                        Resource = sourceRight.Resource.Select(attributeMatch => new AttributeMatch
+                        {
+                            Id = attributeMatch.Id,
+                            Value = attributeMatch.Value
+                        }).ToList(),
+                        Action = new AttributeMatch
+                        {
+                            Id = "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                            Value = sourceRight.Action
+                        }
+                    }).ToList()));
+            CreateMap<DelegationActionResult, DelegationDto>()
+                .ForMember(dest => dest.Rights, opt => opt.MapFrom(src => 
+                    src.Rights.Select(srcRight => new DelegationRequestDto
+                    {
+                        Resource = srcRight.Resource,
+                        Action = srcRight.Action.Value
+                    }).ToList()));
             CreateMap<Right, BaseRightExternal>();
             CreateMap<DelegationActionResult, DelegationOutputExternal>()
                 .ForMember(dest => dest.To, act => act.MapFrom(src => src.To))

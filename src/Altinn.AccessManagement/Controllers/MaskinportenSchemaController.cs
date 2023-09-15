@@ -132,8 +132,7 @@ namespace Altinn.AccessManagement.Controllers
                 
                 return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={delegationOutput.To.First().Value}&resourceId={delegationOutput.Rights.First().Resource.First().Value}"), delegationOutput);
             }
-            catch
-                (Exception ex)
+            catch (Exception ex)
             {
                 if (ex is ValidationException || ex is ArgumentException)
                 {

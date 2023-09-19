@@ -54,12 +54,13 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<RightsQueryExternal, RightsQuery>();
             CreateMap<RightSource, RightSourceExternal>();
             CreateMap<RightSourceExternal, RightSource>();
-            CreateMap<Right, RightExternal>();
+            CreateMap<Right, RightExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<BaseRightExternal, Right>();
-
+            
             // Delegation
-            CreateMap<DelegationDto, DelegationLookup>()
-                .ForMember(dest => dest.Rights, opt => opt.MapFrom(src =>
+            CreateMap<DelegationInputExternal, DelegationLookup>()
+                .ForMember(dest => dest.Rights, act => act.MapFrom(src =>
                     src.Rights.Select(sourceRight => new Right
                     {
                         Resource = sourceRight.Resource.Select(attributeMatch => new AttributeMatch
@@ -73,16 +74,10 @@ namespace Altinn.AccessManagement.Mappers
                             Value = sourceRight.Action
                         }
                     }).ToList()));
-            CreateMap<DelegationActionResult, DelegationDto>()
-                .ForMember(dest => dest.Rights, opt => opt.MapFrom(src => 
-                    src.Rights.Select(srcRight => new DelegationRequestDto
-                    {
-                        Resource = srcRight.Resource,
-                        Action = srcRight.Action.Value
-                    }).ToList()));
-            CreateMap<Right, BaseRightExternal>();
+            CreateMap<AttributeMatch, AttributeMatchExternal>();
+            CreateMap<Right, BaseRightExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<DelegationActionResult, DelegationOutputExternal>()
-                .ForMember(dest => dest.To, act => act.MapFrom(src => src.To))
                 .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
             CreateMap<RevokeOfferedDelegationExternal, DelegationLookup>();
             CreateMap<RevokeReceivedDelegationExternal, DelegationLookup>();

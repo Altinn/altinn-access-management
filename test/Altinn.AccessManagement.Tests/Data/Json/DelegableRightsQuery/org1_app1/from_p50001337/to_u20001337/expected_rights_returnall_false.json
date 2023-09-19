@@ -11,10 +11,7 @@
         "value": "app1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "canDelegate": true,
     "rightSources": [
       {

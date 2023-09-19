@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<DelegationDto>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationDto delegation)
+        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
@@ -128,9 +128,9 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                DelegationDto delegationOutput = _mapper.Map<DelegationDto>(response);
+                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
                 
-                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={delegationOutput.To.First().Value}&resourceId={delegationOutput.Rights.First().Resource.First().Value}"), delegationOutput);
+                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={delegationOutput.To.First().Value}&resourceId={delegationOutput.RightDelegationResults.First().Resource.First().Value}"), delegationOutput);
             }
             catch (Exception ex)
             {

@@ -7,10 +7,7 @@
         "value": "digdirs_company_car"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "drive"
-    },
+    "action": "drive",
     "hasPermit": false,
     "rightSources": [
       {

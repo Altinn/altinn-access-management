@@ -14,10 +14,7 @@
         "value": "resource1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    }
+    "action": "read"
   },
   {
     "delegatedByUserId": 20001336,
@@ -34,9 +31,6 @@
         "value": "resource1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    }
+    "action": "write"
   }
 ]

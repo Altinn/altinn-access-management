@@ -215,9 +215,9 @@ namespace Altinn.AccessManagement.Core.Services
 
             // Verify resource registry id is a valid MaskinportenSchema
             ServiceResource resource = await _contextRetrievalService.GetResource(resourceRegistryId);
-            if (resource == null || (delegationAction == DelegationActionType.Delegation && resource.IsComplete.HasValue && !resource.IsComplete.Value))
+            if (resource == null || (delegationAction == DelegationActionType.Delegation && !resource.Delegable))
             {
-                result.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not complete and available for delegation");
+                result.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not available for delegation");
                 return (result, resourceRegistryId, null, null);
             }
 

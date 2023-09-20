@@ -153,7 +153,6 @@ namespace Altinn.AccessManagement.Core.Services
         public async Task<List<int>> GetKeyRolePartyIds(int userId)
         {
             string cacheKey = $"KeyRolePartyIds_u:{userId}";
-
             if (!_memoryCache.TryGetValue(cacheKey, out List<int> keyrolePartyIds))
             {
                 keyrolePartyIds = await _partiesClient.GetKeyRoleParties(userId);

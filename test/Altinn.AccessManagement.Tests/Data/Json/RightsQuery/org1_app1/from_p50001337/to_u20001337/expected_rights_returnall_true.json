@@ -11,10 +11,7 @@
         "value": "app1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "hasPermit": true,
     "rightSources": [
       {
@@ -86,10 +83,7 @@
         "value": "app1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    },
+    "action": "write",
     "hasPermit": false,
     "rightSources": [
       {
@@ -142,10 +136,7 @@
         "value": "task1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "sign"
-    },
+    "action": "sign",
     "hasPermit": false,
     "rightSources": [
       {
@@ -191,10 +182,7 @@
         "value": "task1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    },
+    "action": "write",
     "hasPermit": true,
     "rightSources": [
       {
@@ -238,10 +226,7 @@
         "value": "event1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "hasPermit": true,
     "rightSources": [
       {

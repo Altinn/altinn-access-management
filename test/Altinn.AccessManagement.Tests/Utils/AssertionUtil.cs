@@ -404,7 +404,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.RightKey, actual.RightKey);
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
-            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Action, actual.Action);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
             AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
@@ -443,7 +443,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.NotNull(expected);
 
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
-            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Action, actual.Action);
         }
 
         /// <summary>

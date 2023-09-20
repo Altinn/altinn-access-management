@@ -45,8 +45,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route(
-            "accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
+        [Route("accessmanagement/api/v1/admin/delegations/maskinportenschema")]// Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
         [Route("accessmanagement/api/v1/maskinporten/delegations/")]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         [Produces("application/json")]
@@ -54,8 +53,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations(
-            [FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
         {
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
@@ -93,7 +91,7 @@ namespace Altinn.AccessManagement.Controllers
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
             }
         }
-
+  
         /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>
@@ -131,9 +129,8 @@ namespace Altinn.AccessManagement.Controllers
                 }
 
                 DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
-                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
-                DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
-                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
+                
+                return StatusCode(201, delegationOutput);
             }
             catch (Exception ex)
             {

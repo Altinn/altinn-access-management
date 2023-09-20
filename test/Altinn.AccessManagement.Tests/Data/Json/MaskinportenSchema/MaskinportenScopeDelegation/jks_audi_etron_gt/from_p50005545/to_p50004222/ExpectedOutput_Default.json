@@ -13,10 +13,7 @@
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": {
-        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-        "value": "drive"
-      }
+      "action": "drive"
     },
     {
       "resource": [
@@ -25,10 +22,7 @@
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": {
-        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-        "value": "park"
-      }
+      "action": "park"
     },
     {
       "resource": [
@@ -37,10 +31,7 @@
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": {
-        "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-        "value": "race"
-      }
+      "action": "race"
     }
   ]
 }

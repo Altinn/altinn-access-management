@@ -130,7 +130,7 @@ namespace Altinn.AccessManagement.Controllers
 
                 DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
                 
-                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={delegationOutput.To.First().Value}&resourceId={delegationOutput.RightDelegationResults.First().Resource.First().Value}"), delegationOutput);
+                return StatusCode(201, delegationOutput);
             }
             catch (Exception ex)
             {

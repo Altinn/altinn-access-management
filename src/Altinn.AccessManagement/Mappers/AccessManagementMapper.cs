@@ -56,26 +56,19 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<RightSourceExternal, RightSource>();
             CreateMap<Right, RightExternal>()
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
-            CreateMap<BaseRightExternal, Right>();
+            CreateMap<BaseRightExternal, Right>()
+                .ForMember(dest => dest.Action, opt => opt.MapFrom(src =>
+                    new AttributeMatch
+                    {
+                        Id = "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                        Value = src.Action
+                    }));
             CreateMap<Right, BaseRightExternal>()
-                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value))
+                .ForMember(dest => dest.Resource, act => act.MapFrom(src => src.Resource));
             
             // Delegation
-            CreateMap<DelegationInputExternal, DelegationLookup>()
-                .ForMember(dest => dest.Rights, act => act.MapFrom(src =>
-                    src.Rights.Select(sourceRight => new Right
-                    {
-                        Resource = sourceRight.Resource.Select(attributeMatch => new AttributeMatch
-                        {
-                            Id = attributeMatch.Id,
-                            Value = attributeMatch.Value
-                        }).ToList(),
-                        Action = new AttributeMatch
-                        {
-                            Id = "urn:oasis:names:tc:xacml:1.0:action:action-id",
-                            Value = sourceRight.Action
-                        }
-                    }).ToList()));
+            CreateMap<DelegationInputExternal, DelegationLookup>();
             CreateMap<DelegationActionResult, DelegationOutputExternal>()
                 .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
             CreateMap<RevokeOfferedDelegationExternal, DelegationLookup>();

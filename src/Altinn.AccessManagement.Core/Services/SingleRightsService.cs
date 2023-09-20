@@ -34,7 +34,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightDelegationStatusRequest request)
+        public async Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
         {
             (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateRightDelegationStatusRequest(request);
             if (!result.IsValid)
@@ -67,7 +67,7 @@ namespace Altinn.AccessManagement.Core.Services
             // Build result model with status
             foreach (Right right in allDelegableRights)
             {
-                RightDelegationStatus rightDelegationStatus = new RightDelegationStatus
+                RightDelegationCheckResult rightDelegationStatus = new RightDelegationCheckResult
                 {
                     RightKey = right.RightKey,
                     Resource = right.Resource,
@@ -107,7 +107,7 @@ namespace Altinn.AccessManagement.Core.Services
             throw new NotImplementedException();
         }
 
-        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationStatusRequest(RightDelegationStatusRequest request)
+        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationStatusRequest(RightsDelegationCheckRequest request)
         {
             DelegationCheckResult result = new DelegationCheckResult { From = request.From, RightsStatus = new() };
 

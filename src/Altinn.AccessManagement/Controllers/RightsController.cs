@@ -108,15 +108,15 @@ namespace Altinn.AccessManagement.Controllers
         /// Endpoint for performing a query of what rights a user can delegate to others on behalf of a specified reportee and resource.
         /// </summary>
         /// <param name="party">The reportee party</param>
-        /// <param name="userDelegationCheckRequest">Request model for user rights delegation check</param>
+        /// <param name="rightsDelegationCheckRequest">Request model for user rights delegation check</param>
         /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
-        [Route("{party}/rights/delegation/userdelegationcheck")]
+        [Route("{party}/rights/delegation/delegationcheck")]
         [ApiExplorerSettings(IgnoreApi = false)]
-        public async Task<ActionResult<List<RightDelegationStatusExternal>>> UserDelegationCheck([FromRoute] string party, [FromBody] RightDelegationStatusRequestExternal userDelegationCheckRequest)
+        public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
@@ -125,7 +125,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
 
-                RightDelegationStatusRequest rightDelegationStatusRequestInternal = _mapper.Map<RightDelegationStatusRequest>(userDelegationCheckRequest);
+                RightsDelegationCheckRequest rightDelegationStatusRequestInternal = _mapper.Map<RightsDelegationCheckRequest>(rightsDelegationCheckRequest);
                 rightDelegationStatusRequestInternal.From = reportee.SingleToList();
 
                 DelegationCheckResult delegationCheckResultInternal = await _rights.RightsDelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
@@ -139,7 +139,7 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                return _mapper.Map<List<RightDelegationStatusExternal>>(delegationCheckResultInternal.RightsStatus);
+                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.RightsStatus);
             }
             catch (ValidationException valEx)
             {
@@ -148,7 +148,7 @@ namespace Altinn.AccessManagement.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(500, ex, "Internal exception occurred during UserDelegationCheck");
+                _logger.LogError(500, ex, "Internal exception occurred during DelegationCheck");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }

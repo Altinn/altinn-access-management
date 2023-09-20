@@ -6,7 +6,7 @@ namespace Altinn.AccessManagement.Core.Models
     /// <summary>
     /// Response model describing the delegation status for a given single right, whether the authenticated user is able to delegate the right or not on behalf of the from part, or whether the to recipient party already have the right.
     /// </summary>
-    public class RightDelegationStatus
+    public class RightDelegationCheckResult
     {
         /// <summary>
         /// Gets or sets the right key

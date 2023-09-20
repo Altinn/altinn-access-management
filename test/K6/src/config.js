@@ -137,13 +137,13 @@ export function buildRightsEndpointUrls(party, type) {
     case 'rights/delegation':
       value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/offered`;
       break;
-    case 'userdelegationcheck':
+    case 'delegationcheck':
       if (baseUrl == null) {
-        value = `http://localhost:5117/accessmanagement/api/v1/${party}/rights/delegation/userdelegationcheck`;
+        value = `http://localhost:5117/accessmanagement/api/v1/${party}/rights/delegation/delegationcheck`;
         break;
       }
       else {
-        value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/userdelegationcheck`;
+        value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/delegationcheck`;
         break;
       }
 

@@ -3,7 +3,7 @@ import * as config from '../../../../config.js';
 import * as header from '../../../../buildrequestheaders.js';
 
 export function resourceUserDelegationCheck(altinnToken, offeredByPartyId, resourceid) {
-    var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'userdelegationcheck');
+    var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'delegationcheck');
     var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
     var body = [];
     body.push(makeResourceRequestBody(resourceid));
@@ -24,7 +24,7 @@ function makeResourceRequestBody(resourceid) {
 }
 
 export function appUserDelegationCheck(altinnToken, offeredByPartyId, org, app) {
-  var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'userdelegationcheck');
+  var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'delegationcheck');
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   var body = [];
   body.push(makeAppRequestBody(org, app));

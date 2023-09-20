@@ -542,14 +542,14 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
         ///            In this case:
         ///            - The user 20000490 is DAGL for the From unit 50005545
         ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having DAGL
-        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task UserDelegationCheck_ResourceRight_DAGL_HasDelegableRights()
+        public async Task DelegationCheck_ResourceRight_DAGL_HasDelegableRights()
         {
             // Arrange
             int userId = 20000490;
@@ -559,29 +559,29 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
-            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
         ///            In this case:
         ///            - The user 20001337 is HADM for the From unit 50005545
         ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having HADM (same as DAGL)
-        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task UserDelegationCheck_ResourceRight_HADM_HasDelegableRights()
+        public async Task DelegationCheck_ResourceRight_HADM_HasDelegableRights()
         {
             // Arrange
             int userId = 20001337;
@@ -591,32 +591,32 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
-            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20000490 is authorized to delegate on behalf of the reportee party 50004221 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20000490 is authorized to delegate on behalf of the reportee party 50004221 for the jks_audi_etron_gt resource from the resource registry.
         ///            In this case:
         ///            - The From unit (50004221) is a subunit of 500042222.
         ///            - The From unit (50004221) has delegated the "Race" action directly to the user.
         ///            - The main unit (50004222) has delegated the "Park" action to the user.
         ///            - The main unit (50004222) has delegated the "Drive" action to the party 50005545 where the user is DAGL and have keyrole privileges.
         ///            - 3 out of 4 rights are thus delegable and should contain the information of the actual recipient of the delegation
-        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task UserDelegationCheck_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
+        public async Task DelegationCheck_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
         {
             // Arrange
             int userId = 20000490;
@@ -626,29 +626,29 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
-            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the org1_app1 Altinn App.
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the org1_app1 Altinn App.
         ///            In this case:
         ///            - The test scenario is setup using existing test data for Org1/App1, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
         ///                 ("rightKey": "app1,org1,task1:sign" and "rightKey": "app1,org1,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
-        /// Expected: UserDelegationCheck returns a list of RightDelegationStatus matching expected
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task UserDelegationCheck_AppRight_UserDelegation_HasDelegableRights()
+        public async Task DelegationCheck_AppRight_UserDelegation_HasDelegableRights()
         {
             // Arrange
             int userId = 20001337;
@@ -658,28 +658,28 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(userId, 0, 4);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            List<RightDelegationStatusExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
-            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            List<RightDelegationStatusExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationStatusExternal>>(responseContent, options);
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
         }
 
         /// <summary>
-        /// Test case: UserDelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id
         ///            In this case:
         ///            - Since the resource is invalid a BadRequest response with a ValidationProblemDetails model response should be returned
         /// Expected: Responce error model is matching expected
         /// </summary>
         [Fact]
-        public async Task UserDelegationCheck_InvalidResource_BadRequest()
+        public async Task DelegationCheck_InvalidResource_BadRequest()
         {
             // Arrange
             int userId = 20001337;
@@ -689,11 +689,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(userId, 0, 4);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            ValidationProblemDetails expectedResponse = GetExpectedValidationError("UserDelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
-            StreamContent requestContent = GetUserDelegationCheckContent(resourceId);
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError("DelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/userdelegationcheck", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -738,10 +738,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return (List<RightExternal>)JsonSerializer.Deserialize(content, typeof(List<RightExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
-        private static List<RightDelegationStatusExternal> GetExpectedRightDelegationStatus(string user, string from, string resourceId)
+        private static List<RightDelegationCheckResultExternal> GetExpectedRightDelegationStatus(string user, string from, string resourceId)
         {
-            string content = File.ReadAllText($"Data/Json/UserDelegationCheck/{resourceId}/from_{from}/authn_{user}.json");
-            return (List<RightDelegationStatusExternal>)JsonSerializer.Deserialize(content, typeof(List<RightDelegationStatusExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            string content = File.ReadAllText($"Data/Json/DelegationCheck/{resourceId}/from_{from}/authn_{user}.json");
+            return (List<RightDelegationCheckResultExternal>)JsonSerializer.Deserialize(content, typeof(List<RightDelegationCheckResultExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static ValidationProblemDetails GetExpectedValidationError(string operation, string user, string from, string resourceId)
@@ -758,9 +758,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return content;
         }
 
-        private static StreamContent GetUserDelegationCheckContent(string resourceId)
+        private static StreamContent GetDelegationCheckContent(string resourceId)
         {
-            Stream dataStream = File.OpenRead($"Data/Json/UserDelegationCheck/{resourceId}/request.json");
+            Stream dataStream = File.OpenRead($"Data/Json/DelegationCheck/{resourceId}/request.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return content;

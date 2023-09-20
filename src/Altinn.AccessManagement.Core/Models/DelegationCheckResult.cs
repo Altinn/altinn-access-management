@@ -13,6 +13,6 @@
         /// <summary>
         /// Gets or sets a list of right delegation status models
         /// </summary>
-        public List<RightDelegationStatus> RightsStatus { get; set; }
+        public List<RightDelegationCheckResult> RightsStatus { get; set; }
     }
 }

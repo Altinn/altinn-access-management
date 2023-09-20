@@ -6,9 +6,9 @@ using Altinn.AccessManagement.Enums;
 namespace Altinn.AccessManagement.Models
 {
     /// <summary>
-    /// Response model describing the delegation status for a given single right, whether the authenticated user is able to delegate the right or not on behalf of the from part, or whether the to recipient party already have the right.
+    /// Response model describing the delegation status for a given single right, whether the authenticated user is able to delegate the right or not on behalf of the from part.
     /// </summary>
-    public class RightDelegationStatusExternal
+    public class RightDelegationCheckResultExternal
     {
         /// <summary>
         /// Gets or sets the right key

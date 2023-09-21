@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Enums.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums.ResourceRegistry;
 
@@ -27,9 +28,14 @@ namespace Altinn.AccessManagement.Models
         public Dictionary<string, string> Description { get; set; }
 
         /// <summary>
-        /// Rights Description
+        /// Description explaining the rights a recipient will receive if given access to the resource
         /// </summary>
         public Dictionary<string, string> RightDescription { get; set; }
+
+        /// <summary>
+        /// The homepage
+        /// </summary>
+        public string? Homepage { get; set; }
 
         /// <summary>
         /// The status
@@ -37,19 +43,70 @@ namespace Altinn.AccessManagement.Models
         public string Status { get; set; }
 
         /// <summary>
-        /// When the resource is available from
+        /// spatial coverage
+        /// This property represents that area(s) a Public Service is likely to be available only within, typically the area(s) covered by a particular public authority.
         /// </summary>
-        public DateTime ValidFrom { get; set; }
-
-            /// <summary>
-        /// ResourceReference
-        /// </summary>
-        public List<ResourceReferenceExternal> ResourceReferences { get; set; }
+        public List<string>? Spatial { get; set; }
 
         /// <summary>
-        /// When the resource is available to
+        /// List of possible contact points
         /// </summary>
-        public DateTime ValidTo { get; set; }
+        public List<ContactPointExternal> ContactPoints { get; set; }
+
+        /// <summary>
+        /// Linkes to the outcome of a public service
+        /// </summary>
+        public List<string>? Produces { get; set; }
+
+        /// <summary>
+        /// IsPartOf
+        /// </summary>
+        public string? IsPartOf { get; set; }
+
+        /// <summary>
+        /// ThematicAreas
+        /// </summary>
+        public List<string>? ThematicAreas { get; set; }
+
+        /// <summary>
+        /// ResourceReference
+        /// </summary>
+        public List<ResourceReferenceExternal>? ResourceReferences { get; set; }
+
+        /// <summary>
+        /// Is this resource possible to delegate to others or not
+        /// </summary>
+        public bool Delegable { get; set; } = true;
+
+        /// <summary>
+        /// The visibility of the resource
+        /// </summary>
+        public bool Visible { get; set; } = true;
+
+        /// <summary>
+        /// HasCompetentAuthority
+        /// </summary>
+        public CompetentAuthorityExternal HasCompetentAuthority { get; set; }
+
+        /// <summary>
+        /// Keywords
+        /// </summary>
+        public List<Keyword>? Keywords { get; set; }
+
+        /// <summary>
+        /// Defines if the resource is limited by Resource Rights Registry
+        /// </summary>
+        public bool LimitedByRRR { get; set; }
+
+        /// <summary>
+        /// The user acting on behalf of party can be a selfidentifed users
+        /// </summary>
+        public bool SelfIdentifiedUserEnabled { get; set; }
+
+        /// <summary>
+        /// The user acting on behalf of party can be an enterprise users
+        /// </summary>
+        public bool EnterpriseUserEnabled { get; set; }
 
         /// <summary>
         /// ResourceType
@@ -58,8 +115,17 @@ namespace Altinn.AccessManagement.Models
         public ResourceTypeExternal ResourceType { get; set; }
 
         /// <summary>
-        /// HasCompetentAuthority
+        /// Available for type defines which type of entity / person that resource targets
         /// </summary>
-        public CompetentAuthorityExternal HasCompetentAuthority { get; set; }
+        public List<ResourcePartyTypeExternal>? AvailableForType { get; set; }
+
+        /// <summary>
+        /// Writes key information when this object is written to Log.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Identifier: {Identifier}, ResourceType: {ResourceType}";
+        }
     }
 }

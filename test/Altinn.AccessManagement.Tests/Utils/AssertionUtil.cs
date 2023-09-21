@@ -365,12 +365,23 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.NotNull(expected);
 
             Assert.Equal(expected.Identifier, actual.Identifier);
-            Assert.Equal(expected.Status, actual.Status);
             Assert.Equal(expected.Title, actual.Title);
             Assert.Equal(expected.Description, actual.Description);
+            Assert.Equal(expected.RightDescription, actual.RightDescription);
+            Assert.Equal(expected.Homepage, actual.Homepage);
+            Assert.Equal(expected.Status, actual.Status);
+            Assert.Equal(expected.Spatial, actual.Spatial);
+            Assert.Equal(expected.Produces, actual.Produces);
+            Assert.Equal(expected.IsPartOf, actual.IsPartOf);
+            Assert.Equal(expected.ThematicAreas, actual.ThematicAreas);
+            Assert.Equal(expected.Delegable, actual.Delegable);
+            Assert.Equal(expected.Visible, actual.Visible);
+            Assert.Equal(expected.Keywords, actual.Keywords);
+            Assert.Equal(expected.LimitedByRRR, actual.LimitedByRRR);
+            Assert.Equal(expected.SelfIdentifiedUserEnabled, actual.SelfIdentifiedUserEnabled);
+            Assert.Equal(expected.EnterpriseUserEnabled, actual.EnterpriseUserEnabled);
             Assert.Equal(expected.ResourceType, actual.ResourceType);
-            Assert.Equal(expected.ValidFrom, actual.ValidFrom);
-            Assert.Equal(expected.ValidTo, actual.ValidTo);
+            Assert.Equal(expected.AvailableForType, actual.AvailableForType);
         }
 
         /// <summary>

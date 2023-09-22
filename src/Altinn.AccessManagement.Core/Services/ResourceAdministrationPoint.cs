@@ -59,9 +59,9 @@ namespace Altinn.AccessManagement.Core.Services
 
             List<ServiceResource> resources = await _contextRetrievalService.GetResources();
 
-            foreach (ServiceResource resource in resources.Where(r => r.ResourceType == ResourceType.MaskinportenSchema))
+            foreach (ServiceResource resource in resources.Where(r => r.ResourceType == ResourceType.MaskinportenSchema && r.ResourceReferences != null))
             {
-                foreach (ResourceReference reference in resource.ResourceReferences?.Where(rf => rf.ReferenceType == ReferenceType.MaskinportenScope && rf.Reference.Equals(scope)))
+                foreach (ResourceReference reference in resource.ResourceReferences.Where(rf => rf.ReferenceType == ReferenceType.MaskinportenScope && rf.Reference.Equals(scope)))
                 {
                     filteredResources.Add(resource);
                 }

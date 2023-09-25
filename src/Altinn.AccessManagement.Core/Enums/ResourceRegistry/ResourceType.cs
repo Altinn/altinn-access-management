@@ -12,7 +12,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         Default = 0,
 
         [PgName("systemresource")]
-        SystemResource = 1,
+        Systemresource = 1,
 
         [PgName("maskinportenschema")]
         MaskinportenSchema = 2,

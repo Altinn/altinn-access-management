@@ -219,8 +219,6 @@ namespace Altinn.AccessManagement.Tests.Utils
                 {
                     { "Description", resourceTitle }
                 },
-                    ValidFrom = Convert.ToDateTime(validFrom),
-                    ValidTo = Convert.ToDateTime(validTo),
                     Status = "NA",
                     ResourceType = resourceType,
                 };
@@ -242,8 +240,6 @@ namespace Altinn.AccessManagement.Tests.Utils
                     { "nb-no", description },
                     { "nn-no", description }
                 },
-                    ValidFrom = Convert.ToDateTime(validFrom),
-                    ValidTo = Convert.ToDateTime(validTo),
                     Status = status,
                     ResourceType = resourceType,
                 };

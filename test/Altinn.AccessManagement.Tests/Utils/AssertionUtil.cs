@@ -334,25 +334,6 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="ServiceResource"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertResourceExternalEqual(ServiceResourceExternal expected, ServiceResourceExternal actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
-            Assert.Equal(expected.Identifier, actual.Identifier);
-            Assert.Equal(expected.Status, actual.Status);
-            Assert.Equal(expected.Title, actual.Title);
-            Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.ResourceType, actual.ResourceType);
-            Assert.Equal(expected.ValidFrom, actual.ValidFrom);
-            Assert.Equal(expected.ValidTo, actual.ValidTo);
-        }
-
-        /// <summary>
         /// Assert that two <see cref="Rule"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
@@ -383,7 +364,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.RightKey, actual.RightKey);
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
-            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Action, actual.Action);
             Assert.Equal(expected.HasPermit, actual.HasPermit);
             Assert.Equal(expected.CanDelegate, actual.CanDelegate);
             AssertCollections(expected.RightSources, actual.RightSources, AssertRightSourceExternalEqual);
@@ -422,7 +403,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.NotNull(expected);
 
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
-            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Action, actual.Action);
         }
 
         /// <summary>

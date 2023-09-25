@@ -77,9 +77,9 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 // ToDo: does resource existance matter?
                 ServiceResource registryResource = await _contextRetrievalService.GetResource(resourceId);
-                if (registryResource == null || !registryResource.IsComplete.HasValue || !registryResource.IsComplete.Value)
+                if (registryResource == null || !registryResource.Delegable)
                 {
-                    throw new ValidationException($"The specified resource registry id: {resourceId} does not exist or is not active");
+                    throw new ValidationException($"The specified resource registry id: {resourceId} does not exist or is not delegable");
                 }
 
                 policy = await _prp.GetPolicyAsync(resourceId);

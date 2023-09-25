@@ -121,15 +121,9 @@ namespace Altinn.AccessManagement.Core.Services
 
             // Verify resource is valid
             ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
-            if (resource == null || (resource.IsComplete.HasValue && !resource.IsComplete.Value))
+            if (resource == null || !resource.Delegable)
             {
-                result.Errors.Add("right[0].Resource", $"The resource does not exist or is not complete and available for delegation");
-                return (result, resource, null);
-            }
-
-            if (!resource.Delegable)
-            {
-                result.Errors.Add("right[0].Resource", $"The resource: {resource}, is not available for delegation");
+                result.Errors.Add("right[0].Resource", $"The resource does not exist or is not available for delegation");
                 return (result, resource, null);
             }
 

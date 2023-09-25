@@ -5,7 +5,7 @@
   "traceId": "00-28b6bcd340952ec6500b24cdc8498b6a-60b6ed58b49f5af6-00",
   "errors": {
     "right[0].Resource": [
-      "The resource does not exist or is not complete and available for delegation"
+      "The resource does not exist or is not available for delegation"
     ]
   }
 }

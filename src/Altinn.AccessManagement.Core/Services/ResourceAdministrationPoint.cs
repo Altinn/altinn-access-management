@@ -45,20 +45,17 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<ServiceResource>> GetResources(string scopes)
+        public async Task<List<ServiceResource>> GetResources(string scope)
         {
             List<ServiceResource> filteredResources = new List<ServiceResource>();
 
             List<ServiceResource> resources = await _contextRetrievalService.GetResources();
 
-            foreach (ServiceResource resource in resources)
+            foreach (ServiceResource resource in resources.Where(r => r.ResourceType == ResourceType.MaskinportenSchema && r.ResourceReferences != null))
             {
-                foreach (ResourceReference reference in resource.ResourceReferences)
+                foreach (ResourceReference reference in resource.ResourceReferences.Where(rf => rf.ReferenceType == ReferenceType.MaskinportenScope && rf.Reference.Equals(scope)))
                 {
-                    if (reference != null && reference.Reference.Equals(scopes) && reference.ReferenceType == ReferenceType.MaskinportenScope)
-                    {
-                        filteredResources.Add(resource);
-                    }
+                    filteredResources.Add(resource);
                 }
             }
 

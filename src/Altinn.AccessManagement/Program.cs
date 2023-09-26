@@ -33,6 +33,7 @@ using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -178,10 +179,12 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
+    builder.Services.AddFeatureManagement();
+
     services.AddHealthChecks().AddCheck<HealthCheck>("authorization_admin_health_check");
     services.AddSwaggerGen(options =>
     {
-        options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
             Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
             In = ParameterLocation.Header,

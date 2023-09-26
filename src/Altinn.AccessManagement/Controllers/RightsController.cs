@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -9,6 +10,7 @@ using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
 {
@@ -116,6 +118,7 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
         [Route("{party}/rights/delegation/delegationcheck")]
         [ApiExplorerSettings(IgnoreApi = false)]
+        [FeatureGate(FeatureFlags.RightsDelegationCheck)]
         public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);

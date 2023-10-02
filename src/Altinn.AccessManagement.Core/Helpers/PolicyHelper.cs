@@ -223,7 +223,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>policypath matching input data</returns>
         public static string GetAltinnAppDelegationPolicyPath(PolicyMatch policyMatch)
         {
-            DelegationHelper.TryGetResourceFromAttributeMatch(policyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app);
+            DelegationHelper.TryGetResourceFromAttributeMatch(policyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string _, out string _);
             DelegationHelper.GetCoveredByFromMatch(policyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
 
             return GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);

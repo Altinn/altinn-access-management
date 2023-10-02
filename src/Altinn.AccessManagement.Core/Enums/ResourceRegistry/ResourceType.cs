@@ -1,11 +1,11 @@
-﻿using System.Runtime.Serialization;
-using NpgsqlTypes;
+﻿using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
     /// <summary>
     /// Enum representation of the different types of resources supported by the resource registry
     /// </summary>
+    [Flags]
     public enum ResourceType
     {
         [PgName("default")]
@@ -25,5 +25,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 
         [PgName("genericaccessresource")]
         GenericAccessResource = 16,
+
+        All = ~Default
     }
 }

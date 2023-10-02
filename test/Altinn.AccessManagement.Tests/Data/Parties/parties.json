@@ -363,5 +363,34 @@
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
     "ChildParties": null
+  },
+
+  {
+    "PartyTypeName": 2,
+    "SSN": "",
+    "OrgNumber": "910001337",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "910001337",
+      "Name": "1337",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50001337,
+    "UnitType": "AS",
+    "Name": "1337",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
   }
 ]

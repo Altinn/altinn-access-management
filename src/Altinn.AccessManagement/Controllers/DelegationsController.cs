@@ -102,7 +102,7 @@ namespace Altinn.AccessManagement.Controllers
 
             foreach (List<AttributeMatch> resource in ruleQuery.Resources)
             {
-                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _))
+                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _, out _, out _))
                 {
                     resourceIds.Add(resourceId);
                 }

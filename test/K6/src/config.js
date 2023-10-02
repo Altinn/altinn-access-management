@@ -95,7 +95,7 @@ export var sblBridge = {
 };
 
 export var sbl = {
-  altinnBuildVersion: `https://${baseUrl}/pages/logout/AltinnBuildVersion.txt` 
+  altinnBuildVersion: `https://${baseUrl}/pages/logout/AltinnBuildVersion.txt`
 }
 
 export function buildMaskinPorteSchemaUrls(party, type) {
@@ -117,6 +117,38 @@ export function buildMaskinPorteSchemaUrls(party, type) {
       value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/offered`;
       break;
   }
+  return value;
+}
+export function buildRightsEndpointUrls(party, type) {
+  var value = '';
+  switch (type) {
+    case 'offered':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/offered`;
+      break;
+    case 'received':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/received`;
+      break;
+    case 'revokeoffered':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/offered/revoke`;
+      break;
+    case 'revokereceived':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/received/revoke`;
+      break;
+    case 'rights/delegation':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/offered`;
+      break;
+    case 'delegationcheck':
+      if (baseUrl == null) {
+        value = `http://localhost:5117/accessmanagement/api/v1/${party}/rights/delegation/delegationcheck`;
+        break;
+      }
+      else {
+        value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/rights/delegation/delegationcheck`;
+        break;
+      }
+
+  }
+  console.log(value)
   return value;
 }
 

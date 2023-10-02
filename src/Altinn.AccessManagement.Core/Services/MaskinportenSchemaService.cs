@@ -53,7 +53,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Verify authenticated users delegable rights
-            RightsQuery rightsQuery = RightsHelper.GetRightsQueryForResourceRegistryService(authenticatedUserId, resourceRegistryId, fromParty.PartyId);
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId);
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
@@ -110,7 +110,7 @@ namespace Altinn.AccessManagement.Core.Services
             int offeredByPartyId = 0;
             if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                Party offeredByParty = await _contextRetrievalService.GetParty(party.Value);
+                Party offeredByParty = await _contextRetrievalService.GetPartyForOrganization(party.Value);
                 offeredByPartyId = offeredByParty.PartyId;
             }
             else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out offeredByPartyId) || offeredByPartyId == 0))
@@ -132,7 +132,7 @@ namespace Altinn.AccessManagement.Core.Services
             int coveredByPartyId = 0;
             if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                Party coveredByParty = await _contextRetrievalService.GetParty(party.Value);
+                Party coveredByParty = await _contextRetrievalService.GetPartyForOrganization(party.Value);
                 coveredByPartyId = coveredByParty.PartyId;
             }
             else if (party.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute && (!int.TryParse(party.Value, out coveredByPartyId) || coveredByPartyId == 0))
@@ -149,7 +149,7 @@ namespace Altinn.AccessManagement.Core.Services
             int consumerPartyId = 0;
             if (!string.IsNullOrEmpty(consumerOrg))
             {
-                Party consumerParty = await _contextRetrievalService.GetParty(consumerOrg);
+                Party consumerParty = await _contextRetrievalService.GetPartyForOrganization(consumerOrg);
                 if (consumerParty == null)
                 {
                     throw new ArgumentException($"The specified consumerOrg: {consumerOrg}, is not a valid organization number", nameof(consumerOrg));
@@ -161,7 +161,7 @@ namespace Altinn.AccessManagement.Core.Services
             int supplierPartyId = 0;
             if (!string.IsNullOrEmpty(supplierOrg))
             {
-                Party supplierParty = await _contextRetrievalService.GetParty(supplierOrg);
+                Party supplierParty = await _contextRetrievalService.GetPartyForOrganization(supplierOrg);
                 if (supplierParty == null)
                 {
                     throw new ArgumentException($"The specified supplierOrg: {supplierOrg}, is not a valid organization number", nameof(supplierOrg));
@@ -205,7 +205,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             Right right = delegation.Rights.First();
-            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _);
+            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _, out string _, out string _);
 
             if (resourceMatchType != ResourceAttributeMatchType.ResourceRegistry)
             {
@@ -223,7 +223,13 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (resource.ResourceType != ResourceType.MaskinportenSchema)
             {
-                result.Errors.Add("right[0].Resource", $"This operation only support requests for Maskinporten schema resources. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                result.Errors.Add("right[0].Resource", $"This operation only support requests for Maskinporten schema resources. Invalid resource: {resource}");
+                return (result, resourceRegistryId, null, null);
+            }
+
+            if (!resource.Delegable)
+            {
+                result.Errors.Add("right[0].Resource", $"The resource: {resource}, is not available for delegation");
                 return (result, resourceRegistryId, null, null);
             }
 
@@ -231,7 +237,7 @@ namespace Altinn.AccessManagement.Core.Services
             Party fromParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
             {
-                fromParty = await _contextRetrievalService.GetParty(fromOrgNo);
+                fromParty = await _contextRetrievalService.GetPartyForOrganization(fromOrgNo);
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
             {
@@ -249,7 +255,7 @@ namespace Altinn.AccessManagement.Core.Services
             Party toParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
             {
-                toParty = await _contextRetrievalService.GetParty(toOrgNo);
+                toParty = await _contextRetrievalService.GetPartyForOrganization(toOrgNo);
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
             {

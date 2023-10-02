@@ -90,6 +90,16 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Social security number attribute match indentifier 
             /// </summary>
             public const string SocialSecurityNumberAttribute = "urn:altinn:ssn";
+
+            /// <summary>
+            /// Altinn 2 service code attribute match indentifier 
+            /// </summary>
+            public const string ServiceCodeAttribute = "urn:altinn:servicecode";
+
+            /// <summary>
+            /// Altinn 2 service edition code attribute match indentifier 
+            /// </summary>
+            public const string ServiceEditionCodeAttribute = "urn:altinn:serviceeditioncode";
         }
 
         /// <summary>

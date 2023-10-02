@@ -30,13 +30,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         Task<List<ServiceResource>> GetResources(string scope);
 
         /// <summary>
-        /// Gets a list of Resources from ResourceRegister
-        /// </summary>
-        /// <param name="resourceIds">The list of resource ids</param>
-        /// <returns>resource list based on given resource ids</returns>
-        Task<List<ServiceResource>> GetResources(List<Tuple<string, string>> resourceIds);
-
-        /// <summary>
         /// Integration point for retrieving a single resoure by it's resource id
         /// </summary>
         /// <param name="resourceRegistryId">The identifier of the resource in the Resource Registry</param>

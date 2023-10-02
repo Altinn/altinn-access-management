@@ -44,6 +44,9 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<RightsQueryExternal, RightsQuery>();
             CreateMap<RightSource, RightSourceExternal>();
             CreateMap<RightSourceExternal, RightSource>();
+            CreateMap<RightsDelegationCheckRequestExternal, RightsDelegationCheckRequest>();
+            CreateMap<RightDelegationCheckResult, RightDelegationCheckResultExternal>();
+            CreateMap<Detail, DetailExternal>();
             CreateMap<Right, RightExternal>()
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<BaseRightExternal, Right>()

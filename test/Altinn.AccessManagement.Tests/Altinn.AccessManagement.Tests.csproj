@@ -51,10 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Data\ResourceRegistryDelegationChanges\delegationchange.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -74,11 +70,6 @@
 
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Data\Json\MaskinportenSchema\Offered.json" />
-    <None Remove="Data\Json\MaskinportenSchema\Received.json" />
   </ItemGroup>
   
 </Project>

@@ -355,36 +355,6 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Assert that two <see cref="ServiceResource"/> have the same property in the same positions.
-        /// </summary>
-        /// <param name="expected">An instance with the expected values.</param>
-        /// <param name="actual">The instance to verify.</param>
-        public static void AssertResourceExternalEqual(ServiceResourceExternal expected, ServiceResourceExternal actual)
-        {
-            Assert.NotNull(actual);
-            Assert.NotNull(expected);
-
-            Assert.Equal(expected.Identifier, actual.Identifier);
-            Assert.Equal(expected.Title, actual.Title);
-            Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.RightDescription, actual.RightDescription);
-            Assert.Equal(expected.Homepage, actual.Homepage);
-            Assert.Equal(expected.Status, actual.Status);
-            Assert.Equal(expected.Spatial, actual.Spatial);
-            Assert.Equal(expected.Produces, actual.Produces);
-            Assert.Equal(expected.IsPartOf, actual.IsPartOf);
-            Assert.Equal(expected.ThematicAreas, actual.ThematicAreas);
-            Assert.Equal(expected.Delegable, actual.Delegable);
-            Assert.Equal(expected.Visible, actual.Visible);
-            Assert.Equal(expected.Keywords, actual.Keywords);
-            Assert.Equal(expected.LimitedByRRR, actual.LimitedByRRR);
-            Assert.Equal(expected.SelfIdentifiedUserEnabled, actual.SelfIdentifiedUserEnabled);
-            Assert.Equal(expected.EnterpriseUserEnabled, actual.EnterpriseUserEnabled);
-            Assert.Equal(expected.ResourceType, actual.ResourceType);
-            Assert.Equal(expected.AvailableForType, actual.AvailableForType);
-        }
-
-        /// <summary>
         /// Assert that two <see cref="Rule"/> have the same property in the same positions.
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>

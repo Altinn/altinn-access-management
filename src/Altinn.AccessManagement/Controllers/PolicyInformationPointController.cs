@@ -46,7 +46,7 @@ namespace Altinn.AccessManagement.Controllers
             bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(delegationChangeInput.Party.SingleToList(), out int partyId);
             bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(delegationChangeInput.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
             
-            return await _pip.FindAllDelegations(userId, partyId, resourceId, resourceMatchType);
+            return await _pip.GetAllDelegations(userId, partyId, resourceId, resourceMatchType);
         }
     }
 }

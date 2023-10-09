@@ -35,6 +35,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="resourceId">The Resource's id</param>
         /// <param name="resourceMatchType">The resources attribute match type</param>
         /// <returns>A list of delegation changes that's stored in the database </returns>
-        Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType);
+        Task<List<DelegationChange>> GetAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType);
     }
 }

@@ -147,9 +147,14 @@ namespace Altinn.AccessManagement.Core.Services
 
             return result.Values.Where(r => r.HasPermit.HasValue && r.HasPermit.Value).ToList();
         }
-
+        
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
+        public async Task<List<DelegationChange>> GetAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
+        {
+            return await FindAllDelegations(subjectUserId, reporteePartyId, resourceId, resourceMatchType);
+        }
+
+        private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
         {
             if (resourceMatchType == ResourceAttributeMatchType.None)
             {

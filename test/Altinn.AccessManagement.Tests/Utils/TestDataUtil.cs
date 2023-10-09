@@ -247,40 +247,6 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Gets a list of service resources
-        /// </summary>
-        /// <param name="resourceType">the resource type.</param>
-        /// <returns>Returns thelist of service resources.</returns>
-        public static List<ServiceResourceExternal> GetResources(ResourceTypeExternal resourceType)
-        {
-            List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
-            List<ServiceResourceExternal> filteredResources = null;
-
-            string path = GetResourcesPath();
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
-
-                foreach (string file in files)
-                {
-                    if (file.Contains("resources"))
-                    {
-                        string content = File.ReadAllText(Path.Combine(path, file));
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                        };
-                        resources = JsonSerializer.Deserialize<List<ServiceResourceExternal>>(content, options);
-                    }
-                }
-
-                filteredResources = resources.FindAll(r => r.ResourceType == resourceType);
-            }
-
-            return filteredResources;
-        }
-
-        /// <summary>
         /// Creates a DelegationChange model from the input.
         /// </summary>
         /// <returns>DelegationChange.</returns>

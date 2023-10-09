@@ -26,7 +26,6 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Scopes, act => act.MapFrom(src => src.ResourceReferences.Where(rf => string.Equals(rf.ReferenceType, ReferenceType.MaskinportenScope)).Select(rf => rf.Reference).ToList()))
                 .ForMember(dest => dest.Created, act => act.MapFrom(src => src.Created))
                 .ForMember(dest => dest.ResourceId, act => act.MapFrom(src => src.ResourceId));
-            CreateMap<ServiceResource, ServiceResourceExternal>();
             CreateMap<CompetentAuthority, CompetentAuthorityExternal>()
                 .ForMember(dest => dest.Orgcode, act => act.MapFrom(src => src.Orgcode))
                 .ForMember(dest => dest.Organization, act => act.MapFrom(src => src.Organization))

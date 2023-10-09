@@ -12,6 +12,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -86,12 +87,17 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             
+            string expectedContent = File.ReadAllText("Data/ResourceRegistryDelegationChanges/ExpectedResponses/jks_audi_etron_gt/50004221/20000490/delegationchange.json");
+            DelegationChange expectedResponse = (DelegationChange)JsonSerializer.Deserialize(expectedContent, typeof(DelegationChange), options);
+
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/policyinformation/getdelegationchanges", content);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage actualResponse = await _client.PostAsync($"accessmanagement/api/v1/policyinformation/getdelegationchanges", content);
+            string responseContent = await actualResponse.Content.ReadAsStringAsync();
             List<DelegationChange> delegationChanges = JsonSerializer.Deserialize<List<DelegationChange>>(responseContent, options);
             
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, actualResponse.StatusCode);
+            AssertionUtil.AssertEqual(expectedResponse, actualResponse);
         }
+        
     }
 }

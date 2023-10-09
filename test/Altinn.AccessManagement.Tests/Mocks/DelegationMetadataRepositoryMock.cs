@@ -136,7 +136,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
             if (altinnAppIds.Any(appId => appId == "org1/app1") && offeredByPartyIds.Contains(50001337) && (coveredByUserIds != null && coveredByUserIds.Contains(20001337)))
             {
-                result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 50001337, coveredByUserId: 50001337));
+                result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 50001337, coveredByUserId: 20001337));
             }
 
             if (altinnAppIds.Any(appId => appId == "skd/taxreport") && offeredByPartyIds.Contains(1000) && (coveredByUserIds != null && coveredByUserIds.Contains(20001337)))

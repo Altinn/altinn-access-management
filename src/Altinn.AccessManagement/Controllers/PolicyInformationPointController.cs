@@ -40,13 +40,14 @@ namespace Altinn.AccessManagement.Controllers
         /// [ApiExplorerSettings(IgnoreApi = false)]
         [HttpPost]
         [Route("getdelegationchanges")]
-        public async Task<ActionResult<List<DelegationChange>>> GetAllDelegationChanges([FromBody] DelegationChangeInput delegationChangeInput)
+        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput delegationChangeInput)
         {
             bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(delegationChangeInput.Subject.SingleToList(), out int userId);
             bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(delegationChangeInput.Party.SingleToList(), out int partyId);
             bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(delegationChangeInput.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
             
-            return await _pip.GetAllDelegations(userId, partyId, resourceId, resourceMatchType);
+            List<DelegationChange> response = await _pip.GetAllDelegations(userId, partyId, resourceId, resourceMatchType);
+            return _mapper.Map<List<DelegationChangeExternal>>(response);
         }
     }
 }

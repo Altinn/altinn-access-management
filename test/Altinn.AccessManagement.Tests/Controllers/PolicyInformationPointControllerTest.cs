@@ -83,21 +83,44 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public async Task GetDelegationChanges_ValidResponse_Resource()
         {
             // Arrange
-            Stream dataStream = File.OpenRead("Data/DelegationChanges/resource.json");
+            Stream dataStream = File.OpenRead("Data/DelegationChangeInput/resource.json");
             StreamContent content = new StreamContent(dataStream);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             
             string expectedContent = File.ReadAllText("Data/ResourceRegistryDelegationChanges/ExpectedResponses/jks_audi_etron_gt/50004221/20000490/delegationchange.json");
-            DelegationChange expectedResponse = (DelegationChange)JsonSerializer.Deserialize(expectedContent, typeof(DelegationChange), options);
+            List<DelegationChange> expectedResponse = (List<DelegationChange>)JsonSerializer.Deserialize(expectedContent, typeof(List<DelegationChange>), options);
 
             // Act
             HttpResponseMessage actualResponse = await _client.PostAsync($"accessmanagement/api/v1/policyinformation/getdelegationchanges", content);
             string responseContent = await actualResponse.Content.ReadAsStringAsync();
-            List<DelegationChange> delegationChanges = JsonSerializer.Deserialize<List<DelegationChange>>(responseContent, options);
+            List<DelegationChange> actualDelegationChanges = JsonSerializer.Deserialize<List<DelegationChange>>(responseContent, options);
             
             Assert.Equal(HttpStatusCode.OK, actualResponse.StatusCode);
-            AssertionUtil.AssertEqual(expectedResponse, actualResponse);
+            AssertionUtil.AssertEqual(expectedResponse, actualDelegationChanges);
         }
         
+        /// <summary>
+        /// Test case: Tests if you can get all delegation changes for a user
+        /// Expected: 
+        /// </summary>
+        [Fact]
+        public async Task GetDelegationChanges_ValidResponse_App()
+        {
+            // Arrange
+            Stream dataStream = File.OpenRead("Data/DelegationChangeInput/app.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            
+            string expectedContent = File.ReadAllText("Data/ResourceRegistryDelegationChanges/ExpectedResponses/app/app.json");
+            List<DelegationChange> expectedResponse = (List<DelegationChange>)JsonSerializer.Deserialize(expectedContent, typeof(List<DelegationChange>), options);
+
+            // Act
+            HttpResponseMessage actualResponse = await _client.PostAsync($"accessmanagement/api/v1/policyinformation/getdelegationchanges", content);
+            string responseContent = await actualResponse.Content.ReadAsStringAsync();
+            List<DelegationChange> actualDelegationChanges = JsonSerializer.Deserialize<List<DelegationChange>>(responseContent, options);
+            
+            Assert.Equal(HttpStatusCode.OK, actualResponse.StatusCode);
+            AssertionUtil.AssertEqual(expectedResponse, actualDelegationChanges);
+        }
     }
 }

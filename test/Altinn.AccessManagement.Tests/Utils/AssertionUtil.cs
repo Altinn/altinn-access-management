@@ -114,7 +114,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 AssertEqual(expectedEntry.Value, actualValue);
             }
         }
-
+        
         /// <summary>
         /// Assert that two lists of <see cref="DelegationChange"/> have the same property values.
         /// </summary>
@@ -129,16 +129,10 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             Assert.Equal(expected.Count, actual.Count);
-            foreach (DelegationChange expectedEntity in expected)
+            Assert.Equal(expected.Count, actual.Count);
+            for (int i = 0; i < expected.Count; i++)
             {
-                DelegationChange actualentity = actual.FirstOrDefault(a => a.ResourceId == expectedEntity.ResourceId
-                                                                        && a.ResourceType == expectedEntity.ResourceType
-                                                                        && a.BlobStoragePolicyPath == expectedEntity.BlobStoragePolicyPath
-                                                                        && a.CoveredByPartyId == expectedEntity.CoveredByPartyId
-                                                                        && a.CoveredByUserId == expectedEntity.CoveredByUserId
-                                                                        && a.OfferedByPartyId == expectedEntity.OfferedByPartyId
-                                                                        && a.DelegationChangeType == expectedEntity.DelegationChangeType);
-                Assert.NotNull(actualentity);
+                AssertEqual(expected[i], actual[i]);
             }
         }
 
@@ -785,6 +779,21 @@ namespace Altinn.AccessManagement.Tests.Utils
         {
             Assert.Equal(expected.Identifier, actual.Identifier);
             Assert.Equal(expected.Title, actual.Title);
+        }
+        
+        private static void AssertEqual(DelegationChange expected, DelegationChange actual)
+        {
+            Assert.Equal(expected.DelegationChangeId, actual.DelegationChangeId);
+            Assert.Equal(expected.ResourceRegistryDelegationChangeId, actual.ResourceRegistryDelegationChangeId);
+            Assert.Equal(expected.DelegationChangeType, actual.DelegationChangeType);
+            Assert.Equal(expected.ResourceId, actual.ResourceId);
+            Assert.Equal(expected.ResourceType, actual.ResourceType);
+            Assert.Equal(expected.OfferedByPartyId, actual.OfferedByPartyId);
+            Assert.Equal(expected.CoveredByPartyId, actual.CoveredByPartyId);
+            Assert.Equal(expected.CoveredByUserId, actual.CoveredByUserId);
+            Assert.Equal(expected.PerformedByUserId, actual.PerformedByUserId);
+            Assert.Equal(expected.PerformedByPartyId, actual.PerformedByPartyId);
+            Assert.Equal(expected.BlobStoragePolicyPath, actual.BlobStoragePolicyPath);
         }
     }
 }

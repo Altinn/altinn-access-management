@@ -1,0 +1,16 @@
+{
+  "subject": {
+    "id": "urn:altinn:userid",
+    "value": "20000490"
+  },
+  "party": {
+    "id": "urn:altinn:partyid",
+    "value": "50004221"
+  },
+  "resource": [
+    {
+    "id": "urn:altinn:resource",
+    "value": "jks_audi_etron_gt"
+    }
+  ]
+}

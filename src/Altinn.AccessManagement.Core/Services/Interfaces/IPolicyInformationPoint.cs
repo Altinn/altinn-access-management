@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -25,5 +26,15 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="getDelegableRights">Whether the query is only rights the user is allowed to delegate to others</param>
         /// <returns>A list of rights</returns>
         Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false, bool getDelegableRights = false);
+
+        /// <summary>
+        /// Finds all delegation changes for a given user, reportee and app/resource context
+        /// </summary>
+        /// <param name="subjectUserId">The subjects user id</param>
+        /// <param name="reporteePartyId">The reportee's partyId</param>
+        /// <param name="resourceId">The Resource's id</param>
+        /// <param name="resourceMatchType">The resources attribute match type</param>
+        /// <returns>A list of delegation changes that's stored in the database </returns>
+        Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType);
     }
 }

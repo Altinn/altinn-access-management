@@ -1,6 +1,3 @@
-// <copyright file="DelegationChangeInput.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
 using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;

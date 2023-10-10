@@ -58,8 +58,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: Tests if you can get all delegation changes for a user
-        /// Expected: 
+        /// Test case: Tests if you can get all delegation changes for a resource
+        /// Expected: Returns delegation changes for a resource
         /// </summary>
         [Fact]
         public async Task GetDelegationChanges_ValidResponse_Resource()
@@ -82,8 +82,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
         
         /// <summary>
-        /// Test case: Tests if you can get all delegation changes for a user
-        /// Expected: 
+        /// Test case: Tests if you can get all delegation changes for an app
+        /// Expected: Returns delegation changes for an app
         /// </summary>
         [Fact]
         public async Task GetDelegationChanges_ValidResponse_App()

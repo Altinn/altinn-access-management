@@ -37,7 +37,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="delegationChangeInput">The input model that contains id info about user, reportee, resource and resourceMatchType </param>
         /// <returns>A list of delegation changes that's stored in the database </returns>
-        /// [ApiExplorerSettings(IgnoreApi = false)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         [Route("getdelegationchanges")]
         public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput delegationChangeInput)

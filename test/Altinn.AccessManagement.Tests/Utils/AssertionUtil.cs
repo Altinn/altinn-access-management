@@ -129,6 +129,27 @@ namespace Altinn.AccessManagement.Tests.Utils
             }
 
             Assert.Equal(expected.Count, actual.Count);
+            foreach (DelegationChange expectedEntity in expected)
+            {
+                DelegationChange actualentity = actual.FirstOrDefault(a => a.ResourceId == expectedEntity.ResourceId && 
+                   a.ResourceType == expectedEntity.ResourceType && 
+                   a.BlobStoragePolicyPath == expectedEntity.BlobStoragePolicyPath && 
+                   a.CoveredByPartyId == expectedEntity.CoveredByPartyId && 
+                   a.CoveredByUserId == expectedEntity.CoveredByUserId &&
+                   a.OfferedByPartyId == expectedEntity.OfferedByPartyId &&
+                   a.DelegationChangeType == expectedEntity.DelegationChangeType);
+                Assert.NotNull(actualentity);
+            }
+        }
+        
+        /// <summary>
+        /// Assert that two lists of <see cref="DelegationChange"/> have the same property values.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertEqual(List<DelegationChangeExternal> expected, List<DelegationChangeExternal> actual)
+        {
+            Assert.Equal(expected.Count, actual.Count);
             Assert.Equal(expected.Count, actual.Count);
             for (int i = 0; i < expected.Count; i++)
             {
@@ -781,7 +802,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Title, actual.Title);
         }
         
-        private static void AssertEqual(DelegationChange expected, DelegationChange actual)
+        private static void AssertEqual(DelegationChangeExternal expected, DelegationChangeExternal actual)
         {
             Assert.Equal(expected.DelegationChangeId, actual.DelegationChangeId);
             Assert.Equal(expected.ResourceRegistryDelegationChangeId, actual.ResourceRegistryDelegationChangeId);

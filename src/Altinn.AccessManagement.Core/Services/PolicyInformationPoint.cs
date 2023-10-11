@@ -149,9 +149,28 @@ namespace Altinn.AccessManagement.Core.Services
         }
         
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
+        public async Task<List<DelegationChange>> GetAllDelegations(DelegationChangeInput input)
         {
-            return await FindAllDelegations(subjectUserId, reporteePartyId, resourceId, resourceMatchType);
+            bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(input.Subject.SingleToList(), out int userId);
+            bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(input.Party.SingleToList(), out int partyId);
+            bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(input.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
+
+            if (!validUser)
+            {
+                throw new ValidationException($"User is not valid");
+            }
+
+            if (!validParty)
+            {
+                throw new ValidationException($"Party is not valid");
+            }
+            
+            if (!validResourceMatchType)
+            {
+                throw new ValidationException($"Resource is not valid");
+            }
+                
+            return await FindAllDelegations(userId, partyId, resourceId, resourceMatchType);
         }
 
         private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)

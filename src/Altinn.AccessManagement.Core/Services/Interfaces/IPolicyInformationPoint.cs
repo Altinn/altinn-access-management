@@ -1,5 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -30,11 +29,8 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context
         /// </summary>
-        /// <param name="subjectUserId">The subjects user id</param>
-        /// <param name="reporteePartyId">The reportee's partyId</param>
-        /// <param name="resourceId">The Resource's id</param>
-        /// <param name="resourceMatchType">The resources attribute match type</param>
-        /// <returns>A list of delegation changes that's stored in the database </returns>
-        Task<List<DelegationChange>> GetAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType);
+        /// <param name="input">The object containing the resource/app that's checked for delegation changes</param>
+        /// <returns>A list of delegation changes that's stored in the database</returns>
+        Task<List<DelegationChange>> GetAllDelegations(DelegationChangeInput input);
     }
 }

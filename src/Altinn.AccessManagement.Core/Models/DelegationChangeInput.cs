@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models;
 
-namespace Altinn.AccessManagement.Models
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
-    /// Contains id info about user, reportee, resource and resourceMatchType that's being used to check all delegation changes
+    /// Contains attribute match info about user, reportee, resource and resourceMatchType that's being used to check all delegation changes for the resource
     /// </summary>
     public class DelegationChangeInput
     {

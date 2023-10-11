@@ -1,7 +1,3 @@
-using System.Text;
-using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -13,8 +9,8 @@ namespace Altinn.AccessManagement.Controllers
     /// <summary>
     /// Controller responsible for all operations for managing delegations of Altinn Apps
     /// </summary>
-    [ApiController]
     [Route("accessmanagement/api/v1/policyinformation")]
+    [ApiController]
     public class PolicyInformationPointController : ControllerBase
     {
         private readonly IPolicyInformationPoint _pip;
@@ -23,7 +19,6 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInformationPointController"/> class.
         /// </summary>
-        /// <param name="logger">The logger</param>
         /// <param name="pip">The policy information point</param>
         /// <param name="mapper">The mapper</param>
         public PolicyInformationPointController(IPolicyInformationPoint pip, IMapper mapper)
@@ -40,14 +35,17 @@ namespace Altinn.AccessManagement.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         [Route("getdelegationchanges")]
-        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput delegationChangeInput)
+        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([Microsoft.AspNetCore.Mvc.FromBody] DelegationChangeInput delegationChangeInput)
         {
-            bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(delegationChangeInput.Subject.SingleToList(), out int userId);
-            bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(delegationChangeInput.Party.SingleToList(), out int partyId);
-            bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(delegationChangeInput.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
-            
-            List<DelegationChange> response = await _pip.GetAllDelegations(userId, partyId, resourceId, resourceMatchType);
-            return _mapper.Map<List<DelegationChangeExternal>>(response);
+            try
+            {
+                List<DelegationChange> response = await _pip.GetAllDelegations(delegationChangeInput);
+                return _mapper.Map<List<DelegationChangeExternal>>(response);
+            }
+            catch (Exception e)
+            {
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState, title: e.Message));
+            }
         }
     }
 }

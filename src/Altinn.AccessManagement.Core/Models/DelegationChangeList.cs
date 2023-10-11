@@ -6,7 +6,7 @@ namespace Altinn.AccessManagement.Core.Models
     public class DelegationChangeList : ValidationErrorResult
     {
         /// <summary>
-        /// Gets or sets a set of attribute id and attribute value for the party offering rights
+        /// The list of delegation changes for a resource/app
         /// </summary>
         public List<DelegationChange> DelegationChanges { get; set; }
     }

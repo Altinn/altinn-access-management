@@ -1394,6 +1394,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
+        [Fact]
+        public async Task DelegationCheck()
+        {
+            
+        }
+
         private static IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
         {
             HttpContext httpContext = new DefaultHttpContext();

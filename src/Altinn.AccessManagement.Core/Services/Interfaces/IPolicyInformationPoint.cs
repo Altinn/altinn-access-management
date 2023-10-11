@@ -29,8 +29,8 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context
         /// </summary>
-        /// <param name="input">The object containing the resource/app that's checked for delegation changes</param>
+        /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
-        Task<List<DelegationChange>> GetAllDelegations(DelegationChangeInput input);
+        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request);
     }
 }

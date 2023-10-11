@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -30,21 +31,33 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Endpoint to find all delegation changes for a given user, reportee and app/resource context
         /// </summary>
-        /// <param name="delegationChangeInput">The input model that contains id info about user, reportee, resource and resourceMatchType </param>
+        /// <param name="request">The input model that contains id info about user, reportee, resource and resourceMatchType </param>
         /// <returns>A list of delegation changes that's stored in the database </returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         [Route("getdelegationchanges")]
-        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([Microsoft.AspNetCore.Mvc.FromBody] DelegationChangeInput delegationChangeInput)
+        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput request)
         {
             try
             {
-                List<DelegationChange> response = await _pip.GetAllDelegations(delegationChangeInput);
-                return _mapper.Map<List<DelegationChangeExternal>>(response);
+                DelegationChangeList response = await _pip.GetAllDelegations(request);
+
+                if (!response.IsValid)
+                {
+                    foreach (string errorKey in response.Errors.Keys)
+                    {
+                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return _mapper.Map<List<DelegationChangeExternal>>(response.DelegationChanges);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState, title: e.Message));
+                ModelState.AddModelError("Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
         }
     }

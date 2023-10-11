@@ -149,28 +149,33 @@ namespace Altinn.AccessManagement.Core.Services
         }
         
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllDelegations(DelegationChangeInput input)
+        public async Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request)
         {
-            bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(input.Subject.SingleToList(), out int userId);
-            bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(input.Party.SingleToList(), out int partyId);
-            bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(input.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
+            DelegationChangeList result = new DelegationChangeList();
+            bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(request.Subject.SingleToList(), out int userId);
+            bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(request.Party.SingleToList(), out int partyId);
+            bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
 
             if (!validUser)
             {
-                throw new ValidationException($"User is not valid");
+                result.Errors.Add($"UserId: ${userId}", "UserId is not valid");
+                return result;
             }
 
             if (!validParty)
             {
-                throw new ValidationException($"Party is not valid");
+                result.Errors.Add($"partyId: ${partyId}", "PartyId is not valid");
+                return result;
             }
             
             if (!validResourceMatchType)
             {
-                throw new ValidationException($"Resource is not valid");
+                result.Errors.Add($"resourceId: ${resourceId}", "ResourceId is not valid");
+                return result;
             }
-                
-            return await FindAllDelegations(userId, partyId, resourceId, resourceMatchType);
+
+            result.DelegationChanges = await FindAllDelegations(userId, partyId, resourceId, resourceMatchType);
+            return result;
         }
 
         private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)

@@ -38,27 +38,19 @@ namespace Altinn.AccessManagement.Controllers
         [Route("getdelegationchanges")]
         public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput request)
         {
-            try
+            DelegationChangeList response = await _pip.GetAllDelegations(request);
+
+            if (!response.IsValid)
             {
-                DelegationChangeList response = await _pip.GetAllDelegations(request);
-
-                if (!response.IsValid)
+                foreach (string errorKey in response.Errors.Keys)
                 {
-                    foreach (string errorKey in response.Errors.Keys)
-                    {
-                        ModelState.AddModelError(errorKey, response.Errors[errorKey]);
-                    }
-
-                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                    ModelState.AddModelError(errorKey, response.Errors[errorKey]);
                 }
 
-                return _mapper.Map<List<DelegationChangeExternal>>(response.DelegationChanges);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("Validation Error", ex.Message);
                 return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
+
+            return _mapper.Map<List<DelegationChangeExternal>>(response.DelegationChanges);
         }
     }
 }

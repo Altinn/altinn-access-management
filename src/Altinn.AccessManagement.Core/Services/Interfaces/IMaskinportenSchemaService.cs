@@ -46,5 +46,14 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="delegation">The delegation lookup model</param>
         /// <returns>The result of the deletion</returns>
         public Task<DelegationActionResult> RevokeMaskinportenSchemaDelegation(int authenticatedUserId, DelegationLookup delegation);
+        
+        /// <summary>
+        /// Performs a delegation check for the authenticated user on behalf of the from party, to find if and what rights the user can delegate to the to party, for the given maskinporten service.
+        /// </summary>
+        /// <param name="authenticatedUserId">The user id of the authenticated user performing the delegation</param>
+        /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
+        /// <param name="request">The model describing the right delegation check to perform</param>
+        /// <returns>The result of the delegation status check</returns>
+        public Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request);
     }
 }

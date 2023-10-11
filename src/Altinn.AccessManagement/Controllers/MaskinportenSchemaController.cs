@@ -20,22 +20,22 @@ namespace Altinn.AccessManagement.Controllers
     public class MaskinportenSchemaController : ControllerBase
     {
         private readonly ILogger _logger;
-        private readonly IMaskinportenSchemaService _delegation;
+        private readonly IMaskinportenSchemaService _maskinportenService;
         private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaskinportenSchemaController"/> class.
         /// </summary>
         /// <param name="logger">logger instance</param>
-        /// <param name="delegationsService">Handler for the delegation service</param>
+        /// <param name="maskinportenServicesService">Handler for the delegation service</param>
         /// <param name="mapper">mapper handler</param>
         public MaskinportenSchemaController(
             ILogger<MaskinportenSchemaController> logger,
-            IMaskinportenSchemaService delegationsService,
+            IMaskinportenSchemaService maskinportenServicesService,
             IMapper mapper)
         {
             _logger = logger;
-            _delegation = delegationsService;
+            _maskinportenService = maskinportenServicesService;
             _mapper = mapper;
         }
 
@@ -75,7 +75,7 @@ namespace Altinn.AccessManagement.Controllers
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetMaskinportenDelegations(supplierOrg, consumerOrg, scope);
+                List<Delegation> delegations = await _maskinportenService.GetMaskinportenDelegations(supplierOrg, consumerOrg, scope);
                 List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
 
                 return delegationsExternal;
@@ -116,7 +116,7 @@ namespace Altinn.AccessManagement.Controllers
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation);
+                DelegationActionResult response = await _maskinportenService.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -163,7 +163,7 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _delegation.GetOfferedMaskinportenSchemaDelegations(partyMatch);
+                List<Delegation> delegations = await _maskinportenService.GetOfferedMaskinportenSchemaDelegations(partyMatch);
                 return _mapper.Map<List<MaskinportenSchemaDelegationExternal>>(delegations);
             }
             catch (ArgumentException argEx)
@@ -202,7 +202,7 @@ namespace Altinn.AccessManagement.Controllers
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _maskinportenService.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -247,7 +247,7 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _delegation.GetReceivedMaskinportenSchemaDelegations(partyMatch);
+                List<Delegation> delegations = await _maskinportenService.GetReceivedMaskinportenSchemaDelegations(partyMatch);
                 return _mapper.Map<List<MaskinportenSchemaDelegationExternal>>(delegations);
             }
             catch (ArgumentException argEx)
@@ -286,7 +286,7 @@ namespace Altinn.AccessManagement.Controllers
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.To = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _maskinportenService.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
 
                 if (!response.IsValid)
                 {
@@ -310,6 +310,55 @@ namespace Altinn.AccessManagement.Controllers
 
                 _logger.LogError(ex, "Internal exception occurred during deletion of maskinportenschema delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
+            }
+        }
+        
+        /// <summary>
+        /// Endpoint for performing a query of what rights a user can delegate to others on behalf of a specified reportee and resource.
+        /// </summary>
+        /// <param name="party">The reportee party</param>
+        /// <param name="rightsDelegationCheckRequest">Request model for user rights delegation check</param>
+        /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [Route("accessmanagement/api/v1/{party}/maskinportenschema/delegation/delegationcheck")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+            
+            try
+            {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+
+                RightsDelegationCheckRequest rightDelegationStatusRequestInternal = _mapper.Map<RightsDelegationCheckRequest>(rightsDelegationCheckRequest);
+                rightDelegationStatusRequestInternal.From = reportee.SingleToList();
+
+                DelegationCheckResult delegationCheckResultInternal = await _maskinportenService.RightsDelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                if (!delegationCheckResultInternal.IsValid)
+                {
+                    foreach (var error in delegationCheckResultInternal.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.RightsStatus);
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(500, ex, "Internal exception occurred during DelegationCheck");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }
     }

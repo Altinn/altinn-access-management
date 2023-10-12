@@ -113,11 +113,19 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="rightsDelegationCheckRequest">Request model for user rights delegation check</param>
         /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
         [Route("{party}/rights/delegation/delegationcheck")]
         [ApiExplorerSettings(IgnoreApi = false)]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(500)]
         [FeatureGate(FeatureFlags.RightsDelegationCheck)]
         public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
         {
@@ -142,7 +150,7 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.RightsStatus);
+                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.DelegationCheckResults);
             }
             catch (ValidationException valEx)
             {

@@ -11,8 +11,8 @@
         public List<AttributeMatch> From { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of right delegation status models
+        /// Gets or sets a list of right delegation check results
         /// </summary>
-        public List<RightDelegationCheckResult> RightsStatus { get; set; }
+        public List<RightDelegationCheckResult> DelegationCheckResults { get; set; }
     }
 }

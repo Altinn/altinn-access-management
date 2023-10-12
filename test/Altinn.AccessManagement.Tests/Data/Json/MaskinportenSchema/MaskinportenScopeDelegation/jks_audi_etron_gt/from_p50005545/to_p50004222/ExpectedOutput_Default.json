@@ -7,31 +7,37 @@
   ],
   "rightDelegationResults": [
     {
+      "rightKey": "jks_audi_etron_gt:drive",
       "resource": [
         {
           "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": "drive"
+      "action": "drive",
+      "status": "Delegated"
     },
     {
+      "rightKey": "jks_audi_etron_gt:park",
       "resource": [
         {
           "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": "park"
+      "action": "park",
+      "status": "Delegated"
     },
     {
+      "rightKey": "jks_audi_etron_gt:race",
       "resource": [
         {
           "id": "urn:altinn:resource",
           "value": "jks_audi_etron_gt"
         }
       ],
-      "action": "race"
+      "action": "race",
+      "status": "Delegated"
     }
   ]
 }

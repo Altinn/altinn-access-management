@@ -753,7 +753,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
 
             // Act
@@ -763,8 +763,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -782,7 +782,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
             _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
 
             // Act
@@ -792,8 +792,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -810,7 +810,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
 
             // Act
@@ -820,8 +820,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -1419,11 +1419,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return content;
         }
 
-        private static DelegationOutputExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
+        private static RightsDelegationResponseExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
             string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
-            return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return (RightsDelegationResponseExternal)JsonSerializer.Deserialize(content, typeof(RightsDelegationResponseExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static ValidationProblemDetails GetExpectedValidationProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")

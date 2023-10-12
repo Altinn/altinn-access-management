@@ -1,4 +1,4 @@
-﻿namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// This model describes a detail while providing a specific code for identifying a specific recurring detail and parameters needed for context and understanding.

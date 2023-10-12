@@ -36,7 +36,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
         {
-            (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateRightDelegationStatusRequest(request);
+            (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateRightsDelegationCheckRequest(request);
             if (!result.IsValid)
             {
                 return result;
@@ -77,7 +77,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                 rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
 
-                result.RightsStatus.Add(rightDelegationStatus);
+                result.DelegationCheckResults.Add(rightDelegationStatus);
             }
 
             return result;
@@ -107,9 +107,9 @@ namespace Altinn.AccessManagement.Core.Services
             throw new NotImplementedException();
         }
 
-        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationStatusRequest(RightsDelegationCheckRequest request)
+        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateRightsDelegationCheckRequest(RightsDelegationCheckRequest request)
         {
-            DelegationCheckResult result = new DelegationCheckResult { From = request.From, RightsStatus = new() };
+            DelegationCheckResult result = new DelegationCheckResult { From = request.From, DelegationCheckResults = new() };
 
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 
@@ -127,6 +127,12 @@ namespace Altinn.AccessManagement.Core.Services
                 return (result, resource, null);
             }
 
+            if (resource.ResourceType == ResourceType.MaskinportenSchema)
+            {
+                result.Errors.Add("right[0].Resource", $"This operation does not support MaskinportenSchema resources. Please use the MaskinportenSchema DelegationCheck API. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                return (result, resource, null);
+            }
+
             // Verify and get From reportee party of the delegation
             Party fromParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(request.From, out string fromOrgNo))
@@ -135,7 +141,8 @@ namespace Altinn.AccessManagement.Core.Services
             }
             else if (DelegationHelper.TryGetSocialSecurityNumberAttributeMatch(request.From, out string fromSsn))
             {
-                fromParty = await _contextRetrievalService.GetPartyForPerson(fromSsn); //// ToDo: make SSN party lookup. Can we do this based on SSN alone or do we need last name?
+                // ToDo: Can we do this based on SSN alone for the Reportee or do we need last name?
+                fromParty = await _contextRetrievalService.GetPartyForPerson(fromSsn);
             }
             else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(request.From, out int fromPartyId))
             {
@@ -145,7 +152,8 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (fromParty == null)
             {
-                result.Errors.Add("From", $"Could not identify the From party. Please try again."); //// ToDo: This shouldn't really happen, as to get here the request must have been authorized for the From reportee, but the register integration could fail.
+                // This shouldn't really happen, as to get here the request must have been authorized for the From reportee, but the register integration could fail.
+                result.Errors.Add("From", $"Could not identify the From party. Please try again.");
                 return (result, resource, null);
             }
 

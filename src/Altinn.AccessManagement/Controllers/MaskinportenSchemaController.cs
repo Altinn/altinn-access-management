@@ -106,11 +106,11 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
+        public async Task<ActionResult<RightsDelegationResponseExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
-
+            
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
@@ -128,9 +128,9 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
+                RightsDelegationResponseExternal delegationResponse = _mapper.Map<RightsDelegationResponseExternal>(response);
                 
-                return StatusCode(201, delegationOutput);
+                return StatusCode(201, delegationResponse);
             }
             catch (Exception ex)
             {

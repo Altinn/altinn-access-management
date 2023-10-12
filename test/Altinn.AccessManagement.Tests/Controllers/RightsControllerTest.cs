@@ -542,19 +542,24 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the generic-access-resource from the resource registry.
         ///            In this case:
         ///            - The user 20000490 is DAGL for the From unit 50005545
-        ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having DAGL
+        ///            - 5 out of 8 of the rights for the resource: generic-access-resource is delegable through having DAGL:
+        ///                 - generic-access-resource:read
+        ///                 - generic-access-resource,org-delegation-subtask:subunit-delegated-action
+        ///                 - generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit
+        ///                 - generic-access-resource,org-delegation-subtask:mainunit-delegated-action
+        ///                 - generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit
         /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task DelegationCheck_ResourceRight_DAGL_HasDelegableRights()
+        public async Task DelegationCheck_GenericAccessResource_DAGL_HasDelegableRights()
         {
             // Arrange
             int userId = 20000490;
             int reporteePartyId = 50005545;
-            string resourceId = "jks_audi_etron_gt";
+            string resourceId = "generic-access-resource";
 
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -574,19 +579,60 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of itself (partyId 50002598) for the generic-access-resource from the resource registry.
         ///            In this case:
-        ///            - The user 20001337 is HADM for the From unit 50005545
-        ///            - 3 out of 4 of the rights for the resource: jks_audi_etron_gt is delegable through having HADM (same as DAGL)
+        ///            - The user 20000490 has PRIV role for itself (party 50002598)
+        ///            - 4 out of 8 of the rights for the resource: generic-access-resource is delegable through having PRIV:
+        ///                 - generic-access-resource:read
+        ///                 - generic-access-resource:write
+        ///                 - generic-access-resource,priv-delegation-subtask:delegated-action-to-user
+        ///                 - generic-access-resource,priv-delegation-subtask:delegated-action-to-keyroleunit
         /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task DelegationCheck_ResourceRight_HADM_HasDelegableRights()
+        public async Task DelegationCheck_GenericAccessResource_PRIV_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50002598;
+            string resourceId = "generic-access-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the generic-access-resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20001337 is HADM for the From unit 50005545
+        ///            - 5 out of 8 of the rights for the resource: generic-access-resource is delegable through having HADM (which inheirits same rights for delegation as DAGL):
+        ///                 - generic-access-resource:read
+        ///                 - generic-access-resource,org-delegation-subtask:subunit-delegated-action
+        ///                 - generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit
+        ///                 - generic-access-resource,org-delegation-subtask:mainunit-delegated-action
+        ///                 - generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_GenericAccessResource_HADM_HasDelegableRights()
         {
             // Arrange
             int userId = 20001337;
             int reporteePartyId = 50005545;
-            string resourceId = "jks_audi_etron_gt";
+            string resourceId = "generic-access-resource";
 
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -606,22 +652,23 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegationCheck returns a list of rights the authenticated 20000490 is authorized to delegate on behalf of the reportee party 50004221 for the jks_audi_etron_gt resource from the resource registry.
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20000490 is authorized to delegate on behalf of the reportee party 50004221 for the generic-access-resource from the resource registry.
         ///            In this case:
         ///            - The From unit (50004221) is a subunit of 500042222.
-        ///            - The From unit (50004221) has delegated the "Race" action directly to the user.
-        ///            - The main unit (50004222) has delegated the "Park" action to the user.
-        ///            - The main unit (50004222) has delegated the "Drive" action to the party 50005545 where the user is DAGL and have keyrole privileges.
-        ///            - 3 out of 4 rights are thus delegable and should contain the information of the actual recipient of the delegation
+        ///            - The From unit (50004221) has delegated the "subunit-delegated-action" action directly to the user.
+        ///            - The From unit (50004221) has delegated the "subunit-delegated-action-to-keyunit" action directly to the user.
+        ///            - The main unit (50004222) has delegated the "mainunit-delegated-action" action to the user.
+        ///            - The main unit (50004222) has delegated the "mainunit-delegated-action-to-keyunit" action to the party 50005545 where the user is DAGL and have keyrole privileges.
+        ///            - 4 out of 8 rights are thus delegable and should contain the information of the actual recipient of the delegation
         /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
         /// </summary>
         [Fact]
-        public async Task DelegationCheck_ResourceRight_UserDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleDelegation_ReturnAllPolicyRights_True()
+        public async Task DelegationCheck_GenericAccessResource_SubUnitToUserDelegation_SubUnitToKeyRoleUnitDelegation_MainUnitToUserDelegation_MainUnitToKeyRoleUnitDelegation_HasDelegableRights()
         {
             // Arrange
             int userId = 20000490;
             int reporteePartyId = 50004221;
-            string resourceId = "jks_audi_etron_gt";
+            string resourceId = "generic-access-resource";
 
             var token = PrincipalUtil.GetToken(userId, 0, 3);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -673,7 +720,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id
+        /// Test case: DelegationCheck when the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id 
         ///            In this case:
         ///            - Since the resource is invalid a BadRequest response with a ValidationProblemDetails model response should be returned
         /// Expected: Responce error model is matching expected
@@ -685,6 +732,37 @@ namespace Altinn.AccessManagement.Tests.Controllers
             int userId = 20001337;
             int reporteePartyId = 50001337;
             string resourceId = "non_existing_id";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError("DelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck when the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the MaskinportenSchema resource jks_audi_etron_gt
+        ///            In this case:
+        ///            - Since the resource is a MaskinportenSchema a BadRequest response with a ValidationProblemDetails model response should be returned
+        /// Expected: Responce error model is matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_MaskinportenSchema_BadRequest()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50001337;
+            string resourceId = "jks_audi_etron_gt";
 
             var token = PrincipalUtil.GetToken(userId, 0, 4);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

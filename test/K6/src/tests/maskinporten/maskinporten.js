@@ -60,6 +60,16 @@ export function setup() {
   };
   testdata.org1.hadm.token = generateToken('personal', tokenGeneratorUserName, tokenGeneratorUserPwd, tokenGenParams);
 
+  tokenGenParams = {
+    env: environment,
+    scopes: 'altinn:instances.read',
+    pid: testdata.org1.apiadm.pid,
+    userid: testdata.org1.apiadm.userid,
+    partyid: testdata.org1.apiadm.partyid,
+    authLvl: 3,
+  };
+  testdata.org1.apiadm.token = generateToken('personal', tokenGeneratorUserName, tokenGeneratorUserPwd, tokenGenParams);
+
   return testdata;
 }
 
@@ -73,8 +83,12 @@ export default function (data) {
   //tests
   postMaskinportenSchemaToOrgNumberTest();
   postMaskinportenSchemaToPartyIdTest();
-  // postMaskinportenSchemaWithOrgNoInHeaderTest();
+  // postMaskinportenSchemaWithOrgNoInHeaderTest(); // Uncomment when #400 "post maskinportenschema with orgno in header returns 403" has been fixed
   postMaskinportenSchemaAsHadmTest();
+  postMaskinportenSchemaAsApiadmTest();
+  postMaskinportenCannotDelegateToPersonTest();
+  postMaskinportenDAGLCannotDelegateNUFResource();
+  postMaskinportenSystemResourceCannotBeDelegatedTest();
   getMaskinPortenSchemaOfferedInvalidPartyId();
   getMaskinPortenSchemaReceivedInvalidPartyId();
   postMaskinportenSchemaNotReadyTest();
@@ -269,6 +283,98 @@ export function postMaskinportenSchemaAsHadmTest() {
     'post MaskinportenSchema As HADM - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
     'post MaskinportenSchema As HADM - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
     'post MaskinportenSchema As HADM - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+  });
+
+  addErrorCount(success);
+}
+
+/** offer a maskinportenschema as APIADM (instead of DAGL) */
+export function postMaskinportenSchemaAsApiadmTest() {
+  // Arrange
+  const offeredByToken = org1.apiadm.token;
+  const offeredByPartyId = org1.partyid;
+  const toPartyId = org2.partyid;
+  const appid = 'ttd-am-k6';
+
+  // Act
+  var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, appid, 'urn:altinn:partyid', toPartyId);
+
+  // Assert
+  var success = check(res, {
+    'post MaskinportenSchema As APIADM - status is 201': (r) => r.status === 201,
+    'post MaskinportenSchema As APIADM - to id is partyid': (r) => r.json('to.0.id') === 'urn:altinn:partyid',
+    'post MaskinportenSchema As APIADM - organization number matches': (r) => r.json('to.0.value') === toPartyId,
+    'post MaskinportenSchema As APIADM - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
+    'post MaskinportenSchema As APIADM - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
+    'post MaskinportenSchema As APIADM - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+    'post MaskinportenSchema As APIADM - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+  });
+
+  addErrorCount(success);
+}
+
+/** try and fail to delegate maskinportenschema to a person */
+export function postMaskinportenCannotDelegateToPersonTest() {
+  // Arrange
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const toPartyId = org2.dagl.partyid;
+  const appid = 'ttd-am-k6';
+
+  // Act
+  var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, appid, 'urn:altinn:partyid', toPartyId);
+
+  // Assert
+  var success = check(res, {
+    'post MaskinportenSchema Cannot Delegate To Person - status is 400': (r) => r.status === 400,
+    'post MaskinportenSchema Cannot Delegate To Person - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'post MaskinportenSchema Cannot Delegate To Person - errors is not null': (r) => r.json('errors') != null,
+    'post MaskinportenSchema Cannot Delegate To Person - Invalid organization': (r) => r.body.includes('Maskinporten schema delegation can only be delegated to a valid organization'),
+  });
+
+  addErrorCount(success);
+}
+
+/** try and fail to delegate maskinportenschema to a person */
+export function postMaskinportenDAGLCannotDelegateNUFResource() {
+  // Arrange
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const toPartyId = org2.partyid;
+  const appid = 'ttd-am-k6-nuf';
+
+  // Act
+  var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, appid, 'urn:altinn:partyid', toPartyId);
+  console.log(res.body);
+
+  // Assert
+  var success = check(res, {
+    'post MaskinportenSchema DAGL Cannot Delegate NUF Resource - status is 400': (r) => r.status === 400,
+    'post MaskinportenSchema DAGL Cannot Delegate NUF Resource - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'post MaskinportenSchema DAGL Cannot Delegate NUF Resource - errors is not null': (r) => r.json('errors') != null,
+    'post MaskinportenSchema DAGL Cannot Delegate NUF Resource - Unauthorized to delegate the resource': (r) => r.body.includes('Authenticated user does not have any delegable rights for the resource: ttd-am-k6-nuf'),
+  });
+
+  addErrorCount(success);
+}
+
+/** try and fail to delegate a system resource */
+export function postMaskinportenSystemResourceCannotBeDelegatedTest() {
+  // Arrange
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const toPartyId = org2.partyid;
+  const appid = 'altinn_maskinporten_scope_delegation';
+
+  // Act
+  var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, appid, 'urn:altinn:partyid', toPartyId);
+
+  // Assert
+  var success = check(res, {
+    'post Maskinporten Systemresource Cannot be delegated - status is 400': (r) => r.status === 400,
+    'post Maskinporten Systemresource Cannot be delegated - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
+    'post Maskinporten Systemresource Cannot be delegated - errors is not null': (r) => r.json('errors') != null,
+    'post Maskinporten Systemresource Cannot be delegated - Invalid resource type': (r) => r.body.includes('This operation only support requests for Maskinporten schema resources. Invalid resource: altinn_maskinporten_scope_delegation. Invalid resource type: SystemResource"'),
   });
 
   addErrorCount(success);

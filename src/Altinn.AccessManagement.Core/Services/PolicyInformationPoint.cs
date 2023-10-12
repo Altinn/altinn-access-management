@@ -147,6 +147,36 @@ namespace Altinn.AccessManagement.Core.Services
 
             return result.Values.Where(r => r.HasPermit.HasValue && r.HasPermit.Value).ToList();
         }
+        
+        /// <inheritdoc/>
+        public async Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request)
+        {
+            DelegationChangeList result = new DelegationChangeList();
+            bool validUser = DelegationHelper.TryGetUserIdFromAttributeMatch(request.Subject.SingleToList(), out int userId);
+            bool validParty = DelegationHelper.TryGetPartyIdFromAttributeMatch(request.Party.SingleToList(), out int partyId);
+            bool validResourceMatchType = DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string _, out string _, out string _, out string _);
+
+            if (!validUser)
+            {
+                result.Errors.Add($"UserId: ${userId}", "UserId is not valid");
+                return result;
+            }
+
+            if (!validParty)
+            {
+                result.Errors.Add($"partyId: ${partyId}", "PartyId is not valid");
+                return result;
+            }
+            
+            if (!validResourceMatchType)
+            {
+                result.Errors.Add($"resourceId: ${resourceId}", "ResourceId is not valid");
+                return result;
+            }
+
+            result.DelegationChanges = await FindAllDelegations(userId, partyId, resourceId, resourceMatchType);
+            return result;
+        }
 
         private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType)
         {
@@ -160,9 +190,9 @@ namespace Altinn.AccessManagement.Core.Services
             List<string> resourceIds = resourceId.SingleToList();
 
             // 1. Direct user delegations
-            List<DelegationChange> userDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
-                await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) :
-                await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserId: subjectUserId);
+            List<DelegationChange> userDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
+                ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserId: subjectUserId);
             delegations.AddRange(userDelegations);
 
             // 2. Direct user delegations from main unit
@@ -172,9 +202,9 @@ namespace Altinn.AccessManagement.Core.Services
             if (mainunitPartyIds.Any())
             {
                 offeredByPartyIds.AddRange(mainunitPartyIds);
-                List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
-                    await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) :
-                    await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserId: subjectUserId);
+                List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserId: subjectUserId);
 
                 if (directMainUnitDelegations.Any())
                 {
@@ -186,9 +216,9 @@ namespace Altinn.AccessManagement.Core.Services
             List<int> keyrolePartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId);
             if (keyrolePartyIds.Any())
             {
-                List<DelegationChange> keyRoleDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId ?
-                    await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds) :
-                    await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds);
+                List<DelegationChange> keyRoleDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds) 
+                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds);
 
                 if (keyRoleDelegations.Any())
                 {

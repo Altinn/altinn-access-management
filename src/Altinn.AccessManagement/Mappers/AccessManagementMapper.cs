@@ -68,6 +68,8 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
             CreateMap<RightDelegationResult, RightDelegationResultExternal>()
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<DelegationChange, DelegationChangeExternal>();
+            CreateMap<DelegationChangeType, DelegationChangeTypeExternal>();
         }
     }
 }

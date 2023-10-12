@@ -422,6 +422,21 @@ namespace Altinn.AccessManagement.Core.Helpers
             };
         }
 
+        /// <summary>
+        /// Gets the list of Rules as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rules">The rules output from a delegation to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static List<RightDelegationResult> GetRightDelegationResultsFromRules(List<Rule> rules)
+        {
+            return rules.Select(rule => new RightDelegationResult
+            {
+                Resource = rule.Resource,
+                Action = rule.Action,
+                Status = rule.CreatedSuccessfully ? DelegationStatus.Delegated : DelegationStatus.NotDelegated
+            }).ToList();
+        }
+
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)
         {
             bool isUserId = TryGetUserIdFromAttributeMatch(coveredBy, out int coveredByUserIdFromRequest);

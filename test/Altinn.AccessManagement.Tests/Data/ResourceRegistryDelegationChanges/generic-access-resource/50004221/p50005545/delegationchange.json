@@ -1,0 +1,15 @@
+{
+  "delegationchangeid": 0,
+  "resourceregistrydelegationchangeid": 42215545,
+  "delegationchangetype": 1,
+  "resourceid": "generic-access-resource",
+  "resourcetype": "GenericAccessResource",
+  "offeredbypartyid": 50004221,
+  "coveredbypartyid": 50005545,
+  "coveredbyuserid": null,
+  "performedbyuserid": 20000095,
+  "performedbypartyid": null,
+  "blobstoragepolicypath": "resourceregistry/generic-access-resource/50004221/p50005545/delegationpolicy.xml",
+  "blobstorageversionid": "2022-11-29T09:19:52.1743413Z",
+  "created": "2022-11-29T10:19:45.336206+01"
+}

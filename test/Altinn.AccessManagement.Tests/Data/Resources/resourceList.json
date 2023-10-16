@@ -12,18 +12,14 @@
       "nn": "Maskinporten Scope Delegation"
     },
     "rightDescription": {
-      "en": "Acces to Maskinporten Scope Delegation",
-      "nb": "Acces to Maskinporten Scope Delegation",
-      "nn": "Acces to Maskinporten Scope Delegation"
+      "en": "Access to Maskinporten Scope Delegation",
+      "nb": "Access to Maskinporten Scope Delegation",
+      "nn": "Access to Maskinporten Scope Delegation"
     },
-    "homepage": "",
+    "homepage": "https://www.digdir.no/",
     "status": "Active",
-    "validFrom": "2023-02-13T17:10:44.439Z",
-    "validTo": "2099-02-13T17:10:44.439Z",
-    "isPartOf": "",
-    "isPublicService": true,
+    "isPartOf": "Altinn",
     "resourceReferences": [],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -36,9 +32,16 @@
       }
     },
     "keywords": [],
-    "sector": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "Systemresource",
-    "mainLanguage": "en"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "altinn_maskinporten_scope_delegation"
+      }
+    ]
   },
   {
     "identifier": "altinn_access_management",
@@ -57,16 +60,13 @@
       "nb": "Bruker som mottar denne ressursen vil få tilgang til alle brukergrensesnitt for tilgangsstyring og behandle tilgangsinformasjon på vegne av delegerende part. Brukeren vil også kunne utføre delegering av roller og rettigheter, som brukeren selv har mottatt fra delegerende part.",
       "nn": "Brukar som mottek ressursen vil få tilgong til alle brukargrensesnitt for tilgongsstyring og behandle tilgongsinformasjon på vegne av delegerande part. Brukaren vil også kunne utføre delegering av roller og rettigheiter, som brukaren sjølv har motteke fra delegerande part."
     },
-    "homepage": "https://www.digdir.no/",
+    "homepage": "https://altinn.no",
     "status": "Active",
-    "validFrom": "2023-07-01T00:00:00Z",
-    "validTo": "2099-07-01T00:00:00Z",
+    "contactPoints": [],
     "isPartOf": "",
-    "isPublicService": true,
     "resourceReferences": [],
-    "isComplete": true,
-    "delegable": true,
-    "visible": true,
+    "delegable": false,
+    "visible": false,
     "hasCompetentAuthority": {
       "organization": "991825827",
       "orgcode": "DIGDIR",
@@ -77,36 +77,37 @@
       }
     },
     "keywords": [],
-    "sector": [
-      "private",
-      "public"
-    ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "Systemresource",
-    "mainLanguage": "en"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "altinn_access_management"
+      }
+    ]
   },
   {
     "identifier": "jks_audi_etron_gt",
     "title": {
       "en": "JK's Audi e-tron GT",
-      "nb-no": "JK's Audi e-tron GT",
-      "nn-no": "JK's Audi e-tron GT"
+      "nb": "JK's Audi e-tron GT",
+      "nn": "JK's Audi e-tron GT"
     },
     "description": {
       "en": "Very nice car",
-      "nb-no": "Veldig fin bil",
-      "nn-no": "Steikje fine bil"
+      "nb": "Veldig fin bil",
+      "nn": "Steikje fine bil"
     },
     "rightDescription": {
       "en": "Permission to borrow the car",
-      "nb-no": "Gir mottaker lov til å låne bilen",
-      "nn-no": "Løyve til å ta ei rånerunde ned i vik"
+      "nb": "Gir mottaker lov til å låne bilen",
+      "nn": "Løyve til å ta ei rånerunde ned i vik"
     },
     "homepage": "https://www.jksaudi.no/",
     "status": "Active",
-    "validFrom": "2022-09-20T06:46:07Z",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -124,7 +125,6 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -137,35 +137,37 @@
         "language": "nb"
       }
     ],
-    "sector": [
-      "privat"
-    ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "MaskinportenSchema",
-    "mainLanguage": "nb"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "jks_audi_etron_gt"
+      }
+    ]
   },
   {
     "identifier": "jks_audi_a3",
     "title": {
       "en": "JK's Audi A3",
-      "nb-no": "JK's Audi A3",
-      "nn-no": "JK's Audi A3"
+      "nb": "JK's Audi A3",
+      "nn": "JK's Audi A3"
     },
     "description": {
       "en": "Very nice car",
-      "nb-no": "Veldig fin bil",
-      "nn-no": "Steikje fine bil"
+      "nb": "Veldig fin bil",
+      "nn": "Steikje fine bil"
     },
     "rightDescription": {
       "en": "Permission to borrow the car",
-      "nb-no": "Gir mottaker lov til å låne bilen",
-      "nn-no": "Løyve til å ta ei rånerunde ned i vik"
+      "nb": "Gir mottaker lov til å låne bilen",
+      "nn": "Løyve til å ta ei rånerunde ned i vik"
     },
     "homepage": "https://www.jksaudi.no/",
     "status": "Active",
-    "validFrom": "2022-09-20T06:46:07Z",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -173,12 +175,16 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
       "organization": "991825827",
-      "orgcode": "DIGDIR"
+      "orgcode": "DIGDIR",
+      "name": {
+        "en": "DIGITALISERINGSDIREKTORATET",
+        "nb": "DIGITALISERINGSDIREKTORATET",
+        "nn": "DIGITALISERINGSDIREKTORATET"
+      }
     },
     "keywords": [
       {
@@ -186,74 +192,87 @@
         "language": "nb"
       }
     ],
-    "sector": [
-      "privat"
-    ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "MaskinportenSchema",
-    "mainLanguage": "nb"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "jks_audi_a3"
+      }
+    ]
   },
   {
     "identifier": "jks_undelegable",
     "title": {
       "en": "JK's Undelegable Resource",
-      "nb-no": "JK's Undelegable Resource",
-      "nn-no": "JK's Undelegable Resource"
+      "nb": "JK's Undelegable Resource",
+      "nn": "JK's Undelegable Resource"
     },
     "description": {
       "en": "Nope",
-      "nb-no": "Nope",
-      "nn-no": "Nope"
+      "nb": "Nope",
+      "nn": "Nope"
     },
     "rightDescription": {
       "en": "Nope",
-      "nb-no": "Nope",
-      "nn-no": "Nope"
+      "nb": "Nope",
+      "nn": "Nope"
     },
     "homepage": "https://www.nope.no/",
     "status": "Active",
-    "validFrom": "2022-09-20T06:46:07Z",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
     "isPublicService": true,
     "resourceReferences": [],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
       "organization": "991825827",
-      "orgcode": "DIGDIR"
+      "orgcode": "DIGDIR",
+      "name": {
+        "en": "DIGITALISERINGSDIREKTORATET",
+        "nb": "DIGITALISERINGSDIREKTORATET",
+        "nn": "DIGITALISERINGSDIREKTORATET"
+      }
     },
-    "keywords": [],
-    "sector": [
-      "privat",
-      "offentlig"
+    "keywords": [
+      {
+        "word": "bil",
+        "language": "nb"
+      }
     ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "MaskinportenSchema",
-    "mainLanguage": "nb"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "jks_audi_a3"
+      }
+    ]
   },
   {
     "identifier": "ttd-am-k6",
     "title": {
       "en": "Maskinporten Schema - AM - K6",
-      "nb-no": "Maskinporten Schema - AM - K6",
-      "nn-no": "Maskinporten Schema - AM - K6"
+      "nb": "Maskinporten Schema - AM - K6",
+      "nn": "Maskinporten Schema - AM - K6"
     },
     "description": {
       "en": "Maskinporten Schema test resource for automated tests",
-      "nb-no": "Maskinporten Schema test resource for automatiserte tester",
-      "nn-no": "Maskinporten Schema test resource for automatiserte testar"
+      "nb": "Maskinporten Schema test resource for automatiserte tester",
+      "nn": "Maskinporten Schema test resource for automatiserte testar"
     },
     "rightDescription": {
       "en": "Access to the test scopes",
-      "nb-no": "Tilgang til test scopene",
-      "nn-no": "Tilgong til test omfang"
+      "nb": "Tilgang til test scopene",
+      "nn": "Tilgong til test omfang"
     },
     "homepage": "https://www.digdir.no/",
     "status": "Active",
-    "validFrom": "2023-03-29T00:00:00Z",
-    "validTo": "2099-12-24T23:59:59",
     "isPartOf": "Altinn",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "ExternalPlatform",
@@ -266,7 +285,6 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -274,25 +292,29 @@
       "orgcode": "TTD",
       "name": {
         "en": "Test departement",
-        "nb-no": "Testdepartement",
-        "nn-no": "Testdepartement"
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
       }
     },
     "keywords": [],
-    "sector": [
-      "private",
-      "public"
-    ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "MaskinportenSchema",
-    "mainLanguage": "nb"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "ttd-am-k6"
+      }
+    ]
   },
   {
+    "identifier": "app_org1_app1",
     "title": {
-      "nb": "org1 app1"
+      "nb": "test applikasjon 1",
+      "nn": "test applikasjon 1",
+      "en": "test application 1"
     },
-    "validFrom": "0001-01-01T00:00:00",
-    "validTo": "9999-12-31T23:59:59.9999999",
-    "isPublicService": false,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -306,10 +328,69 @@
       "organization": "",
       "orgcode": "org1",
       "name": {
-        "nb": "Testorganisasjon1"
+        "en": "Organization 1",
+        "nb": "Organisasjon 1",
+        "nn": "Organisasjon 1"
       }
     },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "AltinnApp",
-    "mainLanguage": "nb"
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ]
+  },
+  {
+    "identifier": "generic-access-resource",
+    "title": {
+      "en": "Generic Access Resource",
+      "nb": "Generisk Tilgangsressurs",
+      "nn": "Generisk Tilgongsressurs"
+    },
+    "description": {
+      "en": "Very nice generic access resource",
+      "nb": "Veldig fin generisk tilgangsressurs",
+      "nn": "Steikje fine generisk tilgongsressurs"
+    },
+    "rightDescription": {
+      "en": "You'll give access to this nice generic access resource",
+      "nb": "Du gir tilgang til denne fine generiske tilgangsressursen",
+      "nn": "Du gir tilgong til dinne steikje fine generiske tilgongsressursen"
+    },
+    "homepage": "https://www.altinn.no",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ]
   }
 ]

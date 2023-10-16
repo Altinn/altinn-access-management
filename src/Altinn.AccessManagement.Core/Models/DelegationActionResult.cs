@@ -18,6 +18,6 @@
         /// <summary>
         /// Gets or sets a list of rights
         /// </summary>
-        public List<Right> Rights { get; set; }
+        public List<RightDelegationResult> Rights { get; set; }
     }
 }

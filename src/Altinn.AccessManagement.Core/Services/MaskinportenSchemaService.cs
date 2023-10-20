@@ -11,6 +11,7 @@ using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest.Azure;
+using System.Net.Security;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -41,6 +42,59 @@ namespace Altinn.AccessManagement.Core.Services
             _resourceAdministrationPoint = resourceAdministrationPoint;
             _pip = pip;
             _pap = pap;
+        }
+
+        /// <inheritdoc/>
+        public async Task<DelegationCheckResult> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
+        {
+            (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateDelegationCheckRequest(request);
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+
+            // Get all delegable rights
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+            List<Right> allDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, returnAllPolicyRights: true);
+            if (allDelegableRights == null || allDelegableRights.Count == 0)
+            {
+                result.Errors.Add("right[0].Resource", $"No delegable rights could be found for the resource: {resource}");
+                return result;
+            }
+
+            // Build result model with status
+            foreach (Right right in allDelegableRights)
+            {
+
+                RightDelegationCheckResult rightDelegationStatus = new RightDelegationCheckResult
+                {
+                    RightKey = right.RightKey,
+                    Resource = right.Resource,
+                    Action = right.Action,
+                    Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable
+                };
+
+                rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
+
+                if (right.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel) && rightDelegationStatus.Status == DelegableStatus.Delegable)
+                {
+                    // Only relevant if delegationCheck passes the other requirement
+                    int minimumAuthenticationLevel = right.RightSources.Find(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel).MinimumAuthenticationLevel;
+                    rightDelegationStatus.Status = DelegableStatus.NotDelegable;
+                    rightDelegationStatus.Details.Add(new Detail
+                    {
+                        Code = "InsufficientAuthenticationLevel",
+                        Description = $"Authenticated user does not meet the required security level for resource. Minimum authentication level is {minimumAuthenticationLevel}",
+                        Parameters = new Dictionary<string, string>() { { "MinimumAuthenticationLevel", $"{minimumAuthenticationLevel}" } }
+                    });
+                }
+
+                result.DelegationCheckResults.Add(rightDelegationStatus);
+            }
+
+            return result;
         }
 
         /// <inheritdoc/>
@@ -366,6 +420,60 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             return delegation;
+        }
+
+        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateDelegationCheckRequest(RightsDelegationCheckRequest request)
+        {
+            DelegationCheckResult result = new DelegationCheckResult { From = request.From, DelegationCheckResults = new() };
+
+            DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+
+            if (resourceMatchType == ResourceAttributeMatchType.None)
+            {
+                result.Errors.Add("right[0].Resource", $"The specified resource is not recognized. The operation only support requests for a single resource from either the Altinn Resource Registry identified by using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id, Altinn Apps identified by using {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute}, or Altinn 2 services identified by using {AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute}");
+                return (result, null, null);
+            }
+
+            // Verify resource is valid
+            ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
+            if (resource == null || !resource.Delegable)
+            {
+                result.Errors.Add("right[0].Resource", $"The resource does not exist or is not available for delegation");
+                return (result, resource, null);
+            }
+
+            if (resource.ResourceType != ResourceType.MaskinportenSchema)
+            {
+                result.Errors.Add("right[0].Resource", $"This operation only supports MaskinportenSchema resources. Please use the Single Rights DelegationCheck API. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                return (result, resource, null);
+            }
+
+            // Verify and get From reportee party of the delegation
+            Party fromParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(request.From, out string fromOrgNo))
+            {
+                fromParty = await _contextRetrievalService.GetPartyForOrganization(fromOrgNo);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(request.From, out int fromPartyId))
+            {
+                List<Party> fromPartyLookup = await _contextRetrievalService.GetPartiesAsync(fromPartyId.SingleToList());
+                fromParty = fromPartyLookup.FirstOrDefault();
+            }
+
+            if (fromParty == null)
+            {
+                // This shouldn't really happen, as to get here the request must have been authorized for the From reportee, but the register integration could fail.
+                result.Errors.Add("From", $"Could not identify the From party. Please try again.");
+                return (result, resource, null);
+            }
+
+            if (fromParty.Organization == null)
+            {
+                result.Errors.Add("From", $"Delegation of MaskinportenSchema can only be performed by organizations.");
+                return (result, resource, null);
+            }
+
+            return (result, resource, fromParty);
         }
     }
 }

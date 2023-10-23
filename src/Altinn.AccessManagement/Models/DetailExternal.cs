@@ -1,4 +1,6 @@
-﻿namespace Altinn.AccessManagement.Models
+﻿using Altinn.AccessManagement.Enums;
+
+namespace Altinn.AccessManagement.Models
 {
     /// <summary>
     /// This model describes a detail while providing a specific code for identifying a specific recurring detail and parameters needed for context and understanding.
@@ -9,7 +11,7 @@
         /// <summary>
         /// Gets or sets the detail identifier code
         /// </summary>
-        public string Code { get; set; }
+        public DetailCodeExternal Code { get; set; }
 
         /// <summary>
         /// Gets or sets a human readable (english) description of the detail

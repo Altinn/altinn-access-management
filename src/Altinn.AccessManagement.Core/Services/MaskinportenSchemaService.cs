@@ -10,8 +10,6 @@ using Altinn.AccessManagement.Core.Utilities;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest.Azure;
-using System.Net.Security;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -67,7 +65,6 @@ namespace Altinn.AccessManagement.Core.Services
             // Build result model with status
             foreach (Right right in allDelegableRights)
             {
-
                 RightDelegationCheckResult rightDelegationStatus = new RightDelegationCheckResult
                 {
                     RightKey = right.RightKey,
@@ -80,12 +77,12 @@ namespace Altinn.AccessManagement.Core.Services
 
                 if (right.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel) && rightDelegationStatus.Status == DelegableStatus.Delegable)
                 {
-                    // Only relevant if delegationCheck passes the other requirement
+                    // Only relevant if delegationCheck passes the other requirements
                     int minimumAuthenticationLevel = right.RightSources.Find(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel).MinimumAuthenticationLevel;
                     rightDelegationStatus.Status = DelegableStatus.NotDelegable;
                     rightDelegationStatus.Details.Add(new Detail
                     {
-                        Code = "InsufficientAuthenticationLevel",
+                        Code = DetailCode.InsufficientAuthenticationLevel,
                         Description = $"Authenticated user does not meet the required security level for resource. Minimum authentication level is {minimumAuthenticationLevel}",
                         Parameters = new Dictionary<string, string>() { { "MinimumAuthenticationLevel", $"{minimumAuthenticationLevel}" } }
                     });

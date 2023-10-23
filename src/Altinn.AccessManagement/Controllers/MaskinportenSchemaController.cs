@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        /// [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("{party}/maskinportenschema/delegationcheck")]
         [ApiExplorerSettings(IgnoreApi = false)]
         [Produces("application/json")]

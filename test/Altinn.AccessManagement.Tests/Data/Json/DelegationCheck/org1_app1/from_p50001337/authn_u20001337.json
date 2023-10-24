@@ -12,8 +12,8 @@
       }
     ],
     "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "read"
     },
     "status": "Delegable",
     "details": [
@@ -39,8 +39,8 @@
       }
     ],
     "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "write"
     },
     "status": "NotDelegable",
     "details": [
@@ -75,8 +75,8 @@
       }
     ],
     "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "sign"
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "sign"
     },
     "status": "NotDelegable",
     "details": [

@@ -1,0 +1,20 @@
+{
+  "subject": {
+    "id": "urn:altinn:userid",
+    "value": "20001337"
+  },
+  "party": {
+    "id": "urn:altinn:partyid",
+    "value": "50001337"
+  },
+  "resource": [
+    {
+      "id": "urn:altinn:org",
+      "value": "org1"
+    },
+    {
+      "id": "urn:altinn:app",
+      "value": "app1"
+    }
+  ]
+}

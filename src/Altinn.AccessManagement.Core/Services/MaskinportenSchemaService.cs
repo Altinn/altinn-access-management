@@ -82,16 +82,18 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             List<Rule> delegationResult = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
+
+            // Map response
             if (delegationResult.All(r => r.CreatedSuccessfully))
             {
-                result.Rights = usersDelegableRights;
+                result.Rights = DelegationHelper.GetRightDelegationResultsFromRules(delegationResult);
                 return await Task.FromResult(result);
             }
             else if (delegationResult.Any(r => r.CreatedSuccessfully))
             {
                 // Partial delegation of rules should not really be possible. Return success but log error?
                 _logger.LogError("One or more rules could not be delegated.\n{result}", delegationResult);
-                result.Rights = usersDelegableRights;
+                result.Rights = DelegationHelper.GetRightDelegationResultsFromRules(delegationResult);
                 return await Task.FromResult(result);
             }
 
@@ -195,7 +197,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<(DelegationActionResult Result, string ResourceRegistryId, Party FromParty, Party ToParty)> ValidateMaskinportenDelegationModel(DelegationActionType delegationAction, DelegationLookup delegation)
         {
-            DelegationActionResult result = new DelegationActionResult { To = delegation.To, Rights = delegation.Rights };
+            DelegationActionResult result = new DelegationActionResult { To = delegation.To, Rights = new List<RightDelegationResult>() };
 
             // Verify request is for single resource registry id
             if (delegation.Rights?.Count != 1)

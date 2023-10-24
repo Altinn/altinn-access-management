@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
+using Altinn.Authorization.ABAC.Constants;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Mappers
@@ -26,7 +27,6 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Scopes, act => act.MapFrom(src => src.ResourceReferences.Where(rf => string.Equals(rf.ReferenceType, ReferenceType.MaskinportenScope)).Select(rf => rf.Reference).ToList()))
                 .ForMember(dest => dest.Created, act => act.MapFrom(src => src.Created))
                 .ForMember(dest => dest.ResourceId, act => act.MapFrom(src => src.ResourceId));
-            CreateMap<ServiceResource, ServiceResourceExternal>();
             CreateMap<CompetentAuthority, CompetentAuthorityExternal>()
                 .ForMember(dest => dest.Orgcode, act => act.MapFrom(src => src.Orgcode))
                 .ForMember(dest => dest.Organization, act => act.MapFrom(src => src.Organization))
@@ -45,7 +45,8 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<RightSource, RightSourceExternal>();
             CreateMap<RightSourceExternal, RightSource>();
             CreateMap<RightsDelegationCheckRequestExternal, RightsDelegationCheckRequest>();
-            CreateMap<RightDelegationCheckResult, RightDelegationCheckResultExternal>();
+            CreateMap<RightDelegationCheckResult, RightDelegationCheckResultExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<Detail, DetailExternal>();
             CreateMap<Right, RightExternal>()
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
@@ -53,18 +54,22 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Action, opt => opt.MapFrom(src =>
                     new AttributeMatch
                     {
-                        Id = "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                        Id = XacmlConstants.MatchAttributeIdentifiers.ActionId,
                         Value = src.Action
                     }));
             CreateMap<Right, BaseRightExternal>()
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             
             // Delegation
-            CreateMap<DelegationInputExternal, DelegationLookup>();
-            CreateMap<DelegationActionResult, DelegationOutputExternal>()
-                .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
+            CreateMap<RightsDelegationRequestExternal, DelegationLookup>();
             CreateMap<RevokeOfferedDelegationExternal, DelegationLookup>();
             CreateMap<RevokeReceivedDelegationExternal, DelegationLookup>();
+            CreateMap<DelegationActionResult, RightsDelegationResponseExternal>()
+                .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
+            CreateMap<RightDelegationResult, RightDelegationResultExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<DelegationChange, DelegationChangeExternal>();
+            CreateMap<DelegationChangeType, DelegationChangeTypeExternal>();
         }
     }
 }

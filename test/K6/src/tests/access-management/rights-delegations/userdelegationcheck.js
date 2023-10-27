@@ -83,20 +83,19 @@ export default function (data) {
 
   //tests
   daglForOrgHasScopeAccessForResource()
-   daglStatusIsNotDelegableForPrivResource()
-   hadmForOrgHasScopeAccess()
-   privUserHasScopeAccessForResource()
-   resourceIsNonDelegable()
-   resourceDoesNotExist()
-   daglForOrgHasScopeAccessForApp()
-   daglStatusIsNotDelegableForPrivApp()
-   privUserHasScopeAccessForApp()
-   daglForOrgHasScopeAccessForAltinn2Service()
-   privUserHasScopeAccessForAltinn2Service()
-  blablablaHasScopeAccessForAltinn2Service()
+  daglStatusIsNotDelegableForPrivResource()
+  hadmForOrgHasScopeAccess()
+  privUserHasScopeAccessForResource()
+  resourceIsNonDelegable()
+  resourceDoesNotExist()
+  daglForOrgHasScopeAccessForApp()
+  daglStatusIsNotDelegableForPrivApp()
+  privUserHasScopeAccessForApp()
+  daglForOrgHasScopeAccessForAltinn2Service()
+  privUserHasScopeAccessForAltinn2Service()
 }
 
-// testing if testdata is correct
+/** Checks that DAGl for an org has ScopeAccess for the resource k6-userdelegationcheck-apiadm */
 export function daglForOrgHasScopeAccessForResource() {
     const offeredByToken = org1.dagl.token;
     const offeredByPartyId = org1.partyid;
@@ -121,7 +120,7 @@ export function daglForOrgHasScopeAccessForResource() {
   addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that DAGl for an org can not delegate a resource that requires PRIV role */
 export function daglStatusIsNotDelegableForPrivResource() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -147,7 +146,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that HADM for an org has ScopeAccess for the resource k6-userdelegationcheck-apiadm */
 export function hadmForOrgHasScopeAccess() {
   const offeredByToken = org1.hadm.token;
   const offeredByPartyId = org1.hadm.partyid;
@@ -171,6 +170,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
+/** Checks that a PRIV user has ScopeAccess for the a resource that requires the PRIV role */
 export function privUserHasScopeAccessForResource() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.dagl.partyid;
@@ -195,7 +195,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that the response is 400 and with an error message when trying to delegate a non-delegable resource */
 export function resourceIsNonDelegable() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -212,7 +212,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that the response is 400 and with an error message when trying to delegate a non-existing resource */
 export function resourceDoesNotExist() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -229,7 +229,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that DAGl for an org has ScopeAccess for the altinn3 app ttd/apps-test */
 export function daglForOrgHasScopeAccessForApp() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -259,7 +259,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that a PRIV user has ScopeAccess for the altinn3 app ttd/apps-test-tba */
 export function privUserHasScopeAccessForApp() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.dagl.partyid;
@@ -287,7 +287,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that DAGl for an org can not delegate an Altinn3 app that requires PRIV role */
 export function daglStatusIsNotDelegableForPrivApp() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -317,7 +317,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that DAGl for an org has ScopeAccess for the altinn2 service ACC Security level 2 MAG */
 export function daglForOrgHasScopeAccessForAltinn2Service() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.dagl.partyid;
@@ -345,7 +345,7 @@ var success = check(res, {
 addErrorCount(success);
 }
 
-// testing if testdata is correct
+/** Checks that a PRIV user has ScopeAccess for the altinn2 service ACC Security level 2 MAG */
 export function privUserHasScopeAccessForAltinn2Service() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
@@ -369,33 +369,6 @@ var success = check(res, {
   'privUserHasScopeAccessForAltinn2Service - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
   'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
   'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'UTINN',
-});
-addErrorCount(success);
-}
-
-// testing if testdata is correct
-export function blablablaHasScopeAccessForAltinn2Service() {
-  const offeredByToken = org1.dagl.token;
-  const offeredByPartyId = org1.partyid;
-  const serviceCode = '3078';
-  const serviceEditionCode = '6';
-  var res = userDelegationCheck.altinn2ServiceUserDelegationCheck(offeredByToken, offeredByPartyId, serviceCode, serviceEditionCode);
-  console.log(res.status);
-  console.log(res.body);
-
-    // Assert
-var success = check(res, {
-  'blablablaHasScopeAccessForAltinn2Service - status is 200': (r) => r.status === 200,
-  // 'privUserHasScopeAccessForAltinn2Service - rightskey is 3225,1596:ScopeAccess': (r) => r.json('0.rightKey') === '3225,1596:ScopeAccess',
-  // 'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:servicecode': (r) => r.json('0.resource.0.id') === 'urn:altinn:servicecode',
-  // 'privUserHasScopeAccessForAltinn2Service - servicecode is 3225': (r) => r.json('0.resource.0.value') == serviceCode,
-  // 'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:serviceeditioncode': (r) => r.json('0.resource.1.id') === 'urn:altinn:serviceeditioncode',
-  // 'privUserHasScopeAccessForAltinn2Service - serviceeditioncoee is 1596': (r) => r.json('0.resource.1.value') == serviceEditionCode,
-  // 'privUserHasScopeAccessForAltinn2Service - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
-  // 'privUserHasScopeAccessForAltinn2Service - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
-  // 'privUserHasScopeAccessForAltinn2Service - status is Delegable': (r) => r.json('0.status') == 'Delegable',
-  // 'privUserHasScopeAccessForAltinn2Service - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
-  // 'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches is urn:altinn:rolecode:PRIV': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:PRIV',
 });
 addErrorCount(success);
 }

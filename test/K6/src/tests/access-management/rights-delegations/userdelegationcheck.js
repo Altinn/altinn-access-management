@@ -61,6 +61,16 @@ export function setup() {
   };
   testdata.org1.hadm.token = generateToken('personal', tokenGeneratorUserName, tokenGeneratorUserPwd, tokenGenParams);
 
+  tokenGenParams = {
+    env: testdata.env,
+    scopes: 'altinn:instances.read',
+    pid: testdata.org1.apiadm.pid,
+    userid: testdata.org1.apiadm.userid,
+    partyid: testdata.org1.apiadm.partyid,
+    authLvl: 3,
+  };
+  testdata.org1.apiadm.token = generateToken('personal', tokenGeneratorUserName, tokenGeneratorUserPwd, tokenGenParams);
+
   return testdata;
 }
 
@@ -73,11 +83,17 @@ export default function (data) {
 
   //tests
   daglForOrgHasScopeAccessForResource()
-  hadmForOrgHasScopeAccess()
-  privUserHasScopeAccessForResource()
-  resourceIsNonDelegable()
-  daglForOrgHasScopeAccessForApp()
-  privUserHasScopeAccessForApp()
+   daglStatusIsNotDelegableForPrivResource()
+   hadmForOrgHasScopeAccess()
+   privUserHasScopeAccessForResource()
+   resourceIsNonDelegable()
+   resourceDoesNotExist()
+   daglForOrgHasScopeAccessForApp()
+   daglStatusIsNotDelegableForPrivApp()
+   privUserHasScopeAccessForApp()
+   daglForOrgHasScopeAccessForAltinn2Service()
+   privUserHasScopeAccessForAltinn2Service()
+  blablablaHasScopeAccessForAltinn2Service()
 }
 
 // testing if testdata is correct
@@ -99,14 +115,41 @@ export function daglForOrgHasScopeAccessForResource() {
     'daglForOrgHasScopeAccessForResource - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
     'daglForOrgHasScopeAccessForResource - status is Delegable': (r) => r.json('0.status') == 'Delegable',
     'daglForOrgHasScopeAccessForResource - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
-    'daglForOrgHasScopeAccessForResource - RoleRequirementsMatches is urn:altinn:rolecode:APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:APIADM',
+    'daglForOrgHasScopeAccessForResource - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+    'daglForOrgHasScopeAccessForResource - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'APIADM',
   });
   addErrorCount(success);
 }
 
 // testing if testdata is correct
-export function hadmForOrgHasScopeAccess() {
+export function daglStatusIsNotDelegableForPrivResource() {
   const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'k6-userdelegationcheck-priv';
+  var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'daglStatusIsNotDelegableForPrivResource - status is 200': (r) => r.status === 200,
+  'daglStatusIsNotDelegableForPrivResource - rightskey is k6-userdelegationcheck-priv:ScopeAccess': (r) => r.json('0.rightKey') === 'k6-userdelegationcheck-priv:ScopeAccess',
+  'daglStatusIsNotDelegableForPrivResource - resource id is urn:altinn:resource': (r) => r.json('0.resource.0.id') === 'urn:altinn:resource',
+  'daglStatusIsNotDelegableForPrivResource - resource value is ttd-am-k6': (r) => r.json('0.resource.0.value') == appid,
+  'daglStatusIsNotDelegableForPrivResource - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+  'daglStatusIsNotDelegableForPrivResource - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
+  'daglStatusIsNotDelegableForPrivResource - status is NotDelegable': (r) => r.json('0.status') == 'NotDelegable',
+  'daglStatusIsNotDelegableForPrivResource - code is MissingDelegationAccess': (r) => r.json('0.details.1.code') == 'MissingDelegationAccess',
+  'daglStatusIsNotDelegableForPrivResource - code is MissingRoleAccess': (r) => r.json('0.details.0.code') == 'MissingRoleAccess',
+  'daglStatusIsNotDelegableForPrivResource - RequiredRoles id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RequiredRoles.0.id') == 'urn:altinn:rolecode',
+  'daglStatusIsNotDelegableForPrivResource - RequiredRoles value is PRIV': (r) => r.json('0.details.0.parameters.RequiredRoles.0.value') == 'PRIV',
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function hadmForOrgHasScopeAccess() {
+  const offeredByToken = org1.hadm.token;
   const offeredByPartyId = org1.hadm.partyid;
   const appid = 'k6-userdelegationcheck-apiadm';
   var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
@@ -146,7 +189,8 @@ var success = check(res, {
   'privUserHasScopeAccessForResource - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
   'privUserHasScopeAccessForResource - status is Delegable': (r) => r.json('0.status') == 'Delegable',
   'privUserHasScopeAccessForResource - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
-  'privUserHasScopeAccessForResource - RoleRequirementsMatches is urn:altinn:rolecode:APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:PRIV',
+  'privUserHasScopeAccessForResource - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+  'privUserHasScopeAccessForResource - RoleRequirementsMatches value is PRIV': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'PRIV',
 });
 addErrorCount(success);
 }
@@ -164,6 +208,23 @@ export function resourceIsNonDelegable() {
 var success = check(res, {
   'ResourceIsNonDelegable - status is 400 ': (r) => r.status === 400,
   'ResourceIsNonDelegable - Error message is "The resource: Identifier: k6-userdelegationcheck-apiadm-non-delegable"': (r) => r.body.includes('The resource: Identifier: k6-userdelegationcheck-apiadm-non-delegable'),
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function resourceDoesNotExist() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'jfkdsaljfdksjafkjdiejfoewjifeovneuwvbu4bvu4buvbvbdbvubduwsdhuh';
+  var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'ResourceIsNonDelegable - status is 400 ': (r) => r.status === 400,
+  'ResourceIsNonDelegable - Error message is "The resource: Identifier: jfkdsaljfdksjafkjdiejfoewjifeovneuwvbu4bvu4buvbvbdbvubduwsdhuh"': (r) => r.body.includes('The resource: Identifier: jfkdsaljfdksjafkjdiejfoewjifeovneuwvbu4bvu4buvbvbdbvubduwsdhuh'),
 });
 addErrorCount(success);
 }
@@ -190,7 +251,10 @@ var success = check(res, {
   'daglForOrgHasScopeAccessForApp - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
   'daglForOrgHasScopeAccessForApp - status is Delegable': (r) => r.json('0.status') == 'Delegable',
   'daglForOrgHasScopeAccessForApp - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
-  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches is urn:altinn:rolecode:APIADM, urn:altinn:org:ttd': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:APIADM, urn:altinn:org:ttd',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches value is PRIV': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'APIADM',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches id is urn:altinn:org': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.1.id') == 'urn:altinn:org',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches value is ttd': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.1.value') == 'ttd',
 });
 addErrorCount(success);
 }
@@ -217,7 +281,121 @@ var success = check(res, {
   'privUserHasScopeAccessForApp - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
   'privUserHasScopeAccessForApp - status is Delegable': (r) => r.json('0.status') == 'Delegable',
   'privUserHasScopeAccessForApp - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
-  'privUserHasScopeAccessForApp - RoleRequirementsMatches is urn:altinn:rolecode:PRIV, urn:altinn:org:ttd': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:PRIV, urn:altinn:org:ttd',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+  'daglForOrgHasScopeAccessForApp - RoleRequirementsMatches value is PRIV': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'PRIV',
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function daglStatusIsNotDelegableForPrivApp() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const org = 'ttd';
+  const app = 'apps-test-tba';
+  var res = userDelegationCheck.appUserDelegationCheck(offeredByToken, offeredByPartyId, org, app);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'daglStatusIsNotDelegableForPrivApp - status is 200': (r) => r.status === 200,
+  'daglStatusIsNotDelegableForPrivApp - rightskey is apps-test-tba,ttd:ScopeAccess': (r) => r.json('0.rightKey') === 'apps-test-tba,ttd:ScopeAccess',
+  'daglStatusIsNotDelegableForPrivApp - resource org id is urn:altinn:org': (r) => r.json('0.resource.0.id') === 'urn:altinn:org',
+  'daglStatusIsNotDelegableForPrivApp - resource org value is ttd': (r) => r.json('0.resource.0.value') == org,
+  'daglStatusIsNotDelegableForPrivApp - resource app id is urn:altinn:app': (r) => r.json('0.resource.1.id') === 'urn:altinn:app',
+  'daglStatusIsNotDelegableForPrivApp - resource app value is apps-test': (r) => r.json('0.resource.1.value') == app,
+  'daglStatusIsNotDelegableForPrivApp - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+  'daglStatusIsNotDelegableForPrivApp - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
+  'daglStatusIsNotDelegableForPrivApp - status is NotDelegable': (r) => r.json('0.status') == 'NotDelegable',
+  'daglStatusIsNotDelegableForPrivApp - code is MissingRoleAccess': (r) => r.json('0.details.0.code') == 'MissingRoleAccess',
+  'daglStatusIsNotDelegableForPrivApp - RequiredRoles id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RequiredRoles.0.id') == 'urn:altinn:rolecode',
+  'daglStatusIsNotDelegableForPrivApp - RequiredRoles value is PRIV': (r) => r.json('0.details.0.parameters.RequiredRoles.0.value') == 'PRIV',
+  'daglStatusIsNotDelegableForPrivApp - RequiredRoles id is urn:altinn:org': (r) => r.json('0.details.0.parameters.RequiredRoles.1.id') == 'urn:altinn:org',
+  'daglStatusIsNotDelegableForPrivApp - RequiredRoles value is ttd': (r) => r.json('0.details.0.parameters.RequiredRoles.1.value') == 'ttd',
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function daglForOrgHasScopeAccessForAltinn2Service() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.dagl.partyid;
+  const serviceCode = '2802';
+  const serviceEditionCode = '2203';
+  var res = userDelegationCheck.altinn2ServiceUserDelegationCheck(offeredByToken, offeredByPartyId, serviceCode, serviceEditionCode);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'daglForOrgHasScopeAccessForAltinn2Service - status is 200': (r) => r.status === 200,
+  'daglForOrgHasScopeAccessForAltinn2Service - rightskey is 2802:2203:read': (r) => r.json('0.rightKey') === '2802:2203:read',
+  'daglForOrgHasScopeAccessForAltinn2Service - resource id is urn:altinn:servicecode': (r) => r.json('0.resource.0.id') === 'urn:altinn:servicecode',
+  'daglForOrgHasScopeAccessForAltinn2Service - servicecode is 3225': (r) => r.json('0.resource.0.value') == serviceCode,
+  'daglForOrgHasScopeAccessForAltinn2Service - resource id is urn:altinn:serviceeditioncode': (r) => r.json('0.resource.1.id') === 'urn:altinn:serviceeditioncode',
+  'daglForOrgHasScopeAccessForAltinn2Service - serviceeditioncoee is 536': (r) => r.json('0.resource.1.value') == serviceEditionCode,
+  'daglForOrgHasScopeAccessForAltinn2Service - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+  'daglForOrgHasScopeAccessForAltinn2Service - action value is read': (r) => r.json('0.action.value') == 'read',
+  'daglForOrgHasScopeAccessForAltinn2Service - status is Delegable': (r) => r.json('0.status') == 'Delegable',
+  'daglForOrgHasScopeAccessForAltinn2Service - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
+  'daglForOrgHasScopeAccessForAltinn2Service - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+  'daglForOrgHasScopeAccessForAltinn2Service - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'UTINN',
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function privUserHasScopeAccessForAltinn2Service() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const serviceCode = '2802';
+  const serviceEditionCode = '2203';
+  var res = userDelegationCheck.altinn2ServiceUserDelegationCheck(offeredByToken, offeredByPartyId, serviceCode, serviceEditionCode);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'privUserHasScopeAccessForAltinn2Service - status is 200': (r) => r.status === 200,
+  'privUserHasScopeAccessForAltinn2Service - rightskey is 2802:2203:read': (r) => r.json('0.rightKey') === '2802:2203:read',
+  'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:servicecode': (r) => r.json('0.resource.0.id') === 'urn:altinn:servicecode',
+  'privUserHasScopeAccessForAltinn2Service - servicecode is 3225': (r) => r.json('0.resource.0.value') == serviceCode,
+  'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:serviceeditioncode': (r) => r.json('0.resource.1.id') === 'urn:altinn:serviceeditioncode',
+  'privUserHasScopeAccessForAltinn2Service - serviceeditioncoee is 536': (r) => r.json('0.resource.1.value') == serviceEditionCode,
+  'privUserHasScopeAccessForAltinn2Service - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+  'privUserHasScopeAccessForAltinn2Service - action value is read': (r) => r.json('0.action.value') == 'read',
+  'privUserHasScopeAccessForAltinn2Service - status is Delegable': (r) => r.json('0.status') == 'Delegable',
+  'privUserHasScopeAccessForAltinn2Service - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
+  'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+  'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'UTINN',
+});
+addErrorCount(success);
+}
+
+// testing if testdata is correct
+export function blablablaHasScopeAccessForAltinn2Service() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const serviceCode = '3078';
+  const serviceEditionCode = '6';
+  var res = userDelegationCheck.altinn2ServiceUserDelegationCheck(offeredByToken, offeredByPartyId, serviceCode, serviceEditionCode);
+  console.log(res.status);
+  console.log(res.body);
+
+    // Assert
+var success = check(res, {
+  'blablablaHasScopeAccessForAltinn2Service - status is 200': (r) => r.status === 200,
+  // 'privUserHasScopeAccessForAltinn2Service - rightskey is 3225,1596:ScopeAccess': (r) => r.json('0.rightKey') === '3225,1596:ScopeAccess',
+  // 'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:servicecode': (r) => r.json('0.resource.0.id') === 'urn:altinn:servicecode',
+  // 'privUserHasScopeAccessForAltinn2Service - servicecode is 3225': (r) => r.json('0.resource.0.value') == serviceCode,
+  // 'privUserHasScopeAccessForAltinn2Service - resource id is urn:altinn:serviceeditioncode': (r) => r.json('0.resource.1.id') === 'urn:altinn:serviceeditioncode',
+  // 'privUserHasScopeAccessForAltinn2Service - serviceeditioncoee is 1596': (r) => r.json('0.resource.1.value') == serviceEditionCode,
+  // 'privUserHasScopeAccessForAltinn2Service - action id is urn:oasis:names:tc:xacml:1.0:action:action-id': (r) => r.json('0.action.id') == 'urn:oasis:names:tc:xacml:1.0:action:action-id',
+  // 'privUserHasScopeAccessForAltinn2Service - action value is ScopeAccess': (r) => r.json('0.action.value') == 'ScopeAccess',
+  // 'privUserHasScopeAccessForAltinn2Service - status is Delegable': (r) => r.json('0.status') == 'Delegable',
+  // 'privUserHasScopeAccessForAltinn2Service - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
+  // 'privUserHasScopeAccessForAltinn2Service - RoleRequirementsMatches is urn:altinn:rolecode:PRIV': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches') == 'urn:altinn:rolecode:PRIV',
 });
 addErrorCount(success);
 }

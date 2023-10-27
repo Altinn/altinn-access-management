@@ -26,7 +26,7 @@ namespace Altinn.AccessManagement.Models
         /// Gets or sets the set of Attribute Id and Attribute Value for a specific action, to identify the action this right applies to
         /// </summary>
         [Required]
-        public AttributeMatchExternal Action { get; set; }
+        public string Action { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the right is delegable or not

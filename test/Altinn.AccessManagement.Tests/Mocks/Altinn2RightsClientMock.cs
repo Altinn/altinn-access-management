@@ -30,7 +30,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         {
             if (request.From[0].Value == "50001337" && request.Resource[0].Value == "1337" && request.Resource[1].Value == "1338")
             {
-                string content = File.ReadAllText($"Data/Json/DelegationCheck/se_1337_1338/from_p50001337/authn_u20001337.json");
+                string content = File.ReadAllText($"Data/Json/DelegationCheck/se_1337_1338/from_p50001337/authn_u20001337_from_sbl_bridge.json");
                 List<RightDelegationCheckResult> results = JsonSerializer.Deserialize<List<RightDelegationCheckResult>>(content);
                 return new DelegationCheckResponse { From = request.From, RightDelegationCheckResults = results };
             }

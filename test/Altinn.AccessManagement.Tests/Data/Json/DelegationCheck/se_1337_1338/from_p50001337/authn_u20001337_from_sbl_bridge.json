@@ -11,7 +11,10 @@
         "Value": "1338"
       }
     ],
-    "action": "read",
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "read"
+    },
     "Status": "Delegable",
     "Details": [
       {
@@ -40,7 +43,10 @@
         "Value": "1338"
       }
     ],
-    "action": "write",
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "write"
+    },
     "Status": "Delegable",
     "Details": [
       {
@@ -73,7 +79,10 @@
         "Value": "1338"
       }
     ],
-    "action": "archiveread",
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "archiveread"
+    },
     "Status": "Delegable",
     "Details": [
       {
@@ -102,7 +111,10 @@
         "Value": "1338"
       }
     ],
-    "action": "archivedelete",
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "archivedelete"
+    },
     "Status": "Delegable",
     "Details": [
       {
@@ -131,7 +143,10 @@
         "Value": "1338"
       }
     ],
-    "action": "sign",
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "sign"
+    },
     "Status": "Delegable",
     "Details": [
       {

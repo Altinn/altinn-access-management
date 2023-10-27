@@ -357,6 +357,60 @@
     "selfIdentifiedUserEnabled": false,
     "enterpriseUserEnabled": false,
     "resourceType": "AltinnApp",
+    "mainLanguage": "nb"
+  },
+  {
+    "identifier": "se_1337_1338",
+    "title": {
+      "en": "ACC Security level 2 MAG",
+      "nb-no": "ACC Security level 2 MAG",
+      "nn-no": "ACC Security level 2 MAG"
+    },
+    "description": {
+      "en": "ACC Security level 2 MAG for automated tests",
+      "nb-no": "ACC Security level 2 MAG for automatiserte tester",
+      "nn-no": "ACC Security level 2 MAG for automatiserte testar"
+    },
+    "rightDescription": {
+      "en": "Access to the test scopes",
+      "nb-no": "Tilgang til test scopene",
+      "nn-no": "Tilgong til test omfang"
+    },
+    "homepage": "https://www.digdir.no/",
+    "status": "Active",
+    "validFrom": "2023-03-29T00:00:00Z",
+    "validTo": "2099-12-24T23:59:59",
+    "isPartOf": "Altinn",
+    "isPublicService": true,
+    "resourceReferences": [
+      {
+        "reference": "1337",
+        "referenceType": "ServiceCode"
+      },
+      {
+        "reference": "1338",
+        "referenceType": "ServiceEditionCode"
+      }
+    ],
+    "isComplete": true,
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ACC",
+      "name": {
+        "en": "Test departement",
+        "nb-no": "Testdepartement",
+        "nn-no": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "sector": [
+      "private",
+      "public"
+    ],
+    "resourceType": "Altinn2Service",
+    "mainLanguage": "nb",
     "authorizationReference": [
       {
         "id": "urn:altinn:org",

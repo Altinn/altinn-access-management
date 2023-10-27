@@ -487,7 +487,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.RightKey, actual.RightKey);
             AssertCollections(expected.Resource, actual.Resource, AssertAttributeMatchExternalEqual);
-            AssertAttributeMatchExternalEqual(expected.Action, actual.Action);
+            Assert.Equal(expected.Action, actual.Action);
             Assert.Equal(expected.Status, actual.Status);
             AssertCollections(expected.Details, actual.Details, AssertDetailExternalEqual);
         }

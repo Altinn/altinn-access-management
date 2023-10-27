@@ -11,10 +11,7 @@
         "value": "app1"
       }
     ],
-    "action": {
-      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "Value": "read"
-    },
+    "action": "read",
     "status": "Delegable",
     "details": [
       {
@@ -38,10 +35,7 @@
         "value": "app1"
       }
     ],
-    "action": {
-      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "Value": "write"
-    },
+    "action": "write",
     "status": "NotDelegable",
     "details": [
       {
@@ -74,10 +68,7 @@
         "value": "task1"
       }
     ],
-    "action": {
-      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "Value": "sign"
-    },
+    "action": "sign",
     "status": "NotDelegable",
     "details": [
       {

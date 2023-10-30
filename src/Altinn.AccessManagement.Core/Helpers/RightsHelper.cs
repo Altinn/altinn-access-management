@@ -56,7 +56,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a RightsQuery request model for lookup of a users rights for a given service resource on behalf of the given reportee party
         /// </summary>
-        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, string resourceRegistryId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null)
+        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, string resourceRegistryId = null, string org = null, string app = null)
         {
             if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
             {
@@ -65,16 +65,6 @@ namespace Altinn.AccessManagement.Core.Helpers
                     To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
                     From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
                     Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } }
-                };
-            }
-
-            if (!string.IsNullOrEmpty(serviceCode) && !string.IsNullOrEmpty(serviceEditionCode))
-            {
-                return new RightsQuery
-                {
-                    To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
-                    From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
-                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute, Value = serviceCode }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceEditionCodeAttribute, Value = serviceEditionCode } }
                 };
             }
 

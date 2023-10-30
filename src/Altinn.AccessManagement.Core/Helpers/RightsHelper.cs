@@ -91,22 +91,16 @@ namespace Altinn.AccessManagement.Core.Helpers
                 if (roleAccessSources.Any())
                 {
                     string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
-                    List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
-                    var thing = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
-                    foreach (List<PolicyAttributeMatch> attributeMatch in thing)
-                    {
-                        attributeMatches.Add(attributeMatch.First());
-                    }
 
                     reasons.Add(new Detail
                     {
                         Code = "RoleAccess",
                         Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>() 
+                        Parameters = new Dictionary<string, List<AttributeMatch>>()
                         {
-                            { 
-                                "RoleRequirementsMatches", attributeMatches
-                            } 
+                            {
+                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects))
+                            }
                         }
                     });
                 }
@@ -116,18 +110,12 @@ namespace Altinn.AccessManagement.Core.Helpers
                 if (delegationPolicySources.Any())
                 {
                     string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
-                    List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
-                    var policySubjects = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
-                    foreach (List<PolicyAttributeMatch> attributeMatch in policySubjects)
-                    {
-                        attributeMatches.Add(attributeMatch.First());
-                    }
 
                     reasons.Add(new Detail
                     {
                         Code = "DelegationAccess",
                         Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", attributeMatches } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)) } }
                     });
                 }
             }
@@ -140,18 +128,12 @@ namespace Altinn.AccessManagement.Core.Helpers
                 if (roleAccessSources.Any())
                 {
                     string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
-                    List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
-                    var policySubjects = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
-                    foreach (List<PolicyAttributeMatch> attributeMatch in policySubjects) 
-                    {
-                        attributeMatches.Add(attributeMatch.First());
-                    }
 
                     reasons.Add(new Detail
                     {
                         Code = "MissingRoleAccess",
                         Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", attributeMatches } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)) } }
                     });
                 }
 
@@ -177,6 +159,22 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return reasons;
+        }
+
+        /// <summary>
+        /// Converts a list of policy attribute matches into a list of attribute matches
+        /// </summary>
+        /// <param name="policySubjects">a list of policy attribute matches</param>
+        /// <returns>a list of attribute matches</returns>
+        private static List<AttributeMatch> GetAttributeMatches(IEnumerable<List<PolicyAttributeMatch>> policySubjects)
+        {
+            List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
+            foreach (List<PolicyAttributeMatch> attributeMatch in policySubjects)
+            {
+                attributeMatches.AddRange(attributeMatch);
+            }
+
+            return attributeMatches;
         }
     }
 }

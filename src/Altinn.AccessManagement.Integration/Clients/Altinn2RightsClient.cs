@@ -39,14 +39,10 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc />
-        public async Task<DelegationCheckResponse> PostDelegationCheck(int userId,RightsDelegationCheckRequest request)
+        public async Task<DelegationCheckResponse> PostDelegationCheck(int userId, string partyId, string serviceCode, string serviceEditionCode)
         {
             try
             {
-                string partyId = request.From[0].Value;
-                string serviceCode = request.Resource.FirstOrDefault(r => r.Id == "urn:altinn:servicecode").Value;
-                string serviceEditionCode = request.Resource.FirstOrDefault(r => r.Id == "urn:altinn:serviceeditioncode").Value;
-
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegationcheck?userId={userId}&partyId={partyId}&serviceCode={serviceCode}&serviceEditionCode={serviceEditionCode}");
                 _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

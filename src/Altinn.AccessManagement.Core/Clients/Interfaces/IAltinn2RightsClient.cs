@@ -12,8 +12,10 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// Get Altinn rights from AltinnII SBL bridge
         /// </summary>
         /// <param name="userId">the logged in user id</param>
-        /// /// <param name="request">the request</param>
+        /// <param name="partyId">the partyid</param>
+        /// <param name="serviceCode">the service code</param>
+        /// <param name="serviceEditionCode">the service edition code</param>
         /// <returns>Delegation Check Response</returns>
-        Task<DelegationCheckResponse> PostDelegationCheck(int userId, RightsDelegationCheckRequest request);
+        Task<DelegationCheckResponse> PostDelegationCheck(int userId, string partyId, string serviceCode, string serviceEditionCode);
     }
 }

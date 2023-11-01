@@ -51,14 +51,11 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, request);
             }
-            else
-            {
-                // Get all delegable rights
-                rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
-            }
+
+            rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
 
             List<Right> allDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, returnAllPolicyRights: true);
-            if (allDelegableRights == null || allDelegableRights.Count == 0)    
+            if (allDelegableRights == null || allDelegableRights.Count == 0)
             {
                 result.Errors.Add("right[0].Resource", $"No delegable rights could be found for the resource: {resource}");
                 return result;
@@ -120,7 +117,7 @@ namespace Altinn.AccessManagement.Core.Services
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 
             if (resourceMatchType == ResourceAttributeMatchType.None)
-            {       
+            {
                 result.Errors.Add("right[0].Resource", $"The specified resource is not recognized. The operation only support requests for a single resource from either the Altinn Resource Registry identified by using the {AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute} attribute id, Altinn Apps identified by using {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute}, or Altinn 2 services identified by using {AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute}");
                 return (result, null, null);
             }

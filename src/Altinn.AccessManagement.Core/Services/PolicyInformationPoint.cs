@@ -88,10 +88,6 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 policy = await _prp.GetPolicyAsync(org, app);
             }
-            else if (resourceMatchType == ResourceAttributeMatchType.Altinn2Service)
-            {
-                policy = await _prp.GetPolicyAsync(serviceCode, serviceEditionCode);
-            }
 
             if (policy == null)
             {

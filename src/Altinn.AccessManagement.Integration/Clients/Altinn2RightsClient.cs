@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -57,16 +58,26 @@ namespace Altinn.AccessManagement.Integration.Clients
                     return delegationCheckResponse;
                 }
 
-                SBLUserDelegationCheckError validationError = JsonSerializer.Deserialize<SBLUserDelegationCheckError>(rights, _serializerOptions);
-                if (validationError.ModelState == null)
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    delegationCheckResponse.Errors.Add("SBLBridge", "Unexpected error from AccessManagement // Altinn2RightsClient // PostDelegationCheck");
+                    SBLUserDelegationCheckError validationError = JsonSerializer.Deserialize<SBLUserDelegationCheckError>(rights, _serializerOptions);
+                    _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
+                    foreach (KeyValuePair<string, List<string>> modelState in validationError.ModelState)
+                    {
+                        string thing = string.Empty;
+                        foreach (var modelStateValue in modelState.Value)
+                        {
+                            thing += modelStateValue;
+                        }
+
+                        delegationCheckResponse.Errors.Add(modelState.Key, modelState.Value.First());
+                    }
+
                     return delegationCheckResponse;
                 }
 
-                delegationCheckResponse.Errors.Add(validationError.ModelState.First().Key, validationError.ModelState.First().Value.First());
-
-                _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
+                _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
+                delegationCheckResponse.Errors.Add("SBLBridge", $"Unexpected error from AccessManagement // Altinn2RightsClient // PostDelegationCheck. HttpStatusCode: {response.StatusCode}");
                 return delegationCheckResponse;
             }
             catch (Exception ex)

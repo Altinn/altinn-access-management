@@ -73,19 +73,24 @@ namespace Altinn.AccessManagement.Core.Services
                     Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable
                 };
 
-                rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
-
                 if (right.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel) && rightDelegationStatus.Status == DelegableStatus.Delegable)
                 {
                     // Only relevant if delegationCheck passes the other requirements
                     int minimumAuthenticationLevel = right.RightSources.Find(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel).MinimumAuthenticationLevel;
                     rightDelegationStatus.Status = DelegableStatus.NotDelegable;
-                    rightDelegationStatus.Details.Add(new Detail
-                    {
-                        Code = DetailCode.InsufficientAuthenticationLevel,
-                        Description = $"Authenticated user does not meet the required security level for resource. Minimum authentication level is {minimumAuthenticationLevel}",
-                        Parameters = new Dictionary<string, string>() { { "MinimumAuthenticationLevel", $"{minimumAuthenticationLevel}" } }
-                    });
+                    rightDelegationStatus.Details = new List<Detail> 
+                    { 
+                        new Detail
+                        {
+                            Code = DetailCode.InsufficientAuthenticationLevel,
+                            Description = $"Authenticated user does not meet the required security level for resource. Minimum authentication level is {minimumAuthenticationLevel}",
+                            Parameters = new Dictionary<string, string>() { { "MinimumAuthenticationLevel", $"{minimumAuthenticationLevel}" } }
+                        }
+                    };
+                }
+                else
+                {
+                    rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
                 }
 
                 result.DelegationCheckResults.Add(rightDelegationStatus);

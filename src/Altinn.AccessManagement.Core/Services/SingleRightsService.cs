@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Core.Services
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
             if (resource.ResourceType == ResourceType.Altinn2Service)
             {
-                string partyId = request.From[0].Value;
+                string partyId = fromParty.PartyId.ToString();
                 return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, partyId, serviceCode, serviceEditionCode);
             }
 

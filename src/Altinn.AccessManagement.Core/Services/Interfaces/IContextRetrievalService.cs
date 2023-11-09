@@ -98,6 +98,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="userId">The id of the authenticated user</param>
         /// <param name="partyId">The party Id of the party to retrieve</param>
         /// <returns>Party that corresponds to partyId parameter if it's in the users reporteelist</returns>
-        public Task<Party> GetPartyForUser(int userId, int partyId);
+        Task<Party> GetPartyForUser(int userId, int partyId);
     }
 }

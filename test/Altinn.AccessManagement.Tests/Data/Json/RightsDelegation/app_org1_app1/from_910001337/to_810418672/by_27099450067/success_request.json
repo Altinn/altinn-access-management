@@ -1,0 +1,36 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organizationnumber",
+      "value": "810418672"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:org",
+          "value": "org1"
+        },
+        {
+          "id": "urn:altinn:app",
+          "value": "app1"
+        }
+      ],
+      "action": "read"
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:org",
+          "value": "org1"
+        },
+        {
+          "id": "urn:altinn:app",
+          "value": "app1"
+        }
+      ],
+      "action": "write"
+    }
+  ]
+}

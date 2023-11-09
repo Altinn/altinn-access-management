@@ -480,7 +480,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRightDelegationStatusExternalEqual(RightDelegationCheckResultExternal expected, RightDelegationCheckResultExternal actual)
+        public static void AssertRightDelegationCheckExternalEqual(RightDelegationCheckResultExternal expected, RightDelegationCheckResultExternal actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);

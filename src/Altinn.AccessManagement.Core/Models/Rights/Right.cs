@@ -8,7 +8,13 @@
         /// <summary>
         /// Gets or sets the right key
         /// </summary>
-        public string RightKey { get; set; }
+        public string RightKey
+        {
+            get
+            {
+                return string.Join(",", Resource.OrderBy(m => m.Id).Select(m => m.Value)) + ":" + Action.Value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
@@ -34,5 +40,11 @@
         /// Gets or sets the set of identified sources providing the right
         /// </summary>
         public List<RightSource> RightSources { get; set; }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return obj is Right right && string.Equals(RightKey, right.RightKey, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

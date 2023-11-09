@@ -1,11 +1,14 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.Platform.Profile.Models;
+using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -13,24 +16,27 @@ namespace Altinn.AccessManagement.Core.Services
     /// <inheritdoc/>
     public class SingleRightsService : ISingleRightsService
     {
-        private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IContextRetrievalService _contextRetrievalService;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
+        private readonly IProfileClient _profile;
+        private readonly IUserProfileLookupService _profileLookup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
         /// </summary>
-        /// <param name="delegationRepository">delegation change handler</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+        /// <param name="profile">Client implementation for getting user profile</param>
+        /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
+        public SingleRightsService(IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IProfileClient profile, IUserProfileLookupService profileLookup)
         {
-            _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
             _pap = pap;
+            _profile = profile;
+            _profileLookup = profileLookup;
         }
 
         /// <inheritdoc/>
@@ -84,9 +90,61 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
+        public async Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
         {
-            throw new NotImplementedException();
+            (DelegationActionResult result, ServiceResource resource, Party fromParty, List<AttributeMatch> to) = await ValidateDelegationLookupModel(DelegationActionType.Delegation, delegation, authenticatedUserId);
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            DelegationHelper.TryGetResourceFromAttributeMatch(resource.AuthorizationReference, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+            if (resourceMatchType == ResourceAttributeMatchType.Altinn2Service)
+            {
+                result.Errors.Add("right[0].Resource", $"Delegation of Altinn 2 services are not yet supported. {resource}"); //// ToDo: Update when support exists
+                return result;
+            }
+
+            // Verify authenticated users delegable rights
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+            List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
+            if (usersDelegableRights == null || usersDelegableRights.Count == 0)
+            {
+                result.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
+                return result;
+            }
+
+            // Perform delegation
+            List<Rule> rulesToDelegate = new List<Rule>();
+            List<Right> rightsUserCantDelegate = new List<Right>();
+            foreach (Right rightToDelegate in delegation.Rights)
+            {
+                if (usersDelegableRights.Contains(rightToDelegate))
+                {
+                    rulesToDelegate.Add(new Rule
+                    {
+                        DelegatedByUserId = authenticatedUserId,
+                        OfferedByPartyId = fromParty.PartyId,
+                        CoveredBy = to,
+                        Resource = rightToDelegate.Resource,
+                        Action = rightToDelegate.Action
+                    });
+                }
+                else
+                {
+                    rightsUserCantDelegate.Add(rightToDelegate);
+                }
+            }
+
+            List<Rule> delegationResult = await _pap.TryWriteDelegationPolicyRules(rulesToDelegate);
+            result.Rights = DelegationHelper.GetRightDelegationResultsFromRules(delegationResult);
+
+            if (rightsUserCantDelegate.Any())
+            {
+                result.Rights.AddRange(DelegationHelper.GetRightDelegationResultsFromFailedRights(rightsUserCantDelegate));
+            }
+
+            return await Task.FromResult(result);
         }
 
         /// <inheritdoc/>
@@ -158,6 +216,132 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             return (result, resource, fromParty);
+        }
+
+        private async Task<(DelegationActionResult Result, ServiceResource Resource, Party FromParty, List<AttributeMatch> To)> ValidateDelegationLookupModel(DelegationActionType delegationAction, DelegationLookup delegation, int authenticatedUserId)
+        {
+            DelegationActionResult result = new DelegationActionResult { From = delegation.From, To = delegation.To, Rights = new List<RightDelegationResult>() };
+
+            // Verify request is for single resource, app or Altinn 2 service
+            if (delegation.Rights?.Count > 1 && !ValidateAllRightsAreForTheSameResource(delegation.Rights))
+            {
+                result.Errors.Add("Rights", "Rights delegation only support requests where all rights are for the same resource, app or Altinn 2 service");
+                return (result, null, null, null);
+            }
+
+            Right right = delegation.Rights.First();
+            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+
+            ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
+            if (resource == null || !resource.Delegable)
+            {
+                result.Errors.Add("right[0].Resource", $"The resource does not exist or is not available for delegation");
+                return (result, resource, null, null);
+            }
+
+            if (resource.ResourceType == ResourceType.MaskinportenSchema)
+            {
+                result.Errors.Add("right[0].Resource", $"This operation does not support delegations for MaskinportenSchema resources. Please use the MaskinportenSchema Delegations API. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");
+                return (result, resource, null, null);
+            }
+
+            // Verify and get From reportee party of the delegation
+            Party fromParty = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))
+            {
+                fromParty = await _contextRetrievalService.GetPartyForOrganization(fromOrgNo);
+            }
+            else if (DelegationHelper.TryGetSocialSecurityNumberAttributeMatch(delegation.From, out string fromSsn))
+            {
+                fromParty = await _contextRetrievalService.GetPartyForPerson(fromSsn);
+            }
+            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.From, out int fromPartyId))
+            {
+                List<Party> fromPartyLookup = await _contextRetrievalService.GetPartiesAsync(fromPartyId.SingleToList());
+                fromParty = fromPartyLookup.FirstOrDefault();
+            }
+
+            if (fromParty == null)
+            {
+                // This shouldn't really happen, as to get here the request must have been authorized for the From reportee, but the register integration could fail.
+                result.Errors.Add("From", $"Could not identify the From party. Please try again.");
+                return (result, resource, null, null);
+            }
+
+            // Verify and get To recipient party of the delegation
+            Party toParty = null;
+            UserProfile toUser = null;
+            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
+            {
+                toParty = await _contextRetrievalService.GetPartyForOrganization(toOrgNo);
+            }
+            else if (DelegationHelper.TryGetSocialSecurityNumberAndLastNameAttributeMatch(delegation.To, out string toSsn, out string toLastName))
+            {
+                toUser = await _profileLookup.GetUserProfile(authenticatedUserId, new UserProfileLookup { Ssn = toSsn }, toLastName);
+            }
+            else if (DelegationHelper.TryGetUsernameAndLastNameAttributeMatch(delegation.To, out string toUsername, out toLastName))
+            {
+                toUser = await _profileLookup.GetUserProfile(authenticatedUserId, new UserProfileLookup { Username = toUsername }, toLastName);
+            }
+            else if (DelegationHelper.TryGetEnterpriseUserNameAttributeMatch(delegation.To, out string enterpriseUserName))
+            {
+                toUser = await _profile.GetUser(new UserProfileLookup { Username = enterpriseUserName });
+
+                if (toUser != null && toUser.Party.PartyId != fromParty.PartyId)
+                {
+                    result.Errors.Add("To", $"Enterpriseuser either does not exist or does not belong to the From party and cannot be delegated to.");
+                    return (result, resource, null, null);
+                }
+            }
+
+            if (toParty == null && toUser == null)
+            {
+                result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.LastName} attributes, or {AltinnXacmlConstants.MatchAttributeIdentifiers.UserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.LastName} attributes.");
+                return (result, resource, null, null);
+            }
+
+            // Verify delegation From and To is not the same party (with exception for Altinn 2 Enterprise users)
+            if (fromParty.PartyId == toParty?.PartyId || (fromParty.PartyId == toUser?.PartyId && toUser?.Party.PartyTypeName != PartyType.Organisation))
+            {
+                result.Errors.Add("To", $"The From party and the To recipient are the same. Self-delegation is not supported as it serves no purpose.");
+                return (result, resource, null, null);
+            }
+
+            // Build To AttributeMatch to be used for the delegation rules
+            List<AttributeMatch> to = new List<AttributeMatch>();
+            if (toParty != null)
+            {
+                to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toParty.PartyId.ToString() });
+            }
+
+            if (toUser != null)
+            {
+                to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = toUser.UserId.ToString() });
+            }
+
+            return (result, resource, fromParty, to);
+        }
+
+        private static bool ValidateAllRightsAreForTheSameResource(List<Right> rights)
+        {
+            string firstResourceKey = string.Empty;
+            foreach (Right right in rights)
+            {
+                DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+                string currentResourceKey = $"{resourceMatchType}{resourceRegistryId}{org}{app}{serviceCode}{serviceEditionCode}";
+
+                if (firstResourceKey == string.Empty)
+                {
+                    firstResourceKey = currentResourceKey;
+                }
+
+                if (firstResourceKey != currentResourceKey)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

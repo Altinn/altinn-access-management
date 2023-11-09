@@ -1,0 +1,62 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:userid",
+      "value": "27099450067"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "Id": "urn:altinn:servicecode",
+          "Value": "2802"
+        },
+        {
+          "Id": "urn:altinn:serviceeditioncode",
+          "Value": "2203"
+        }
+      ],
+      "action": "subunit-delegated-action"
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "subunit-delegated-action-to-keyroleunit"
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "mainunit-delegated-action"
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "mainunit-delegated-action-to-keyroleunit"
+    }
+  ]
+}

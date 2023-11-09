@@ -1,0 +1,74 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:ssn",
+      "value": "27099450067"
+    },
+    {
+      "id": "urn:altinn:lastname",
+      "value": "RAVNÅS"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "subunit-delegated-action",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "subunit-delegated-action-to-keyroleunit",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "mainunit-delegated-action",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "mainunit-delegated-action-to-keyroleunit",
+      "status": "Delegated"
+    }
+  ]
+}

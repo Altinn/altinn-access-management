@@ -90,6 +90,12 @@ namespace Altinn.AccessManagement.Core.Helpers
                 if (roleAccessSources.Any())
                 {
                     string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+                    IEnumerable<List<PolicyAttributeMatch>> polMatches = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
+                    List<AttributeMatch> matchList = new List<AttributeMatch>();
+                    foreach (List<PolicyAttributeMatch> polMatch in polMatches)
+                    {
+                        matchList.AddRange(polMatch);
+                    }
 
                     reasons.Add(new Detail
                     {
@@ -104,7 +110,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 if (delegationPolicySources.Any())
                 {
                     string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
-
+                    
                     reasons.Add(new Detail
                     {
                         Code = "DelegationAccess",

@@ -54,10 +54,10 @@ namespace Altinn.AccessManagement.Integration.Clients
                 return delegationCheckResponse;
             }
 
+            _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 SblDelegationCheckError validationError = JsonSerializer.Deserialize<SblDelegationCheckError>(responseContent, _serializerOptions);
-                _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
                 foreach (KeyValuePair<string, List<string>> modelState in validationError.ModelState)
                 {
                     delegationCheckResponse.Errors.Add(modelState.Key, string.Join(" | ", modelState.Value));
@@ -66,7 +66,6 @@ namespace Altinn.AccessManagement.Integration.Clients
                 return delegationCheckResponse;
             }
 
-            _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
             delegationCheckResponse.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
             return delegationCheckResponse;
         }

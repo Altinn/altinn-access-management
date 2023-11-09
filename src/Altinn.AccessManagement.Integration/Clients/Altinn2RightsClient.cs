@@ -1,23 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Integration.Configuration;
-using Authorization.Platform.Authorization.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Rest.Azure;
 
 namespace Altinn.AccessManagement.Integration.Clients
 {
     /// <summary>
     /// Client for getting Altinn roles from AltinnII SBL Bridge
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Altinn2RightsClient : IAltinn2RightsClient
     {
         private readonly SblBridgeSettings _sblBridgeSettings;
@@ -36,55 +34,41 @@ namespace Altinn.AccessManagement.Integration.Clients
             _sblBridgeSettings = sblBridgeSettings.Value;
             _logger = logger;
             _client = httpClient;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
         /// <inheritdoc />
         public async Task<DelegationCheckResponse> PostDelegationCheck(int userId, string partyId, string serviceCode, string serviceEditionCode)
         {
-            try
+            UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegationcheck?userId={userId}&partyId={partyId}&serviceCode={serviceCode}&serviceEditionCode={serviceEditionCode}");
+            
+            HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            DelegationCheckResponse delegationCheckResponse = new DelegationCheckResponse();
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegationcheck?userId={userId}&partyId={partyId}&serviceCode={serviceCode}&serviceEditionCode={serviceEditionCode}");
-                _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
-                string rights = await response.Content.ReadAsStringAsync();
-
-                DelegationCheckResponse delegationCheckResponse = new DelegationCheckResponse();
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    delegationCheckResponse.RightDelegationCheckResults = JsonSerializer.Deserialize<List<RightDelegationCheckResult>>(rights, _serializerOptions);
-                    return delegationCheckResponse;
-                }
-
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                {
-                    SBLUserDelegationCheckError validationError = JsonSerializer.Deserialize<SBLUserDelegationCheckError>(rights, _serializerOptions);
-                    _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
-                    foreach (KeyValuePair<string, List<string>> modelState in validationError.ModelState)
-                    {
-                        string thing = string.Empty;
-                        foreach (var modelStateValue in modelState.Value)
-                        {
-                            thing += modelStateValue;
-                        }
-
-                        delegationCheckResponse.Errors.Add(modelState.Key, modelState.Value.First());
-                    }
-
-                    return delegationCheckResponse;
-                }
-
-                _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
-                delegationCheckResponse.Errors.Add("SBLBridge", $"Unexpected error from AccessManagement // Altinn2RightsClient // PostDelegationCheck. HttpStatusCode: {response.StatusCode}");
+                delegationCheckResponse.RightDelegationCheckResults = JsonSerializer.Deserialize<List<RightDelegationCheckResult>>(responseContent, _serializerOptions);
                 return delegationCheckResponse;
             }
-            catch (Exception ex)
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                _logger.LogError(ex, "AccessManagement // Altinn2RightsClient // PostDelegationCheck // Exception");
-                throw;
+                SblDelegationCheckError validationError = JsonSerializer.Deserialize<SblDelegationCheckError>(responseContent, _serializerOptions);
+                _logger.LogError($"AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {response.StatusCode}");
+                foreach (KeyValuePair<string, List<string>> modelState in validationError.ModelState)
+                {
+                    delegationCheckResponse.Errors.Add(modelState.Key, string.Join(" | ", modelState.Value));
+                }
+
+                return delegationCheckResponse;
             }
+
+            _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+            delegationCheckResponse.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+            return delegationCheckResponse;
         }
     }
 }

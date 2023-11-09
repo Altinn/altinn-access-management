@@ -1,11 +1,9 @@
-﻿using System.Web.Http.ModelBinding;
-
-namespace Altinn.AccessManagement.Core.Models
+﻿namespace Altinn.AccessManagement.Core.Models.SblBridge
 {
     /// <summary>
     /// Model for error messages from SBL UserDelegationCheck
     /// </summary>
-    public class SBLUserDelegationCheckError
+    public class SblDelegationCheckError
     {
         /// <summary>
         /// Gets or sets the error message
@@ -15,6 +13,6 @@ namespace Altinn.AccessManagement.Core.Models
         /// <summary>
         /// Gets or sets the model state
         /// </summary>
-        public ModelStateDictionary ModelState { get; set; }
+        public Dictionary<string, List<string>> ModelState { get; set; }
     }
 }

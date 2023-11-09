@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -17,6 +18,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IContextRetrievalService _contextRetrievalService;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
+        private readonly IAltinn2RightsClient _altinn2RightsClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
@@ -25,34 +27,37 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
-        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+        /// <param name="altinn2RightsClient">SBL Bridge client implementation for rights operations on Altinn 2 services</param>
+        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient)
         {
             _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
             _pap = pap;
+            _altinn2RightsClient = altinn2RightsClient;
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationCheckResult> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
+        public async Task<DelegationCheckResponse> RightsDelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
         {
-            (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateRightsDelegationCheckRequest(request);
+            (DelegationCheckResponse result, ServiceResource resource, Party fromParty) = await ValidateRightDelegationCheckRequest(request);
             if (!result.IsValid)
             {
                 return result;
             }
 
+            RightsQuery rightsQuery;
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
             if (resource.ResourceType == ResourceType.Altinn2Service)
             {
-                result.Errors.Add("right[0].Resource", $"Altinn apps and Altinn 2 services are not yet supported. {resource}"); //// ToDo: Update when support exists
-                return result;
+                string partyId = fromParty.PartyId.ToString();
+                return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, partyId, serviceCode, serviceEditionCode);
             }
 
-            // Get all delegable rights
-            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+            rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+
             List<Right> allDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, returnAllPolicyRights: true);
-            if (allDelegableRights == null || allDelegableRights.Count == 0)    
+            if (allDelegableRights == null || allDelegableRights.Count == 0)
             {
                 result.Errors.Add("right[0].Resource", $"No delegable rights could be found for the resource: {resource}");
                 return result;
@@ -77,7 +82,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                 rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
 
-                result.DelegationCheckResults.Add(rightDelegationStatus);
+                result.RightDelegationCheckResults.Add(rightDelegationStatus);
             }
 
             return result;
@@ -107,9 +112,9 @@ namespace Altinn.AccessManagement.Core.Services
             throw new NotImplementedException();
         }
 
-        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateRightsDelegationCheckRequest(RightsDelegationCheckRequest request)
+        private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)
         {
-            DelegationCheckResult result = new DelegationCheckResult { From = request.From, DelegationCheckResults = new() };
+            DelegationCheckResponse result = new DelegationCheckResponse { From = request.From, RightDelegationCheckResults = new() };
 
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 

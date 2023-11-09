@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
@@ -30,11 +31,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets a value indicating whether the right is delegable or not
         /// </summary>
         [Required]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public DelegableStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets a list of details describing the reasons why or why not the right is valid in the current user and reportee party context
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public List<Detail> Details { get; set; }
     }
 }

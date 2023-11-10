@@ -20,7 +20,6 @@
     "status": "Active",
     "isPartOf": "Altinn",
     "resourceReferences": [],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -65,7 +64,6 @@
     "status": "Active",
     "contactPoints": [],
     "isPartOf": "",
-    "isPublicService": true,
     "resourceReferences": [],
     "delegable": false,
     "visible": false,
@@ -109,9 +107,7 @@
     },
     "homepage": "https://www.jksaudi.no/",
     "status": "Active",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -129,7 +125,6 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -172,9 +167,7 @@
     },
     "homepage": "https://www.jksaudi.no/",
     "status": "Active",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -182,7 +175,6 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -230,11 +222,9 @@
     },
     "homepage": "https://www.nope.no/",
     "status": "Active",
-    "validTo": "2023-12-24T23:59:59Z",
     "isPartOf": "jk_ressurser",
     "isPublicService": true,
     "resourceReferences": [],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -282,9 +272,7 @@
     },
     "homepage": "https://www.digdir.no/",
     "status": "Active",
-    "validTo": "2099-12-24T23:59:59",
     "isPartOf": "Altinn",
-    "isPublicService": true,
     "resourceReferences": [
       {
         "referenceSource": "ExternalPlatform",
@@ -297,7 +285,6 @@
         "referenceType": "MaskinportenScope"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -328,8 +315,6 @@
       "nn": "test applikasjon 1",
       "en": "test application 1"
     },
-    "validTo": "9999-12-31T23:59:59.9999999",
-    "isPublicService": false,
     "resourceReferences": [
       {
         "referenceSource": "Altinn3",
@@ -352,30 +337,39 @@
     "selfIdentifiedUserEnabled": false,
     "enterpriseUserEnabled": false,
     "resourceType": "AltinnApp",
-    "mainLanguage": "nb"
+    "mainLanguage": "nb",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ]
   },
   {
     "identifier": "se_1337_1338",
     "title": {
-      "en": "ACC Security level 2 MAG",
-      "nb-no": "ACC Security level 2 MAG",
-      "nn-no": "ACC Security level 2 MAG"
+      "en": "Altinn 2 delegation check",
+      "nb": "Altinn 2 delegation check",
+      "nn": "Altinn 2 delegation check"
     },
     "description": {
-      "en": "ACC Security level 2 MAG for automated tests",
-      "nb-no": "ACC Security level 2 MAG for automatiserte tester",
-      "nn-no": "ACC Security level 2 MAG for automatiserte testar"
+      "en": "Altinn 2 delegation check",
+      "nb": "Altinn 2 delegation check",
+      "nn": "Altinn 2 delegation check"
     },
     "rightDescription": {
-      "en": "Access to the test scopes",
-      "nb-no": "Tilgang til test scopene",
-      "nn-no": "Tilgong til test omfang"
+      "en": "Altinn 2 delegation check",
+      "nb": "Altinn 2 delegation check",
+      "nn": "Altinn 2 delegation check"
     },
-    "homepage": "https://www.digdir.no/",
+    "homepage": "",
     "status": "Active",
-    "validTo": "2099-12-24T23:59:59",
-    "isPartOf": "Altinn",
-    "isPublicService": true,
+    "contactPoints": [],
+    "isPartOf": "",
     "resourceReferences": [
       {
         "reference": "1337",
@@ -386,7 +380,6 @@
         "referenceType": "ServiceEditionCode"
       }
     ],
-    "isComplete": true,
     "delegable": true,
     "visible": true,
     "hasCompetentAuthority": {
@@ -394,25 +387,24 @@
       "orgcode": "ACC",
       "name": {
         "en": "Test departement",
-        "nb-no": "Testdepartement",
-        "nn-no": "Testdepartement"
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
       }
     },
     "keywords": [],
-    "sector": [
-      "private",
-      "public"
-    ],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
     "resourceType": "Altinn2Service",
     "mainLanguage": "nb",
     "authorizationReference": [
       {
-        "id": "urn:altinn:org",
-        "value": "org1"
+        "id": "urn:altinn:servicecode",
+        "value": "1337"
       },
       {
-        "id": "urn:altinn:app",
-        "value": "app1"
+        "id": "urn:altinn:serviceeditioncode",
+        "value": "1338"
       }
     ]
   },

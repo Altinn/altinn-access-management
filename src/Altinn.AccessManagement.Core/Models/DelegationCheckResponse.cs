@@ -3,7 +3,7 @@
     /// <summary>
     /// Response model for the result of a delegation status check, for which rights a user is able to delegate between two parties.
     /// </summary>
-    public class DelegationCheckResult : ValidationErrorResult
+    public class DelegationCheckResponse : ValidationErrorResult
     {
         /// <summary>
         /// Gets or sets a set of attribute id and attribute value for the party offering rights
@@ -11,8 +11,8 @@
         public List<AttributeMatch> From { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of right delegation check results
+        /// Gets or sets a list of right delegation status models
         /// </summary>
-        public List<RightDelegationCheckResult> DelegationCheckResults { get; set; }
+        public List<RightDelegationCheckResult> RightDelegationCheckResults { get; set; }
     }
 }

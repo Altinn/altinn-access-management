@@ -14,7 +14,16 @@
         "code": "MissingRoleAccess",
         "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV, urn:altinn:rolecode:DAGL), which would give access to delegate the right.",
         "parameters": {
-          "RequiredRoles": "urn:altinn:rolecode:PRIV, urn:altinn:rolecode:DAGL"
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "PRIV"
+            },
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "DAGL"
+            }
+          ]
         }
       },
       {
@@ -39,7 +48,12 @@
         "code": "MissingRoleAccess",
         "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
         "parameters": {
-          "RequiredRoles": "urn:altinn:rolecode:PRIV"
+          "RequiredRoles": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "PRIV"
+            }
+          ]
         }
       },
       {
@@ -68,7 +82,12 @@
         "code": "MissingRoleAccess",
         "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
         "parameters": {
-          "RequiredRoles": "urn:altinn:rolecode:PRIV"
+          "RequiredRoles": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "PRIV"
+            }
+          ]
         }
       },
       {
@@ -97,7 +116,12 @@
         "code": "MissingRoleAccess",
         "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
         "parameters": {
-          "RequiredRoles": "urn:altinn:rolecode:PRIV"
+          "RequiredRoles": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "PRIV"
+            }
+          ]
         }
       },
       {
@@ -126,7 +150,12 @@
         "code": "DelegationAccess",
         "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:userid:20000490",
         "parameters": {
-          "DelegationRecipients": "urn:altinn:userid:20000490"
+          "DelegationRecipients": [
+            {
+              "Id": "urn:altinn:userid",
+              "Value": "20000490"
+            }
+          ]
         }
       }
     ]
@@ -150,7 +179,12 @@
         "code": "DelegationAccess",
         "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:userid:20000490",
         "parameters": {
-          "DelegationRecipients": "urn:altinn:userid:20000490"
+          "DelegationRecipients": [
+            {
+              "Id": "urn:altinn:userid",
+              "Value": "20000490"
+            }
+          ]
         }
       }
     ]
@@ -174,7 +208,12 @@
         "code": "DelegationAccess",
         "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:partyid:50005545",
         "parameters": {
-          "DelegationRecipients": "urn:altinn:partyid:50005545"
+          "DelegationRecipients": [
+            {
+              "Id": "urn:altinn:partyid",
+              "Value": "50005545"
+            }
+          ]
         }
       }
     ]
@@ -198,7 +237,12 @@
         "code": "DelegationAccess",
         "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:partyid:50005545",
         "parameters": {
-          "DelegationRecipients": "urn:altinn:partyid:50005545"
+          "DelegationRecipients": [
+            {
+              "Id": "urn:altinn:partyid",
+              "Value": "50005545"
+            }
+          ]
         }
       }
     ]

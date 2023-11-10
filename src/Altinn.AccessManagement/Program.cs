@@ -212,6 +212,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddHttpClient<IPartiesClient, PartiesClient>();
     services.AddHttpClient<IProfileClient, ProfileClient>();
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
+    services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
     services.AddHttpClient<AuthorizationApiClient>();
     
     services.AddTransient<IDelegationRequests, DelegationRequestService>();

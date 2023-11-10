@@ -48,3 +48,31 @@ function makeAppRequestBody(org, app) {
 
   return requestBody;
 }
+
+export function altinn2ServiceUserDelegationCheck(altinnToken, offeredByPartyId, serviceCode, serviceEditionCode) {
+  var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'delegationcheck');
+  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
+  var body = [];
+  body.push(makeAltinn2ServiceRequestBody(serviceCode, serviceEditionCode));
+  var bodystring = JSON.stringify(body);
+  bodystring = bodystring.substring(1, bodystring.length-1)
+  return http.post(endpoint, bodystring, params);
+  console.log('Altinn2service body')
+  console.log(bodystring)
+}
+
+function makeAltinn2ServiceRequestBody(serviceCode, serviceEditionCode) {
+  var requestBody = {
+    resource: [{
+      id: 'urn:altinn:servicecode',
+      value: serviceCode
+    },
+    {
+      id: 'urn:altinn:serviceeditioncode',
+      value: serviceEditionCode
+    }
+  ],
+  };
+
+  return requestBody;
+}

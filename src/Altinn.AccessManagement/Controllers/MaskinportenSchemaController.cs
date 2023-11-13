@@ -108,7 +108,6 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("{party}/maskinportenschema/delegationcheck")]
-        [ApiExplorerSettings(IgnoreApi = false)]
         [Produces("application/json")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]

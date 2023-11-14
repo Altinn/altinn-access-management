@@ -460,5 +460,71 @@
         "value": "generic-access-resource"
       }
     ]
+  },
+  {
+    "identifier": "scope-access-schema",
+    "title": {
+      "en": "Generic Access Maskinportenschema",
+      "nb": "Generisk Maskinportenschema",
+      "nn": "Generisk Maskinportenschema"
+    },
+    "description": {
+      "en": "Very nice generic maskinportenschema resource",
+      "nb": "Veldig fin generisk maskinportenschema-resurs",
+      "nn": "Steikje fine generisk maskinportenschema-resurs"
+    },
+    "rightDescription": {
+      "en": "You'll give access to the scopes of this maskinportenschema",
+      "nb": "Du gir tilgang til scopesene til denne maskinportenschemet",
+      "nn": "Du gir tilgong til scopesene til denne maskinportenschemet"
+    },
+    "homepage": "https://www.altinn.no",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn2",
+        "reference": "3fc59d3e-1c45-4b37-9c2f-d804afb55f7s",
+        "referenceType": "DelegationSchemeId"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "great:things",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "AppId:49",
+        "referenceType": "ServiceCode"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "1",
+        "referenceType": "ServiceEditionCode"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "MaskinportenSchema",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "scope-access-schema"
+      }
+    ]
   }
 ]

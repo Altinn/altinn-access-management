@@ -16,8 +16,8 @@
         "parameters": {
           "RoleRequirementsMatches": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "DAGL"
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
             }
           ]
         }
@@ -41,8 +41,8 @@
         "parameters": {
           "RequiredRoles": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "PRIV"
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
             }
           ]
         }
@@ -75,8 +75,8 @@
         "parameters": {
           "RequiredRoles": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "PRIV"
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
             }
           ]
         }
@@ -109,8 +109,8 @@
         "parameters": {
           "RequiredRoles": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "PRIV"
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
             }
           ]
         }
@@ -143,8 +143,8 @@
         "parameters": {
           "RoleRequirementsMatches": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "DAGL"
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
             }
           ]
         }
@@ -172,8 +172,8 @@
         "parameters": {
           "RoleRequirementsMatches": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "DAGL"
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
             }
           ]
         }
@@ -201,8 +201,8 @@
         "parameters": {
           "RoleRequirementsMatches": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "DAGL"
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
             }
           ]
         }
@@ -230,8 +230,33 @@
         "parameters": {
           "RoleRequirementsMatches": [
             {
-              "Id": "urn:altinn:rolecode",
-              "Value": "DAGL"
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource:admai-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "admai-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:UTINN. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
             }
           ]
         }

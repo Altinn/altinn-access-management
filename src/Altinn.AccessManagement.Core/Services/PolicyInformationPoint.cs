@@ -75,13 +75,6 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                // ToDo: does resource existance matter?
-                ServiceResource registryResource = await _contextRetrievalService.GetResource(resourceId);
-                if (registryResource == null || !registryResource.Delegable)
-                {
-                    throw new ValidationException($"The specified resource registry id: {resourceId} does not exist or is not delegable");
-                }
-
                 policy = await _prp.GetPolicyAsync(resourceId);
             }
             else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)

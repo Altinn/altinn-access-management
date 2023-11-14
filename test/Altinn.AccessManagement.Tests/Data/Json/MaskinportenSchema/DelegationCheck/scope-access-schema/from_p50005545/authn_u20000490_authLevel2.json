@@ -1,0 +1,27 @@
+[
+  {
+    "rightKey": "scope-access-schema:ScopeAccess",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "scope-access-schema"
+      }
+    ],
+    "action": "ScopeAccess",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "InsufficientAuthenticationLevel",
+        "description": "Authenticated user does not meet the required security level for resource. Minimum authentication level is 3",
+        "parameters": {
+          "MinimumAuthenticationLevel": [
+            {
+              "Id": "urn:altinn:minimum-authenticationlevel",
+              "Value": "3"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

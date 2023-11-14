@@ -63,12 +63,6 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            if (allDelegableRights.Exists(r => r.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
-            {
-                result.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resource}"); //// ToDo: convert to status?
-                return result;
-            }
-
             // Build result model with status
             foreach (Right right in allDelegableRights)
             {

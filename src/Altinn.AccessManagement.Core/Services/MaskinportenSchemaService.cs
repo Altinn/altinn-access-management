@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Utilities;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.Extensions.Logging;
+using static Altinn.AccessManagement.Core.Constants.AltinnXacmlConstants;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -43,9 +44,9 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationCheckResult> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
+        public async Task<DelegationCheckResponse> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request)
         {
-            (DelegationCheckResult result, ServiceResource resource, Party fromParty) = await ValidateDelegationCheckRequest(request);
+            (DelegationCheckResponse result, ServiceResource resource, Party fromParty) = await ValidateDelegationCheckRequest(request);
             if (!result.IsValid)
             {
                 return result;
@@ -78,14 +79,19 @@ namespace Altinn.AccessManagement.Core.Services
                     // Only relevant if delegationCheck passes the other requirements
                     int minimumAuthenticationLevel = right.RightSources.Find(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel).MinimumAuthenticationLevel;
                     rightDelegationStatus.Status = DelegableStatus.NotDelegable;
-                    rightDelegationStatus.Details = new List<Detail> 
-                    { 
+                    rightDelegationStatus.Details = new List<Detail>
+                    {
                         new Detail
                         {
                             Code = DetailCode.InsufficientAuthenticationLevel,
                             Description = $"Authenticated user does not meet the required security level for resource. Minimum authentication level is {minimumAuthenticationLevel}",
-                            Parameters = new Dictionary<string, string>() { { "MinimumAuthenticationLevel", $"{minimumAuthenticationLevel}" } }
-                        }
+                            Parameters = new Dictionary<string, List<AttributeMatch>>()
+                            {
+                                {
+                                    "MinimumAuthenticationLevel", new List<AttributeMatch> { new AttributeMatch { Id = MatchAttributeCategory.MinimumAuthenticationLevel, Value = minimumAuthenticationLevel.ToString() } }
+                                }
+                            }
+                        },
                     };
                 }
                 else
@@ -93,7 +99,7 @@ namespace Altinn.AccessManagement.Core.Services
                     rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
                 }
 
-                result.DelegationCheckResults.Add(rightDelegationStatus);
+                result.RightDelegationCheckResults.Add(rightDelegationStatus);
             }
 
             return result;
@@ -424,9 +430,9 @@ namespace Altinn.AccessManagement.Core.Services
             return delegation;
         }
 
-        private async Task<(DelegationCheckResult Result, ServiceResource Resource, Party FromParty)> ValidateDelegationCheckRequest(RightsDelegationCheckRequest request)
+        private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateDelegationCheckRequest(RightsDelegationCheckRequest request)
         {
-            DelegationCheckResult result = new DelegationCheckResult { From = request.From, DelegationCheckResults = new() };
+            DelegationCheckResponse result = new DelegationCheckResponse { From = request.From, RightDelegationCheckResults = new() };
 
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 

@@ -13,7 +13,14 @@
       {
         "code": "InsufficientAuthenticationLevel",
         "description": "Authenticated user does not meet the required security level for resource. Minimum authentication level is 3",
-        "parameters": { "MinimumAuthenticationLevel": "3" }
+        "parameters": {
+          "MinimumAuthenticationLevel": [
+            {
+              "Id": "urn:altinn:minimum-authenticationlevel",
+              "Value": "3"
+            }
+          ]
+        }
       }
     ]
   }

@@ -126,7 +126,7 @@ namespace Altinn.AccessManagement.Controllers
                 RightsDelegationCheckRequest rightDelegationStatusRequestInternal = _mapper.Map<RightsDelegationCheckRequest>(rightsDelegationCheckRequest);
                 rightDelegationStatusRequestInternal.From = reportee.SingleToList();
 
-                DelegationCheckResult delegationCheckResultInternal = await _delegation.DelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                DelegationCheckResponse delegationCheckResultInternal = await _delegation.DelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
                 if (!delegationCheckResultInternal.IsValid)
                 {
                     foreach (var error in delegationCheckResultInternal.Errors)
@@ -137,7 +137,7 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.DelegationCheckResults);
+                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.RightDelegationCheckResults);
             }
             catch (ValidationException valEx)
             {

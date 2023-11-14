@@ -21,6 +21,6 @@ namespace Altinn.AccessManagement.Models
         /// <summary>
         /// Gets or sets a dictionary of parameters which is related to the detail code and description
         /// </summary>
-        public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, List<AttributeMatchExternal>> Parameters { get; set; } = new Dictionary<string, List<AttributeMatchExternal>>();
     }
 }

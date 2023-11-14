@@ -720,7 +720,39 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// Test case: DelegationCheck when the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id 
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the 1337_1338 Altinn 2 service.
+        ///            In this case:
+        ///            - The test scenario is setup using existing test data for 1337/1338, offeredBy 50001337 and coveredbyuser 20001337, where the delegation policy contains rules for resources not in the App policy:
+        ///                 ("rightKey": "1338,1337,task1:sign" and "rightKey": "1338,1337,task1:write"). This should normally not happen but can become an real scenario where delegations have been made and then the resource/app policy is changed to remove some rights.
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_ServiceRight_UserDelegation_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50001337;
+            string resourceId = "se_1337_1338";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id
         ///            In this case:
         ///            - Since the resource is invalid a BadRequest response with a ValidationProblemDetails model response should be returned
         /// Expected: Responce error model is matching expected
@@ -796,6 +828,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
                     services.AddSingleton<IPDP, PdpPermitMock>();
+                    services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

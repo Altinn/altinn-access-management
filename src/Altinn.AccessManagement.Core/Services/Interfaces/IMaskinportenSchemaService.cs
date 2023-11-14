@@ -14,7 +14,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="request">The model describing the right delegation check to perform</param>
         /// <returns>The result of the delegation status check</returns>
-        public Task<DelegationCheckResult> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request);
+        public Task<DelegationCheckResponse> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request);
 
         /// <summary>
         /// Gets all offered maskinporten schema delegations for a reportee

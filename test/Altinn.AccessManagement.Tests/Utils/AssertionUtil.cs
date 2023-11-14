@@ -504,6 +504,25 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.Code, actual.Code);
             Assert.Equal(expected.Description, actual.Description);
+            AssertDetailParametersExternalEqual(expected.Parameters, actual.Parameters);
+        }
+
+        /// <summary>
+        /// Assert that two detail parameter dictionaries have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertDetailParametersExternalEqual(Dictionary<string, List<AttributeMatchExternal>> expected, Dictionary<string, List<AttributeMatchExternal>> actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.Keys.Count, actual.Keys.Count);
+            Assert.True(expected.Keys.All(expectedKey => actual.Keys.Contains(expectedKey)));
+            foreach (string key in expected.Keys)
+            {
+                AssertCollections(expected[key], actual[key], AssertAttributeMatchExternalEqual);
+            }
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

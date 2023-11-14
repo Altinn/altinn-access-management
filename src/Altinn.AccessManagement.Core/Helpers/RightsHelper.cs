@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using System.Collections.Generic;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
@@ -96,7 +97,12 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = DetailCode.RoleAccess,
                         Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
-                        Parameters = new Dictionary<string, string>() { { "RoleRequirementsMatches", $"{requiredRoles}" } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>()
+                        {
+                            {
+                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects))
+                            }
+                        }
                     });
                 }
 
@@ -110,7 +116,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = DetailCode.DelegationAccess,
                         Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
-                        Parameters = new Dictionary<string, string>() { { "DelegationRecipients", $"{delegationRecipients}" } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(delegationPolicySources.SelectMany(delegationAccessSource => delegationAccessSource.PolicySubjects)) } }
                     });
                 }
             }
@@ -128,7 +134,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     {
                         Code = DetailCode.MissingRoleAccess,
                         Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        Parameters = new Dictionary<string, string>() { { "RequiredRoles", $"{requiredRoles}" } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)) } }
                     });
                 }
 
@@ -154,6 +160,22 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return reasons;
+        }
+
+        /// <summary>
+        /// Converts a list of policy attribute matches into a list of attribute matches
+        /// </summary>
+        /// <param name="policySubjects">a list of policy attribute matches</param>
+        /// <returns>a list of attribute matches</returns>
+        private static List<AttributeMatch> GetAttributeMatches(IEnumerable<List<PolicyAttributeMatch>> policySubjects)
+        {
+            List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
+            foreach (List<PolicyAttributeMatch> attributeMatch in policySubjects)
+            {
+                attributeMatches.AddRange(attributeMatch);
+            }
+
+            return attributeMatches;
         }
     }
 }

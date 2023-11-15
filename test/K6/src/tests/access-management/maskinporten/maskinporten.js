@@ -7,15 +7,15 @@ docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=*** -e 
 
 */
 import { check, sleep, fail } from 'k6';
-import { addErrorCount, stopIterationOnFail } from '../../errorcounter.js';
-import { generateToken } from '../../api/altinn-testtools/token-generator.js';
-import { generateJUnitXML, reportPath } from '../../report.js';
-import * as maskinporten from '../../api/platform/authorization/maskinporten.js';
+import { addErrorCount, stopIterationOnFail } from '../../../errorcounter.js';
+import { generateToken } from '../../../api/altinn-testtools/token-generator.js';
+import { generateJUnitXML, reportPath } from '../../../report.js';
+import * as maskinporten from '../../../api/access-management/maskinporten/maskinporten.js';
 
 const environment = __ENV.env.toLowerCase();
 const tokenGeneratorUserName = __ENV.tokengenuser;
 const tokenGeneratorUserPwd = __ENV.tokengenuserpwd;
-let testdataFile = open(`../../data/testdata/maskinportenschema/${__ENV.env}testdata.json`);
+let testdataFile = open(`../../../data/testdata/maskinportenschema/${__ENV.env}testdata.json`);
 var testdata = JSON.parse(testdataFile);
 var org1;
 var org2;

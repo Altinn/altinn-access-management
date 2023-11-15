@@ -1,6 +1,6 @@
 import http from 'k6/http';
-import * as config from '../../../../config.js';
-import * as header from '../../../../buildrequestheaders.js';
+import * as config from '../../../config.js';
+import * as header from '../../../buildrequestheaders.js';
 
 export function resourceUserDelegationCheck(altinnToken, offeredByPartyId, resourceid) {
     var endpoint = config.buildRightsEndpointUrls(offeredByPartyId, 'delegationcheck');

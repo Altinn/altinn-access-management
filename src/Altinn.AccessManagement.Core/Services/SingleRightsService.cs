@@ -55,8 +55,7 @@ namespace Altinn.AccessManagement.Core.Services
             DelegationHelper.TryGetResourceFromAttributeMatch(request.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
             if (resource.ResourceType == ResourceType.Altinn2Service)
             {
-                string partyId = fromParty.PartyId.ToString();
-                return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, partyId, serviceCode, serviceEditionCode);
+                return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, fromParty.PartyId, serviceCode, serviceEditionCode);
             }
 
             rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
@@ -65,12 +64,6 @@ namespace Altinn.AccessManagement.Core.Services
             if (allDelegableRights == null || allDelegableRights.Count == 0)
             {
                 result.Errors.Add("right[0].Resource", $"No delegable rights could be found for the resource: {resource}");
-                return result;
-            }
-
-            if (allDelegableRights.Exists(r => r.RightSources.Exists(rs => rs.MinimumAuthenticationLevel > authenticatedUserAuthlevel)))
-            {
-                result.Errors.Add("right[0].Resource", $"Authenticated user does not meet the required security level requirement for resource: {resource}"); //// ToDo: convert to status?
                 return result;
             }
 
@@ -102,11 +95,15 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(resource.AuthorizationReference, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+            // Altinn 2 service delegation is handled by SBL Bridge
+            DelegationHelper.TryGetResourceFromAttributeMatch(resource.AuthorizationReference, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string _, out string _);
             if (resourceMatchType == ResourceAttributeMatchType.Altinn2Service)
             {
-                result.Errors.Add("right[0].Resource", $"Delegation of Altinn 2 services are not yet supported. {resource}"); //// ToDo: Update when support exists
-                return result;
+                SblRightDelegationRequest sblRightDelegationRequest = new SblRightDelegationRequest { To = to.FirstOrDefault(), Rights = delegation.Rights };
+                DelegationActionResult sblResult = await _altinn2RightsClient.PostDelegation(authenticatedUserId, fromParty.PartyId, sblRightDelegationRequest);
+
+                sblResult.To = result.To; // Set result.To to match original input
+                return sblResult;
             }
 
             // Verify authenticated users delegable rights

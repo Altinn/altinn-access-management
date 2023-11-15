@@ -11,64 +11,48 @@
   ],
   "RightDelegationResults": [
     {
-      "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action",
-      "resource": [
+      "RightKey": "2802,2203:read",
+      "Resource": [
         {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
+          "id": "urn:altinn:servicecode",
+          "value": "2802"
         },
         {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
+          "id": "urn:altinn:serviceeditioncode",
+          "value": "2203"
         }
       ],
-      "action": "subunit-delegated-action",
-      "status": "Delegated"
+      "Action": "read",
+      "Status": "Delegated",
+      "Details": [
+        {
+          "Code": "DelegationAccess",
+          "Description": null,
+          "Parameters": {}
+        }
+      ]
     },
     {
-      "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit",
-      "resource": [
+      "RightKey": "2802,2203:write",
+      "Resource": [
         {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
+          "id": "urn:altinn:servicecode",
+          "value": "2802"
         },
         {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
+          "id": "urn:altinn:serviceeditioncode",
+          "value": "2203"
         }
       ],
-      "action": "subunit-delegated-action-to-keyroleunit",
-      "status": "Delegated"
-    },
-    {
-      "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action",
-      "resource": [
+      "Action": "write",
+      "Status": "Delegated",
+      "Details": [
         {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
-        },
-        {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
+          "Code": "DelegationAccess",
+          "Description": null,
+          "Parameters": {}
         }
-      ],
-      "action": "mainunit-delegated-action",
-      "status": "Delegated"
-    },
-    {
-      "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit",
-      "resource": [
-        {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
-        },
-        {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
-        }
-      ],
-      "action": "mainunit-delegated-action-to-keyroleunit",
-      "status": "Delegated"
+      ]
     }
   ]
 }

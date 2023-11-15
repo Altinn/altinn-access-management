@@ -1,8 +1,12 @@
 {
   "to": [
     {
-      "id": "urn:altinn:userid",
+      "id": "urn:altinn:ssn",
       "value": "27099450067"
+    },
+    {
+      "id": "urn:altinn:lastname",
+      "value": "RAVNÅS"
     }
   ],
   "rights": [
@@ -17,46 +21,20 @@
           "Value": "2203"
         }
       ],
-      "action": "subunit-delegated-action"
+      "action": "read"
     },
     {
       "resource": [
         {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
+          "Id": "urn:altinn:servicecode",
+          "Value": "2802"
         },
         {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
+          "Id": "urn:altinn:serviceeditioncode",
+          "Value": "2203"
         }
       ],
-      "action": "subunit-delegated-action-to-keyroleunit"
-    },
-    {
-      "resource": [
-        {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
-        },
-        {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
-        }
-      ],
-      "action": "mainunit-delegated-action"
-    },
-    {
-      "resource": [
-        {
-          "id": "urn:altinn:resource",
-          "value": "generic-access-resource"
-        },
-        {
-          "id": "urn:altinn:task",
-          "value": "org-delegation-subtask"
-        }
-      ],
-      "action": "mainunit-delegated-action-to-keyroleunit"
+      "action": "write"
     }
   ]
 }

@@ -452,5 +452,44 @@
         "value": "generic-access-resource"
       }
     ]
+  },
+  {
+    "identifier": "se_2802_2203",
+    "title": {
+      "nb": "ACC Security level 2 MAG",
+      "en": "ACC Security level 2 MAG",
+      "nn": "ACC Security level 2 MAG"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn2",
+        "reference": "2802",
+        "referenceType": "ServiceCode"
+      },
+      {
+        "referenceSource": "Altinn2",
+        "reference": "2203",
+        "referenceType": "ServiceEditionCode"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "orgcode": "acn"
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "Altinn2Service",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:servicecode",
+        "value": "2802"
+      },
+      {
+        "id": "urn:altinn:serviceeditioncode",
+        "value": "2203"
+      }
+    ]
   }
 ]

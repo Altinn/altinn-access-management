@@ -8,6 +8,15 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
     public interface IMaskinportenSchemaService
     {
         /// <summary>
+        /// Performs a delegation check for the authenticated user on behalf of the from party, to find if and what rights the user can delegate to the to party, for the given maskinportenschema.
+        /// </summary>
+        /// <param name="authenticatedUserId">The user id of the authenticated user performing the delegation</param>
+        /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
+        /// <param name="request">The model describing the right delegation check to perform</param>
+        /// <returns>The result of the delegation status check</returns>
+        public Task<DelegationCheckResponse> DelegationCheck(int authenticatedUserId, int authenticatedUserAuthlevel, RightsDelegationCheckRequest request);
+
+        /// <summary>
         /// Gets all offered maskinporten schema delegations for a reportee
         /// </summary>
         /// <param name="party">reportee that delegated resources</param>

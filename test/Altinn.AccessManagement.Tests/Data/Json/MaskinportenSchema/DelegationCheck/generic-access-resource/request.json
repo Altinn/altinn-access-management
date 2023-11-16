@@ -1,0 +1,8 @@
+{
+  "resource": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "generic-access-resource"
+    }
+  ]
+}

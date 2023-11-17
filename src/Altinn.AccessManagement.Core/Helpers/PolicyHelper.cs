@@ -574,7 +574,6 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     foreach (XacmlAllOf action in actionAllOfs)
                     {
-                        string rightKey = $"{GetXacmlAllOffKey(resource)}:{GetXacmlAllOffKey(action)}";
                         Right right = new Right
                         {
                             RightSources = new List<RightSource>(),

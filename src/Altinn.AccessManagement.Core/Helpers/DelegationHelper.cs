@@ -52,9 +52,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetPartyIdFromAttributeMatch(List<AttributeMatch> match, out int partyid)
         {
             partyid = 0;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
             {
-                return int.TryParse(match.First().Value, out partyid) && partyid != 0;
+                return int.TryParse(match[0].Value, out partyid) && partyid != 0;
             }
 
             return false;
@@ -67,9 +67,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetUserIdFromAttributeMatch(List<AttributeMatch> match, out int userid)
         {
             userid = 0;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
             {
-                return int.TryParse(match.First().Value, out userid) && userid != 0;
+                return int.TryParse(match[0].Value, out userid) && userid != 0;
             }
 
             return false;
@@ -82,9 +82,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetOrganizationNumberFromAttributeMatch(List<AttributeMatch> match, out string orgNo)
         {
             orgNo = string.Empty;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                orgNo = match.First().Value;
+                orgNo = match[0].Value;
                 return true;
             }
 
@@ -98,9 +98,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetSocialSecurityNumberAttributeMatch(List<AttributeMatch> match, out string ssn)
         {
             ssn = string.Empty;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
             {
-                ssn = match.First().Value;
+                ssn = match[0].Value;
                 return true;
             }
 
@@ -116,7 +116,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)?.Value;
             lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
 
-            if (match?.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
+            if (match != null && match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
             {
                 return true;
             }
@@ -133,7 +133,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
             lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
 
-            if (match?.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
+            if (match != null && match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
             {
                 return true;
             }
@@ -148,9 +148,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetEnterpriseUserNameAttributeMatch(List<AttributeMatch> match, out string enterpriseUserName)
         {
             enterpriseUserName = string.Empty;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName)
             {
-                enterpriseUserName = match.First().Value;
+                enterpriseUserName = match[0].Value;
                 return true;
             }
 

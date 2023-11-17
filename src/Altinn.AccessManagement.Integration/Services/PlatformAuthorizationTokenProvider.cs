@@ -17,7 +17,7 @@ public class PlatformAuthorizationTokenProvider : IPlatformAuthorizationTokenPro
     private readonly AccessTokenSettings _accessTokenSettings;
     private readonly KeyVaultSettings _keyVaultSettings;
     private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
-    private static DateTime _cacheTokenUntil = DateTime.MinValue;
+    private DateTime _cacheTokenUntil = DateTime.MinValue;
     private string _accessToken;
 
     /// <summary>
@@ -39,7 +39,7 @@ public class PlatformAuthorizationTokenProvider : IPlatformAuthorizationTokenPro
         _accessTokenGenerator = accessTokenGenerator;
         _accessTokenSettings = accessTokenSettings.Value;
         _keyVaultSettings = keyVaultSettings.Value;
-        _oidcProviderSettings = oidcProviderSettings.Value;        
+        _oidcProviderSettings = oidcProviderSettings.Value;
     }
 
     /// <inheritdoc />

@@ -223,15 +223,20 @@ namespace Altinn.AccessManagement.Core.Services
         {
             DelegationActionResult result = new DelegationActionResult { From = delegation.From, To = delegation.To, Rights = new List<RightDelegationResult>() };
 
+            if (delegation.Rights.Count == 0)
+            {
+                result.Errors.Add("Rights", "Request must contain at least one right to be delegated");
+                return (result, null, null, null);
+            }
+
             // Verify request is for single resource, app or Altinn 2 service
-            if (delegation.Rights?.Count > 1 && !ValidateAllRightsAreForTheSameResource(delegation.Rights))
+            if (delegation.Rights.Count > 1 && !ValidateAllRightsAreForTheSameResource(delegation.Rights))
             {
                 result.Errors.Add("Rights", "Rights delegation only support requests where all rights are for the same resource, app or Altinn 2 service");
                 return (result, null, null, null);
             }
 
-            Right right = delegation.Rights.First();
-            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
+            DelegationHelper.TryGetResourceFromAttributeMatch(delegation.Rights[0].Resource, out ResourceAttributeMatchType _, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 
             ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
             if (resource == null || !resource.Delegable)
@@ -302,7 +307,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Verify delegation From and To is not the same party (with exception for Altinn 2 Enterprise users)
-            if (fromParty.PartyId == toParty?.PartyId || (fromParty.PartyId == toUser?.PartyId && toUser?.Party.PartyTypeName != PartyType.Organisation))
+            if (fromParty.PartyId == toParty?.PartyId || (toUser != null && fromParty.PartyId == toUser.PartyId && toUser.Party.PartyTypeName != PartyType.Organisation))
             {
                 result.Errors.Add("To", $"The From party and the To recipient are the same. Self-delegation is not supported as it serves no purpose.");
                 return (result, resource, null, null);

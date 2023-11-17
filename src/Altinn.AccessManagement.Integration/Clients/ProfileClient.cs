@@ -3,13 +3,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Extensions;
-using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Integration.Configuration;
-using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Platform.Profile.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -38,20 +34,18 @@ namespace Altinn.AccessManagement.Integration.Clients
         {
             _logger = logger;
             _settings = platformSettings.Value;
-            httpClient.BaseAddress = new Uri(_settings.ApiProfileEndpoint);
-            httpClient.DefaultRequestHeaders.Add(_settings.SubscriptionKeyHeaderName, _settings.SubscriptionKey);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
         /// <inheritdoc/>
         public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
         {
-            string endpointUrl = $"internal/user/";
+            UriBuilder endpoint = new UriBuilder($"{_settings.ApiProfileEndpoint}internal/user/");
 
             StringContent requestBody = new StringContent(JsonSerializer.Serialize(userProfileLookup), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(endpointUrl, requestBody);
+            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)

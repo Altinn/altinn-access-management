@@ -116,7 +116,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)?.Value;
             lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
 
-            if (match != null && match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
+            if (match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
             {
                 return true;
             }
@@ -133,7 +133,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
             lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
 
-            if (match != null && match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
+            if (match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
             {
                 return true;
             }

@@ -652,11 +652,6 @@ namespace Altinn.AccessManagement.Core.Helpers
             return ruleAttributeMatches;
         }
 
-        private static string GetXacmlAllOffKey(XacmlAllOf allOf)
-        {
-            return string.Join(",", allOf.Matches.OrderBy(m => m.AttributeDesignator.AttributeId.OriginalString).Select(m => m.AttributeValue.Value));
-        }
-
         private static List<AttributeMatch> GetAttributeMatchFromXacmlAllOfs(XacmlAllOf allOf)
         {
             List<AttributeMatch> attributeMatches = new List<AttributeMatch>();

@@ -1,0 +1,75 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{bearerToken}}
+}
+
+script:pre-request {
+  const axios = require("axios");
+  const btoa = require("btoa");
+  
+  const tokenBaseUrl = bru.getEnvVar("tokenBaseUrl");
+  const basicAuthUser = bru.getEnvVar("tokenBasicAuthUser");
+  const basicAuthPw = bru.getEnvVar("tokenBasicAuthPw");
+  const Authorization = 'Basic ' + btoa(`${basicAuthUser}:${basicAuthPw}`);
+  //console.log('tokenBaseUrl:', tokenBaseUrl);
+  //console.log('basicAuthUser:', basicAuthUser);
+  //console.log('basicAuthPw:', basicAuthPw);
+  //console.log('Authorization:', Authorization);
+  
+  const tokenEnv = bru.getEnvVar("tokenEnv");
+  const tokenType = bru.getVar("auth_tokenType");
+  const tokenUser = bru.getVar("auth_userId");
+  const tokenParty = bru.getVar("auth_partyId");
+  const tokenPid = bru.getVar("auth_ssn");
+  const tokenScopes = bru.getVar("auth_scopes");
+  const tokenOrg = bru.getVar("auth_org");
+  const tokenOrgNo = bru.getVar("auth_orgNo");
+  const tokenUsername = bru.getVar("auth_username");
+  
+  console.log('tokenEnv:', tokenEnv);
+  console.log('tokenType:', tokenType);
+  console.log('tokenUser:', tokenUser);
+  console.log('tokenParty:', tokenParty);
+  console.log('tokenPid:', tokenPid);
+  console.log('tokenScopes:', tokenScopes);
+  console.log('tokenOrg:', tokenOrg);
+  console.log('tokenOrgNo:', tokenOrgNo);
+  console.log('tokenUsername:', tokenUsername);
+  
+  let tokenUrl;
+  if (tokenType == "Personal") {
+    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&userId=${tokenUser}&partyId=${tokenParty}&pid=${tokenPid}&ttl=30`;
+  }
+  
+  if (tokenType == "Enterprise") {
+    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&org=${tokenOrg}&orgNo=${tokenOrgNo}&ttl=30`;
+  }
+  
+  if (tokenType == "EnterpriseUser") {
+    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&orgNo=${tokenOrgNo}&userId=${tokenUser}&partyId=${tokenParty}&userName=${tokenUserName}&ttl=30`;
+  }
+  
+  console.log('tokenUrl:', tokenUrl);
+  const response = await axios.get(tokenUrl, {
+    headers: { Authorization }
+  });
+  
+  //console.log('response.data:', response.data);
+  bru.setVar("bearerToken", response.data);
+}
+
+script:post-response {
+  // Reset request vars so auth token data does not bleed between requests.
+  // Probably better ways of doing this?
+  bru.setVar("auth_tokenType", null);
+  bru.setVar("auth_userId", null);
+  bru.setVar("auth_partyId", null);
+  bru.setVar("auth_ssn", null);
+  bru.setVar("auth_scopes", null);
+  bru.setVar("auth_org", null);
+  bru.setVar("auth_orgNo", null);
+  bru.setVar("auth_username", null);
+}

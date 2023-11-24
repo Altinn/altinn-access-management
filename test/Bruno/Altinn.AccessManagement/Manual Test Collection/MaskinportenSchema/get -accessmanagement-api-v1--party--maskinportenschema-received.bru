@@ -1,0 +1,15 @@
+meta {
+  name: get -accessmanagement-api-v1--party--maskinportenschema-received
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://accessmanagement/api/v1/{party}/maskinportenschema/received
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}

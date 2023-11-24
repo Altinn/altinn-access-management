@@ -1,0 +1,15 @@
+meta {
+  name: put -accessmanagement-api-v1-internal-resources
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://accessmanagement/api/v1/internal/resources
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}

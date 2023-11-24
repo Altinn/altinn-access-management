@@ -1,0 +1,15 @@
+meta {
+  name: get -accessmanagement-api-v1-lookup-reportee--partyId-
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://accessmanagement/api/v1/lookup/reportee/{partyId}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}

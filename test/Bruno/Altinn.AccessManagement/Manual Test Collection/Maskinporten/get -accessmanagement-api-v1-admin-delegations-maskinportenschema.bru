@@ -1,0 +1,21 @@
+meta {
+  name: get -accessmanagement-api-v1-admin-delegations-maskinportenschema
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://accessmanagement/api/v1/admin/delegations/maskinportenschema
+  body: none
+  auth: none
+}
+
+query {
+  ~supplierOrg: 
+  ~consumerOrg: 
+  ~scope: 
+}
+
+headers {
+  Authorization: {{apiKey}}
+}

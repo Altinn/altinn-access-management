@@ -6,8 +6,8 @@ namespace Altinn.AccessManagement.Core.Configuration
     public static class FeatureFlags
     {
         /// <summary>
-        /// Feature flag for testing
+        /// Feature flag for activating the Rights Delegation API
         /// </summary>
-        public const string RightsDelegationCheck = "RightsDelegationCheck";
+        public const string RightsDelegationApi = "RightsDelegationApi";
     }
 }

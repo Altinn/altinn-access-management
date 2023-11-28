@@ -2,6 +2,7 @@ using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -10,7 +11,7 @@ using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Services;
-using Altinn.AccessManagement.Interfaces;
+using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Services;
@@ -205,7 +206,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
     services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
+    services.Configure<KeyVaultSettings>(config.GetSection("kvSetting"));
     services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
+    services.Configure<UserProfileLookupSettings>(config.GetSection("UserProfileLookupSettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
@@ -239,6 +242,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
     services.AddSingleton<IPDP, PDPAppSI>();
     services.AddSingleton<ISingleRightsService, SingleRightsService>();
+    services.AddSingleton<IUserProfileLookupService, UserProfileLookupService>();
+    services.AddSingleton<IKeyVaultService, KeyVaultService>();
+    services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {

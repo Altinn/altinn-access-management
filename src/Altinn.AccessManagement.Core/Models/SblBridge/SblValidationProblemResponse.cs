@@ -1,9 +1,9 @@
 ﻿namespace Altinn.AccessManagement.Core.Models.SblBridge
 {
     /// <summary>
-    /// Model for error messages from SBL UserDelegationCheck
+    /// Model for validation problem error messages from SBL Bridge
     /// </summary>
-    public class SblDelegationCheckError
+    public class SblValidationProblemResponse
     {
         /// <summary>
         /// Gets or sets the error message

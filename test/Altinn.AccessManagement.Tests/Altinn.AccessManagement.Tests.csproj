@@ -45,9 +45,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Data\**">
+    <None Include="Data\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

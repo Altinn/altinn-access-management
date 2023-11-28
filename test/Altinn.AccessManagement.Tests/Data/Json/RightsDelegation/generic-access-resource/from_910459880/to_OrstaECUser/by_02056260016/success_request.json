@@ -1,0 +1,19 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:enterpriseusername",
+      "value": "OrstaECUser"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "admai-delegated-action"
+    }
+  ]
+}

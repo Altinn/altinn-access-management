@@ -100,6 +100,21 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Altinn 2 service edition code attribute match indentifier 
             /// </summary>
             public const string ServiceEditionCodeAttribute = "urn:altinn:serviceeditioncode";
+
+            /// <summary>
+            /// Last name of a person 
+            /// </summary>
+            public const string LastName = "urn:altinn:lastname";
+
+            /// <summary>
+            /// Username
+            /// </summary>
+            public const string UserName = "urn:altinn:username";
+
+            /// <summary>
+            /// Enterprise username
+            /// </summary>
+            public const string EnterpriseUserName = "urn:altinn:enterpriseusername";
         }
 
         /// <summary>

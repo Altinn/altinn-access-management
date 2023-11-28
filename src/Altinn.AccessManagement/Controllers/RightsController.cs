@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
+using Altinn.AccessManagement.Core;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
@@ -126,7 +128,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        [FeatureGate(FeatureFlags.RightsDelegationCheck)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
         public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
@@ -160,6 +162,68 @@ namespace Altinn.AccessManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(500, ex, "Internal exception occurred during DelegationCheck");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
+            }
+        }
+
+        /// <summary>
+        /// Endpoint for performing a delegation of rights on behalf of a specified reportee and resource, to a recipient.
+        /// </summary>
+        /// <param name="party">The reportee party</param>
+        /// <param name="rightsDelegationRequest">Request model for rights delegation</param>
+        /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [Route("{party}/rights/delegation/offered")]
+        [ApiExplorerSettings(IgnoreApi = false)]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(500)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<ActionResult<RightsDelegationResponseExternal>> Delegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal rightsDelegationRequest)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+
+            try
+            {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+
+                DelegationLookup rightsDelegationRequestInternal = _mapper.Map<DelegationLookup>(rightsDelegationRequest);
+                rightsDelegationRequestInternal.From = reportee.SingleToList();
+
+                DelegationActionResult delegationResultInternal = await _rights.DelegateRights(authenticatedUserId, authenticationLevel, rightsDelegationRequestInternal);
+                if (!delegationResultInternal.IsValid)
+                {
+                    foreach (var error in delegationResultInternal.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return _mapper.Map<RightsDelegationResponseExternal>(delegationResultInternal);
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (TooManyFailedLookupsException tooManyEx)
+            {
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, (int)HttpStatusCode.TooManyRequests, detail: tooManyEx.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(500, ex, "Internal exception occurred during Rights Delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }

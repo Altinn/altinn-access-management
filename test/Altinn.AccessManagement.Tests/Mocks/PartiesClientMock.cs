@@ -99,7 +99,14 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     }
                 }
 
-                party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);
+                if (!string.IsNullOrWhiteSpace(partyLookup.OrgNo))
+                {
+                    party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);
+                }
+                else if (!string.IsNullOrWhiteSpace(partyLookup.Ssn))
+                {
+                    party = partyList.Find(p => p.Person?.SSN == partyLookup.Ssn);
+                }                
             }
 
             return Task.FromResult(party);

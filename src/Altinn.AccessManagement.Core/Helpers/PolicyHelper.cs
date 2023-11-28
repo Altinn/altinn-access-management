@@ -574,16 +574,16 @@ namespace Altinn.AccessManagement.Core.Helpers
                 {
                     foreach (XacmlAllOf action in actionAllOfs)
                     {
-                        string rightKey = $"{GetXacmlAllOffKey(resource)}:{GetXacmlAllOffKey(action)}";
-                        if (!rights.ContainsKey(rightKey))
+                        Right right = new Right
                         {
-                            rights.Add(rightKey, new Right
-                            {
-                                RightKey = rightKey,
-                                RightSources = new List<RightSource>(),
-                                Resource = GetAttributeMatchFromXacmlAllOfs(resource),
-                                Action = GetAttributeMatchFromXacmlAllOfs(action).FirstOrDefault()
-                            });
+                            RightSources = new List<RightSource>(),
+                            Resource = GetAttributeMatchFromXacmlAllOfs(resource),
+                            Action = GetAttributeMatchFromXacmlAllOfs(action).FirstOrDefault()
+                        };
+
+                        if (!rights.ContainsKey(right.RightKey))
+                        {
+                            rights.Add(right.RightKey, right);
                         }
                     }
                 }
@@ -650,11 +650,6 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return ruleAttributeMatches;
-        }
-
-        private static string GetXacmlAllOffKey(XacmlAllOf allOf)
-        {
-            return string.Join(",", allOf.Matches.OrderBy(m => m.AttributeDesignator.AttributeId.OriginalString).Select(m => m.AttributeValue.Value));
         }
 
         private static List<AttributeMatch> GetAttributeMatchFromXacmlAllOfs(XacmlAllOf allOf)

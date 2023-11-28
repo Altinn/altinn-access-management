@@ -1424,7 +1424,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
-            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
         }
 
         /// <summary>
@@ -1457,7 +1457,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
-            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
         }
 
         /// <summary>
@@ -1610,7 +1610,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
-            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationStatusExternalEqual);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
         }
 
         private static IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)

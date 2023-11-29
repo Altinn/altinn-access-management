@@ -116,6 +116,9 @@ export function buildMaskinPorteSchemaUrls(party, type) {
     case 'maskinportenschema':
       value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/offered`;
       break;
+    case 'delegationCheck':
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/delegationcheck`;
+      break;
   }
   return value;
 }

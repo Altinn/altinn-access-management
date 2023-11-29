@@ -8,12 +8,17 @@ auth:bearer {
 
 script:pre-request {
   const axios = require("axios");
-  const btoa = require("btoa");
+
+  const debug = (bru.getVar("debug") || bru.getEnvVar("debug")) === "true";
+  const debugLog = (...args) => {
+    if (debug) {
+      console.log(...args);
+    }
+  };
   
   const tokenBaseUrl = "https://altinn-testtools-token-generator.azurewebsites.net";
   const basicAuthUser = bru.getEnvVar("tokenBasicAuthUser");
   const basicAuthPw = bru.getEnvVar("tokenBasicAuthPw");
-  const Authorization = 'Basic ' + btoa(`${basicAuthUser}:${basicAuthPw}`);
   //console.log('tokenBaseUrl:', tokenBaseUrl);
   //console.log('basicAuthUser:', basicAuthUser);
   //console.log('basicAuthPw:', basicAuthPw);
@@ -29,36 +34,46 @@ script:pre-request {
   const tokenOrgNo = bru.getVar("auth_orgNo");
   const tokenUsername = bru.getVar("auth_username");
   
-  console.log('tokenEnv:', tokenEnv);
-  console.log('tokenType:', tokenType);
-  console.log('tokenUser:', tokenUser);
-  console.log('tokenParty:', tokenParty);
-  console.log('tokenPid:', tokenPid);
-  console.log('tokenScopes:', tokenScopes);
-  console.log('tokenOrg:', tokenOrg);
-  console.log('tokenOrgNo:', tokenOrgNo);
-  console.log('tokenUsername:', tokenUsername);
+  debugLog('tokenEnv:', tokenEnv);
+  debugLog('tokenType:', tokenType);
+  debugLog('tokenUser:', tokenUser);
+  debugLog('tokenParty:', tokenParty);
+  debugLog('tokenPid:', tokenPid);
+  debugLog('tokenScopes:', tokenScopes);
+  debugLog('tokenOrg:', tokenOrg);
+  debugLog('tokenOrgNo:', tokenOrgNo);
+  debugLog('tokenUsername:', tokenUsername);
   
   let tokenUrl;
-  if (tokenType == "Personal") {
-    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&userId=${tokenUser}&partyId=${tokenParty}&pid=${tokenPid}&ttl=30`;
+  switch (tokenType) {
+    case "Personal":
+      tokenUrl = `${tokenBaseUrl}/api/GetPersonalToken?env=${tokenEnv}&scopes=${tokenScopes}&userId=${tokenUser}&partyId=${tokenParty}&pid=${tokenPid}&ttl=30`;
+      break;
+    case "Enterprise":
+      tokenUrl = `${tokenBaseUrl}/api/GetEnterpriseToken?env=${tokenEnv}&scopes=${tokenScopes}&org=${tokenOrg}&orgNo=${tokenOrgNo}&ttl=30`;
+      break;
+    case "EnterpriseUser":
+      tokenUrl = `${tokenBaseUrl}/api/GetEnterpriseUserToken?env=${tokenEnv}&scopes=${tokenScopes}&orgNo=${tokenOrgNo}&userId=${tokenUser}&partyId=${tokenParty}&userName=${tokenUserName}&ttl=30`;
+      break;
+    default:
+      throw new Error('Unknown token type (vars.auth_tokenType)');
   }
   
-  if (tokenType == "Enterprise") {
-    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&org=${tokenOrg}&orgNo=${tokenOrgNo}&ttl=30`;
+  debugLog('tokenUrl:', tokenUrl);
+  try {
+    const response = await axios.get(tokenUrl, {
+      auth: {
+        username: basicAuthUser,
+        password: basicAuthPw
+      }
+    });
+    
+    //console.log('response.data:', response.data);
+    bru.setVar("bearerToken", response.data);
+  } catch (error) {
+    console.error('authentication error:', error);
+    throw new Error('Getting token failed');
   }
-  
-  if (tokenType == "EnterpriseUser") {
-    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&orgNo=${tokenOrgNo}&userId=${tokenUser}&partyId=${tokenParty}&userName=${tokenUserName}&ttl=30`;
-  }
-  
-  console.log('tokenUrl:', tokenUrl);
-  const response = await axios.get(tokenUrl, {
-    headers: { Authorization }
-  });
-  
-  //console.log('response.data:', response.data);
-  bru.setVar("bearerToken", response.data);
 }
 
 script:post-response {

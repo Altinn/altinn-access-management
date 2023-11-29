@@ -1,0 +1,29 @@
+name: "Run Bruno tests"
+
+on:
+  push:
+    branches: [ main ]    
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  bruno:
+    name: Bruno
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 21.x
+    - name: Install bruno
+      run: npm install -g bruno
+
+    - name: Run automatic tests against AT22
+      working-directory: ./test/Bruno/Altinn.AcessManagement
+      run: bru run "Automatic Test Collection" -r --env AT22

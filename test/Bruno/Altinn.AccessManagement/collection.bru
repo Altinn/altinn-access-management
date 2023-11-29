@@ -71,7 +71,7 @@ script:pre-request {
     //console.log('response.data:', response.data);
     bru.setVar("bearerToken", response.data);
   } catch (error) {
-    console.error('authentication error:', error);
+    console.error('authentication error:', error.message);
     throw new Error('Getting token failed');
   }
 }

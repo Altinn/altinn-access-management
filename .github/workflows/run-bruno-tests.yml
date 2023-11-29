@@ -17,13 +17,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
     - name: Setup node
       uses: actions/setup-node@v3
       with:
         node-version: 21.x
+
     - name: Install bruno
       run: npm install -g bruno
 
     - name: Run automatic tests against AT22
-      working-directory: ./test/Bruno/Altinn.AcessManagement
+      working-directory: test/Bruno/Altinn.AccessManagement
       run: bru run "Automatic Test Collection" -r --env AT22

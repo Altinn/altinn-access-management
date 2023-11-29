@@ -24,7 +24,7 @@ jobs:
         node-version: 21.x
 
     - name: Install bruno
-      run: npm install -g bruno
+      run: npm install --global @usebruno/cli@1.x
 
     - name: Run automatic tests against AT22
       working-directory: test/Bruno/Altinn.AccessManagement

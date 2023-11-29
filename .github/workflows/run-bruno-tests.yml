@@ -29,3 +29,6 @@ jobs:
     - name: Run automatic tests against AT22
       working-directory: test/Bruno/Altinn.AccessManagement
       run: bru run "Automatic Test Collection" -r --env AT22
+      env:
+        TOKEN_BASIC_AUTH_USER: ${{ secrets.BRUNO_TOKEN_BASIC_AUTH_USER }}
+        TOKEN_BASIC_AUTH_PW: ${{ secrets.BRUNO_TOKEN_BASIC_AUTH_PW }}

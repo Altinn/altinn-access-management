@@ -7,15 +7,15 @@ docker-compose run k6 run /src/tests/maskinporten/maskinporten.js -e env=*** -e 
 
 */
 import { check, sleep, fail } from 'k6';
-import { addErrorCount, stopIterationOnFail } from '../../errorcounter.js';
-import { generateToken } from '../../api/altinn-testtools/token-generator.js';
-import { generateJUnitXML, reportPath } from '../../report.js';
-import * as maskinporten from '../../api/platform/authorization/maskinporten.js';
+import { addErrorCount, stopIterationOnFail } from '../../../errorcounter.js';
+import { generateToken } from '../../../api/altinn-testtools/token-generator.js';
+import { generateJUnitXML, reportPath } from '../../../report.js';
+import * as maskinporten from '../../../api/access-management/maskinporten/maskinporten.js';
 
 const environment = __ENV.env.toLowerCase();
 const tokenGeneratorUserName = __ENV.tokengenuser;
 const tokenGeneratorUserPwd = __ENV.tokengenuserpwd;
-let testdataFile = open(`../../data/testdata/maskinportenschema/${__ENV.env}testdata.json`);
+let testdataFile = open(`../../../data/testdata/maskinportenschema/${__ENV.env}testdata.json`);
 var testdata = JSON.parse(testdataFile);
 var org1;
 var org2;
@@ -100,6 +100,10 @@ export default function (data) {
   revokeReceivedMaskinPortenSchemaUsingPartyId();
   revokeNonExistentOfferedMaskinPortenSchema();
   revokeNonExistentReceivedMaskinPortenSchema();
+  delegationCheckMaskinPortenSchema_DAGLhasScopeAccess();
+  delegationCheckMaskinPortenSchema_HADMhasScopeAccess();
+  delegationCheckMaskinPortenSchema_resourceDoesNotExist();
+  delegationCheckMaskinPortenSchema_tooLowAuthLevel();
 
 }
 
@@ -566,6 +570,98 @@ export function revokeNonExistentReceivedMaskinPortenSchema() {
   });
   addErrorCount(success);
 }
+
+/** check delegation rights on a maskinportenschema for DAGL role */
+export function delegationCheckMaskinPortenSchema_DAGLhasScopeAccess() {
+  // Arrange
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'ttd-am-k6';
+
+  // Act
+  var res = maskinporten.postDelegationCheck(offeredByToken, offeredByPartyId, appid);
+
+  // Assert
+  var success = check(res, {
+    'delegationCheckMaskinportenSchema: DAGL has scope access - status is 200': (r) => r.status === 200,
+    'delegationCheckMaskinportenSchema: DAGL has scope access - rightskey is ttd-am-k6:ScopeAccess': (r) => r.json('0.rightKey') === appid + ':ScopeAccess',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - resource id is urn:altinn:resource': (r) => r.json('0.resource.0.id') === 'urn:altinn:resource',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - resource value is ttd-am-k6': (r) => r.json('0.resource.0.value') == appid,
+    'delegationCheckMaskinportenSchema: DAGL has scope access - action value is ScopeAccess': (r) => r.json('0.action') == 'ScopeAccess',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - status is Delegable': (r) => r.json('0.status') == 'Delegable',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+    'delegationCheckMaskinportenSchema: DAGL has scope access - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'APIADM',
+  });
+  addErrorCount(success);
+}
+
+/** check delegation rights on a maskinportenschema for HADM role*/
+export function delegationCheckMaskinPortenSchema_HADMhasScopeAccess() {
+  // Arrange
+  const offeredByToken = org1.hadm.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'ttd-am-k6';
+
+  // Act
+  var res = maskinporten.postDelegationCheck(offeredByToken, offeredByPartyId, appid);
+
+  // Assert
+  var success = check(res, {
+    'delegationCheckMaskinportenSchema: HADM has scope access - status is 200': (r) => r.status === 200,
+    'delegationCheckMaskinportenSchema: HADM has scope access - rightskey is ttd-am-k6:ScopeAccess': (r) => r.json('0.rightKey') === appid + ':ScopeAccess',
+    'delegationCheckMaskinportenSchema: HADM has scope access - resource id is urn:altinn:resource': (r) => r.json('0.resource.0.id') === 'urn:altinn:resource',
+    'delegationCheckMaskinportenSchema: HADM has scope access - resource value is ttd-am-k6': (r) => r.json('0.resource.0.value') == appid,
+    'delegationCheckMaskinportenSchema: HADM has scope access - action value is ScopeAccess': (r) => r.json('0.action') == 'ScopeAccess',
+    'delegationCheckMaskinportenSchema: HADM has scope access - status is Delegable': (r) => r.json('0.status') == 'Delegable',
+    'delegationCheckMaskinportenSchema: HADM has scope access - code is RoleAccess': (r) => r.json('0.details.0.code') == 'RoleAccess',
+    'delegationCheckMaskinportenSchema: HADM has scope access - RoleRequirementsMatches id is urn:altinn:rolecode': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.id') == 'urn:altinn:rolecode',
+    'delegationCheckMaskinportenSchema: HADM has scope access - RoleRequirementsMatches value is APIADM': (r) => r.json('0.details.0.parameters.RoleRequirementsMatches.0.value') == 'APIADM',
+  });
+  addErrorCount(success);
+}
+
+/** Checks that the response is 400 and with an error message when trying to delegate a non-existing resource */
+export function delegationCheckMaskinPortenSchema_resourceDoesNotExist() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'aresourcethattotallydoesnotexist';
+  
+  // Act
+  var res = maskinporten.postDelegationCheck(offeredByToken, offeredByPartyId, appid);
+
+  // Assert
+  var success = check(res, {
+    'delegationCheckMaskinportenSchema: Resource Is NonDelegable - status is 400 ': (r) => r.status === 400,
+    'delegationCheckMaskinportenSchema: Resource Is NonDelegable - Error message is "The resource does not exist or is not available for delegation"': (r) => r.body.includes('The resource does not exist or is not available for delegation'),
+  });
+  addErrorCount(success);
+}
+
+/** Checks that the response is 400 and with an error message when trying to delegate with a too low authentication level */
+export function delegationCheckMaskinPortenSchema_tooLowAuthLevel() {
+  const offeredByToken = org1.dagl.token;
+  const offeredByPartyId = org1.partyid;
+  const appid = 'altinn_automation_test_lv4';
+  
+  // Act
+  var res = maskinporten.postDelegationCheck(offeredByToken, offeredByPartyId, appid);
+
+  // Assert
+  var success = check(res, {
+    'delegationCheckMaskinportenSchema: user has too low authentication level - status is 200': (r) => r.status === 200,
+    'delegationCheckMaskinportenSchema: user has too low authentication level - rightskey is altinn_automation_test_lv4:ScopeAccess': (r) => r.json('0.rightKey') === appid + ':ScopeAccess',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - resource id is urn:altinn:resource': (r) => r.json('0.resource.0.id') === 'urn:altinn:resource',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - resource value is altinn_automation_test_lv4': (r) => r.json('0.resource.0.value') == appid,
+    'delegationCheckMaskinportenSchema: user has too low authentication level - action value is ScopeAccess': (r) => r.json('0.action') == 'ScopeAccess',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - status is NotDelegable': (r) => r.json('0.status') == 'NotDelegable',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - code is InsufficientAuthenticationLevel': (r) => r.json('0.details.0.code') == 'InsufficientAuthenticationLevel',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - MinimumAuthenticationLevel id is urn:altinn:minimum-authenticationlevel': (r) => r.json('0.details.0.parameters.MinimumAuthenticationLevel.0.id') == 'urn:altinn:minimum-authenticationlevel',
+    'delegationCheckMaskinportenSchema: user has too low authentication level - MinimumAuthenticationLevel value is 4': (r) => r.json('0.details.0.parameters.MinimumAuthenticationLevel.0.value') == '4',
+  });
+  addErrorCount(success);
+}
+
 
 export function handleSummary(data) {
   let result = {};

@@ -10,7 +10,7 @@ import { check, sleep, fail } from 'k6';
 import { addErrorCount, stopIterationOnFail } from '../../../errorcounter.js';
 import { generateToken } from '../../../api/altinn-testtools/token-generator.js';
 import { generateJUnitXML, reportPath } from '../../../report.js';
-import * as userDelegationCheck from '../../../api/platform/access-management/rights-delegations/userdelegationcheck.js';
+import * as userDelegationCheck from '../../../api/access-management/rights-delegations/userdelegationcheck.js';
 
 const environment = __ENV.env.toLowerCase();
 const tokenGeneratorUserName = __ENV.tokengenuser;

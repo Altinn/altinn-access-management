@@ -182,11 +182,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Act
             HttpResponseMessage response = await _client.SendAsync(httpRequestMessage);
             string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-            string actualErrorMessage = actual.Errors.Values.FirstOrDefault()[0];
-
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            string actualErrorMessage = actual.Errors.Values.FirstOrDefault()[0];
             Assert.Equal(expectedErrorMessage, actualErrorMessage);
         }
 

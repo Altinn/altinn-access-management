@@ -90,10 +90,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -135,10 +131,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -179,10 +171,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -253,10 +241,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -332,11 +316,12 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-            string errormessage = actual.Errors.Values.FirstOrDefault()[0];
-
+            
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            string errormessage = actual.Errors.Values.FirstOrDefault()[0];
             Assert.Equal("Not all RequestToDelete has a value for the user performing the delete", errormessage);
         }
 
@@ -365,12 +350,13 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeletePolicy", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-            string errormessage = actual.Errors.Values.FirstOrDefault()[0];
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal("Not all RequestToDelete has a value for the user performing the delete", errormessage);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            string errorMessage = actual.Errors.Values.FirstOrDefault()[0];
+            Assert.Equal("Not all RequestToDelete has a value for the user performing the delete", errorMessage);
         }
 
         /// <summary>
@@ -440,10 +426,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             string errorMessage = actual.Errors.Values.FirstOrDefault()[0];
             Assert.Equal("Input should not contain any duplicate policies", errorMessage);
         }
@@ -693,10 +679,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             string errorMessage = actual.Errors.Values.FirstOrDefault()[0];
             Assert.Equal("Input should not contain any duplicate policies", errorMessage);
         }
@@ -727,10 +713,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            ValidationProblemDetails actual = (ValidationProblemDetails)JsonSerializer.Deserialize(responseContent, typeof(ValidationProblemDetails));
-
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             string errorMessage = actual.Errors.Values.FirstOrDefault()[0];
             Assert.Equal("A non-empty request body is required.", errorMessage);
         }

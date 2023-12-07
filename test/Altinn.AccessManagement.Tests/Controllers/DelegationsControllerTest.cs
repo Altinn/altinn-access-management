@@ -90,10 +90,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -135,10 +131,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -179,10 +171,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert
@@ -253,10 +241,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
             List<Rule> actual = JsonSerializer.Deserialize<List<Rule>>(responseContent, options);
 
             // Assert

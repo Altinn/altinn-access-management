@@ -76,6 +76,8 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
+  console.log("body: ");
+  console.log(bodystring);
   return http.post(endpoint, bodystring, params);
 }
 
@@ -98,22 +100,6 @@ export function postMaskinportenSchemaOrgNoInHeader(altinnToken, offeredByOrgani
 }
 
 /**
- * POST call to delegation check on a maskinportenschema where the offeredby's partyid is in the path
- * @param {*} altinnToken personal token for DAGL
- * @param {*} offeredByPartyId the offeredby's party id
- * @param {*} resourceid the id of the resource to delegate
- */
-export function postDelegationCheck(altinnToken, offeredByPartyId, resourceid) {
-  var endpoint = config.buildMaskinPorteSchemaUrls(offeredByPartyId, 'delegationCheck');
-  var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
-  var body = [];
-  body.push(makeRequestBody(resourceid));
-  var bodystring = JSON.stringify(body);
-  bodystring = bodystring.substring(1, bodystring.length-1);
-  return http.post(endpoint, bodystring, params);
-}
-
-/**
  * function to build the request body for maskinportenschema
  * @param {*} resourceid the resourceid for the schema
  * @param {*} toAttributeId the attribute id for the receiver of the schema. 'urn:altinn:partyid' or 'urn:altinn:organizationnumber'
@@ -122,7 +108,7 @@ export function postDelegationCheck(altinnToken, offeredByPartyId, resourceid) {
  * @param {*} fromAttributeValue the sender's partyid or organization number
  * @returns request body json object
  */
-function makeRequestBody(resourceid, toAttributeId = null, toAttributeValue = null, fromAttributeId = null, fromAttributeValue = null) {
+function makeRequestBody(resourceid, toAttributeId, toAttributeValue, fromAttributeId, fromAttributeValue) {
   var rights = {
     resource: [{
       id: 'urn:altinn:resource',
@@ -131,28 +117,22 @@ function makeRequestBody(resourceid, toAttributeId = null, toAttributeValue = nu
   }
   var requestBody = {};
   
-  if (toAttributeId !== null && toAttributeValue !== null) {
+  if (toAttributeId != null && toAttributeValue != null) {
     requestBody = {
       to: [],
       rights: []
     };
-
     requestBody.to.push({id: toAttributeId, value: toAttributeValue});
-    requestBody.rights.push(rights);
   }
 
-  else if (fromAttributeId !== null && fromAttributeValue !== null ) {
+  else {
     requestBody = {
       from: [],
       rights: []
     };
     requestBody.from.push({id: fromAttributeId, value: fromAttributeValue});
-    requestBody.rights.push(rights);
   }
 
-  else {
-    requestBody = rights;
-  }
-
+  requestBody.rights.push(rights);
   return requestBody;
 }

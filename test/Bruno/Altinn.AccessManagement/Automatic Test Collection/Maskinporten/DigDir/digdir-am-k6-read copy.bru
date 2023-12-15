@@ -1,5 +1,5 @@
 meta {
-  name: digdir-am-k6-read
+  name: digdir-am-k6-read-404-error
   type: http
   seq: 2
 }
@@ -33,7 +33,6 @@ vars:pre-request {
 
 assert {
   res.status: eq 200
-  res.body: isDefined
 }
 
 script:pre-request {

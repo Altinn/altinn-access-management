@@ -14,6 +14,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.AccessManagement.Utilities;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -47,6 +48,27 @@ namespace Altinn.AccessManagement.Tests.Controllers
         public RightsControllerTest(CustomWebApplicationFactory<RightsController> factory)
         {
             _factory = factory;
+        }
+
+        /// <summary>
+        /// asd
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RightsOfferedDelegations_Valid_OfferedByParty()
+        {
+            var token = PrincipalUtil.GetToken(4321, 87654321, 3);
+            var client = GetTestClient(sblInternalToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "123");
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         /// <summary>

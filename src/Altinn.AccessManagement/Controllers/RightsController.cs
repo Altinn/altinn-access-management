@@ -239,7 +239,7 @@ namespace Altinn.AccessManagement.Controllers
         [Tags("delegation")]
         [ActionName("ListDelegationsOffered")]
         [HttpGet("{party}/rights/delegation/offered")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(RightsDelegationResponseExternal))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(RightsQueryExternal))]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -250,7 +250,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegations = await _rights.GetOfferedRightsDelegations(reportee, cancellationToken);
-                return Ok(_mapper.Map<RightsDelegationResponseExternal>(delegations));
+                return Ok(_mapper.Map<RightsQueryExternal>(delegations));
             }
             catch (FormatException ex)
             {
@@ -264,7 +264,7 @@ namespace Altinn.AccessManagement.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(500, ex, "Internal exception occurred during Rights Delegation");
+                _logger.LogError(StatusCodes.Status500InternalServerError, ex, "Internal exception occurred during Rights Delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }

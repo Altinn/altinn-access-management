@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -158,13 +159,21 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegations(AttributeMatch attribute, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegations(AttributeMatch partyAttribute, CancellationToken cancellationToken = default)
         {
-            var allOffers = await _delegationRepository.GetOfferedResourceRegistryDelegations(await SelectPartyID(attribute), cancellationToken: cancellationToken);
-            return allOffers.Where(a => a.ResourceType != "MaskinportenSchema");
+            var partyID = await GetPartyID(partyAttribute);
+            var delegations = new ConcurrentBag<List<DelegationChange>>();
+            Parallel.ForEach(
+                [
+                    _delegationRepository.GetOfferedResourceRegistryDelegations(partyID, cancellationToken: cancellationToken),
+                    _delegationRepository.GetAllCurrentAppDelegationChanges(partyID.SingleToList(), cancellationToken: cancellationToken)
+                ],
+                async delegation => delegations.Add(await delegation));
+
+            return delegations.SelectMany(d => d).Where(d => d.ResourceType != "MaskinportenSchema");
         }
 
-        private async Task<int> SelectPartyID(AttributeMatch attribute) => attribute.Id switch
+        private async Task<int> GetPartyID(AttributeMatch attribute) => attribute.Id switch
         {
             AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute => (await _contextRetrievalService.GetPartyForOrganization(attribute.Value)).PartyId,
             AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute => (await _contextRetrievalService.GetPartyForPerson(attribute.Value)).PartyId,

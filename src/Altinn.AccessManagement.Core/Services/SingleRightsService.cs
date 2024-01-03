@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
@@ -6,10 +7,13 @@ using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -22,18 +26,24 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IAltinn2RightsClient _altinn2RightsClient;
         private readonly IProfileClient _profile;
         private readonly IUserProfileLookupService _profileLookup;
+        private readonly IDelegationMetadataRepository _delegationRepository;
+        private readonly IHttpContextAccessor _accessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
         /// </summary>
+        /// <param name="delegationRepository">database implementation for fetching and inserting delegations</param>
+        /// <param name="accessor">http request context</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
         /// <param name="altinn2RightsClient">SBL Bridge client implementation for rights operations on Altinn 2 services</param>
         /// <param name="profile">Client implementation for getting user profile</param>
         /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
-        public SingleRightsService(IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
+        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IHttpContextAccessor accessor, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
         {
+            _delegationRepository = delegationRepository;
+            _accessor = accessor;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
             _pap = pap;
@@ -149,10 +159,19 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public Task<List<Delegation>> GetOfferedRightsDelegations(AttributeMatch party)
+        public async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegations(AttributeMatch attribute, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var allOffers = await _delegationRepository.GetOfferedResourceRegistryDelegations(await SelectPartyID(attribute), cancellationToken: cancellationToken);
+            return allOffers.Where(a => a.ResourceType != "MaskinportenSchema");
         }
+
+        private async Task<int> SelectPartyID(AttributeMatch attribute) => attribute.Id switch
+        {
+            AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute => (await _contextRetrievalService.GetPartyForOrganization(attribute.Value)).PartyId,
+            AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute => (await _contextRetrievalService.GetPartyForPerson(attribute.Value)).PartyId,
+            AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute => int.Parse(attribute.Value),
+            _ => throw new ValidationException($"can't handle reportee of type {attribute.Id}")
+        };
 
         /// <inheritdoc/>
         public Task<List<Delegation>> GetReceivedRightsDelegations(AttributeMatch party)

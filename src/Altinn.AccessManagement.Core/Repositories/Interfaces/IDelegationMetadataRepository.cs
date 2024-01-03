@@ -60,7 +60,8 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="offeredByPartyId">The party id of the entity offering the delegations</param>
         /// <param name="resourceRegistryIds">The resource registry ids of resources to find delegations of</param>
         /// <param name="resourceTypes">The types of resources to find delegations of</param>
-        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
+        /// <param name="cancellationToken">Cancellation token for cancelling the request</param>
+        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all the active resource registry delegations a list of parties have received from others

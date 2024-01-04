@@ -51,27 +51,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// asd
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task RightsOfferedDelegations_Valid_OfferedByParty()
-        {
-            var token = PrincipalUtil.GetToken(4321, 87654321, 3);
-            var client = GetTestClient(sblInternalToken);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "123");
-
-            // Act
-            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        /// <summary>
         /// Test case: RightsQuery returns a list of rights the To userid 20000095 have for the From party 50005545 for the jks_audi_etron_gt resource from the resource registry.
         ///            In this case:
         ///            - The From unit (50005545) has delegated the "Park" action directly to the user.
@@ -1178,6 +1157,26 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// asd
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RightsOfferedDelegations_Valid_OfferedByParty()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 87654321, 3);
+            var client = GetTestClient(token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/{20001337}/rights/delegation/offered");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         private HttpClient GetTestClient(string token)

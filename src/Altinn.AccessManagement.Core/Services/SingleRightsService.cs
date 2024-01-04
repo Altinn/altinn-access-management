@@ -170,7 +170,7 @@ namespace Altinn.AccessManagement.Core.Services
                 ],
                 async delegation => delegations.Add(await delegation));
 
-            return delegations.SelectMany(d => d).Where(d => d.ResourceType != "MaskinportenSchema");
+            return delegations.SelectMany(d => d).Where(d => d?.ResourceType != "MaskinportenSchema");
         }
 
         private async Task<int> GetPartyID(AttributeMatch attribute) => attribute.Id switch

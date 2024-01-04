@@ -236,10 +236,9 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-        [Tags("delegation")]
         [ActionName("ListDelegationsOffered")]
         [HttpGet("{party}/rights/delegation/offered")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(RightsQueryExternal))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationOfferedExternal>))]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -250,7 +249,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegations = await _rights.GetOfferedRightsDelegations(reportee, cancellationToken);
-                return Ok(_mapper.Map<RightsQueryExternal>(delegations));
+                return Ok(_mapper.Map<RightDelegationOfferedExternal>(delegations));
             }
             catch (FormatException ex)
             {

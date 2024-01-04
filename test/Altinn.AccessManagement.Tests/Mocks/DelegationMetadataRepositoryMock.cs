@@ -69,9 +69,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 PerformedByUserId = delegationChange.PerformedByUserId,
                 BlobStoragePolicyPath = delegationChange.BlobStoragePolicyPath,
                 BlobStorageVersionId = delegationChange.BlobStorageVersionId,
-                Created = DateTime.Now                
+                Created = DateTime.Now
             };
-    
+
             current.Add(currentDelegationChange);
 
             if (delegationChange.ResourceId == "error/postgrewritechangefail")
@@ -131,7 +131,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds, List<int> coveredByUserIds)
+        public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default)
         {
             List<DelegationChange> result = new List<DelegationChange>();
 

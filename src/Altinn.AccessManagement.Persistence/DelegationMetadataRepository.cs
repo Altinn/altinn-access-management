@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null)
+        public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default)
         {
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
             CheckIfOfferedbyPartyIdsHasValue(offeredByPartyIds);
@@ -417,7 +417,7 @@ namespace Altinn.AccessManagement.Persistence
                 PerformedByUserId = reader.GetFieldValue<int?>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                Created = reader.GetFieldValue<DateTime>("created")                
+                Created = reader.GetFieldValue<DateTime>("created")
             };
         }
 

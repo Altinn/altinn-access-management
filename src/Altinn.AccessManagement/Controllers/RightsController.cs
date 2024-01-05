@@ -249,7 +249,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegations = await _rights.GetOfferedRightsDelegations(reportee, cancellationToken);
-                return Ok(_mapper.Map<RightDelegationOfferedExternal>(delegations));
+                return Ok(_mapper.Map<IEnumerable<RightDelegationOfferedExternal>>(delegations));
             }
             catch (FormatException ex)
             {

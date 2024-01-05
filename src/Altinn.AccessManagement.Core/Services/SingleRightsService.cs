@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -27,23 +28,20 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IProfileClient _profile;
         private readonly IUserProfileLookupService _profileLookup;
         private readonly IDelegationMetadataRepository _delegationRepository;
-        private readonly IHttpContextAccessor _accessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
         /// </summary>
         /// <param name="delegationRepository">database implementation for fetching and inserting delegations</param>
-        /// <param name="accessor">http request context</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
         /// <param name="altinn2RightsClient">SBL Bridge client implementation for rights operations on Altinn 2 services</param>
         /// <param name="profile">Client implementation for getting user profile</param>
         /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
-        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IHttpContextAccessor accessor, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
+        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
         {
             _delegationRepository = delegationRepository;
-            _accessor = accessor;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
             _pap = pap;
@@ -159,7 +157,46 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegations(AttributeMatch partyAttribute, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch partyAttribute, CancellationToken cancellationToken = default)
+        {
+            var delegations = await GetOfferedRightsDelegationFromRepository(partyAttribute, cancellationToken, (delegation) => delegation?.ResourceType != "MaskinportenSchema");
+            var resources = await _contextRetrievalService.GetResourceList();
+            var result = new List<RightDelegation>();
+
+            foreach (var delegation in delegations)
+            {
+                var entry = new RightDelegation();
+                if (delegation.CoveredByPartyId != null)
+                {
+                    entry.To.Add(new()
+                    {
+                        Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
+                        Value = delegation.CoveredByPartyId.ToString()
+                    });
+                }
+         
+                if (delegation.CoveredByUserId != null)
+                {
+                    entry.To.Add(new()
+                    {
+                        Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute,
+                        Value = delegation.CoveredByUserId.ToString(),
+                    });
+                }
+
+                entry.From.Add(new()
+                {
+                    Id = partyAttribute.Id,
+                    Value = partyAttribute.Value
+                });
+
+                entry.Resource.AddRange(resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
+            }
+
+            return result;
+        }
+
+        private async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegationFromRepository(AttributeMatch partyAttribute, CancellationToken cancellationToken, params Func<DelegationChange, bool>[] filters)
         {
             var partyID = await GetPartyID(partyAttribute);
             var delegations = new ConcurrentBag<List<DelegationChange>>();
@@ -170,7 +207,13 @@ namespace Altinn.AccessManagement.Core.Services
                 ],
                 async delegation => delegations.Add(await delegation));
 
-            return delegations.SelectMany(d => d).Where(d => d?.ResourceType != "MaskinportenSchema");
+            var delegationsFlat = delegations.SelectMany(d => d);
+            foreach (var filter in filters)
+            {
+                delegationsFlat = delegationsFlat.Where(filter);
+            }
+
+            return delegationsFlat;
         }
 
         private async Task<int> GetPartyID(AttributeMatch attribute) => attribute.Id switch

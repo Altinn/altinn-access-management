@@ -15,5 +15,5 @@ public record RightDelegationOfferedExternal
     /// <summary>
     /// Specifies the permissions
     /// </summary>
-    public List<BaseRightExternal> Rights { get; set; }
+    public List<AttributeMatchExternal> Resources { get; set; }
 }

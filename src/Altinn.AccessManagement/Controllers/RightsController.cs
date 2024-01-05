@@ -238,7 +238,7 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
         [ActionName("ListDelegationsOffered")]
         [HttpGet("{party}/rights/delegation/offered")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationOfferedExternal>))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
@@ -249,7 +249,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegations = await _rights.GetOfferedRightsDelegations(reportee, cancellationToken);
-                return Ok(_mapper.Map<IEnumerable<RightDelegationOfferedExternal>>(delegations));
+                return Ok(_mapper.Map<IEnumerable<RightDelegationExternal>>(delegations));
             }
             catch (FormatException ex)
             {

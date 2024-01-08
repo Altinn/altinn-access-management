@@ -1,5 +1,8 @@
 namespace Altinn.AccessManagement.Models;
 
+/// <summary>
+/// Describes the delegation result for a given single right.
+/// </summary>
 public record RightDelegationExternal
 {
     /// <summary>

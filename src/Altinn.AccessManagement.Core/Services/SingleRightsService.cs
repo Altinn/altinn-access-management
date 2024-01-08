@@ -160,10 +160,14 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch partyAttribute, CancellationToken cancellationToken = default)
         {
-            var delegations = await GetOfferedRightsDelegationFromRepository(partyAttribute, cancellationToken, (delegation) => delegation?.ResourceType != "MaskinportenSchema");
-            var resources = await _contextRetrievalService.GetResourceList();
-            var result = new List<RightDelegation>();
+            var delegations = await GetActiveOfferedRightsDelegationFromRepository(partyAttribute, cancellationToken, (delegation) => delegation?.ResourceType != "MaskinportenSchema");
+            return await ParseDelegationChanges(partyAttribute, delegations);
+        }
 
+        private async Task<List<RightDelegation>> ParseDelegationChanges(AttributeMatch offeredBy, IEnumerable<DelegationChange> delegations)
+        {
+            var result = new List<RightDelegation>();
+            var resources = await _contextRetrievalService.GetResourceList();
             foreach (var delegation in delegations)
             {
                 var entry = new RightDelegation();
@@ -187,8 +191,8 @@ namespace Altinn.AccessManagement.Core.Services
 
                 entry.From.Add(new()
                 {
-                    Id = partyAttribute.Id,
-                    Value = partyAttribute.Value
+                    Id = offeredBy.Id,
+                    Value = offeredBy.Value
                 });
 
                 var resourcePath = Strings.Split(delegation.ResourceId, "/");
@@ -210,7 +214,7 @@ namespace Altinn.AccessManagement.Core.Services
             return result;
         }
 
-        private async Task<IEnumerable<DelegationChange>> GetOfferedRightsDelegationFromRepository(AttributeMatch partyAttribute, CancellationToken cancellationToken, params Func<DelegationChange, bool>[] filters)
+        private async Task<IEnumerable<DelegationChange>> GetActiveOfferedRightsDelegationFromRepository(AttributeMatch partyAttribute, CancellationToken cancellationToken, params Func<DelegationChange, bool>[] filters)
         {
             var partyID = await GetPartyID(partyAttribute);
             var delegations = new ConcurrentBag<List<DelegationChange>>();

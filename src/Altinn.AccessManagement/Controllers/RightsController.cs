@@ -236,7 +236,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-        [ActionName("ListDelegationsOffered")]
+        [ActionName("ListOfferedDelegations")]
         [HttpGet("{party}/rights/delegation/offered")]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

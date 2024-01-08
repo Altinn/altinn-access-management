@@ -1284,7 +1284,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
                         action(services);
                     }
                 });
-
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

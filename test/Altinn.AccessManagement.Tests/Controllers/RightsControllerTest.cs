@@ -1215,7 +1215,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
             var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
-            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "22093229405");
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "21033041133");
 
             // Act
             HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
@@ -1225,6 +1225,24 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(3, actualRights.Count);
+        }
+
+        /// <summary>
+        /// Test case: Get all delegations offered from person 22093229405
+        /// Expected: - Should return 500 as person with SSN 22093229405 don't exist
+        /// </summary>
+        [Fact]
+        public async Task RightsOfferedDelegations_NoneExistingPartyInPersonHeader_ReturnInternalServerError()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "22093229405");
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)

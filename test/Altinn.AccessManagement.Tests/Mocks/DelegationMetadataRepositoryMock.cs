@@ -134,7 +134,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default)
         {
             List<DelegationChange> result = new List<DelegationChange>();
-            altinnAppIds ??= [];
+            altinnAppIds ??=[];
             if (altinnAppIds.Count == 0 && offeredByPartyIds.Contains(20001337))
             {
                 result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 20001337, 20001336));

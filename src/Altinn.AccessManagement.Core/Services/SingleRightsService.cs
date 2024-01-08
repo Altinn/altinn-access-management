@@ -15,6 +15,7 @@ using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -174,7 +175,7 @@ namespace Altinn.AccessManagement.Core.Services
                         Value = delegation.CoveredByPartyId.ToString()
                     });
                 }
-         
+
                 if (delegation.CoveredByUserId != null)
                 {
                     entry.To.Add(new()
@@ -190,7 +191,20 @@ namespace Altinn.AccessManagement.Core.Services
                     Value = partyAttribute.Value
                 });
 
-                entry.Resource.AddRange(resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
+                var resourcePath = Strings.Split(delegation.ResourceId, "/");
+                if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
+                {
+                    entry.Resource.AddRange(resources
+                        .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
+                        .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
+                        .First().AuthorizationReference);
+                }
+                else
+                {
+                    entry.Resource.AddRange(resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
+                }
+
+                result.Add(entry);
             }
 
             return result;

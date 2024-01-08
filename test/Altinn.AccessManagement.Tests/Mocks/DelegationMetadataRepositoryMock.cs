@@ -137,7 +137,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             altinnAppIds ??= [];
             if (altinnAppIds.Count == 0 && offeredByPartyIds.Contains(20001337))
             {
-                result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 20001337));
+                result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 20001337, 20001336));
             }
 
             if (altinnAppIds.Any(appId => appId == "org1/app1") && offeredByPartyIds.Contains(50001337) && (coveredByUserIds != null && coveredByUserIds.Contains(20001337)))
@@ -244,6 +244,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
         {
             List<DelegationChange> result = new List<DelegationChange>();
             DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
+            if (offeredByPartyId == 20001337)
+            {
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 20001337, created, null, 50004219, 20000002, DelegationChangeType.Grant, 1234));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("app_org1_app1", ResourceType.AltinnApp, 20001337, created, null, 50004220, 20000002, DelegationChangeType.Grant, 1235));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("scope-access-schema", ResourceType.MaskinportenSchema, 20001337, created, null, 50004221, 20000002, DelegationChangeType.Grant, 1236));
+            }
 
             if (offeredByPartyId == 50004223 && resourceTypes.Count == 1 && resourceTypes.First() == ResourceType.MaskinportenSchema)
             {

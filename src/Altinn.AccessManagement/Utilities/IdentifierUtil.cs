@@ -12,12 +12,12 @@ namespace Altinn.AccessManagement.Utilities
         private const string OrganizationHeaderTrigger = "organization";
         
         /// <summary>
-        /// DOCS
+        /// Default HTTP header for SSN input
         /// </summary>
         public const string PersonHeader = "Altinn-Party-SocialSecurityNumber";
         
         /// <summary>
-        /// DOCS 
+        /// Default HTTP header for Organization number input
         /// </summary>
         public const string OrganizationNumberHeader = "Altinn-Party-OrganizationNumber";
 

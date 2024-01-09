@@ -7,7 +7,7 @@ namespace Altinn.AccessManagement.Models;
 /// <summary>
 /// Input model
 /// </summary>
-public record RightDelegationOfferedInput
+public record AuthorizedPartyInput
 {
     /// <summary>
     /// Used to provide the organization number of the party, in combination with 'organization' as placeholder value for the {party} path parameter

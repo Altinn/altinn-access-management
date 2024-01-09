@@ -9,7 +9,6 @@ import * as header from '../../../buildrequestheaders.js';
  */
 export function getMaskinportenSchemaOffered(altinnToken, partyid) {
   var endpoint = config.buildMaskinPorteSchemaUrls(partyid, 'offered');
-  console.log(endpoint);
   var params = header.buildHeaderWithRuntimeAndJson(altinnToken);
   return http.get(endpoint, params);
 }

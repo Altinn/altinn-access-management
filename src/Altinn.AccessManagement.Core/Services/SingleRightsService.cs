@@ -12,6 +12,7 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -210,7 +211,7 @@ namespace Altinn.AccessManagement.Core.Services
                 {
                     var party = parties[(int)delegation.CoveredByUserId];
                     var profile = await _profile.GetUser(new() { Ssn = party.SSN });
-                    if (profile.UserType == Platform.Profile.Enums.UserType.EnterpriseIdentified)
+                    if (profile.UserType == UserType.EnterpriseIdentified)
                     {
                         entry.To.Add(
                             new()

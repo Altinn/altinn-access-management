@@ -247,40 +247,18 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task RevokeRightsDelegation(int authenticatedUserID, AttributeMatch authorizedParty, DelegationLookup delegation, CancellationToken cancellationToken)
+        public async Task<DelegationCheckResponse> RevokeRightsDelegation(int authenticatedUserID, AttributeMatch authorizedParty, RightsDelegationCheckRequest delegation, CancellationToken cancellationToken)
         {
-            var partyID = await GetPartyID(authorizedParty);
-            if (delegation.Rights.Count != 1)
+            (DelegationCheckResponse result, ServiceResource resource, Party fromParty) = await ValidateRightDelegationCheckRequest(delegation);
+            if (!result.IsValid)
             {
-                throw new ValidationException($"there must be exactly one right, got {delegation.Rights.Count}");
+                return result;
             }
 
-            DelegationHelper.TryGetResourceFromAttributeMatch(delegation.Rights.First().Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _, out string _, out string _);
-            var resource = await _contextRetrievalService.GetResource(resourceRegistryId);
-            if (resource.ResourceType == ResourceType.MaskinportenSchema)
-            {
-                throw new ValidationException("resource type can't be maskinporten");
-            }
-
-            if (!resource.Delegable)
-            {
-                throw new ValidationException("the resource is not avaiable for delegation");
-            }
-
-            // Verify and get To recipient party of the delegation
-            Party toParty = null;
-            if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
-            {
-                toParty = await _contextRetrievalService.GetPartyForOrganization(toOrgNo);
-            }
-            else if (DelegationHelper.TryGetPartyIdFromAttributeMatch(delegation.To, out int toPartyId))
-            {
-                List<Party> toPartyLookup = await _contextRetrievalService.GetPartiesAsync(toPartyId.SingleToList());
-                toParty = toPartyLookup.FirstOrDefault();
-            }
-
-            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resourceRegistryId, partyID, toParty.PartyId);
+            var toPartyId = await GetPartyID(authorizedParty);
+            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, toPartyId);
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            return result;
         }
 
         private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)

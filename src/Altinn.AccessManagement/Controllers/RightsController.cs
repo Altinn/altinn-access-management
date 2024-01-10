@@ -292,7 +292,17 @@ namespace Altinn.AccessManagement.Controllers
             {
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party.Party, HttpContext);
-                await _rights.RevokeRightsDelegation(authenticatedUserId, reportee, _mapper.Map<DelegationLookup>(body), cancellationToken);
+                var result = await _rights.RevokeRightsDelegation(authenticatedUserId, reportee, _mapper.Map<RightsDelegationCheckRequest>(body), cancellationToken);
+                if (!result.IsValid)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
                 return NoContent();
             }
             catch (FormatException ex)

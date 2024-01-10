@@ -48,6 +48,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="delegation">The delegation lookup model</param>
         /// <param name="cancellationToken">cancelleation token for cancelling the request</param>
         /// <returns>The result of the deletion</returns>
-        public Task RevokeRightsDelegation(int authenticatedUserID, AttributeMatch authorizedParty, DelegationLookup delegation, CancellationToken cancellationToken);
+        Task<DelegationCheckResponse> RevokeRightsDelegation(int authenticatedUserID, AttributeMatch authorizedParty, RightsDelegationCheckRequest delegation, CancellationToken cancellationToken);
     }
 }

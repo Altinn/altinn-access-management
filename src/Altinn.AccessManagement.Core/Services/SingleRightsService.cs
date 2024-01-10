@@ -220,8 +220,8 @@ namespace Altinn.AccessManagement.Core.Services
                         entry.To.Add(
                             new()
                             {
-                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute,
-                                Value = profile.UserId.ToString(),
+                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserName,
+                                Value = profile.UserName,
                             });
                     }
                     else
@@ -233,14 +233,6 @@ namespace Altinn.AccessManagement.Core.Services
                                 Value = party.SSN,
                             });
                     }
-
-                    entry.To.AddRange([
-                        new()
-                        {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.LastName,
-                            Value = entities.Parties[(int)delegation.CoveredByUserId].Person.LastName, 
-                        }
-                    ]);
                 }
 
                 entry.From.Add(new()
@@ -250,7 +242,7 @@ namespace Altinn.AccessManagement.Core.Services
                 });
 
                 var resourcePath = Strings.Split(delegation.ResourceId, "/");
-                if (delegation.ResourceType.Equals(ResourceType.AltinnApp.ToString(), StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
+                if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
                 {
                     entry.Resource.AddRange(entities.Resources
                         .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))

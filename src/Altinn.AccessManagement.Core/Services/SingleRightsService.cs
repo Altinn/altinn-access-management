@@ -179,14 +179,16 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<RightDelegation>> ParseDelegationChanges(AttributeMatch offeredBy, IEnumerable<DelegationChange> delegations)
         {
-            var result = new List<RightDelegation>();
+            var result = new ConcurrentBag<RightDelegation>();
             var resouresTask = _contextRetrievalService.GetResourceList();
             var parties = await GetAllParties(delegations);
             var resources = await resouresTask;
 
-            foreach (var delegation in delegations)
+            Parallel.ForEach(delegations, async delegation =>
             {
                 var entry = new RightDelegation();
+
+                // handle delegations to an organization
                 if (delegation.CoveredByPartyId != null)
                 {
                     entry.To.AddRange([
@@ -203,19 +205,31 @@ namespace Altinn.AccessManagement.Core.Services
                     ]);
                 }
 
+                // handle the delegation to a person or user
                 if (delegation.CoveredByUserId != null)
                 {
+                    var party = parties[(int)delegation.CoveredByUserId];
+                    var profile = await _profile.GetUser(new() { Ssn = party.SSN });
+                    if (profile.UserType == Platform.Profile.Enums.UserType.EnterpriseIdentified)
+                    {
+                        entry.To.Add(
+                            new()
+                            {
+                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute,
+                                Value = profile.UserId.ToString(),
+                            });
+                    }
+                    else
+                    {
+                        entry.To.Add(
+                            new()
+                            {
+                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
+                                Value = party.SSN,
+                            });
+                    }
+
                     entry.To.AddRange([
-                        new()
-                        {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute,
-                            Value = delegation.CoveredByUserId.ToString(),
-                        },
-                        new()
-                        {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
-                            Value = parties[(int)delegation.CoveredByUserId].Person.SSN,
-                        },
                         new()
                         {
                             Id = AltinnXacmlConstants.MatchAttributeIdentifiers.LastName,
@@ -244,7 +258,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
 
                 result.Add(entry);
-            }
+            });
 
             return result.ToList();
         }

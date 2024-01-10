@@ -166,8 +166,8 @@ namespace Altinn.AccessManagement.Core.Services
         private async Task<Dictionary<int, Party>> GetAllParties(IEnumerable<DelegationChange> delegations)
         {
             var distinctParties = delegations
-                .Select(d => d.CoveredByPartyId != null ? (int)d.CoveredByPartyId : (int)d.CoveredByUserId)
-                .Concat(delegations.Select(d => d.OfferedByPartyId))
+                .Where(d => d.CoveredByPartyId != null)
+                .Select(d => (int)d.CoveredByPartyId)
                 .Distinct()
                 .ToList();
 
@@ -181,12 +181,12 @@ namespace Altinn.AccessManagement.Core.Services
             var fetchEntities = new
             {
                 Resources = _contextRetrievalService.GetResourceList(),
-                Parties = GetAllParties(delegations),
+                Organizations = GetAllParties(delegations),
             };
             var entities = new
             {
                 Resources = await fetchEntities.Resources,
-                Parties = await fetchEntities.Parties,
+                Organizations = await fetchEntities.Organizations,
             };
 
             Parallel.ForEach(delegations, async delegation =>
@@ -205,7 +205,7 @@ namespace Altinn.AccessManagement.Core.Services
                         new()
                         {
                             Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                            Value = entities.Parties[(int)delegation.CoveredByPartyId].OrgNumber
+                            Value = entities.Organizations[(int)delegation.CoveredByPartyId].OrgNumber
                         },
                     ]);
                 }
@@ -213,8 +213,7 @@ namespace Altinn.AccessManagement.Core.Services
                 // handle the delegation to a person or user
                 if (delegation.CoveredByUserId != null)
                 {
-                    var party = entities.Parties[(int)delegation.CoveredByUserId];
-                    var profile = await _profile.GetUser(new() { Ssn = party.SSN });
+                    var profile = await _profile.GetUser(new() { UserId = (int)delegation.CoveredByUserId });
                     if (profile.UserType == UserType.EnterpriseIdentified)
                     {
                         entry.To.Add(
@@ -230,7 +229,7 @@ namespace Altinn.AccessManagement.Core.Services
                             new()
                             {
                                 Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
-                                Value = party.SSN,
+                                Value = profile.Party.SSN,
                             });
                     }
                 }

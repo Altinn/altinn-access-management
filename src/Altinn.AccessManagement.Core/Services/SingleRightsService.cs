@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -11,12 +10,10 @@ using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -181,9 +178,16 @@ namespace Altinn.AccessManagement.Core.Services
         private async Task<List<RightDelegation>> ParseDelegationChanges(AttributeMatch offeredBy, IEnumerable<DelegationChange> delegations)
         {
             var result = new ConcurrentBag<RightDelegation>();
-            var resouresTask = _contextRetrievalService.GetResourceList();
-            var parties = await GetAllParties(delegations);
-            var resources = await resouresTask;
+            var fetchEntities = new
+            {
+                Resources = _contextRetrievalService.GetResourceList(),
+                Parties = GetAllParties(delegations),
+            };
+            var entities = new
+            {
+                Resources = await fetchEntities.Resources,
+                Parties = await fetchEntities.Parties,
+            };
 
             Parallel.ForEach(delegations, async delegation =>
             {
@@ -201,7 +205,7 @@ namespace Altinn.AccessManagement.Core.Services
                         new()
                         {
                             Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                            Value = parties[(int)delegation.CoveredByPartyId].OrgNumber
+                            Value = entities.Parties[(int)delegation.CoveredByPartyId].OrgNumber
                         },
                     ]);
                 }
@@ -209,7 +213,7 @@ namespace Altinn.AccessManagement.Core.Services
                 // handle the delegation to a person or user
                 if (delegation.CoveredByUserId != null)
                 {
-                    var party = parties[(int)delegation.CoveredByUserId];
+                    var party = entities.Parties[(int)delegation.CoveredByUserId];
                     var profile = await _profile.GetUser(new() { Ssn = party.SSN });
                     if (profile.UserType == UserType.EnterpriseIdentified)
                     {
@@ -234,7 +238,7 @@ namespace Altinn.AccessManagement.Core.Services
                         new()
                         {
                             Id = AltinnXacmlConstants.MatchAttributeIdentifiers.LastName,
-                            Value = parties[(int)delegation.CoveredByUserId].Person.LastName, 
+                            Value = entities.Parties[(int)delegation.CoveredByUserId].Person.LastName, 
                         }
                     ]);
                 }
@@ -248,14 +252,14 @@ namespace Altinn.AccessManagement.Core.Services
                 var resourcePath = Strings.Split(delegation.ResourceId, "/");
                 if (delegation.ResourceType.Equals(ResourceType.AltinnApp.ToString(), StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
                 {
-                    entry.Resource.AddRange(resources
+                    entry.Resource.AddRange(entities.Resources
                         .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
                         .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
                         .First().AuthorizationReference);
                 }
                 else
                 {
-                    entry.Resource.AddRange(resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
+                    entry.Resource.AddRange(entities.Resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
                 }
 
                 result.Add(entry);

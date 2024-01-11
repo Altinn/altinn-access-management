@@ -199,13 +199,13 @@ namespace Altinn.AccessManagement.Core.Services
                     entry.To.AddRange([
                         new()
                         {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute,
-                            Value = delegation.CoveredByPartyId.ToString()
+                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationName,
+                            Value = entities.Organizations[(int)delegation.CoveredByPartyId].Name,
                         },
                         new()
                         {
                             Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                            Value = entities.Organizations[(int)delegation.CoveredByPartyId].OrgNumber
+                            Value = entities.Organizations[(int)delegation.CoveredByPartyId].OrgNumber,
                         },
                     ]);
                 }

@@ -82,6 +82,11 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string ResourceRegistryAttribute = "urn:altinn:resource";
 
             /// <summary>
+            /// Organization name
+            /// </summary>
+            public const string OrganizationName = "urn:altinn:organization:name";
+
+            /// <summary>
             /// Organization number attribute match indentifier 
             /// </summary>
             public const string OrganizationNumberAttribute = "urn:altinn:organizationnumber";

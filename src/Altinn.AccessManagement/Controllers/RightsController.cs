@@ -244,7 +244,8 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDelegationOfferedList([FromRoute, FromHeader] RightDelegationOfferedInput input, CancellationToken cancellationToken)
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<IActionResult> GetDelegationOfferedList([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
         {
             try
             {

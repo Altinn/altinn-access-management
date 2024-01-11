@@ -193,7 +193,6 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 var entry = new RightDelegation();
 
-                // handle delegations to an organization
                 if (delegation.CoveredByPartyId != null)
                 {
                     entry.To.AddRange([
@@ -210,7 +209,6 @@ namespace Altinn.AccessManagement.Core.Services
                     ]);
                 }
 
-                // handle the delegation to a person or user
                 if (delegation.CoveredByUserId != null)
                 {
                     var profile = await _profile.GetUser(new() { UserId = (int)delegation.CoveredByUserId });

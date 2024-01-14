@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -291,16 +292,15 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationCheckResponse> RevokeRightsDelegation(int authenticatedUserID, AttributeMatch authorizedParty, RightsDelegationCheckRequest delegation, CancellationToken cancellationToken)
+        public async Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserID, DelegationLookup delegation, CancellationToken cancellationToken)
         {
-            (DelegationCheckResponse result, ServiceResource resource, Party fromParty) = await ValidateRightDelegationCheckRequest(delegation);
+            (DelegationActionResult result, ServiceResource resource, Party fromParty, List<AttributeMatch> to) = await ValidateDelegationLookupModel(DelegationActionType.Revoke, delegation, authenticatedUserID);
             if (!result.IsValid)
             {
                 return result;
             }
 
-            var toPartyId = await GetPartyID(authorizedParty);
-            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, toPartyId);
+            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, int.Parse(to.First(t => t.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute).Value));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return result;
         }

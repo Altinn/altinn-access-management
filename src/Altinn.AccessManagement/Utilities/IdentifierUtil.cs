@@ -152,7 +152,7 @@ namespace Altinn.AccessManagement.Utilities
         /// <returns>AttributeMatch model representation of the identifier</returns>
         public static AttributeMatch GetIdentifierAsAttributeMatch(string party, HttpContext context)
         {
-            if (party.Equals(OrganizationHeaderTrigger))
+            if (string.IsNullOrEmpty(party) || party.Equals(OrganizationHeaderTrigger))
             {
                 if (!context.Request.Headers.ContainsKey(OrganizationNumberHeader))
                 {

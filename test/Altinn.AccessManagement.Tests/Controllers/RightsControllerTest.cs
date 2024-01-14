@@ -4,10 +4,13 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -15,6 +18,8 @@ using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.AccessManagement.Utilities;
+using Altinn.Authorization.ABAC.Constants;
+using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -1241,6 +1246,55 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
+        /// a
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RevokeRightsOfferedDelegations()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
+            var input = new RevokeOfferedDelegationExternal
+            {
+                Rights = 
+                [
+                    new BaseRightExternal()
+                    {
+                        Action = "read",
+                        Resource =
+                        [
+                            new AttributeMatchExternal()
+                            {
+                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute,
+                                Value = "org1",
+                            },
+                            new AttributeMatchExternal()
+                            {
+                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute,
+                                Value = "app1",
+                            },
+                        ]
+                    }
+                ],
+                To =
+                [
+                    new AttributeMatchExternal()
+                    {
+                        Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
+                        Value = "910493353",
+                    }
+                ]
+            };
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "21033041133");
+
+            // Act
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/person/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)

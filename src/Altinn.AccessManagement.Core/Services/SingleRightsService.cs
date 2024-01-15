@@ -300,7 +300,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, int.Parse(to.First(t => t.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute).Value));
+            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, int.Parse(to.First().Value));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return result;
         }

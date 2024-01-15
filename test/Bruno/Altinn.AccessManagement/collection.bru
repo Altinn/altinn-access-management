@@ -7,73 +7,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  const axios = require("axios");
-
-  const debug = (bru.getVar("debug") || bru.getEnvVar("debug")) === "true";
-  const debugLog = (...args) => {
-    if (debug) {
-      console.log(...args);
-    }
-  };
-  
-  const tokenBaseUrl = "https://altinn-testtools-token-generator.azurewebsites.net";
-  const basicAuthUser = bru.getEnvVar("tokenBasicAuthUser");
-  const basicAuthPw = bru.getEnvVar("tokenBasicAuthPw");
-  //console.log('tokenBaseUrl:', tokenBaseUrl);
-  //console.log('basicAuthUser:', basicAuthUser);
-  //console.log('basicAuthPw:', basicAuthPw);
-  //console.log('Authorization:', Authorization);
-  
-  const tokenEnv = bru.getEnvVar("tokenEnv");
-  const tokenType = bru.getVar("auth_tokenType");
-  const tokenUser = bru.getVar("auth_userId");
-  const tokenParty = bru.getVar("auth_partyId");
-  const tokenPid = bru.getVar("auth_ssn");
-  const tokenScopes = bru.getVar("auth_scopes");
-  const tokenOrg = bru.getVar("auth_org");
-  const tokenOrgNo = bru.getVar("auth_orgNo");
-  const tokenUsername = bru.getVar("auth_username");
-  
-  debugLog('tokenEnv:', tokenEnv);
-  debugLog('tokenType:', tokenType);
-  debugLog('tokenUser:', tokenUser);
-  debugLog('tokenParty:', tokenParty);
-  debugLog('tokenPid:', tokenPid);
-  debugLog('tokenScopes:', tokenScopes);
-  debugLog('tokenOrg:', tokenOrg);
-  debugLog('tokenOrgNo:', tokenOrgNo);
-  debugLog('tokenUsername:', tokenUsername);
-  
-  let tokenUrl;
-  switch (tokenType) {
-    case "Personal":
-      tokenUrl = `${tokenBaseUrl}/api/GetPersonalToken?env=${tokenEnv}&scopes=${tokenScopes}&userId=${tokenUser}&partyId=${tokenParty}&pid=${tokenPid}&ttl=30`;
-      break;
-    case "Enterprise":
-      tokenUrl = `${tokenBaseUrl}/api/GetEnterpriseToken?env=${tokenEnv}&scopes=${tokenScopes}&org=${tokenOrg}&orgNo=${tokenOrgNo}&ttl=30`;
-      break;
-    case "EnterpriseUser":
-      tokenUrl = `${tokenBaseUrl}/api/GetEnterpriseUserToken?env=${tokenEnv}&scopes=${tokenScopes}&orgNo=${tokenOrgNo}&userId=${tokenUser}&partyId=${tokenParty}&userName=${tokenUserName}&ttl=30`;
-      break;
-    default:
-      throw new Error('Unknown token type (vars.auth_tokenType)');
-  }
-  
-  debugLog('tokenUrl:', tokenUrl);
-  try {
-    const response = await axios.get(tokenUrl, {
-      auth: {
-        username: basicAuthUser,
-        password: basicAuthPw
-      }
-    });
-    
-    //console.log('response.data:', response.data);
-    bru.setVar("bearerToken", response.data);
-  } catch (error) {
-    console.error('authentication error:', error.message);
-    throw new Error('Getting token failed');
-  }
+  const helpers = require("./helpers.js");
 }
 
 script:post-response {
@@ -88,4 +22,24 @@ script:post-response {
   bru.setVar("auth_orgNo", null);
   bru.setVar("auth_username", null);
   bru.setVar("bearerToken", null);
+}
+
+docs {
+  Dokumentasjon havner i collection.bru filen i rotmappa.
+
+  # Støtter markdown
+  Ja, det gjør det!
+
+  ## Undertittel
+  Her er en *undertittel*.
+
+  ### under-undertittel
+  Her er en **under-undertittel**.
+
+  ### Bullet points
+    * bullet point 1
+    * bullet point 2
+    - bullet point 3
+    - bullet point 4
+
 }

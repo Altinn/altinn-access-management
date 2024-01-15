@@ -1294,7 +1294,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/person/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)

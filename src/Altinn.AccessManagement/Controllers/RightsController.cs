@@ -13,7 +13,6 @@ using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
@@ -274,7 +273,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
         /// </summary>
-        /// <param name="party">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+        /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
         /// <param name="body">The specific delegation to be revoked</param>
         /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
@@ -287,12 +286,12 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RevokeReceivedDelegation([FromRoute, FromHeader] AuthorizedPartyInput party, [FromBody] RevokeReceivedDelegationExternal body, CancellationToken cancellationToken)
+        public async Task<IActionResult> RevokeReceivedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeReceivedDelegationExternal body, CancellationToken cancellationToken)
         {
             try
             {
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
-                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party.Party, HttpContext);
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
                 delegation.To = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
@@ -328,7 +327,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
         /// </summary>
-        /// <param name="party">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+        /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
         /// <param name="body">payload</param>
         /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
@@ -341,12 +340,12 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RevokeOfferedDelegation([FromRoute] string party, [FromBody] RevokeOfferedDelegationExternal body, CancellationToken cancellationToken)
+        public async Task<IActionResult> RevokeOfferedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeOfferedDelegationExternal body, CancellationToken cancellationToken)
         {
             try
             {
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
-                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
                 delegation.From = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);

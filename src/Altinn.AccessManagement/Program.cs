@@ -229,7 +229,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IMaskinportenSchemaService, MaskinportenSchemaService>();
     services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
-    services.AddTransient<ISigningKeysResolver, SigningKeysResolver>();
+    services.AddTransient<IPublicSigningKeyProvider, PublicSigningKeyProvider>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();

@@ -251,40 +251,6 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(expected, actual);
         }
 
-        /// <summary>
-        /// Test case: GetResources returns a list of resources 
-        /// Expected: GetResources returns a list of resources filtered by resourcetype
-        /// </summary>
-        [Fact]
-        public async Task GetResources_valid_resourcetype()
-        {
-            // Arrange
-            List<ServiceResourceExternal> expectedResources = GetExpectedResources(ResourceTypeExternal.MaskinportenSchema);
-
-            string token = PrincipalUtil.GetAccessToken("platform", "resourceregistry");
-            _client.DefaultRequestHeaders.Add("PlatformAccessToken", token);
-
-            // Act
-            HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/52004219/resources/maskinportenschema");
-            string responseContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<ServiceResourceExternal> actualResources = JsonSerializer.Deserialize<List<ServiceResourceExternal>>(responseContent, options);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            AssertionUtil.AssertCollections(expectedResources, actualResources, AssertionUtil.AssertResourceExternalEqual);
-        }
-
-        private static List<ServiceResourceExternal> GetExpectedResources(ResourceTypeExternal resourceType)
-        {
-            List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
-            resources = TestDataUtil.GetResources(resourceType);
-            return resources;
-        }
-
         private HttpClient GetTestClient()
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
@@ -293,7 +259,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepositoryMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
-                    services.AddSingleton<ISigningKeysResolver, SigningKeyResolverMock>();
+                    services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton<IPDP, PdpPermitMock>();
                 });

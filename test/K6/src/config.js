@@ -102,19 +102,19 @@ export function buildMaskinPorteSchemaUrls(party, type) {
   var value = '';
   switch (type) {
     case 'offered':
-      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/offered`;
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/offered`;
       break;
     case 'received':
-      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/received`;
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/received`;
       break;
     case 'revokeoffered':
-      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/offered/revoke`;
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/offered/revoke`;
       break;
     case 'revokereceived':
-      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema/received/revoke`;
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/received/revoke`;
       break;
     case 'maskinportenschema':
-      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/delegations/maskinportenschema`;
+      value = `https://platform.${baseUrl}/accessmanagement/api/v1/${party}/maskinportenschema/offered`;
       break;
   }
   return value;

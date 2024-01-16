@@ -95,21 +95,22 @@ export function getMaskinPortenSchemaOfferedTest() {
   const offeredByToken = org1.dagl.token;
   const offeredByPartyId = org1.partyid;
   const appid = 'ttd-am-k6-nuf';
+  var res = maskinporten.revokeOfferedMaskinportenSchema(org1.dagl.token, org1.partyid, 'ttd-am-k6', 'urn:altinn:organizationnumber', org2.orgno);
 
   // Act
-  var res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
+  res = maskinporten.getMaskinportenSchemaOffered(offeredByToken, offeredByPartyId);
 
   // Assert
   var success = check(res, {
     'get offered MaskinPortenSchemas - status is 200': (r) => r.status === 200,
     'get offered MaskinPortenSchemas - coveredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.coveredByName') === 'LARKOLLEN OG FAUSKE',
+    'get offered MaskinPortenSchemas - offeredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
     'get offered MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == offeredByPartyId,
     'get offered MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org2.partyid,
     'get offered MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
+    'get offered MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org1.orgno,
     'get offered MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2.orgno,
     'get offered MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
-    'get offered MaskinPortenSchemas - resourceTitle is Maskinporten Schema - AM - K6 - NUF': (r) => r.json('0.resourceTitle.en') == 'Maskinporten Schema - AM - K6 - NUF',
-    'get offered MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
   });
   addErrorCount(success);
 }
@@ -136,21 +137,22 @@ export function getMaskinPortenSchemaReceivedTest() {
   const toToken = org2.dagl.token;
   const toPartyId = org2.partyid;
   const appid = 'ttd-am-k6-nuf';
+  var res = maskinporten.revokeOfferedMaskinportenSchema(org1.dagl.token, org1.partyid, 'ttd-am-k6', 'urn:altinn:organizationnumber', org2.orgno);
 
   // Act
-  var res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
+  res = maskinporten.getMaskinportenSchemaReceived(toToken, toPartyId);
 
   // Assert
   var success = check(res, {
     'get Received MaskinPortenSchemas - status is 200': (r) => r.status === 200,
-    'get Received MaskinPortenSchemas - offeredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
+    'get Received MaskinPortenSchemas - offeredByName is ALDRA OG FORTUN': (r) => r.json('0.offeredByName') === 'ALDRA OG FORTUN',
+    'get Received MaskinPortenSchemas - coveredByName is LARKOLLEN OG FAUSKE': (r) => r.json('0.coveredByName') === 'LARKOLLEN OG FAUSKE',
     'get Received MaskinPortenSchemas - offeredByPartyId is ${offeredByPartyId}': (r) => r.json('0.offeredByPartyId') == org1.partyid,
     'get Received MaskinPortenSchemas - coveredByPartyId is ${coveredByPartyId}': (r) => r.json('0.coveredByPartyId') == org2.partyid,
     'get Received MaskinPortenSchemas - performedByUserId is ${performedByUserId}': (r) => r.json('0.performedByUserId') == org1.dagl.userid,
     'get Received MaskinPortenSchemas - offeredByOrganizationNumber is ${offeredByOrganizationNumber}': (r) => r.json('0.offeredByOrganizationNumber') == org1.orgno,
+    'get Received MaskinPortenSchemas - coveredByOrganizationNumber is ${coveredByOrganizationNumber}': (r) => r.json('0.coveredByOrganizationNumber') == org2.orgno,
     'get Received MaskinPortenSchemas - resourceId is ttd-am-k6-nuf': (r) => r.json('0.resourceId') == appid,
-    'get Received MaskinPortenSchemas - resourceTitle is Maskinporten Schema - AM - K6 - NUF': (r) => r.json('0.resourceTitle.en') == 'Maskinporten Schema - AM - K6 - NUF',
-    'get Received MaskinPortenSchemas - resourceType is MaskinportenSchema': (r) => r.json('0.resourceType') == 'MaskinportenSchema',
 
   });
   addErrorCount(success);

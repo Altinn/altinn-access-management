@@ -1,0 +1,46 @@
+{
+    "UserId": 20000095,
+    "UserType": 1,
+    "UserName": "",
+    "ExternalIdentity": "",
+    "PhoneNumber": null,
+    "Email": null,
+    "PartyId": 20001336,
+    "Party": {
+      "PartyTypeName": 1,
+      "SSN": "02056260016",
+      "OrgNumber": "",
+      "Person": {
+        "SSN": "02056260016",
+        "Name": "JOHNNY KJETIL",
+        "FirstName": "JOHNNY",
+        "MiddleName": "KJETIL",
+        "LastName": "THERMSON",
+        "TelephoneNumber": "",
+        "MobileNumber": "",
+        "MailingAddress": " Mobilgata 31 2012 ØRSTAD",
+        "MailingPostalCode": "2012",
+        "MailingPostalCity": "ØRSTAD",
+        "AddressMunicipalNumber": "",
+        "AddressMunicipalName": "",
+        "AddressStreetName": "",
+        "AddressHouseNumber": "",
+        "AddressHouseLetter": "",
+        "AddressPostalCode": "3014",
+        "AddressCity": "ØRSTAD",
+        "DateOfDeath": null
+      },
+      "Organization": null,
+      "PartyId": 20001336,
+      "UnitType": null,
+      "Name": "JOHNNY KJETIL",
+      "IsDeleted": false,
+      "OnlyHierarchyElementWithNoAccess": false,
+      "ChildParties": null
+    },
+    "ProfileSettingPreference": {
+      "Language": "nb",
+      "PreSelectedPartyId": 0,
+      "DoNotPromptForParty": false
+    }
+  }

@@ -378,3 +378,6 @@ src/Altinn.Apps/AppTemplates/AspNet/App/Properties/launchSettings.json
 
 # Bruno
 /test/Bruno/Altinn.AccessManagement/.env
+
+# vscode
+.vscode

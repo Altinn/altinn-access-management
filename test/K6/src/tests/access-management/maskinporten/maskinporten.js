@@ -210,8 +210,7 @@ export function postMaskinportenSchemaToPartyIdTest() {
     'post MaskinportenSchema To PartyId - organization number matches': (r) => r.json('to.0.value') === toPartyId,
     'post MaskinportenSchema To PartyId - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
     'post MaskinportenSchema To PartyId - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
-    'post MaskinportenSchema To PartyId - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
-    'post MaskinportenSchema To PartyId - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+    'post MaskinportenSchema To PartyId - action is ScopeAccess': (r) => r.json('rightDelegationResults.0.action') === 'ScopeAccess',
   });
 
   addErrorCount(success);
@@ -235,8 +234,7 @@ export function postMaskinportenSchemaToOrgNumberTest() {
     'post MaskinportenSchema To Org Number - organization number matches': (r) => r.json('to.0.value') === toOrgNumber,
     'post MaskinportenSchema To Org Number - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
     'post MaskinportenSchema To Org Number - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
-    'post MaskinportenSchema To Org Number - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
-    'post MaskinportenSchema To Org Number - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+    'post MaskinportenSchema To Org Number - action is ScopeAccess': (r) => r.json('rightDelegationResults.0.action') === 'ScopeAccess',
   });
 
   addErrorCount(success);
@@ -285,8 +283,7 @@ export function postMaskinportenSchemaAsHadmTest() {
     'post MaskinportenSchema As HADM - organization number matches': (r) => r.json('to.0.value') === toPartyId,
     'post MaskinportenSchema As HADM - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
     'post MaskinportenSchema As HADM - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
-    'post MaskinportenSchema As HADM - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
-    'post MaskinportenSchema As HADM - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+    'post MaskinportenSchema As HADM - action is ScopeAccess': (r) => r.json('rightDelegationResults.0.action') === 'ScopeAccess',
   });
 
   addErrorCount(success);
@@ -310,8 +307,7 @@ export function postMaskinportenSchemaAsApiadmTest() {
     'post MaskinportenSchema As APIADM - organization number matches': (r) => r.json('to.0.value') === toPartyId,
     'post MaskinportenSchema As APIADM - resource type is urn:altinn:resource': (r) => r.json('rightDelegationResults.0.resource.0.id') === 'urn:altinn:resource',
     'post MaskinportenSchema As APIADM - appid matches': (r) => r.json('rightDelegationResults.0.resource.0.value') === appid,
-    'post MaskinportenSchema As APIADM - action type is action-id': (r) => r.json('rightDelegationResults.0.action.id') === 'urn:oasis:names:tc:xacml:1.0:action:action-id',
-    'post MaskinportenSchema As APIADM - action value is ScopeAccess': (r) => r.json('rightDelegationResults.0.action.value') === 'ScopeAccess',
+    'post MaskinportenSchema As APIADM - action is ScopeAccess': (r) => r.json('rightDelegationResults.0.action') === 'ScopeAccess',
   });
 
   addErrorCount(success);
@@ -349,7 +345,6 @@ export function postMaskinportenDAGLCannotDelegateNUFResource() {
 
   // Act
   var res = maskinporten.postMaskinportenSchema(offeredByToken, offeredByPartyId, appid, 'urn:altinn:partyid', toPartyId);
-  console.log(res.body);
 
   // Assert
   var success = check(res, {
@@ -378,7 +373,7 @@ export function postMaskinportenSystemResourceCannotBeDelegatedTest() {
     'post Maskinporten Systemresource Cannot be delegated - status is 400': (r) => r.status === 400,
     'post Maskinporten Systemresource Cannot be delegated - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
     'post Maskinporten Systemresource Cannot be delegated - errors is not null': (r) => r.json('errors') != null,
-    'post Maskinporten Systemresource Cannot be delegated - Invalid resource type': (r) => r.body.includes('This operation only support requests for Maskinporten schema resources. Invalid resource: altinn_maskinporten_scope_delegation. Invalid resource type: SystemResource"'),
+    'post Maskinporten Systemresource Cannot be delegated - Invalid resource type': (r) => r.body.includes('This operation only support requests for Maskinporten schema resources. Invalid resource: Identifier: altinn_maskinporten_scope_delegation, ResourceType: Systemresource'),
   });
 
   addErrorCount(success);
@@ -400,7 +395,7 @@ export function postMaskinportenSchemaNotReadyTest() {
     'post MaskinportenSchema that is Not Ready - status is 400': (r) => r.status === 400,
     'post MaskinportenSchema that is Not Ready - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
     'post MaskinportenSchema that is Not Ready - errors is not null': (r) => r.json('errors') != null,
-    'post MaskinportenSchema that is Not Ready - resource is incomplete or not found': (r) => r.body.includes('The resource: appid-302, does not exist or is not complete and available for delegation'),
+    'post MaskinportenSchema that is Not Ready - resource is incomplete or not found': (r) => r.body.includes('The resource: appid-302, does not exist or is not available for delegation'),
   });
 
   addErrorCount(success);
@@ -546,7 +541,7 @@ export function revokeNonExistentOfferedMaskinPortenSchema() {
     'revoke non-existent Offered MaskinPortenSchema - status is 400': (r) => r.status === 400,
     'revoke non-existent Offered MaskinPortenSchema - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
     'revoke non-existent Offered MaskinPortenSchema - errors is not null': (r) => r.json('errors') != null,
-    'revoke non-existent Offered MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not complete and available for delegation'),
+    'revoke non-existent Offered MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not available for delegation'),
   });
   addErrorCount(success);
 }
@@ -566,7 +561,7 @@ export function revokeNonExistentReceivedMaskinPortenSchema() {
     'revoke non-existent Received MaskinPortenSchema - status is 400': (r) => r.status === 400,
     'revoke non-existent Received MaskinPortenSchema - `One or more validation errors occurred.`': (r) => r.json('title') == 'One or more validation errors occurred.',
     'revoke non-existent Received MaskinPortenSchema - errors is not null': (r) => r.json('errors') != null,
-    'revoke non-existent Received MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not complete and available for delegation'),
+    'revoke non-existent Received MaskinPortenSchema - resource is incomplete or not found': (r) => r.body.includes('The resource: nonexistentmaskinportenschema, does not exist or is not available for delegation'),
   });
   addErrorCount(success);
 }

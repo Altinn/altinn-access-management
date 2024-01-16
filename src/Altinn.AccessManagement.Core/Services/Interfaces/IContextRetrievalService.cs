@@ -28,50 +28,69 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId);
 
         /// <summary>
-        /// Returns a party
+        /// Gets a single party by its party id
         /// </summary>
         /// <returns>Party</returns>
         Task<Party> GetPartyAsync(int partyId);
 
         /// <summary>
-        /// Returns a list of parties
+        /// Gets a list of parties by their party ids
         /// </summary>
         /// <returns>List of parties</returns>
         Task<List<Party>> GetPartiesAsync(List<int> partyIds);
 
         /// <summary>
-        /// Returns looks up the party of an organization
+        /// Gets the party of an organization
         /// </summary>
         /// <param name="organizationNumber">The organization number to lookup party</param>
         /// <returns>Party</returns>
-        Task<Party> GetParty(string organizationNumber);
+        Task<Party> GetPartyForOrganization(string organizationNumber);
 
         /// <summary>
-        /// Method that fetches a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)
+        /// Gets the party of a person
+        /// </summary>
+        /// <param name="ssn">The social security number to lookup party</param>
+        /// <returns>Party</returns>
+        Task<Party> GetPartyForPerson(string ssn);
+
+        /// <summary>
+        /// Gets a list of PartyIds the given user id has key role access to (where the user inherit delegations to their organization)
         /// </summary>
         /// <param name="userId">The user id</param>
         /// <returns>list of PartyIds where the logged in user have key role access</returns>
         Task<List<int>> GetKeyRolePartyIds(int userId);
 
         /// <summary>
-        /// Method that fetches a main unit for the input sub unit partyId. If the input partyId is not a sub unit the response model will have null values for main unit properties.
+        /// Gets a main unit for the input sub unit partyId. If the input partyId is not a sub unit the response model will have null values for main unit properties.
         /// </summary>
         /// <param name="subunitPartyId">The PartyId to check and retrieve any main unit for</param>
         /// <returns>main units</returns>
         Task<List<MainUnit>> GetMainUnits(int subunitPartyId);
 
         /// <summary>
-        /// Integration point for retrieving a single resoure by it's resource id
+        /// Gets a single resoure by it's resource id if registered in the Resource Registry
         /// </summary>
         /// <param name="resourceRegistryId">The identifier of the resource in the Resource Registry</param>
         /// <returns>The resource if exists</returns>
         Task<ServiceResource> GetResource(string resourceRegistryId);
 
         /// <summary>
-        /// Integration point for retrieving a list of resources by it's resource id
+        /// Gets a list of all resources from the Resource Registry
         /// </summary>
-        /// <returns>The resource list if exists</returns>
+        /// <returns>The resource list</returns>
         Task<List<ServiceResource>> GetResources();
+
+        /// <summary>
+        /// Gets a list of all available resources including Altinn Apps, Altinn 2 services and resources from the Resource Registry
+        /// </summary>
+        /// <returns>The resource list</returns>
+        Task<List<ServiceResource>> GetResourceList();
+
+        /// <summary>
+        /// Gets a single resource from the list of all available resources including Altinn Apps, Altinn 2 services and resources from the Resource Registry, if it exists.
+        /// </summary>
+        /// <returns>The resource if exists</returns>
+        Task<ServiceResource> GetResourceFromResourceList(string resourceId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null);
 
         /// <summary>
         /// Gets a Party based on partyId if the party is in the users reporteelist
@@ -79,6 +98,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="userId">The id of the authenticated user</param>
         /// <param name="partyId">The party Id of the party to retrieve</param>
         /// <returns>Party that corresponds to partyId parameter if it's in the users reporteelist</returns>
-        public Task<Party> GetPartyForUser(int userId, int partyId);
+        Task<Party> GetPartyForUser(int userId, int partyId);
     }
 }

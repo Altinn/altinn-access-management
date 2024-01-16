@@ -18,6 +18,7 @@ using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
+using Altinn.Platform.Register.Models;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -753,7 +754,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
 
             // Act
@@ -763,8 +764,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -782,7 +783,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
             _client.DefaultRequestHeaders.Add("Altinn-Party-OrganizationNumber", "910459880");
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50004222");
 
             // Act
@@ -792,8 +793,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -810,7 +811,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string fromParty = "50005545";
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            DelegationOutputExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
+            RightsDelegationResponseExternal expectedResponse = GetExpectedResponse("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "810418672");
 
             // Act
@@ -820,8 +821,8 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            DelegationOutputExternal actualResponse = JsonSerializer.Deserialize<DelegationOutputExternal>(responseContent, options);
-            AssertionUtil.AssertDelegationOutputExternalEqual(expectedResponse, actualResponse);
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
         }
 
         /// <summary>
@@ -1411,7 +1412,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50005545");
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/maskinportenschema/offered", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1432,13 +1433,15 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             string fromParty = "50005545";
+            string toOrg = "910459880";
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
 
-            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50005545");
-            StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50005545");
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", toOrg);
+            StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", toOrg);
 
             // Act
-            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/delegations/maskinportenschema/", requestContent);
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/maskinportenschema/offered", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -1446,6 +1449,225 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate the maskinportenchema on behalf of the reportee party 50005545.
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The only right for the maskinportenschema scope-access-schema is delegable through having DAGL:
+        ///                 - scope-access-schema:ScopeAccess
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_DAGL_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005545;
+            string resourceId = "scope-access-schema";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20001337 is authorized to delegate on behalf of the reportee party 50005545 for the generic-access-resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20001337 is HADM for the From unit 50005545
+        ///            - The only right for the maskinportenschema scope-access-schema is delegable through having DAGL (and HADM inherits the same rights as DAGL):
+        ///               - scope-access-schema:ScopeAccess
+        /// Expected: DelegationCheck returns a list of RightDelegationStatus matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_HADM_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50005545;
+            string resourceId = "scope-access-schema";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck bars use by private persons
+        ///            In this case:
+        ///            - The user 20000490 has PRIV role for itself (party 50002598)
+        ///            - Only Organizations can delegate and get delegated maskinpostenschema
+        /// Expected: DelegationCheck returns a 403 Forbidden
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_PRIV_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50002598;
+            string resourceId = "scope-access-schema";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck is only made to be used for MaskinportenServices, not A3 apps
+        ///            In this case:
+        ///            - Since the resource is an AltinnApp, a BadRequest response with a ValidationProblemDetails model response should be returned
+        /// Expected: Responce error model is matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_AppRight_BadRequest()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50005545;
+            string resourceId = "org1_app1";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError($"DelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck when the authenticated 20001337 is authorized to delegate on behalf of the reportee party 50001337 for the invalid resource non_existing_id 
+        ///            In this case:
+        ///            - Since the resource is invalid a BadRequest response with a ValidationProblemDetails model response should be returned
+        /// Expected: Responce error model is matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_InvalidResource_BadRequest()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50005545;
+            string resourceId = "non_existing_id";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError("DelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck is only made to be used for MaskinportenServices, not resource registry resources
+        ///            In this case:
+        ///            - Since the resource is an AltinnApp, a BadRequest response with a ValidationProblemDetails model response should be returned
+        /// Expected: Responce error model is matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_RRResource_BadRequest()
+        {
+            // Arrange
+            int userId = 20001337;
+            int reporteePartyId = 50005545;
+            string resourceId = "generic-access-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 4);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationError("DelegationCheck", $"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck checks that minimum required access level is fulfilled
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545, meaning the resource scope-access-schema is delegable for the user
+        ///            - The user is currently authorized with a level 2 while the resource requires a minum level of 3
+        /// Expected: DelegationCheck returns a responce error matching expected
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_InsufficientAccessLevel()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005545;
+            string resourceId = "scope-access-schema";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 2);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId, 2);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{reporteePartyId}/maskinportenschema/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
         }
 
         private static IHttpContextAccessor GetHttpContextAccessorMock(string partytype, string id)
@@ -1473,11 +1695,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
             return content;
         }
 
-        private static DelegationOutputExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
+        private static RightsDelegationResponseExternal GetExpectedResponse(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
         {
             string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
-            return (DelegationOutputExternal)JsonSerializer.Deserialize(content, typeof(DelegationOutputExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return (RightsDelegationResponseExternal)JsonSerializer.Deserialize(content, typeof(RightsDelegationResponseExternal), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private static ValidationProblemDetails GetExpectedValidationProblemDetails(string operation, string resourceId, string from, string to, string responseFileName = "ExpectedOutput_Default")
@@ -1492,6 +1714,44 @@ namespace Altinn.AccessManagement.Tests.Controllers
             string responsePath = $"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/to_{to}/{responseFileName}.json";
             string content = File.ReadAllText(responsePath);
             return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static List<RightDelegationCheckResultExternal> GetExpectedDelegationStatus(string user, string from, string resourceId, int? authLevel = null)
+        {
+            string content;
+            if (authLevel == null)
+            {
+                content = File.ReadAllText($"Data/Json/MaskinportenSchema/DelegationCheck/{resourceId}/from_{from}/authn_{user}.json");
+            }
+            else
+            {
+                content = File.ReadAllText($"Data/Json/MaskinportenSchema/DelegationCheck/{resourceId}/from_{from}/authn_{user}_authLevel{authLevel}.json");
+            }
+
+            return (List<RightDelegationCheckResultExternal>)JsonSerializer.Deserialize(content, typeof(List<RightDelegationCheckResultExternal>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static ValidationProblemDetails GetExpectedValidationError(string operation, string user, string from, string resourceId, int? authLevel = null)
+        {
+            string content;
+            if (authLevel == null)
+            {
+                content = File.ReadAllText($"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/authn_{user}.json");
+            }
+            else
+            {
+                content = File.ReadAllText($"Data/Json/MaskinportenSchema/{operation}/{resourceId}/from_{from}/authn_{user}_authLevel{authLevel}.json");
+            }
+
+            return (ValidationProblemDetails)JsonSerializer.Deserialize(content, typeof(ValidationProblemDetails), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        private static StreamContent GetDelegationCheckContent(string resourceId)
+        {
+            Stream dataStream = File.OpenRead($"Data/Json/MaskinportenSchema/DelegationCheck/{resourceId}/request.json");
+            StreamContent content = new StreamContent(dataStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
         }
 
         private HttpClient GetTestClient(IPDP pdpMock = null, IHttpContextAccessor httpContextAccessor = null, IDelegationMetadataRepository delegationMetadataRepositoryMock = null)

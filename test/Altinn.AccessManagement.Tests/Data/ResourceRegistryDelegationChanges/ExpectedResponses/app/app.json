@@ -1,0 +1,17 @@
+[
+  {
+    "delegationchangeid": 1337,
+    "resourceregistrydelegationchangeid": 0,
+    "delegationchangetype": 1,
+    "resourceid": "org1/app1",
+    "resourcetype": "AltinnAppId",
+    "offeredbypartyid": 50001337,
+    "coveredbypartyid": null,
+    "coveredbyuserid": 20001337,
+    "performedbyuserid": 20001336,
+    "performedbypartyid": null,
+    "blobstoragepolicypath": "org1/app1/50001337/u20001337/delegationpolicy.xml",
+    "blobstorageversionid": "CorrectLeaseId",
+    "created": "2022-11-29T10:19:45"
+  }
+]

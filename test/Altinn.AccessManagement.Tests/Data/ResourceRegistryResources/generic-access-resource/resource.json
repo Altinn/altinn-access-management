@@ -1,0 +1,45 @@
+{
+  "identifier": "generic-access-resource",
+  "title": {
+    "en": "Generic Access Resource",
+    "nb": "Generisk Tilgangsressurs",
+    "nn": "Generisk Tilgongsressurs"
+  },
+  "description": {
+    "en": "Very nice generic access resource",
+    "nb": "Veldig fin generisk tilgangsressurs",
+    "nn": "Steikje fine generisk tilgongsressurs"
+  },
+  "rightDescription": {
+    "en": "You'll give access to this nice generic access resource",
+    "nb": "Du gir tilgang til denne fine generiske tilgangsressursen",
+    "nn": "Du gir tilgong til dinne steikje fine generiske tilgongsressursen"
+  },
+  "homepage": "https://www.altinn.no",
+  "status": "Active",
+  "contactPoints": [],
+  "isPartOf": "",
+  "resourceReferences": [],
+  "delegable": true,
+  "visible": true,
+  "hasCompetentAuthority": {
+    "organization": "991825827",
+    "orgcode": "ttd",
+    "name": {
+      "en": "Test departement",
+      "nb": "Testdepartement",
+      "nn": "Testdepartement"
+    }
+  },
+  "keywords": [],
+  "limitedByRRR": false,
+  "selfIdentifiedUserEnabled": false,
+  "enterpriseUserEnabled": false,
+  "resourceType": "GenericAccessResource",
+  "authorizationReference": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "generic-access-resource"
+    }
+  ]
+}

@@ -1,4 +1,6 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using System.Collections.Generic;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Authorization.Platform.Authorization.Models;
@@ -53,16 +55,133 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Builds a RightsQuery request model for lookup of a users rights for a given resource registry service on behalf of the given reportee party
+        /// Builds a RightsQuery request model for lookup of a users rights for a given service resource on behalf of the given reportee party
         /// </summary>
-        public static RightsQuery GetRightsQueryForResourceRegistryService(int userId, string resourceRegistryId, int fromPartyId)
+        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, string resourceRegistryId = null, string org = null, string app = null)
         {
+            if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
+            {
+                return new RightsQuery
+                {
+                    To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
+                    From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
+                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } }
+                };
+            }
+
             return new RightsQuery
             {
                 To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
                 From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
                 Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
             };
+        }
+
+        /// <summary>
+        /// Analyses a Right model for a reason for the rights delegation access status
+        /// </summary>
+        public static List<Detail> AnalyzeDelegationAccessReason(Right right)
+        {
+            List<Detail> reasons = new();
+
+            // Analyse why able to delegate
+            if (right.CanDelegate.HasValue && right.CanDelegate.Value)
+            {
+                // Analyze for role access
+                List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
+                if (roleAccessSources.Any())
+                {
+                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+                    IEnumerable<List<PolicyAttributeMatch>> polMatches = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
+                    List<AttributeMatch> matchList = new List<AttributeMatch>();
+                    foreach (List<PolicyAttributeMatch> polMatch in polMatches)
+                    {
+                        matchList.AddRange(polMatch);
+                    }
+
+                    reasons.Add(new Detail
+                    {
+                        Code = DetailCode.RoleAccess,
+                        Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                        Parameters = new Dictionary<string, List<AttributeMatch>>()
+                        {
+                            {
+                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects))
+                            }
+                        }
+                    });
+                }
+
+                // Analyze for delegation policy access
+                List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
+                if (delegationPolicySources.Any())
+                {
+                    string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+                    
+                    reasons.Add(new Detail
+                    {
+                        Code = DetailCode.DelegationAccess,
+                        Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(delegationPolicySources.SelectMany(delegationAccessSource => delegationAccessSource.PolicySubjects)) } }
+                    });
+                }
+            }
+
+            // Analyse why not allowed to delegate
+            if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
+            {
+                // Analyze for role access failure
+                List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
+                if (roleAccessSources.Any())
+                {
+                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+
+                    reasons.Add(new Detail
+                    {
+                        Code = DetailCode.MissingRoleAccess,
+                        Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)) } }
+                    });
+                }
+
+                // Analyze for delegation policy failure
+                List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy).ToList();
+                if (!delegationPolicySources.Any())
+                {
+                    reasons.Add(new Detail
+                    {
+                        Code = DetailCode.MissingDelegationAccess,
+                        Description = $"The user does not have access through delegation(s) of the right"
+                    });
+                }
+            }
+
+            if (reasons.Count == 0)
+            {
+                reasons.Add(new Detail
+                {
+                    Code = DetailCode.Unknown,
+                    Description = $"Unknown"
+                });
+            }
+
+            return reasons;
+        }
+
+        /// <summary>
+        /// Converts a list of policy attribute matches into a list of attribute matches
+        /// </summary>
+        /// <param name="policySubjects">a list of policy attribute matches</param>
+        /// <returns>a list of attribute matches</returns>
+        private static List<AttributeMatch> GetAttributeMatches(IEnumerable<List<PolicyAttributeMatch>> policySubjects)
+        {
+            List<AttributeMatch> attributeMatches = new List<AttributeMatch>();
+            foreach (List<PolicyAttributeMatch> attributeMatch in policySubjects)
+            {
+                attributeMatches.AddRange(attributeMatch);
+            }
+
+            return attributeMatches;
         }
     }
 }

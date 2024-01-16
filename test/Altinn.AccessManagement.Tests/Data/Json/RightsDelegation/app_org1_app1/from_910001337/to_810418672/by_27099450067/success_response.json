@@ -1,0 +1,40 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organizationnumber",
+      "value": "810418672"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "app1,org1:read",
+      "resource": [
+        {
+          "id": "urn:altinn:org",
+          "value": "org1"
+        },
+        {
+          "id": "urn:altinn:app",
+          "value": "app1"
+        }
+      ],
+      "action": "read",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "app1,org1:write",
+      "resource": [
+        {
+          "id": "urn:altinn:org",
+          "value": "org1"
+        },
+        {
+          "id": "urn:altinn:app",
+          "value": "app1"
+        }
+      ],
+      "action": "write",
+      "status": "NotDelegated"
+    }
+  ]
+}

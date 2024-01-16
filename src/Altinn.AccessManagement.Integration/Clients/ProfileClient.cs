@@ -1,11 +1,11 @@
 ﻿using System.Net.Http.Headers;
-using Altinn.AccessManagement.Core.Extensions;
-using Altinn.AccessManagement.Core.Helpers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Integration.Configuration;
-using Altinn.AccessManagement.Interfaces;
-using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Platform.Profile.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -17,56 +17,44 @@ namespace Altinn.AccessManagement.Integration.Clients
     public class ProfileClient : IProfileClient
     {
         private readonly ILogger _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PlatformSettings _settings;
         private readonly HttpClient _client;
-        private readonly IAccessTokenGenerator _accessTokenGenerator;
+        private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfileClient"/> class
         /// </summary>
         /// <param name="platformSettings">the platform settings</param>
         /// <param name="logger">the logger</param>
-        /// <param name="httpContextAccessor">The http context accessor </param>
-        /// <param name="settings">The application settings.</param>
         /// <param name="httpClient">A HttpClient provided by the HttpClientFactory.</param>
-        /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
         public ProfileClient(
             IOptions<PlatformSettings> platformSettings,
             ILogger<ProfileClient> logger,
-            IHttpContextAccessor httpContextAccessor,
-            IOptionsMonitor<PlatformSettings> settings,
-            HttpClient httpClient,
-            IAccessTokenGenerator accessTokenGenerator)
+            HttpClient httpClient)
         {
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
-            _settings = settings.CurrentValue;
-            httpClient.BaseAddress = new Uri(platformSettings.Value.ApiProfileEndpoint);
-            httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _settings = platformSettings.Value;
             _client = httpClient;
-            _accessTokenGenerator = accessTokenGenerator;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
-        /// <inheritdoc />
-        public async Task<UserProfile> GetUserProfile(int userId)
+        /// <inheritdoc/>
+        public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
         {
-            UserProfile userProfile = null;
+            UriBuilder endpoint = new UriBuilder($"{_settings.ApiProfileEndpoint}internal/user/");
 
-            string endpointUrl = $"users/{userId}";
-            string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _settings.JwtCookieName);
+            StringContent requestBody = new StringContent(JsonSerializer.Serialize(userProfileLookup), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody);
+            string responseContent = await response.Content.ReadAsStringAsync();
 
-            var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-            HttpResponseMessage response = await _client.GetAsync(token, endpointUrl, accessToken);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (!response.IsSuccessStatusCode)
             {
-                userProfile = await response.Content.ReadAsAsync<UserProfile>();
+                _logger.LogError("Getting user profile failed with unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+                return null;
             }
-            else
-            {
-                _logger.LogError($"Getting user profile with userId {userId} failed with statuscode {response.StatusCode}");
-            }
+            
+            UserProfile userProfile = JsonSerializer.Deserialize<UserProfile>(responseContent, _serializerOptions);
 
             return userProfile;
         }

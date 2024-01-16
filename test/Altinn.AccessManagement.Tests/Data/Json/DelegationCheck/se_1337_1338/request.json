@@ -1,0 +1,12 @@
+{
+  "resource": [
+    {
+      "id": "urn:altinn:servicecode",
+      "value": "1337"
+    },
+    {
+      "id": "urn:altinn:serviceeditioncode",
+      "value": "1338"
+    }
+  ]
+}

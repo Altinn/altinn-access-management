@@ -1,0 +1,40 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:ssn",
+      "value": "27099450067"
+    },
+    {
+      "id": "urn:altinn:lastname",
+      "value": "RAVNÅS"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "Id": "urn:altinn:servicecode",
+          "Value": "2802"
+        },
+        {
+          "Id": "urn:altinn:serviceeditioncode",
+          "Value": "2203"
+        }
+      ],
+      "action": "read"
+    },
+    {
+      "resource": [
+        {
+          "Id": "urn:altinn:servicecode",
+          "Value": "2802"
+        },
+        {
+          "Id": "urn:altinn:serviceeditioncode",
+          "Value": "2203"
+        }
+      ],
+      "action": "write"
+    }
+  ]
+}

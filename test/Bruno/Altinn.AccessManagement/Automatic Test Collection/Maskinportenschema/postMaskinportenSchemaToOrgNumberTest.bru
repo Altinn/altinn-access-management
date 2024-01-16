@@ -1,0 +1,85 @@
+meta {
+  name: postMaskinportenSchemaToOrgNumberTest
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:organizationnumber",
+              "value": "{{to_orgno}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:resource",
+                      "value": "ttd-am-k6"
+                  }
+              ]
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  scope: altinn:instances.read
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_scopes: altinn:instances.read
+  auth_partyId: 
+  auth_ssn: 
+  party: 50067258
+  to_orgno: 
+}
+
+assert {
+  res.status: eq 201
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_orgno", testdata.org2.orgno);
+  
+  await helpers.getToken();
+}
+
+script:post-response {
+  console.log("request url (after): " + req.getUrl());
+  console.log("response body:");
+}
+
+tests {
+  test("Response body should contain correct values", function() {
+    const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+    const data = res.getBody();
+    expect(data.to[0]).to.have.property('id', 'urn:altinn:organizationnumber');
+    expect(data.to[0]).to.have.property('value', testdata.org2.orgno);
+    expect(data.rightDelegationResults[0]).to.have.property('rightKey', 'ttd-am-k6:ScopeAccess');
+    expect(data.rightDelegationResults[0].resource[0]).to.have.property('id', 'urn:altinn:resource');
+    expect(data.rightDelegationResults[0].resource[0]).to.have.property('value', 'ttd-am-k6');
+    expect(data.rightDelegationResults[0]).to.have.property('action', 'ScopeAccess');
+    expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');
+  });
+}
+
+docs {
+  offer a maskinportenschema using an organization number
+}

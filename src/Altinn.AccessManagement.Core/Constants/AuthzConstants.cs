@@ -26,6 +26,16 @@
         public const string POLICY_MASKINPORTEN_DELEGATION_WRITE = "MaskinportenDelegationWrite";
 
         /// <summary>
+        /// Policy tag for reading access management information
+        /// </summary>
+        public const string POLICY_ACCESS_MANAGEMENT_READ = "AccessManagementRead";
+
+        /// <summary>
+        /// Policy tag for writing access management delegations
+        /// </summary>
+        public const string POLICY_ACCESS_MANAGEMENT_WRITE = "AccessManagementWrite";
+
+        /// <summary>
         /// Policy tag for scope authorization on the proxy API from Altinn II for the maskinporten integration API
         /// </summary>
         public const string POLICY_MASKINPORTEN_DELEGATIONS_PROXY = "MaskinportenDelegationsProxy";

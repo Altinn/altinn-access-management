@@ -1,0 +1,36 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:ssn",
+      "value": "27099450067"
+    },
+    {
+      "id": "urn:altinn:lastname",
+      "value": "RAVNÅS"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "generic-access-resource:read",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "read",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "generic-access-resource:write",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "write",
+      "status": "Delegated"
+    }
+  ]
+}

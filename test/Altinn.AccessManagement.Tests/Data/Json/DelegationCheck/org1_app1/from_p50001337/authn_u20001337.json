@@ -1,0 +1,115 @@
+[
+  {
+    "rightKey": "app1,org1:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "DelegationAccess",
+        "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:userid:20001337",
+        "parameters": {
+          "DelegationRecipients": [
+            {
+              "id": "urn:altinn:userid",
+              "value": "20001337"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,org1:write",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      }
+    ],
+    "action": "write",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:regna, urn:altinn:rolecode:dagl, urn:altinn:rolecode:priv), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "regna"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "dagl"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "priv"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "app1,org1,task1:sign",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "org1"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "app1"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "task1"
+      }
+    ],
+    "action": "sign",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:dagl, urn:altinn:rolecode:priv), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "dagl"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "priv"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  }
+]

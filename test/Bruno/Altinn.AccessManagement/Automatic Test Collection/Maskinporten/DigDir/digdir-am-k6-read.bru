@@ -30,3 +30,12 @@ vars:pre-request {
   auth_orgNo: 991825827
   auth_scopes: altinn:maskinporten/delegations.admin
 }
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+script:pre-request {
+  await helpers.getToken();
+}

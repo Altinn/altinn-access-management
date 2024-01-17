@@ -1,0 +1,78 @@
+meta {
+  name: postMaskinportenDAGLCannotDelegateNUFResource
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:partyid",
+              "value": "{{to_partyid}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:resource",
+                      "value": "ttd-am-k6-nuf"
+                  }
+              ]
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  scope: altinn:instances.read
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_scopes: altinn:instances.read
+  auth_partyId: 
+  auth_ssn: 
+  party: 50067258
+  to_partyid: 
+}
+
+assert {
+  res.status: eq 400
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_partyid", testdata.org2.partyid);
+  
+  await helpers.getToken();
+}
+
+script:post-response {
+  console.log("request url (after): " + req.getUrl());
+}
+
+tests {
+  test("Response body should contain correct values", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('title', 'One or more validation errors occurred.');
+    expect(data.errors['right[0].Resource']).to.include('Authenticated user does not have any delegable rights for the resource: ttd-am-k6-nuf');
+  });
+}
+
+docs {
+  try and fail to delegate maskinportenschema to a person
+}

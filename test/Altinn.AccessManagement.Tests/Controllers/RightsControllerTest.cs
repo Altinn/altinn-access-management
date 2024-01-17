@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
@@ -18,8 +18,6 @@ using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.AccessManagement.Utilities;
-using Altinn.Authorization.ABAC.Constants;
-using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -29,6 +27,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Xunit;
 
@@ -172,7 +171,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -197,7 +196,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -495,7 +494,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -1249,45 +1248,20 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
-        /// a
+        /// Test case: Revoke all delegations offered from party 20001337 to organization 910493353
+        /// Expected: - Should return 201 
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task RevokeRightsOfferedDelegations()
+        public async Task RevokeRightsOfferedDelegations_FromPersonToOrganization_ReturnNoContent()
         {
             var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
-            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
-            var input = new RevokeOfferedDelegationExternal
-            {
-                Rights = 
-                [
-                    new BaseRightExternal()
-                    {
-                        Action = "read",
-                        Resource =
-                        [
-                            new AttributeMatchExternal()
-                            {
-                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute,
-                                Value = "org1",
-                            },
-                            new AttributeMatchExternal()
-                            {
-                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute,
-                                Value = "app1",
-                            },
-                        ]
-                    }
-                ],
-                To =
-                [
-                    new AttributeMatchExternal()
-                    {
-                        Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                        Value = "910493353",
-                    }
-                ]
-            };
+            var client = GetTestClient(token, WithPDPMock);
+            var input = NewRevokeOfferedModel(
+                WithRevokeOfferedTo(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, "910493353"),
+                WithRevokeOfferedAction("read"),
+                WithRevokeOfferedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, "org1"),
+                WithRevokeOfferedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, "app1"));
             client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "21033041133");
 
             // Act
@@ -1297,9 +1271,84 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
+        /// <summary>
+        /// Test case: Revoke all delegations received to organization 910493353 from person with ssn 21033041133
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RevokeRightsReceivedDelegations_FromPersonToOrganization_ReturnNoContent()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            var input = NewRevokeReceivedModel(
+                WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, "21033041133"),
+                WithRevokeReceivedAction("read"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, "org1"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, "app1"));
+
+            client.DefaultRequestHeaders.Add(IdentifierUtil.OrganizationNumberHeader, "910493353");
+
+            // Act
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/organization/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Revoke all delegations received to person 910493353 from person with ssn 21033041133
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RevokeRightsReceivedDelegations_FromPersonToPerson_ReturnNoContent()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            var input = NewRevokeReceivedModel(
+                WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, "21033041133"),
+                WithRevokeReceivedAction("read"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, "org1"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, "app1"));
+
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "02056260016");
+
+            // Act
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/organization/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Revoke all delegations received to organization 910493353 from person with ssn 21033041133
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task RevokeRightsReceivedDelegations()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
+            var input = NewRevokeReceivedModel(
+                WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, "21033041133"),
+                WithRevokeReceivedAction("read"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, "org1"),
+                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, "app1"));
+
+            client.DefaultRequestHeaders.Add(IdentifierUtil.OrganizationNumberHeader, "910493353");
+
+            // Act
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/organization/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
         private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)
         {
-            return services => 
+            return services =>
             {
                 HttpContext httpContext = new DefaultHttpContext();
                 httpContext.Request.RouteValues.Add(partytype, id);
@@ -1311,6 +1360,82 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
+
+        private static RevokeReceivedDelegationExternal NewRevokeReceivedModel(params Action<RevokeReceivedDelegationExternal>[] actions)
+        {
+            var model = new RevokeReceivedDelegationExternal();
+            foreach (var action in actions)
+            {
+                action(model);
+            }
+
+            return model;
+        }
+
+        private static RevokeOfferedDelegationExternal NewRevokeOfferedModel(params Action<RevokeOfferedDelegationExternal>[] actions)
+        {
+            var model = new RevokeOfferedDelegationExternal();
+            foreach (var action in actions)
+            {
+                action(model);
+            }
+
+            return model;
+        }
+
+        private static Action<RevokeReceivedDelegationExternal> WithRevokeReceivedAction(string action) => model =>
+        {
+            model.Rights ??= [new() { Action = action }];
+            model.Rights.First().Action = action;
+        };
+
+        private static Action<RevokeReceivedDelegationExternal> WithRevokeReceivedResource(string id, object value) => model =>
+        {
+            model.Rights ??= [new() { Resource = [] }];
+            model.Rights.First().Resource ??= [];
+            model.Rights.First().Resource.Add(new()
+            {
+                Id = id,
+                Value = value.ToString(),
+            });
+        };
+
+        private static Action<RevokeReceivedDelegationExternal> WithRevokeReceivedFrom(string id, object value) => model =>
+        {
+            model.From ??= [];
+            model.From.Add(new()
+            {
+                Id = id,
+                Value = value.ToString(),
+            });
+        };
+
+        private static Action<RevokeOfferedDelegationExternal> WithRevokeOfferedAction(string action) => model =>
+        {
+            model.Rights ??= [new() { Action = action, Resource = [] }];
+            model.Rights.First().Action = action;
+        };
+
+        private static Action<RevokeOfferedDelegationExternal> WithRevokeOfferedResource(string id, object value) => model =>
+        {
+            model.Rights ??= [new() { Resource = [] }];
+            model.Rights.First().Resource ??= [];
+            model.Rights.First().Resource.Add(new()
+            {
+                Id = id,
+                Value = value.ToString(),
+            });
+        };
+
+        private static Action<RevokeOfferedDelegationExternal> WithRevokeOfferedTo(string id, object value) => model =>
+        {
+            model.To ??= [];
+            model.To.Add(new()
+            {
+                Id = id,
+                Value = value.ToString(),
+            });
+        };
 
         private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
         {
@@ -1330,7 +1455,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPDP, PdpPermitMock>();
                     services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
                     services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
-                
+
                     foreach (var action in actions)
                     {
                         action(services);

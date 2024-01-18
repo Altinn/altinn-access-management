@@ -47,7 +47,7 @@ vars:pre-request {
 }
 
 assert {
-  res.status: eq 201
+  ~res.status: eq 201
 }
 
 script:pre-request {
@@ -67,9 +67,10 @@ script:post-response {
 }
 
 tests {
-  test("Response body should contain correct values", function() {
+  test("post MaskinportenSchema To OrgNumber", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();
+    expect(res.status).to.equal(201);
     expect(data.to[0]).to.have.property('id', 'urn:altinn:organizationnumber');
     expect(data.to[0]).to.have.property('value', testdata.org2.orgno);
     expect(data.rightDelegationResults[0]).to.have.property('rightKey', 'ttd-am-k6:ScopeAccess');

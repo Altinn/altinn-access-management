@@ -1251,11 +1251,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// <returns></returns>
         [Theory]
         [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
-
-        // [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
-        // [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
-        // [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
-        // [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
         public async Task RevokeRightsOfferedDelegations_ReturnNoContent(RevokeOfferedDelegationExternal input, string headerKey, string headerValue)
         {
             var token = PrincipalUtil.GetToken(20001337, 50002203, 3);

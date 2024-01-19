@@ -21,19 +21,25 @@ public abstract class Asserter<TModel>
     /// <returns></returns>
     public Assertion<TModel> Any(params Assertion<TModel>[] actions) => (errors, values) =>
     {
-        var err = new Dictionary<string, string[]>();
+        var result = new List<IDictionary<string, string[]>>();
         foreach (var action in actions)
         {
+            var err = new Dictionary<string, string[]>();
             action(err, values);
-            if (err.Count != 0)
+            if (err.Count == 0)
             {
                 return;
             }
+
+            result.Add(err);
         }
 
-        foreach (var entry in err)
+        foreach (var entry in result)
         {
-            errors.Add(entry);
+            foreach (var err in errors)
+            {
+                errors.Add(err);
+            }
         }
     };
 

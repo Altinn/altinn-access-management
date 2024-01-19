@@ -25,7 +25,7 @@ vars:pre-request {
 }
 
 assert {
-  res.status: eq 200
+  ~res.status: eq 200
   ~res.body: contains created
 }
 
@@ -45,9 +45,10 @@ script:post-response {
 
 tests {
   
-  test("Response body should contain correct values", function() {
+  test("get MaskinPortenSchema Received", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();  
+    expect(res.status).to.equal(200);
     expect(data[0]).to.have.property('offeredByPartyId', testdata.org1.partyid);
     expect(data[0]).to.have.property('offeredByName', 'ALDRA OG FORTUN');
     expect(data[0]).to.have.property('coveredByPartyId', testdata.org2.partyid);

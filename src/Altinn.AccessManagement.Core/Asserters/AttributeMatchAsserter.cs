@@ -73,7 +73,7 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
                 HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)),
         };
 
-        defaults.AddRange(defaults);
+        defaults.AddRange(actions);
         foreach (var action in defaults)
         {
             action(errors, values);
@@ -95,7 +95,7 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
                 HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceEditionCodeAttribute)),
         };
 
-        defaults.AddRange(defaults);
+        defaults.AddRange(actions);
         foreach (var action in defaults)
         {
             action(errors, values);

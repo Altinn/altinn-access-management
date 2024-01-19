@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Integration.Configuration;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
@@ -30,14 +31,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc />
-        public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
+        public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
         {
             try
             {
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/roles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
 
-                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
-                string roleList = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri, cancellationToken);
+                string roleList = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -55,14 +56,14 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc />
-        public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId)
+        public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
         {
             try
             {
                 UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/delegatableroles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
 
-                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
-                string roleList = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri, cancellationToken);
+                string roleList = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -75,6 +76,31 @@ namespace Altinn.AccessManagement.Integration.Clients
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetRolesForDelegation // Exception");
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userid={userId}");
+
+                HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri, cancellationToken);
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return JsonSerializer.Deserialize<List<AuthorizedParty>>(content);
+                }
+
+                _logger.LogError("AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Unexpected HttpStatusCode: {StatusCode} Response: {Content}", response.StatusCode, content);
+                return new();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Exception");
                 throw;
             }
         }

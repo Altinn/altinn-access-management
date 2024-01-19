@@ -2,7 +2,6 @@ using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -14,6 +13,7 @@ using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
@@ -38,6 +38,7 @@ using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -78,6 +79,8 @@ void ConfigureSetupLogging()
     });
 
     logger = logFactory.CreateLogger<Program>();
+
+    NpgsqlLoggingConfiguration.InitializeLogging(logFactory);
 }
 
 void ConfigureLogging(ILoggingBuilder logging)
@@ -242,6 +245,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IUserProfileLookupService, UserProfileLookupService>();
     services.AddSingleton<IKeyVaultService, KeyVaultService>();
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
+    services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
+    services.AddAccessManagementPersistence();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {

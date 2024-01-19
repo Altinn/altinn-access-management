@@ -1,0 +1,33 @@
+meta {
+  name: Kasper
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+}
+
+script:pre-request {
+  await helpers.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

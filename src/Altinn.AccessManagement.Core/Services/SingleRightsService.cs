@@ -28,7 +28,6 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IAltinn2RightsClient _altinn2RightsClient;
         private readonly IProfileClient _profile;
         private readonly IUserProfileLookupService _profileLookup;
-        private readonly AttributeMatchAsserter _asserter;
         private readonly IDelegationMetadataRepository _delegationRepository;
 
         /// <summary>
@@ -380,12 +379,6 @@ namespace Altinn.AccessManagement.Core.Services
             DelegationHelper.TryGetResourceFromAttributeMatch(delegation.Rights[0].Resource, out ResourceAttributeMatchType _, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 
             ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
-            if (resource == null || !resource.Delegable)
-            {
-                result.Errors.Add("right[0].Resource", $"The resource does not exist or is not available for delegation");
-                return (result, resource, null, null);
-            }
-
             if (resource.ResourceType == ResourceType.MaskinportenSchema)
             {
                 result.Errors.Add("right[0].Resource", $"This operation does not support delegations for MaskinportenSchema resources. Please use the MaskinportenSchema Delegations API. Invalid resource: {resourceRegistryId}. Invalid resource type: {resource.ResourceType}");

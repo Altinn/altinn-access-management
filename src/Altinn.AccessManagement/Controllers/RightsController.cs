@@ -286,6 +286,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
         public async Task<IActionResult> RevokeReceivedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeReceivedDelegationExternal body, CancellationToken cancellationToken)
         {
             try
@@ -340,6 +341,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
         public async Task<IActionResult> RevokeOfferedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeOfferedDelegationExternal body, CancellationToken cancellationToken)
         {
             try

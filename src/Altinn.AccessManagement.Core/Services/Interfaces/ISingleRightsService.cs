@@ -43,10 +43,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Operation to revoke a single rights delegation
         /// </summary>
-        /// <param name="authenticatedUserID">authenticed user</param>
+        /// <param name="authenticatedUserId">authenticed user</param>
         /// <param name="delegation">delegation</param>
         /// <param name="cancellationToken">http context token</param>
         /// <returns>The result of the deletion</returns>
-        Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserID, DelegationLookup delegation, CancellationToken cancellationToken);
+        Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
     }
 }

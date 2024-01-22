@@ -91,6 +91,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
             switch (resourceId)
             {
+                case "app_org1_app1":
                 case "org1/app1":
                 case "org1/app3":
                 case "org2/app3":

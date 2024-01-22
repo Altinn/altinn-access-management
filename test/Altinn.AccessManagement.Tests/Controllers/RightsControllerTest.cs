@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
@@ -167,7 +168,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -192,7 +193,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -490,7 +491,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -1243,9 +1244,59 @@ namespace Altinn.AccessManagement.Tests.Controllers
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+        /// <summary>
+        /// Test case: Revoke given delegation
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        [Theory]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        public async Task RevokeRightsOfferedDelegations_ReturnNoContent(RevokeOfferedDelegationExternal input, string headerKey, string headerValue)
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+
+            // Act
+            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Revoke given delegation
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        // [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [Theory]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromPersonToPerson), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        public async Task RevokeRightsReceivedDelegations_ReturnNoContent(RevokeReceivedDelegationExternal input, string headerKey, string headerValue)
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            
+            // Act
+            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
         private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)
         {
-            return services => 
+            return services =>
             {
                 HttpContext httpContext = new DefaultHttpContext();
                 httpContext.Request.RouteValues.Add(partytype, id);
@@ -1276,7 +1327,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPDP, PdpPermitMock>();
                     services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
                     services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
-                
+
                     foreach (var action in actions)
                     {
                         action(services);

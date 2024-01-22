@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
@@ -14,14 +15,17 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.AccessManagement.Utilities;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers
@@ -164,7 +168,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -189,7 +193,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -487,7 +491,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
             AssertionUtil.AssertCollections(expectedRights, actualRights, AssertionUtil.AssertRightExternalEqual);
         }
@@ -1158,7 +1162,154 @@ namespace Altinn.AccessManagement.Tests.Controllers
             AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
         }
 
-        private HttpClient GetTestClient(string token)
+        /// <summary>
+        /// Test case: Get all delegations offered from party 20001337 for systemresource and altinnapps
+        ///             In this case:
+        ///            - Should use the partyID in the URL
+        /// Expected: - Should return 200 Ok and a list containing three delegations from party 20001337
+        /// </summary>
+        [Fact]
+        public async Task RightsOfferedDelegations_PartyInURL_ReturnOK()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token);
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/{20001337}/rights/delegation/offered");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<RightDelegationExternal> actualRights = JsonSerializer.Deserialize<List<RightDelegationExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(3, actualRights.Count);
+        }
+
+        /// <summary>
+        /// Test case: Get all delegations offered from party 20001337 for systemresource and altinnapps
+        /// Expected: - Should return 200 Ok and a list containing three delegations from party 20001337
+        /// </summary>
+        [Fact]
+        public async Task RightsOfferedDelegations_PartyInOrganizationHeader_ReturnOK()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token);
+            client.DefaultRequestHeaders.Add(IdentifierUtil.OrganizationNumberHeader, "927144913");
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/organization/rights/delegation/offered");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<RightDelegationExternal> actualRights = JsonSerializer.Deserialize<List<RightDelegationExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(3, actualRights.Count);
+        }
+
+        /// <summary>
+        /// Test case: Get all delegations offered from party 20001337 for systemresource and altinnapps
+        /// Expected: - Should return 200 Ok and a list containing three delegations from party 20001337
+        /// </summary>
+        [Fact]
+        public async Task RightsOfferedDelegations_PartyInPersonHeader_ReturnOK()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "21033041133");
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
+            string responseContent = await response.Content.ReadAsStringAsync();
+            List<RightDelegationExternal> actualRights = JsonSerializer.Deserialize<List<RightDelegationExternal>>(responseContent, options);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(3, actualRights.Count);
+        }
+
+        /// <summary>
+        /// Test case: Get all delegations offered from person 22093229405
+        /// Expected: - Should return 500 as person with SSN 22093229405 don't exist
+        /// </summary>
+        [Fact]
+        public async Task RightsOfferedDelegations_NoneExistingPartyInPersonHeader_ReturnInternalServerError()
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithHttpContextAccessorMock("party", "20001337"), WithPDPMock);
+            client.DefaultRequestHeaders.Add(IdentifierUtil.PersonHeader, "22093229405");
+
+            // Act
+            HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/person/rights/delegation/offered");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Revoke given delegation
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        [Theory]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
+        public async Task RevokeRightsOfferedDelegations_ReturnNoContent(RevokeOfferedDelegationExternal input, string headerKey, string headerValue)
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+
+            // Act
+            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Test case: Revoke given delegation
+        /// Expected: - Should return 201 
+        /// </summary>
+        /// <returns></returns>
+        // [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToEnterpriseuser), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [Theory]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromPersonToPerson), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
+        public async Task RevokeRightsReceivedDelegations_ReturnNoContent(RevokeReceivedDelegationExternal input, string headerKey, string headerValue)
+        {
+            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
+            var client = GetTestClient(token, WithPDPMock);
+            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            
+            // Act
+            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        private static Action<IServiceCollection> WithHttpContextAccessorMock(string partytype, string id)
+        {
+            return services =>
+            {
+                HttpContext httpContext = new DefaultHttpContext();
+                httpContext.Request.RouteValues.Add(partytype, id);
+
+                var mock = new Mock<IHttpContextAccessor>();
+                mock.Setup(h => h.HttpContext).Returns(httpContext);
+                services.AddSingleton(mock.Object);
+            };
+        }
+
+        private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
+
+        private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
         {
             HttpClient client = _factory.WithWebHostBuilder(builder =>
             {
@@ -1176,6 +1327,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IPDP, PdpPermitMock>();
                     services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
                     services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
+
+                    foreach (var action in actions)
+                    {
+                        action(services);
+                    }
                 });
             }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

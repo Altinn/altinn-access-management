@@ -10,8 +10,16 @@ namespace Altinn.AccessManagement.Utilities
     {
         private const string PersonHeaderTrigger = "person";
         private const string OrganizationHeaderTrigger = "organization";
-        private const string PersonHeader = "Altinn-Party-SocialSecurityNumber";
-        private const string OrganizationNumberHeader = "Altinn-Party-OrganizationNumber";
+        
+        /// <summary>
+        /// Default HTTP header for SSN input
+        /// </summary>
+        public const string PersonHeader = "Altinn-Party-SocialSecurityNumber";
+        
+        /// <summary>
+        /// Default HTTP header for Organization number input
+        /// </summary>
+        public const string OrganizationNumberHeader = "Altinn-Party-OrganizationNumber";
 
         /// <summary>
         /// Validates that a given organization number is valid.

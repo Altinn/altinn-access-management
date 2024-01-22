@@ -28,9 +28,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Gets all offered single rights delegations for a reportee
         /// </summary>
-        /// <param name="party">reportee that delegated resources</param>
+        /// <param name="reportee">reportee</param>
+        /// <param name="token">cancellation token</param>
         /// <returns>list of delgations</returns>
-        public Task<List<Delegation>> GetOfferedRightsDelegations(AttributeMatch party);
+        Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch reportee, CancellationToken token = default);
 
         /// <summary>
         /// Gets all received single rights delegations for a reportee
@@ -42,9 +43,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Operation to revoke a single rights delegation
         /// </summary>
-        /// <param name="authenticatedUserId">The user id of the authenticated user deleting the delegation</param>
-        /// <param name="delegation">The delegation lookup model</param>
+        /// <param name="authenticatedUserId">authenticed user</param>
+        /// <param name="delegation">delegation</param>
+        /// <param name="cancellationToken">http context token</param>
         /// <returns>The result of the deletion</returns>
-        public Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation);
+        Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
     }
 }

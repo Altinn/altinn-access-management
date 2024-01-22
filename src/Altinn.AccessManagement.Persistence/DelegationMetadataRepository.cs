@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null)
+        public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default)
         {
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
             CheckIfOfferedbyPartyIdsHasValue(offeredByPartyIds);
@@ -151,12 +151,12 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc/>
-        public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+        public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
         {
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-                await conn.OpenAsync();
+                await conn.OpenAsync(cancellationToken);
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesOfferedByPartyId, conn);
                 pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
@@ -164,7 +164,7 @@ namespace Altinn.AccessManagement.Persistence
                 pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
                 List<DelegationChange> delegatedResources = new List<DelegationChange>();
-                using NpgsqlDataReader reader = pgcom.ExecuteReader();
+                using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync(cancellationToken);
                 while (reader.Read())
                 {
                     delegatedResources.Add(GetResourceRegistryDelegationChange(reader));
@@ -417,7 +417,7 @@ namespace Altinn.AccessManagement.Persistence
                 PerformedByUserId = reader.GetFieldValue<int?>("performedbyuserid"),
                 BlobStoragePolicyPath = reader.GetFieldValue<string>("blobstoragepolicypath"),
                 BlobStorageVersionId = reader.GetFieldValue<string>("blobstorageversionid"),
-                Created = reader.GetFieldValue<DateTime>("created")                
+                Created = reader.GetFieldValue<DateTime>("created")
             };
         }
 

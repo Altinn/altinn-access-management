@@ -49,11 +49,12 @@ namespace Altinn.AccessManagement.Controllers
                     Id = "urn:altinn:person:partyid",
                     Value = "1234",
                 },
-            ],
-            [
-                "urn:altinn:person:ssn",
-            ]);
-           return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
+                ],
+                [
+                    "urn:altinn:person:ssn",
+                ]);
+
+            return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }
 
         /// <summary>
@@ -64,12 +65,17 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("accessmanagement/api/v1/delegationrequests/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<ActionResult<DelegationRequest>> Get(string id)
+        public Task<ActionResult<DelegationRequest>> Get(string id)
         {
-            DelegationRequest delegationRequest = new DelegationRequest();
-            delegationRequest.RequestResources = new List<AuthorizationRequestResource>();
-            delegationRequest.RequestResources.Add(new AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 });
-            return delegationRequest;
+            DelegationRequest delegationRequest = new()
+            {
+                RequestResources =
+                [
+                    new AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 },
+                ]
+            };
+
+            return Task.FromResult<ActionResult<DelegationRequest>>(delegationRequest);
         }
     }
 }

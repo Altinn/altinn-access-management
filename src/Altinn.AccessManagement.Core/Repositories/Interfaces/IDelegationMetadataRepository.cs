@@ -43,7 +43,8 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="altinnAppIds">The list of altinn app ids to look up</param>
         /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
         /// <param name="coveredByUserIds">The list of user id of the entity having received the delegated policy, if the entity is a user</param>
-        Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null);
+        /// <param name="cancellationToken">Cancellation token for cancelling the request</param>
+        Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all the current resource registry delegation change records matching the filter values
@@ -60,7 +61,8 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// <param name="offeredByPartyId">The party id of the entity offering the delegations</param>
         /// <param name="resourceRegistryIds">The resource registry ids of resources to find delegations of</param>
         /// <param name="resourceTypes">The types of resources to find delegations of</param>
-        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null);
+        /// <param name="cancellationToken">Cancellation token for cancelling the request</param>
+        Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all the active resource registry delegations a list of parties have received from others

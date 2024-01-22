@@ -47,7 +47,7 @@ vars:pre-request {
 }
 
 assert {
-  res.status: eq 400
+  ~res.status: eq 400
 }
 
 script:pre-request {
@@ -66,8 +66,9 @@ script:post-response {
 }
 
 tests {
-  test("Response body should contain correct values", function() {
+  test("post Maskinporten DAGL Cannot Delegate NUF Resource", function() {
     const data = res.getBody();
+    expect(res.status).to.equal(400);
     expect(data).to.have.property('title', 'One or more validation errors occurred.');
     expect(data.errors['right[0].Resource']).to.include('Authenticated user does not have any delegable rights for the resource: ttd-am-k6-nuf');
   });

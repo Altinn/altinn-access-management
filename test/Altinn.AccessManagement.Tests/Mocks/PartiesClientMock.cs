@@ -17,7 +17,7 @@ namespace Altinn.AccessManagement.Tests.Mocks;
 public class PartiesClientMock : IPartiesClient
 {
     /// <inheritdoc/>
-    public Task<List<Party>> GetPartiesAsync(List<int> parties, CancellationToken cancellationToken = default)
+    public Task<List<Party>> GetPartiesAsync(List<int> parties, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
         List<Party> partyList = new List<Party>();
         List<Party> filteredList = new List<Party>();

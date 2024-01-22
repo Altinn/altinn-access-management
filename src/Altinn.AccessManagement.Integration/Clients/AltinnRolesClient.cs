@@ -16,6 +16,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly SblBridgeSettings _sblBridgeSettings;
         private readonly HttpClient _client;
         private readonly ILogger _logger;
+        private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AltinnRolesClient"/> class
@@ -42,7 +43,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return JsonSerializer.Deserialize<List<Role>>(roleList);
+                    return JsonSerializer.Deserialize<List<Role>>(roleList, _serializerOptions);
                 }
 
                 _logger.LogError("AccessManagement // AltinnRolesClient // GetDecisionPointRolesForUser // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
@@ -67,7 +68,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return JsonSerializer.Deserialize<List<Role>>(roleList);
+                    return JsonSerializer.Deserialize<List<Role>>(roleList, _serializerOptions);
                 }
 
                 _logger.LogError("AccessManagement // AltinnRolesClient // GetRolesForDelegation // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
@@ -92,7 +93,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return JsonSerializer.Deserialize<List<AuthorizedParty>>(content);
+                    return JsonSerializer.Deserialize<List<AuthorizedParty>>(content, _serializerOptions);
                 }
 
                 _logger.LogError("AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Unexpected HttpStatusCode: {StatusCode} Response: {Content}", response.StatusCode, content);

@@ -37,9 +37,10 @@ public interface IContextRetrievalService
     /// Gets a list of parties by their party ids
     /// </summary>
     /// <param name="partyIds">List of partyIds to lookup</param>
+    /// <param name="includeSubunits">(Optional) Whether subunits should be included as ChildParties, if any of the lookup party IDs are for a main unit</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>List of parties</returns>
-    Task<List<Party>> GetPartiesAsync(List<int> partyIds, CancellationToken cancellationToken = default);
+    Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the party of an organization

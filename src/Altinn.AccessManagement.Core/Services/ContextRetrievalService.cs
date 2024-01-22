@@ -85,14 +85,14 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<Party>> GetPartiesAsync(List<int> partyIds, CancellationToken cancellationToken = default)
+    public async Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
         List<Party> parties = new List<Party>();
         List<int> partyIdsNotInCache = new List<int>();
 
         foreach (int partyId in partyIds.Distinct())
         {
-            if (_memoryCache.TryGetValue($"p:{partyId}", out Party party))
+            if (_memoryCache.TryGetValue($"p:{partyId}|inclSubunits:{includeSubunits}", out Party party))
             {
                 parties.Add(party);
             }
@@ -107,7 +107,7 @@ public class ContextRetrievalService : IContextRetrievalService
             return parties;
         }
 
-        List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache, cancellationToken);
+        List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyIdsNotInCache, includeSubunits, cancellationToken);
         if (remainingParties.Count > 0)
         {
             foreach (Party party in remainingParties)
@@ -119,7 +119,7 @@ public class ContextRetrievalService : IContextRetrievalService
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                    .SetPriority(CacheItemPriority.High)
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
-                    _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
+                    _memoryCache.Set($"p:{party.PartyId}|inclSubunits:{includeSubunits}", party, cacheEntryOptions);
                 }                    
             }
         }

@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=true
   body: json
   auth: none
+}
+
+query {
+  includeAltinn2: true
 }
 
 headers {

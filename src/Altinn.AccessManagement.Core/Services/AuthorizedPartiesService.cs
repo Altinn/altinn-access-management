@@ -15,36 +15,30 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
     private readonly IPolicyInformationPoint _pip;
     private readonly IDelegationMetadataRepository _delegations;
     private readonly IAltinnRolesClient _altinnRolesClient;
-    private readonly IUserProfileLookupService _profileLookup;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizedPartiesService"/> class.
     /// </summary>
     /// <param name="contextRetrievalService">Service for retrieving context information</param>
-    /// <param name="pip">Service implementation for policy information point</param>
     /// <param name="delegations">Database repository for delegations</param>
-    /// <param name="roles">SBL bridge client for role information form Altinn 2</param>
-    /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
-    public AuthorizedPartiesService(IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IDelegationMetadataRepository delegations, IAltinnRolesClient roles, IUserProfileLookupService profileLookup)
+    /// <param name="altinn2">SBL bridge client for role and reportee information from Altinn 2</param>
+    public AuthorizedPartiesService(IContextRetrievalService contextRetrievalService, IDelegationMetadataRepository delegations, IAltinnRolesClient altinn2)
     {
         _contextRetrievalService = contextRetrievalService;
-        _pip = pip;
         _delegations = delegations;
-        _altinnRolesClient = roles;
-        _profileLookup = profileLookup;
+        _altinnRolesClient = altinn2;
     }
 
     /// <inheritdoc/>
-    public async Task<List<AuthorizedParty>> GetAuthorizedParties(int authenticatedUserId, CancellationToken cancellationToken)
+    public async Task<List<AuthorizedParty>> GetAuthorizedParties(int authenticatedUserId, bool includeAltinn2AuthorizedParties, CancellationToken cancellationToken)
     {
         List<AuthorizedParty> result = new();
         List<AuthorizedParty> a3AuthParties = new();
         SortedDictionary<int, AuthorizedParty> authorizedPartyDict = [];
-        bool includeAltinn2Reportees = false;
 
-        List<AuthorizedParty> a2AuthParties = await _altinnRolesClient.GetAuthorizedPartiesWithRoles(authenticatedUserId, cancellationToken);
-        if (includeAltinn2Reportees)
+        if (includeAltinn2AuthorizedParties)
         {
+            List<AuthorizedParty> a2AuthParties = await _altinnRolesClient.GetAuthorizedPartiesWithRoles(authenticatedUserId, cancellationToken);
             foreach (AuthorizedParty a2Party in a2AuthParties)
             {
                 authorizedPartyDict.Add(a2Party.PartyId, a2Party);
@@ -62,7 +56,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
 
         //// ToDo: Find all Resource rights through roles (needs RR Role - Resource API)
 
-        // Find all A3 delegations (direct and inherited)
+        // Find all needed datasets: A3 delegations (direct and inherited), KeyRole-relations, MainUnits, Subunits and Parties
         List<int> keyRoleUnits = await _contextRetrievalService.GetKeyRolePartyIds(authenticatedUserId, cancellationToken);
         List<DelegationChange> delegations = await _delegations.GetAllDelegationChangesTo(authenticatedUserId.SingleToList(), keyRoleUnits, cancellationToken: cancellationToken);
 
@@ -74,10 +68,9 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         
         foreach (var delegation in delegations)
         {
-            // Todo build or enrich AuthorizedParties
             if (!authorizedPartyDict.TryGetValue(delegation.OfferedByPartyId, out AuthorizedParty authorizedParty))
             {
-                // Check if party has a main unit
+                // Check if offering party has a main unit
                 MainUnit mainUnit = mainUnits.Find(mu => mu.SubunitPartyId == delegation.OfferedByPartyId);
                 if (mainUnit?.PartyId > 0)
                 {
@@ -86,6 +79,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                         Party mainUnitParty = delegationParties.Find(p => p.PartyId == mainUnit.PartyId.Value);
                         mainUnitParty.OnlyHierarchyElementWithNoAccess = true;
 
+                        // Find the authorized party as a subunit on the main unit
                         foreach (Party subunit in mainUnitParty.ChildParties)
                         {
                             if (subunit.PartyId == delegation.OfferedByPartyId)
@@ -111,6 +105,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                 }
                 else
                 {
+                    // Authorized party is not a subunit. Find party to add.
                     Party party = delegationParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
                     if (party != null)
                     {

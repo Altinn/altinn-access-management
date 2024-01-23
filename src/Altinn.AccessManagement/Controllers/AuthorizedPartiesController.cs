@@ -38,10 +38,11 @@ public class AuthorizedPartiesController : ControllerBase
     }
 
     /// <summary>
-    /// Endpoint for retrieving all authorized parties (aka Reportee List from Altinn 2) for the authenticated user
+    /// Endpoint for retrieving all authorized parties (with option to include Authorized Parties, aka Reportees, from Altinn 2) for the authenticated user
     /// </summary>
+    /// <param name="includeAltinn2">Optional (Default: False): Whether Authorized Parties from Altinn 2 should be included in the result set, and if access to Altinn 3 resources through having Altinn 2 roles should be included.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    /// <response code="200" cref="List{PartyExternal}">Ok</response>
+    /// <response code="200" cref="List{AuthorizedParty}">Ok</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="500">Internal Server Error</response>
@@ -54,15 +55,15 @@ public class AuthorizedPartiesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<ActionResult<List<AuthorizedParty>>> GetAuthorizedParties(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<AuthorizedParty>>> GetAuthorizedParties(bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
         try
         {
             int userId = AuthenticationHelper.GetUserId(HttpContext);
 
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(userId, cancellationToken);
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(userId, includeAltinn2, cancellationToken);
 
-            return _mapper.Map<List<AuthorizedParty>>(authorizedParties); // Todo: Add External model
+            return _mapper.Map<List<AuthorizedParty>>(authorizedParties); // Todo: Add External model, paging?
         }
         catch (Exception ex)
         {

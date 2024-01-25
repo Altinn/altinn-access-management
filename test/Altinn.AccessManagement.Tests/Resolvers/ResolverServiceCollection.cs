@@ -9,7 +9,6 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Common.AccessToken.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
 
 namespace Altinn.AccessManagement.Tests.Resolvers;
 

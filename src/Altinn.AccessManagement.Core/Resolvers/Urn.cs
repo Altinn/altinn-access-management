@@ -15,6 +15,16 @@ public static class Urn
     public new static string ToString() => $"{nameof(Urn)}".ToLower();
 
     /// <summary>
+    /// summary
+    /// </summary>
+    public static string[] PartyIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId];
+
+    /// <summary>
+    /// summary
+    /// </summary>
+    public static string[] Identifiers => [Altinn.Organization.IdentifierNo, Altinn.Person.IdentifierNo];
+
+    /// <summary>
     /// altinn
     /// </summary>
     public static class Altinn
@@ -47,22 +57,22 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
-            public static string Firstname => $"{ToString()}:{nameof(Firstname)}";
+            public static string Firstname => $"{ToString()}:firstname";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string Shortname => $"{ToString()}:{nameof(Shortname)}";
+            public static string Shortname => $"{ToString()}:shortname";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string Middlename => $"{ToString()}:{nameof(Middlename)}";
+            public static string Middlename => $"{ToString()}:middlename";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string Lastname => $"{ToString()}:{nameof(Lastname)}";
+            public static string Lastname => $"{ToString()}:lastname";
 
             /// <summary>
             /// summary
@@ -84,12 +94,17 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
-            public static string PartyId => $"{ToString()}:{PartyId}";
+            public static string Name => $"{ToString()}:name";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string Uuid => $"{ToString()}:{Uuid}";
+            public static string PartyId => $"{ToString()}:partyid";
+
+            /// <summary>
+            /// summary
+            /// </summary>
+            public static string Uuid => $"{ToString()}:uuid";
 
             /// <summary>
             /// summary
@@ -106,12 +121,12 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
-            public static string Username => $"{ToString()}:{nameof(Username)}";
+            public static string Username => $"{ToString()}:username";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string Uuid => $"{ToString()}:{nameof(Uuid)}";
+            public static string Uuid => $"{ToString()}:uuid";
 
             /// <summary>
             /// summary
@@ -121,8 +136,8 @@ public static class Urn
                 /// <summary>
                 /// summary
                 /// </summary>
-                public static string Uuid => $"{ToString()}:{nameof(Uuid)}";
-            
+                public static string Uuid => $"{ToString()}:uuid";
+
                 /// <summary>
                 /// summary
                 /// </summary>
@@ -145,18 +160,18 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
-            public static string ResourceRegistryId => $"{ToString()}:{nameof(ResourceRegistryId)}".ToLower();
+            public static string ResourceRegistryId => $"{ToString()}:resourceregistryid".ToLower();
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string AppId => $"{ToString()}:{AppId}".ToLower();
+            public static string AppId => $"{ToString()}:appid".ToLower();
 
             /// <summary>
             /// summary
             /// </summary>
             /// <returns></returns>
             public new static string ToString() => $"{Altinn.ToString()}:{nameof(Resource)}".ToLower();
-        } 
+        }
     }
 }

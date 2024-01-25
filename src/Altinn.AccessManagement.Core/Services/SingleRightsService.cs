@@ -310,16 +310,11 @@ namespace Altinn.AccessManagement.Core.Services
                 return assertion;
             }
 
-            var wants = new List<string>()
-            {
-                Urn.Altinn.Person.PartyId,
-                Urn.Altinn.Organization.PartyId,
-            };
-            var toParty = await _resolver.Resolve(delegation.To, wants, cancellationToken);
-            var fromParty = await _resolver.Resolve(delegation.From, wants, cancellationToken);
+            var toParty = await _resolver.Resolve(delegation.To, Urn.PartyIds, cancellationToken);
+            var fromParty = await _resolver.Resolve(delegation.From, Urn.PartyIds, cancellationToken);
             var resource = await _resolver.Resolve(delegation?.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.AppId], cancellationToken);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.AppId), fromParty.GetInt([.. wants]), toParty.GetInt([.. wants]));
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.AppId), fromParty.GetInt([.. Urn.PartyIds]), toParty.GetInt([.. Urn.PartyIds]));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }
@@ -333,24 +328,13 @@ namespace Altinn.AccessManagement.Core.Services
             _asserter.Join(
                 _asserter.Evaluate(
                     delegation.From,
-                    _asserter.Single(
-                        _asserter.HasAttributeTypes(Urn.Altinn.Person.PartyId),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo))),
+                    _asserter.DefaultFrom),
                 _asserter.Evaluate(
                     delegation.To,
-                    _asserter.Single(
-                        _asserter.HasAttributeTypes(Urn.Altinn.Person.PartyId),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
-                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo))),
+                    _asserter.DefaultTo),
                 _asserter.Evaluate(
                     delegation?.Rights?.FirstOrDefault()?.Resource ?? [],
-                    _asserter.HasAttributeTypes(),
-                    _asserter.Single(
-                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo, Urn.Altinn.Resource.AppId),
-                        _asserter.HasAttributeTypes())));
+                    _asserter.DefaultResource));
 
         private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)
         {

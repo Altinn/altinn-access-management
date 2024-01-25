@@ -12,7 +12,7 @@ public delegate void Assertion<T>(IDictionary<string, string[]> errors, IEnumera
 /// ss
 /// </summary>
 /// <typeparam name="TModel">aa</typeparam>
-public abstract class Asserter<TModel>
+public class Asserter<TModel> : IAssert<TModel>
 {
     /// <summary>
     /// If any given asserts don't add an error to the errors dictionary parameter then all other errors are ignored
@@ -38,7 +38,7 @@ public abstract class Asserter<TModel>
         {
             foreach (var err in errors)
             {
-                errors.Add(err);
+                AddError(errors, err);
             }
         }
     };
@@ -58,7 +58,7 @@ public abstract class Asserter<TModel>
     };
 
     /// <summary>
-    /// Ensure that
+    /// summary
     /// </summary>
     /// <param name="actions">assertions</param>
     /// <returns></returns>
@@ -75,7 +75,7 @@ public abstract class Asserter<TModel>
             }
         }
 
-        if (result.Count + 1 == actions.Count())
+        if (result.Count + 1 == actions.Length)
         {
             return;
         }
@@ -87,12 +87,24 @@ public abstract class Asserter<TModel>
 
         foreach (var err in result)
         {
-            foreach (var entry in errors)
+            foreach (var entry in err)
             {
-                errors.Add(entry);
+                AddError(errors, entry);
             }
         }
     };
+
+    private static void AddError(IDictionary<string, string[]> errors, KeyValuePair<string, string[]> entry)
+    {
+        if (errors.ContainsKey(entry.Key))
+        {
+            errors[entry.Key] = errors[entry.Key]?.Concat(entry.Value)?.Distinct()?.ToArray() ?? entry.Value;
+        }
+        else
+        {
+            errors.Add(entry);
+        }
+    }
 
     /// <summary>
     /// Evaluates the given given values by 
@@ -133,7 +145,7 @@ public abstract class Asserter<TModel>
         {
             foreach (var error in evaluation.Errors)
             {
-                result.Errors.Add(error);
+                AddError(result.Errors, error);
             }
         }
 

@@ -1,5 +1,5 @@
 {
     "dotnet.defaultSolution": "Altinn.AccessManagement.sln",
     "FSharp.suggestGitignore": false,
-    "explorer.excludeGitIgnore": false
+    "explorer.excludeGitIgnore": true
 }

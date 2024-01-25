@@ -71,7 +71,7 @@ public abstract class AttributeResolver(string resourceName, params IAttributeRe
     /// <param name="result">b</param>
     /// <param name="cancellationToken">c</param>
     private async Task ResolveLeafNodes(IEnumerable<string> wants, ConcurrentBag<AttributeMatch> result, CancellationToken cancellationToken) =>
-        await Parallel.ForEachAsync(LeafResolvers, cancellationToken, async (resolver, cancellationToken) =>
+        await Task.WhenAll(LeafResolvers.Select(async resolver =>
         {
             var resolverExecutionCondtions = new List<bool>()
             {
@@ -87,7 +87,26 @@ public abstract class AttributeResolver(string resourceName, params IAttributeRe
                     result.Add(attribute);
                 }
             }
-        });
+        })).WaitAsync(cancellationToken);
+
+    /// <summary>
+    /// summary
+    /// </summary>
+    /// <param name="attributes">a</param>
+    /// <param name="wants">b</param>
+    /// <param name="result">c</param>
+    /// <param name="cancellationToken">d</param>
+    private async Task ResolveInternalNodes(IEnumerable<AttributeMatch> attributes, IEnumerable<string> wants, ConcurrentBag<AttributeMatch> result, CancellationToken cancellationToken) =>
+        await Task.WhenAll(Resolvers.Select(async resolver =>
+        {
+            if (DoesInternalNodeMatchWants(wants))
+            {
+                foreach (var attribute in await resolver.Resolve(attributes, wants, cancellationToken))
+                {
+                    result.Add(attribute);
+                }
+            }
+        })).WaitAsync(cancellationToken);
 
     /// <summary>
     /// summary
@@ -121,25 +140,6 @@ public abstract class AttributeResolver(string resourceName, params IAttributeRe
     /// <returns></returns>
     protected static int GetAttributeInt(IEnumerable<AttributeMatch> attributes, string type) =>
         int.Parse(GetAttributeString(attributes, type));
-
-    /// <summary>
-    /// summary
-    /// </summary>
-    /// <param name="attributes">a</param>
-    /// <param name="wants">b</param>
-    /// <param name="result">c</param>
-    /// <param name="cancellationToken">d</param>
-    private async Task ResolveInternalNodes(IEnumerable<AttributeMatch> attributes, IEnumerable<string> wants, ConcurrentBag<AttributeMatch> result, CancellationToken cancellationToken) =>
-        await Parallel.ForEachAsync(Resolvers, cancellationToken, async (resolver, cancellationToken) =>
-        {
-            if (DoesInternalNodeMatchWants(wants))
-            {
-                foreach (var attribute in await resolver.Resolve(attributes, wants, cancellationToken))
-                {
-                    result.Add(attribute);
-                }
-            }
-        });
 
     /// <summary>
     /// summary

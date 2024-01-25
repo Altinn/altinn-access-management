@@ -1,5 +1,6 @@
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Resolvers;
 using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Asserts;
@@ -7,15 +8,15 @@ namespace Altinn.AccessManagement.Core.Asserts;
 /// <summary>
 /// asserts values for model <see cref="AttributeMatch"/>
 /// </summary>
-public class AttributeMatchAsserter : Asserter<AttributeMatch>
+public static class AttributeMatchAsserter
 {
     /// <summary>
     /// Passes if the all the given attribute types contains in the given list of attributes.
     /// </summary>
     /// <returns></returns>
-    public static Assertion<AttributeMatch> HasAttributeTypes(params string[] types) => (errors, values) =>
+    public static Assertion<AttributeMatch> HasAttributeTypes(this IAssert<AttributeMatch> assert, params string[] attributes) => (errors, values) =>
     {
-        if (values.All(value => types.Any(type => string.Equals(type, value.Id, StringComparison.InvariantCultureIgnoreCase))))
+        if (values.All(value => attributes.Any(type => string.Equals(type, value.Id, StringComparison.InvariantCultureIgnoreCase))))
         {
             return;
         }
@@ -26,7 +27,7 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
     /// <summary>
     /// summary
     /// </summary>
-    public static Assertion<AttributeMatch> HasOrgAndAltinnApp() => (errors, values) =>
+    public static Assertion<AttributeMatch> HasOrgAndAltinnApp(this IAssert<AttributeMatch> assert) => (errors, values) =>
     {
         if (values.Any(value => value.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute) && values.Any(value => value.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute))
         {
@@ -39,19 +40,19 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
     /// <summary>
     /// heheee
     /// </summary>
-    /// <param name="actions">hehe</param>
+    /// <param name="assert">a</param>
     /// <returns></returns>
-    public Assertion<AttributeMatch> WithDefaultTo(params Assertion<AttributeMatch>[] actions) => (errors, values) =>
+    public static Assertion<AttributeMatch> WithDefaultTo(this IAssert<AttributeMatch> assert) => (errors, values) =>
     {
         var defaults = new List<Assertion<AttributeMatch>>()
         {
-            Single(
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)),
+            assert.Single(
+                assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo)),
         };
 
-        defaults.AddRange(actions);
         foreach (var action in defaults)
         {
             action(errors, values);
@@ -59,21 +60,21 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
     };
 
     /// <summary>
-    /// aa
+    /// summary
     /// </summary>
-    /// <param name="actions">cake</param>
+    /// <param name="assert">a</param>
     /// <returns></returns>
-    public Assertion<AttributeMatch> WithDefaultFrom(params Assertion<AttributeMatch>[] actions) => (errors, values) =>
+    public static Assertion<AttributeMatch> WithDefaultFrom(this IAssert<AttributeMatch> assert) => (errors, values) =>
     {
         var defaults = new List<Assertion<AttributeMatch>>()
         {
-            Single(
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)),
+            assert.Single(
+                assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo)),
         };
 
-        defaults.AddRange(actions);
         foreach (var action in defaults)
         {
             action(errors, values);
@@ -83,19 +84,18 @@ public class AttributeMatchAsserter : Asserter<AttributeMatch>
     /// <summary>
     /// some actions
     /// </summary>
-    /// <param name="actions">some action</param>
+    /// <param name="assert">a</param>
     /// <returns></returns>
-    public Assertion<AttributeMatch> WithDefaultResource(params Assertion<AttributeMatch>[] actions) => (errors, values) =>
+    public static Assertion<AttributeMatch> WithDefaultResource(this IAssert<AttributeMatch> assert) => (errors, values) =>
     {
         var defaults = new List<Assertion<AttributeMatch>>()
         {
-            Single(
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute),
-                HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceEditionCodeAttribute)),
+            assert.Single(
+                assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo, Urn.Altinn.Resource.AppId),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId, Urn.Altinn.Resource.AppId),
+                assert.HasAttributeTypes(Urn.Altinn.Resource.ResourceRegistryId)),
         };
 
-        defaults.AddRange(actions);
         foreach (var action in defaults)
         {
             action(errors, values);

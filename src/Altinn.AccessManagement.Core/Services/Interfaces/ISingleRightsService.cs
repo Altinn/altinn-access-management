@@ -1,4 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -47,6 +48,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="delegation">delegation</param>
         /// <param name="cancellationToken">http context token</param>
         /// <returns>The result of the deletion</returns>
-        Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
+        Task<ValidationProblemDetails> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
     }
 }

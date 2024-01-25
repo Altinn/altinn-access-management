@@ -5,8 +5,26 @@ namespace Altinn.AccessManagement.Core.Models
     /// <summary>
     /// This model describes a pair of AttributeId and AttributeValue for use in matching in XACML policies, for instance a resource, a user, a party or an action.
     /// </summary>
-    public class AttributeMatch
+    public class AttributeMatch : IEquatable<AttributeMatch>
     {
+        /// <summary>
+        /// summary
+        /// </summary>
+        public AttributeMatch()
+        {
+        }
+
+        /// <summary>
+        /// Attribute
+        /// </summary>
+        /// <param name="id">a</param>
+        /// <param name="value">b</param>
+        public AttributeMatch(string id, object value)
+        {
+            Id = id;
+            Value = value?.ToString() ?? string.Empty;
+        }
+
         /// <summary>
         /// Gets or sets the attribute id for the match
         /// </summary>
@@ -19,13 +37,13 @@ namespace Altinn.AccessManagement.Core.Models
         [Required]
         public string Value { get; set; }
 
+        /// <inheritdoc/>
+        public bool Equals(AttributeMatch other) => Id.Equals(other.Id, StringComparison.InvariantCultureIgnoreCase) && Value == other.Value;
+
         /// <summary>
         /// String representation of the attribute
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return $"{Id}:{Value}";
-        }
+        public override string ToString() => $"{Id}:{Value}";
     }
 }

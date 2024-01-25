@@ -10,11 +10,14 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Resolvers;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -28,11 +31,15 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IAltinn2RightsClient _altinn2RightsClient;
         private readonly IProfileClient _profile;
         private readonly IUserProfileLookupService _profileLookup;
+        private readonly IAttributeResolver _resolver;
+        private readonly IAssert<AttributeMatch> _asserter;
         private readonly IDelegationMetadataRepository _delegationRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
         /// </summary>
+        /// <param name="resolver">a</param>
+        /// <param name="asserter">b</param>
         /// <param name="delegationRepository">database implementation for fetching and inserting delegations</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
@@ -40,8 +47,10 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="altinn2RightsClient">SBL Bridge client implementation for rights operations on Altinn 2 services</param>
         /// <param name="profile">Client implementation for getting user profile</param>
         /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
-        public SingleRightsService(IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
+        public SingleRightsService(IAttributeResolver resolver, IAssert<AttributeMatch> asserter, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
         {
+            _resolver = resolver;
+            _asserter = asserter;
             _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
@@ -293,18 +302,55 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserID, DelegationLookup delegation, CancellationToken cancellationToken)
+        public async Task<ValidationProblemDetails> RevokeRightsDelegation(int authenticatedUserID, DelegationLookup delegation, CancellationToken cancellationToken)
         {
-            (DelegationActionResult result, ServiceResource resource, Party fromParty, List<AttributeMatch> to) = await ValidateRevoke(DelegationActionType.Revoke, delegation, authenticatedUserID);
-            if (!result.IsValid)
+            var assertion = AssertRevokeDelegationInput(delegation);
+            if (assertion != null)
             {
-                return result;
+                return assertion;
             }
 
-            List<RequestToDelete> policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.Identifier, fromParty.PartyId, int.Parse(to.First().Value));
+            var wants = new List<string>()
+            {
+                Urn.Altinn.Person.PartyId,
+                Urn.Altinn.Organization.PartyId,
+            };
+            var toParty = await _resolver.Resolve(delegation.To, wants, cancellationToken);
+            var fromParty = await _resolver.Resolve(delegation.From, wants, cancellationToken);
+            var resource = await _resolver.Resolve(delegation?.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.AppId], cancellationToken);
+
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.AppId), fromParty.GetInt([.. wants]), toParty.GetInt([.. wants]));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
-            return result;
+            return assertion;
         }
+
+        /// <summary>
+        /// Ensures that input model contains valid combinations
+        /// </summary>
+        /// <param name="delegation">a</param>
+        /// <returns></returns>
+        private ValidationProblemDetails AssertRevokeDelegationInput(DelegationLookup delegation) =>
+            _asserter.Join(
+                _asserter.Evaluate(
+                    delegation.From,
+                    _asserter.Single(
+                        _asserter.HasAttributeTypes(Urn.Altinn.Person.PartyId),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo))),
+                _asserter.Evaluate(
+                    delegation.To,
+                    _asserter.Single(
+                        _asserter.HasAttributeTypes(Urn.Altinn.Person.PartyId),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo))),
+                _asserter.Evaluate(
+                    delegation?.Rights?.FirstOrDefault()?.Resource ?? [],
+                    _asserter.HasAttributeTypes(),
+                    _asserter.Single(
+                        _asserter.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo, Urn.Altinn.Resource.AppId),
+                        _asserter.HasAttributeTypes())));
 
         private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)
         {
@@ -415,7 +461,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 toParty = await _contextRetrievalService.GetPartyForOrganization(toOrgNo);
             }
-                else if (DelegationHelper.TryGetSocialSecurityNumberAttributeMatch(delegation.To, out string toSsn))
+            else if (DelegationHelper.TryGetSocialSecurityNumberAttributeMatch(delegation.To, out string toSsn))
             {
                 toParty = await _contextRetrievalService.GetPartyForPerson(toSsn);
             }

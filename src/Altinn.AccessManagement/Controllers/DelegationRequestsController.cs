@@ -1,7 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Resovers;
+using Altinn.AccessManagement.Resolvers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
@@ -15,16 +15,13 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly IDelegationRequests _delegationRequests;
 
-        private readonly IAttributeResolver _resolver;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationRequestsController"/> class.
         /// </summary>
         /// <param name="delegationRequsts">The service implementation for</param>
-        public DelegationRequestsController(IDelegationRequests delegationRequsts, IAttributeResolver resolver)
+        public DelegationRequestsController(IDelegationRequests delegationRequsts)
         {
             _delegationRequests = delegationRequsts;
-            _resolver = resolver;
         }
 
         /// <summary>
@@ -42,18 +39,6 @@ namespace Altinn.AccessManagement.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
         {
-            await _resolver.Resolve(
-                [
-                new()
-                {
-                    Id = "urn:altinn:person:partyid",
-                    Value = "1234",
-                },
-                ],
-                [
-                    "urn:altinn:person:ssn",
-                ]);
-
             return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }
 

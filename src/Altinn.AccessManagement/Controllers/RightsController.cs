@@ -296,11 +296,11 @@ namespace Altinn.AccessManagement.Controllers
                 var delegation = _mapper.Map<DelegationLookup>(body);
                 delegation.To = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
-                if (!result.IsValid)
+                if (result != null)
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value);
+                        ModelState.AddModelError(error.Key, error.Value.First());
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
@@ -351,11 +351,11 @@ namespace Altinn.AccessManagement.Controllers
                 var delegation = _mapper.Map<DelegationLookup>(body);
                 delegation.From = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
-                if (!result.IsValid)
+                if (result != null)
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value);
+                        ModelState.AddModelError(error.Key, error.Value.First());
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));

@@ -89,37 +89,38 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         DelegationChange result = null;
         DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
 
-        switch (resourceId)
-        {
-            case "org1/app1":
-            case "org1/app3":
-            case "org2/app3":
-            case "org1/app4":
-            case "error/blobstorageleaselockwritefail":
-            case "error/postgrewritechangefail":
-                result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId);
-                break;
-            case "org1/app5":
-                result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.RevokeLast);
-                break;
-            case "error/postgregetcurrentfail":
-                throw new Exception("Some exception happened");
-            case "error/delegationeventfail":
-                result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.Grant);
-                break;
-            case "resource1":
-                result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
-                break;
-            case "resource2":
-                result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
-                break;
-            case "jks_audi_etron_gt":
-                result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
-                break;
-            default:
-                result = null;
-                break;
-        }
+            switch (resourceId)
+            {
+                case "app_org1_app1":
+                case "org1/app1":
+                case "org1/app3":
+                case "org2/app3":
+                case "org1/app4":
+                case "error/blobstorageleaselockwritefail":
+                case "error/postgrewritechangefail":
+                    result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId);
+                    break;
+                case "org1/app5":
+                    result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.RevokeLast);
+                    break;
+                case "error/postgregetcurrentfail":
+                    throw new Exception("Some exception happened");
+                case "error/delegationeventfail":
+                    result = TestDataUtil.GetAltinnAppDelegationChange(resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, changeType: DelegationChangeType.Grant);
+                    break;
+                case "resource1":
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
+                    break;
+                case "resource2":
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
+                    break;
+                case "jks_audi_etron_gt":
+                    result = TestDataUtil.GetResourceRegistryDelegationChange(resourceId, ResourceType.MaskinportenSchema, offeredByPartyId, created, coveredByUserId, coveredByPartyId);
+                    break;
+                default:
+                    result = null;
+                    break;
+            }
 
         return Task.FromResult(result);
     }

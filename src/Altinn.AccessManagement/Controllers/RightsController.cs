@@ -269,5 +269,115 @@ namespace Altinn.AccessManagement.Controllers
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
         }
+
+        /// <summary>
+        /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
+        /// </summary>
+        /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+        /// <param name="body">The specific delegation to be revoked</param>
+        /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [ActionName(nameof(RevokeReceivedDelegation))]
+        [HttpPost("{party}/rights/delegation/received/revoke")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<IActionResult> RevokeReceivedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeReceivedDelegationExternal body, CancellationToken cancellationToken)
+        {
+            try
+            {
+                int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
+                var delegation = _mapper.Map<DelegationLookup>(body);
+                delegation.To = reportee.SingleToList();
+                var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
+                if (!result.IsValid)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return NoContent();
+            }
+            catch (FormatException ex)
+            {
+                ModelState.AddModelError("Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(StatusCodes.Status500InternalServerError, ex, "Internal exception occurred during Rights Delegation");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
+        /// </summary>
+        /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+        /// <param name="body">payload</param>
+        /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [ActionName(nameof(RevokeOfferedDelegation))]
+        [HttpPost("{party}/rights/delegation/offered/revoke")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<IActionResult> RevokeOfferedDelegation([FromRoute, FromHeader] AuthorizedPartyInput input, [FromBody] RevokeOfferedDelegationExternal body, CancellationToken cancellationToken)
+        {
+            try
+            {
+                int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
+                var delegation = _mapper.Map<DelegationLookup>(body);
+                delegation.From = reportee.SingleToList();
+                var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
+                if (!result.IsValid)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return NoContent();
+            }
+            catch (FormatException ex)
+            {
+                ModelState.AddModelError("Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (ValidationException ex)
+            {
+                ModelState.AddModelError("Validation Error", ex.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(StatusCodes.Status500InternalServerError, ex, "Internal exception occurred during Rights Delegation");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
+            }
+        }
     }
 }

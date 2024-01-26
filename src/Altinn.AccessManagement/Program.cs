@@ -38,7 +38,6 @@ using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql.Logging;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -48,7 +47,7 @@ ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
-NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
+//NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;

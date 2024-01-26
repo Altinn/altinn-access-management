@@ -165,17 +165,17 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
-            public static string ResourceRegistryId => $"{ToString()}:resourceregistryid".ToLower();
+            public static string ResourceRegistryId => "urn:altinn:resource";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string AppOwner => $"{ToString()}:appowner".ToLower();
+            public static string AppOwner => "urn:altinn:org";
 
             /// <summary>
             /// summary
             /// </summary>
-            public static string AppId => $"{ToString()}:appid".ToLower();
+            public static string AppId => "urn:altinn:app".ToLower();
 
             /// <summary>
             /// summary

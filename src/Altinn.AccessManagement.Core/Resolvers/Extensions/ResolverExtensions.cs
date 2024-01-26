@@ -18,7 +18,9 @@ public static class ResolverExtensions
     {
         services.AddTransient<IAttributeResolver, UrnResolver>();
         services.AddTransient<UrnResolver>();
+        services.AddTransient<AltinnEnterpriseUserResolver>();
         services.AddTransient<AltinnResolver>();
+        services.AddTransient<AltinnResourceResolver>();
         services.AddTransient<AltinnOrganizationResolver>();
         services.AddTransient<AltinnPersonResolver>();
         return services;
@@ -34,7 +36,7 @@ public static class ResolverExtensions
     {
         foreach (var attribute in attributes)
         {
-            if (values.FirstOrDefault(value => value.Id.Equals(attribute, StringComparison.InvariantCultureIgnoreCase)) is var result && result != null) 
+            if (values.FirstOrDefault(value => value.Id.Equals(attribute, StringComparison.InvariantCultureIgnoreCase)) is var result && result != null)
             {
                 return result.Value;
             }

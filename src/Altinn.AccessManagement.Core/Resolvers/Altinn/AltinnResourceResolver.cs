@@ -1,6 +1,6 @@
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Resolvers;
+using Npgsql;
 
 namespace Altinn.AccessManagement.Core.Resolvers;
 
@@ -15,10 +15,10 @@ public class AltinnResourceResolver : AttributeResolver, IAttributeResolver
     /// summary
     /// </summary>
     /// <param name="contextRetrievalService">service init</param>
-    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Person.ToString())
+    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Resource.ToString())
     {
-        AddLeaf([Urn.Altinn.Organization.IdentifierNo, Urn.Altinn.Resource.AppId], [], ResolveOrganizationAndAppId());
-        AddLeaf([Urn.Altinn.Resource.ResourceRegistryId], [], ResolveResourceRegistry());
+        AddLeaf([Urn.Altinn.Resource.AppOwner, Urn.Altinn.Resource.AppId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type, Urn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
+        AddLeaf([Urn.Altinn.Resource.ResourceRegistryId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type], ResolveResourceRegistryId());
         _contextRetrievalService = contextRetrievalService;
     }
 
@@ -26,17 +26,16 @@ public class AltinnResourceResolver : AttributeResolver, IAttributeResolver
     /// Resolve social security number and lastname
     /// </summary>
     /// <returns></returns>
-    public LeafResolver ResolveOrganizationAndAppId() => async (attributes, cancellationToken) =>
+    public LeafResolver ResolveAppOwnerAndAppId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForPerson(GetAttributeString(attributes, Urn.Altinn.Person.IdentifierNo)) is var party && party != null)
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetString(Urn.Altinn.Resource.AppOwner), attributes.GetString(Urn.Altinn.Resource.AppId), null, null);
+        if (resource != null)
         {
             return
             [
-                new(Urn.Altinn.Person.PartyId, party.PartyId),
-                new(Urn.Altinn.Person.Shortname, party.Person.Name),
-                new(Urn.Altinn.Person.Firstname, party.Person.FirstName),
-                new(Urn.Altinn.Person.Middlename, party.Person.MiddleName),
-                new(Urn.Altinn.Person.Lastname, party.Person.LastName),
+                new(Urn.Altinn.Resource.Delegable, resource.Delegable),
+                new(Urn.Altinn.Resource.Type, resource.ResourceType),
+                new(Urn.Altinn.Resource.ResourceRegistryId, resource.Identifier),
             ];
         }
 
@@ -47,13 +46,15 @@ public class AltinnResourceResolver : AttributeResolver, IAttributeResolver
     /// summary
     /// </summary>
     /// <returns></returns>
-    public LeafResolver ResolveResourceRegistry() => async (attributes, cancellationToken) =>
+    public LeafResolver ResolveResourceRegistryId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetResourceList() is var resources && resources != null)
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetString(Urn.Altinn.Resource.AppId), null, null, null, null);
+        if (resource != null)
         {
-            var resource = resources.First(resource => resource.Identifier == attributes.GetString(Urn.Altinn.Resource.ResourceRegistryId));
-            return [
-                new(Urn.Altinn.Resource.ResourceRegistryId, resource.Identifier),
+            return
+            [
+                new(Urn.Altinn.Resource.Delegable, resource.Delegable),
+                new(Urn.Altinn.Resource.Type, resource.ResourceType),
             ];
         }
 

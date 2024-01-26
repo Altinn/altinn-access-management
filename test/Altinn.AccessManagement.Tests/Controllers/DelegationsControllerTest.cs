@@ -314,7 +314,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.PostAsync("accessmanagement/api/v1/delegations/DeleteRules", content);
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -1422,7 +1422,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
             ProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             Assert.Equal(expected, errorResponse.Title);
@@ -1472,7 +1472,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope=");
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(expected, errorResponse.Errors["scope"][0]);
@@ -1498,7 +1498,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(expected, errorResponse.Errors["supplierOrg"][0]);
@@ -1524,7 +1524,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(expected, errorResponse.Errors["consumerOrg"][0]);
@@ -1575,7 +1575,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/admin/delegations/maskinportenschema/?supplierorg={supplierOrg}&consumerorg={consumerOrg}&scope={scope}");
             string responseContent = await response.Content.ReadAsStringAsync();
             ValidationProblemDetails errorResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(expected, errorResponse.Errors["scope"][0]);
@@ -1619,7 +1619,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
-                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>(); 
+                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton(pdpMock);
                     services.AddSingleton(httpContextAccessor);
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();

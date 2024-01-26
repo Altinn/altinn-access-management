@@ -7,7 +7,9 @@ namespace Altinn.AccessManagement.Core.Resolvers;
 /// </summary>
 /// <param name="person">person</param>
 /// <param name="organization">organization</param>
-public class AltinnResolver(AltinnPersonResolver person, AltinnOrganizationResolver organization)
-    : AttributeResolver(Urn.Altinn.ToString(), person, organization), IAttributeResolver
+/// <param name="resource">resource</param>
+/// <param name="enterpriseUserResolver">enterpriseuser</param>
+public class AltinnResolver(AltinnPersonResolver person, AltinnOrganizationResolver organization, AltinnResourceResolver resource, AltinnEnterpriseUserResolver enterpriseUserResolver)
+    : AttributeResolver(Urn.Altinn.ToString(), person, organization, resource, enterpriseUserResolver), IAttributeResolver
 {
 }

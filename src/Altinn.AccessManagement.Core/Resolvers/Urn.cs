@@ -17,7 +17,7 @@ public static class Urn
     /// <summary>
     /// summary
     /// </summary>
-    public static string[] PartyIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId];
+    public static string[] PartyIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.EnterpriseUser.PartyId];
 
     /// <summary>
     /// summary
@@ -131,6 +131,11 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
+            public static string PartyId => $"{ToString()}:partyid";
+
+            /// <summary>
+            /// summary
+            /// </summary>
             public static class Organization
             {
                 /// <summary>
@@ -165,7 +170,22 @@ public static class Urn
             /// <summary>
             /// summary
             /// </summary>
+            public static string AppOwner => $"{ToString()}:appowner".ToLower();
+
+            /// <summary>
+            /// summary
+            /// </summary>
             public static string AppId => $"{ToString()}:appid".ToLower();
+
+            /// <summary>
+            /// summary
+            /// </summary>
+            public static string Type => $"{ToString()}:type".ToLower();
+
+            /// <summary>
+            /// summary
+            /// </summary>
+            public static string Delegable => $"{ToString()}:delegable".ToLower();
 
             /// <summary>
             /// summary

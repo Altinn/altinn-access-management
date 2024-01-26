@@ -6,7 +6,7 @@ namespace Altinn.AccessManagement.Core.Asserts;
 /// <summary>
 /// The signature of an Assertion that validates models
 /// </summary>
-public delegate void Assertion<T>(IDictionary<string, string[]> errors, IEnumerable<T> value);
+public delegate void Assertion<T>(IDictionary<string, string[]> errors, IEnumerable<T> attributes);
 
 /// <summary>
 /// ss
@@ -143,9 +143,12 @@ public class Asserter<TModel> : IAssert<TModel>
 
         foreach (var evaluation in evaluations)
         {
-            foreach (var error in evaluation.Errors)
+            if (evaluation != null)
             {
-                AddError(result.Errors, error);
+                foreach (var error in evaluation.Errors)
+                {
+                    AddError(result.Errors, error);
+                }
             }
         }
 

@@ -38,7 +38,7 @@ public class AttributeMatchAsserterTests
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Person.PartyId, "<partyid>")],
+                [new(Urn.Altinn.Person.PartyId, "123")],
                 Assert.Null
             },
             {
@@ -46,8 +46,66 @@ public class AttributeMatchAsserterTests
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.PartyId, "<partyid>")],
+                [new(Urn.Altinn.Organization.PartyId, "321")],
                 Assert.Null
+            },
+            {
+                [new(Urn.Altinn.Organization.PartyId, "<string>")],
+                Assert.NotNull
+            },
+            {
+                [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
+                Assert.NotNull
+            },
+            {
+                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                Assert.NotNull
+            },
+            {
+                [new(Urn.Altinn.Person.IdentifierNo, string.Empty)],
+                Assert.NotNull
+            }
+        };
+
+    /// <summary>
+    /// summary
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(DefaultFromCases), MemberType = typeof(AttributeMatchAsserterTests))]
+    public void DefaultFrom(IEnumerable<AttributeMatch> values, Action<ValidationProblemDetails> assert)
+    {
+        var asserter = AsserterTests.Asserter<AttributeMatch>();
+
+        var result = asserter.Evaluate(values, asserter.DefaultTo);
+
+        assert(result);
+    }
+
+    /// <summary>
+    /// summary
+    /// </summary>
+    public static TheoryData<IEnumerable<AttributeMatch>, Action<ValidationProblemDetails>> DefaultFromCases =>
+        new()
+        {
+            {
+                [new(Urn.Altinn.Person.IdentifierNo, "<identifierno>")],
+                Assert.Null
+            },
+            {
+                [new(Urn.Altinn.Person.PartyId, "123")],
+                Assert.Null
+            },
+            {
+                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>")],
+                Assert.Null
+            },
+            {
+                [new(Urn.Altinn.Organization.PartyId, "321")],
+                Assert.Null
+            },
+            {
+                [new(Urn.Altinn.Organization.PartyId, "<string>")],
+                Assert.NotNull
             },
             {
                 [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
@@ -84,11 +142,7 @@ public class AttributeMatchAsserterTests
         new()
         {
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
-                Assert.Null
-            },
-            {
-                [new(Urn.Altinn.Organization.PartyId, "<partyid>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                [new(Urn.Altinn.Resource.AppOwner, "<appowner>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
                 Assert.Null
             },
             {

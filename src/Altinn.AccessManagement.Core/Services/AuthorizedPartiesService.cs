@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Clients.Interfaces;
+﻿using System.Diagnostics;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -54,7 +55,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             result = a2AuthParties;
         }
 
-        //// ToDo: Find all Resource rights through roles (needs RR Role - Resource API)
+        //// To-be-implemented: Find all authorized resources through roles (needs RR Role - Resource API)
 
         // Find all needed datasets: A3 delegations (direct and inherited), KeyRole-relations, MainUnits, Subunits and Parties
         List<int> keyRoleUnits = await _contextRetrievalService.GetKeyRolePartyIds(authenticatedUserId, cancellationToken);
@@ -70,7 +71,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         {
             if (!authorizedPartyDict.TryGetValue(delegation.OfferedByPartyId, out AuthorizedParty authorizedParty))
             {
-                // Check if offering party has a main unit
+                // Check if offering party has a main unit / is itself a subunit
                 MainUnit mainUnit = mainUnits.Find(mu => mu.SubunitPartyId == delegation.OfferedByPartyId);
                 if (mainUnit?.PartyId > 0)
                 {
@@ -115,7 +116,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                     }
                     else
                     {
-                        // WTF happened here?
+                        throw new UnreachableException($"Get AuthorizedParties failed to find Party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
                     }
                 }
             }

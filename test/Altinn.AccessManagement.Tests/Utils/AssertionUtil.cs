@@ -6,7 +6,6 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -524,6 +523,28 @@ namespace Altinn.AccessManagement.Tests.Utils
             {
                 AssertCollections(expected[key], actual[key], AssertAttributeMatchExternalEqual);
             }
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="AuthorizedParty"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertAuthorizedPartyEqual(AuthorizedParty expected, AuthorizedParty actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.PartyId, actual.PartyId);
+            Assert.Equal(expected.PartyUuid, actual.PartyUuid);
+            Assert.Equal(expected.PartyTypeName, actual.PartyTypeName);
+            Assert.Equal(expected.OrgNumber, actual.OrgNumber);
+            Assert.Equal(expected.SSN, actual.SSN);
+            Assert.Equal(expected.UnitType, actual.UnitType);
+            Assert.Equal(expected.Name, actual.Name);
+            Assert.Equal(expected.IsDeleted, actual.IsDeleted);
+            Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
+            AssertCollections(expected.ChildParties, actual.ChildParties, AssertAuthorizedPartyEqual);
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

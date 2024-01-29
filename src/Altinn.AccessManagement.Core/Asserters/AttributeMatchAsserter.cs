@@ -1,53 +1,51 @@
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Resolvers;
-using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Asserts;
 
 /// <summary>
-/// asserts values for model <see cref="AttributeMatch"/>
+/// Asserts values for model <see cref="AttributeMatch"/>.
 /// </summary>
 public static class AttributeMatchAsserter
 {
-    private static string StringifyAttributeIds(IEnumerable<AttributeMatch> values) => $"[{Strings.Join(values.Select(v => v.Id).ToArray(), ",")}]";
+    private static string StringifyAttributeIds(IEnumerable<AttributeMatch> values) => $"[{string.Join(",", values.Select(v => v.Id))}]";
 
     /// <summary>
-    /// Passes if the all the given attribute types contains in the given list of attributes.
+    /// Passes if all the given attribute types are contained in the given list of attributes.
     /// </summary>
     /// <returns></returns>
     public static Assertion<AttributeMatch> HasAttributeTypes(this IAssert<AttributeMatch> _, params string[] attributes) => (errors, values) =>
     {
-        if (!values.All(value => attributes.Any(type => string.Equals(type, value.Id, StringComparison.InvariantCultureIgnoreCase))))
+        if (!values.All(value => attributes.Any(type => type.Equals(value.Id, StringComparison.InvariantCultureIgnoreCase))))
         {
             errors.Add(nameof(HasAttributeTypes), [$"attributes {StringifyAttributeIds(values)} is not configured as an interpretable combination"]);
         }
     };
 
     /// <summary>
-    /// summary
+    /// Checks if all given types has a value of type integer. Attributes that don't exist in the list of attributes are ignored.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="types">b</param>
+    /// <param name="assert">list of attributes</param>
+    /// <param name="types">URN of the types that should be integers</param>
     /// <returns></returns>
     public static Assertion<AttributeMatch> AttributesAreIntegers(this IAssert<AttributeMatch> assert, params string[] types) => (errors, values) =>
     {
         var matchingAttributes = values.Where(attribute => types.Any(type => type.Equals(attribute.Id, StringComparison.InvariantCultureIgnoreCase)));
-        var assertedNoneIntegers = matchingAttributes.Where(attribute => !int.TryParse(attribute.Value, out _));
-        if (assertedNoneIntegers.Any())
+        if (matchingAttributes.Where(attribute => !int.TryParse(attribute.Value, out _)) is var assertedNoneIntegers && assertedNoneIntegers.Any())
         {
             errors.Add(nameof(AttributesAreIntegers), [$"attributes {StringifyAttributeIds(values)} can't be parsed as integers"]);
         }
     };
 
     /// <summary>
-    /// summary
+    /// Checks if all given types has a value of type boolean. Attributes that don't exist in the list of attributes are ignored.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="types">b</param>
+    /// <param name="assert">list of attributes</param>
+    /// <param name="types">URN of the types that should be boolean</param>
     /// <returns></returns>
     public static Assertion<AttributeMatch> AttributesAreBoolean(this IAssert<AttributeMatch> assert, params string[] types) => (errors, values) =>
     {
-        var matchingAttributes = values.Where(attribute => types.Any(type => type.Equals(attribute.Value, StringComparison.InvariantCultureIgnoreCase)));
+        var matchingAttributes = values.Where(attribute => types.Any(type => type.Equals(attribute.Id, StringComparison.InvariantCultureIgnoreCase)));
         if (matchingAttributes.Where(attribute => !bool.TryParse(attribute.Value, out _)) is var assertedNoneIntegers && assertedNoneIntegers.Any())
         {
             errors.Add(nameof(AttributesAreIntegers), [$"attributes {StringifyAttributeIds(values)} can't be parsed as boolean"]);
@@ -55,10 +53,10 @@ public static class AttributeMatchAsserter
     };
 
     /// <summary>
-    /// summary
+    /// Can pass a custom compare function that compares a single attribute an return a boolean that specifies if it passed or not.
     /// </summary>
-    /// <param name="type">a</param>
-    /// <param name="cmp">b</param>
+    /// <param name="type">list of attributes</param>
+    /// <param name="cmp">compare function</param>
     /// <returns></returns>
     public static Assertion<AttributeMatch> AttributeCompare(string type, Func<AttributeMatch, bool> cmp) => (errors, values) =>
     {
@@ -78,11 +76,11 @@ public static class AttributeMatchAsserter
     };
 
     /// <summary>
-    /// Passes if all attributes has a populated value field
+    /// Passes if all attributes has a populated value field. Content is irrelevant, but it can't be an empty string or null 
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="errors">b</param>
-    /// <param name="values">c</param>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
     public static void AllAttributesHasValues(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values)
     {
         var attributesWithEmptyValues = values.Where(attribute => string.IsNullOrEmpty(attribute?.Value));
@@ -93,11 +91,11 @@ public static class AttributeMatchAsserter
     }
 
     /// <summary>
-    /// summmary
+    /// Checks if a resource is delegable. The resource must be in the list of attributes otherwise it fails.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="errors">b</param>
-    /// <param name="values">c</param>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
     public static void IsDelegatableResource(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values)
     {
         if (values.FirstOrDefault(value => value.Id.Equals(Urn.Altinn.Resource.Delegable, StringComparison.InvariantCultureIgnoreCase)) is var attribute && attribute != null)
@@ -118,11 +116,11 @@ public static class AttributeMatchAsserter
     }
 
     /// <summary>
-    /// summary
+    /// A default list of assertions that contains the baseline for validating in input delegaton to an entity.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="errors">b</param>
-    /// <param name="values">c</param>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
     public static void DefaultTo(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
                 assert.Single(
@@ -135,11 +133,11 @@ public static class AttributeMatchAsserter
                 assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
 
     /// <summary>
-    /// summary
+    /// A default list of assertions that contains the baseline for validating in input delegaton from an entity.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="errors">b</param>
-    /// <param name="values">c</param>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
     public static void DefaultFrom(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
             assert.Single(
@@ -151,11 +149,11 @@ public static class AttributeMatchAsserter
             assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
 
     /// <summary>
-    /// some actions
+    /// A default list of assertions that contains the baseline for validating input for a resource.
     /// </summary>
-    /// <param name="assert">a</param>
-    /// <param name="errors">b</param>
-    /// <param name="values">c</param>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
     public static void DefaultResource(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
             assert.Single(

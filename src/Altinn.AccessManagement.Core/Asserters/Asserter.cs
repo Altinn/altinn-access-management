@@ -1,21 +1,26 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Core.Asserts;
 
 /// <summary>
-/// The signature of an Assertion that validates models
+/// The function signature of an Assertion that validates data
 /// </summary>
 public delegate void Assertion<T>(IDictionary<string, string[]> errors, IEnumerable<T> attributes);
 
 /// <summary>
-/// ss
+/// Contains the basic methods for combining and nesting assertions.
+/// Use the <see cref="Asserter{TModel}.Evaluate"/> to make assertions for one dataset. If you have multiple datasets,
+/// you can pass the evaluations to the <see cref="Asserter{TModel}.Join"/> to get a single assertions result for all
+/// the datasets.
 /// </summary>
-/// <typeparam name="TModel">aa</typeparam>
+/// <typeparam name="TModel">the model that should</typeparam>
 public class Asserter<TModel> : IAssert<TModel>
 {
     /// <summary>
-    /// If any given asserts don't add an error to the errors dictionary parameter then all other errors are ignored
+    /// If any given asserts don't add an error to the errors dictionary parameter, then all other errors are ignored
     /// </summary>
     /// <param name="actions">assertions</param>
     /// <returns></returns>
@@ -45,7 +50,8 @@ public class Asserter<TModel> : IAssert<TModel>
 
     /// <summary>
     /// All errors are directly written to the errors dictionary. This method works as calling the Evaluate method directly
-    /// with a set of asserts. However, this can also be combined inside the Any method to make an even more complex Any statement.
+    /// with a set of asserts. However, this can also be combined inside <see cref="Asserter{TModel}.Any"/> or <see cref="Asserter{TModel}.Single"/>
+    /// to create even more complex assertion.
     /// </summary>
     /// <param name="actions">assertions</param>
     /// <returns></returns>
@@ -58,7 +64,9 @@ public class Asserter<TModel> : IAssert<TModel>
     };
 
     /// <summary>
-    /// summary
+    /// Single will omit writing to the error dict if there is just one assertion that passes.
+    /// Can be combined with <see cref="Asserter{TModel}.Any"/> and <see cref="Asserter{TModel}.All"/>
+    /// to create even more complex assertion.
     /// </summary>
     /// <param name="actions">assertions</param>
     /// <returns></returns>
@@ -94,24 +102,15 @@ public class Asserter<TModel> : IAssert<TModel>
         }
     };
 
-    private static void AddError(IDictionary<string, string[]> errors, KeyValuePair<string, string[]> entry)
-    {
-        if (errors.TryGetValue(entry.Key, out var value))
-        {
-            errors[entry.Key] = value == null ? entry.Value : value.Concat(entry.Value)?.Distinct()?.ToArray();
-        }
-        else
-        {
-            errors.Add(entry);
-        }
-    }
-
     /// <summary>
-    /// Evaluates the given given values by 
+    /// Executes all the assertions using the given dataset 
     /// </summary>
     /// <param name="values">the values to be asserted</param>
     /// <param name="actions">assertions</param>
-    /// <returns></returns>
+    /// <returns>
+    /// returns null if all the assertions passed. If an assertion generated an error then these errors will be present in <see cref="ValidationProblemDetails.Errors"/>
+    /// dictionary where the keys should be named the assertion method and value should contain the message(s).
+    /// </returns>
     public ValidationProblemDetails Evaluate(IEnumerable<TModel> values, params Assertion<TModel>[] actions)
     {
         var result = new Dictionary<string, string[]>();
@@ -129,16 +128,19 @@ public class Asserter<TModel> : IAssert<TModel>
     }
 
     /// <summary>
-    /// Joins multiple evaluation to a single result
+    /// Joins multiple evaluations to a single result
     /// </summary>
     /// <param name="evaluations">evaluations</param>
-    /// <returns></returns>
+    /// <returns>
+    /// returns null if all the assertions passed. If an assertion generated an error then these errors will be present in <see cref="ValidationProblemDetails.Errors"/>
+    /// dictionary where the keys should be named the assertion method and value should contain the message(s).
+    /// </returns>
     public ValidationProblemDetails Join(params ValidationProblemDetails[] evaluations)
     {
         var result = new ValidationProblemDetails()
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "there is an issue with the input body",
+            Title = "there is an issue with provided input",
         };
 
         foreach (var evaluation in evaluations)
@@ -153,5 +155,22 @@ public class Asserter<TModel> : IAssert<TModel>
         }
 
         return result.Errors.Count > 0 ? result : null;
+    }
+
+    /// <summary>
+    /// add error to the dictionary
+    /// </summary>
+    /// <param name="errors">error dictionary</param>
+    /// <param name="entry">the key-value pair that should be written to the error dict</param>
+    private static void AddError(IDictionary<string, string[]> errors, KeyValuePair<string, string[]> entry)
+    {
+        if (errors.TryGetValue(entry.Key, out var value))
+        {
+            errors[entry.Key] = value == null ? entry.Value : value.Concat(entry.Value ?? Enumerable.Empty<string>()).Distinct().ToArray();
+        }
+        else
+        {
+            errors.Add(entry);
+        }
     }
 }

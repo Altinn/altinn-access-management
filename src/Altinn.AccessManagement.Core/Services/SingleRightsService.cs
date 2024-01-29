@@ -320,9 +320,10 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <summary>
-        /// Ensures that input model contains valid combinations
+        /// Ensures that given input for revoking a delegations contains a combination of attributes that
+        /// the service layer can process. If the method return null then input should be processable.
         /// </summary>
-        /// <param name="delegation">a</param>
+        /// <param name="delegation">input parameters from API callee</param>
         /// <returns></returns>
         private ValidationProblemDetails AssertRevokeDelegationInput(DelegationLookup delegation) =>
             _asserter.Join(

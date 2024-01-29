@@ -324,7 +324,6 @@ namespace Altinn.AccessManagement.Core.Services
         /// the service layer can process. If the method return null then input should be processable.
         /// </summary>
         /// <param name="delegation">input parameters from API callee</param>
-        /// <returns></returns>
         private ValidationProblemDetails AssertRevokeDelegationInput(DelegationLookup delegation) =>
             _asserter.Join(
                 _asserter.Evaluate(

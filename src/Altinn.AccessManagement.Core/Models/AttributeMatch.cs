@@ -1,25 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// This model describes a pair of AttributeId and AttributeValue for use in matching in XACML policies, for instance a resource, a user, a party or an action.
     /// </summary>
-    public class AttributeMatch : IEquatable<AttributeMatch>, IEqualityComparer<AttributeMatch>
+    public sealed class AttributeMatch : IEquatable<AttributeMatch>
     {
         /// <summary>
-        /// summary
+        /// ctor
         /// </summary>
         public AttributeMatch()
         {
         }
 
         /// <summary>
-        /// Attribute
+        /// ctor
         /// </summary>
-        /// <param name="id">a</param>
-        /// <param name="value">b</param>
+        /// <param name="id">type</param>
+        /// <param name="value">value</param>
         public AttributeMatch(string id, object value)
         {
             Id = id;
@@ -40,14 +39,6 @@ namespace Altinn.AccessManagement.Core.Models
 
         /// <inheritdoc/>
         public bool Equals(AttributeMatch other) => Id.Equals(other.Id, StringComparison.InvariantCultureIgnoreCase) && Value == other.Value;
-
-        /// <inheritdoc/>
-        public bool Equals(AttributeMatch x, AttributeMatch y) =>
-            x.Id.Equals(y.Id, StringComparison.InvariantCultureIgnoreCase) && x.Value.Equals(y.Value);
-
-        /// <inheritdoc/>
-        public int GetHashCode([DisallowNull] AttributeMatch obj) =>
-            obj.ToString().GetHashCode();
 
         /// <summary>
         /// String representation of the attribute

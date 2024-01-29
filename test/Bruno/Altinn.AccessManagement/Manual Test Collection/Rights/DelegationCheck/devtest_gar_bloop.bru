@@ -1,7 +1,7 @@
 meta {
-  name: generic-access-resource_success
+  name: devtest_gar_bloop
   type: http
-  seq: 2
+  seq: 3
 }
 
 post {
@@ -13,6 +13,7 @@ post {
 headers {
   Content-Type: application/json
   Accept: application/json
+  Altinn-Party-OrganizationNumber: {{partyOrganizationNumber}}
 }
 
 body:json {
@@ -27,7 +28,7 @@ body:json {
 }
 
 vars:pre-request {
-  resourceId: generic-access-resource
+  resourceId: devtest_gar_bloop
   party: 50005545
   auth_tokenType: Personal
   auth_userId: 20000490

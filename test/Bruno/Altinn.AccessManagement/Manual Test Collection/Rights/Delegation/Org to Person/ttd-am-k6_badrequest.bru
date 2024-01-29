@@ -1,5 +1,5 @@
 meta {
-  name: ttd-apps-test_success
+  name: ttd-am-k6_badrequest
   type: http
   seq: 3
 }
@@ -31,33 +31,32 @@ body:json {
           {
               "resource": [
                   {
-                      "id": "urn:altinn:org",
-                      "value": "{{org}}"
-                  },
-                  {
-                      "id": "urn:altinn:app",
-                      "value": "{{app}}"
+                      "id": "urn:altinn:resource",
+                      "value": "{{resourceId}}"
                   }
               ],
-              "action": "read"
+              "action": "ScopeAccess"
           }
       ]
   }
 }
 
 vars:pre-request {
-  toSsn: 02056260016
+  toSsn: '02056260016'
   toLastName: Rimstad
-  org: ttd
-  app: am-k6
+  resourceId: ttd-am-k6
   auth_tokenType: Personal
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
 }
 
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
 tests {
-  test("Should return 201 CREATED", function() {
+  test("Should return 400 BADREQUEST", function() {
     expect(res.status).to.equal(201);
   });
 }

@@ -58,7 +58,7 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_orgno", testdata.org2.orgno);
   
-  await helpers.getToken();
+  await tokenGenerator.getToken();
 }
 
 script:post-response {

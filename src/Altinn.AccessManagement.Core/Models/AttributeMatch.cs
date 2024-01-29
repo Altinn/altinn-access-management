@@ -5,7 +5,7 @@ namespace Altinn.AccessManagement.Core.Models
     /// <summary>
     /// This model describes a pair of AttributeId and AttributeValue for use in matching in XACML policies, for instance a resource, a user, a party or an action.
     /// </summary>
-    public sealed class AttributeMatch : IEquatable<AttributeMatch>
+    public class AttributeMatch : IEquatable<AttributeMatch>
     {
         /// <summary>
         /// ctor

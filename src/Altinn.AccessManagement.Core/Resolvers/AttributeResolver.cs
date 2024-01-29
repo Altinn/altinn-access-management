@@ -4,15 +4,14 @@ using Altinn.AccessManagement.Core.Models;
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// Leaf resolver is a function the fetches new requested attributes based on given attributes
+/// Leaf resolver is a function that fetches new requested attributes based on given attributes
 /// </summary>
 /// <param name="attributes">current attributes</param>
 /// <param name="cancellationToken">Cancellation token</param>
-/// <returns></returns>
 public delegate Task<IEnumerable<AttributeMatch>> LeafResolver(IEnumerable<AttributeMatch> attributes, CancellationToken cancellationToken);
 
 /// <summary>
-/// A Generic node in the parse tree. Root node should be the UrnResolver
+/// A generic node in the parse tree. Root node should be the UrnResolver
 /// </summary>
 /// <param name="resourceName">Name of the resource / Urn </param>
 /// <param name="internalNodes">Internal nodes in the parse tree</param>

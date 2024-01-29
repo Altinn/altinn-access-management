@@ -27,7 +27,7 @@ public class AltinnPersonResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveIdentifierNo() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForPerson(attributes.GetRquiredString(Urn.Altinn.Person.IdentifierNo)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyForPerson(attributes.GetRequiredString(Urn.Altinn.Person.IdentifierNo)) is var party && party != null)
         {
             return
             [

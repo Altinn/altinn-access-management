@@ -43,7 +43,7 @@ public class AltinnOrganizationResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveOrganizationNumber() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForOrganization(attributes.GetRquiredString(Urn.Altinn.Organization.IdentifierNo)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyForOrganization(attributes.GetRequiredString(Urn.Altinn.Organization.IdentifierNo)) is var party && party != null)
         {
             return
             [

@@ -32,7 +32,7 @@ public static class ResolverExtensions
     /// <param name="values">list of attributes</param>
     /// <param name="attributes">attributes types / URN's</param>
     /// <returns></returns>
-    public static string GetRquiredString(this IEnumerable<AttributeMatch> values, params string[] attributes)
+    public static string GetRequiredString(this IEnumerable<AttributeMatch> values, params string[] attributes)
     {
         foreach (var attribute in attributes)
         {
@@ -51,5 +51,5 @@ public static class ResolverExtensions
     /// <param name="values">list of attributes</param>
     /// <param name="attributes">attributes types / URN's</param>
     /// <returns></returns>
-    public static int GetRequiredInt(this IEnumerable<AttributeMatch> values, params string[] attributes) => int.Parse(values.GetRquiredString(attributes));
+    public static int GetRequiredInt(this IEnumerable<AttributeMatch> values, params string[] attributes) => int.Parse(values.GetRequiredString(attributes));
 }

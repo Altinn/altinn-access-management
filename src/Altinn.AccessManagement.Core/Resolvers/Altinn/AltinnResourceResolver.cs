@@ -25,7 +25,7 @@ public class AltinnResourceResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveAppOwnerAndAppId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetRquiredString(Urn.Altinn.Resource.AppOwner), attributes.GetRquiredString(Urn.Altinn.Resource.AppId), null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetRequiredString(Urn.Altinn.Resource.AppOwner), attributes.GetRequiredString(Urn.Altinn.Resource.AppId), null, null);
         if (resource != null)
         {
             return
@@ -44,7 +44,7 @@ public class AltinnResourceResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveResourceRegistryId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRquiredString(Urn.Altinn.Resource.AppId), null, null, null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRequiredString(Urn.Altinn.Resource.AppId), null, null, null, null);
         if (resource != null)
         {
             return

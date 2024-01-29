@@ -333,7 +333,7 @@ namespace Altinn.AccessManagement.Core.Services
                     delegation.To,
                     _asserter.DefaultTo),
                 _asserter.Evaluate(
-                    delegation.Rights.FirstOrDefault().Resource ?? [],
+                    delegation.Rights?.FirstOrDefault()?.Resource ?? [],
                     _asserter.DefaultResource));
 
         private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)

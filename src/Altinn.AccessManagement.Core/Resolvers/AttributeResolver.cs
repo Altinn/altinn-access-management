@@ -80,7 +80,7 @@ public abstract class AttributeResolver(string resourceName, params IAttributeRe
                 DoesResolverAddNewAttributes(result, resolver)
             };
 
-            if (resolverExecutionCondtions.All(condition => condition == true))
+            if (resolverExecutionCondtions.TrueForAll(condition => condition))
             {
                 foreach (var attribute in await resolver.Resolver(result, cancellationToken))
                 {

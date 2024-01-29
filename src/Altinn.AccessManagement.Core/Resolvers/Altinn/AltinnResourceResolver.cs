@@ -15,7 +15,7 @@ public class AltinnResourceResolver : AttributeResolver
     /// summary
     /// </summary>
     /// <param name="contextRetrievalService">service init</param>
-    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Resource.ToString())
+    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Resource.String())
     {
         AddLeaf([Urn.Altinn.Resource.AppOwner, Urn.Altinn.Resource.AppId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type, Urn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
         AddLeaf([Urn.Altinn.Resource.ResourceRegistryId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type], ResolveResourceRegistryId());

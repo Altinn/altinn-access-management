@@ -314,7 +314,7 @@ namespace Altinn.AccessManagement.Core.Services
             var fromParty = await _resolver.Resolve(delegation.From, Urn.PartyIds, cancellationToken);
             var resource = await _resolver.Resolve(delegation?.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetInt([.. Urn.PartyIds]), toParty.GetInt([.. Urn.PartyIds]));
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetInt(Urn.PartyIds), toParty.GetInt(Urn.PartyIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }
@@ -333,7 +333,7 @@ namespace Altinn.AccessManagement.Core.Services
                     delegation.To,
                     _asserter.DefaultTo),
                 _asserter.Evaluate(
-                    delegation?.Rights?.FirstOrDefault()?.Resource ?? [],
+                    delegation.Rights.FirstOrDefault().Resource ?? [],
                     _asserter.DefaultResource));
 
         private async Task<(DelegationCheckResponse Result, ServiceResource Resource, Party FromParty)> ValidateRightDelegationCheckRequest(RightsDelegationCheckRequest request)

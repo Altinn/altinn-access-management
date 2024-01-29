@@ -14,7 +14,7 @@ public class AltinnOrganizationResolver : AttributeResolver
     /// summary
     /// </summary>
     /// <param name="contextRetrievalService">service init</param>
-    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Organization.ToString())
+    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Organization.String())
     {
         AddLeaf([Urn.Altinn.Organization.PartyId], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
         AddLeaf([Urn.Altinn.Organization.IdentifierNo], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.PartyId], ResolveOrganizationNumber());

@@ -16,7 +16,7 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
     /// summary
     /// </summary>
     /// <param name="profile">a</param>
-    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(Urn.Altinn.EnterpriseUser.ToString())
+    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(Urn.Altinn.EnterpriseUser.String())
     {
         AddLeaf([Urn.Altinn.EnterpriseUser.Username], [Urn.Altinn.EnterpriseUser.PartyId], ResolveUsername());
         _profile = profile;

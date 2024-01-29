@@ -106,9 +106,15 @@ public static class AttributeMatchAsserter
             {
                 return;
             }
+            else
+            {
+                errors.Add(nameof(IsDelegatableResource), [$"resource is not delegable"]);
+            }
         }
-
-        errors.Add(nameof(IsDelegatableResource), ["resource is not delegable"]);
+        else
+        {
+            errors.Add(nameof(IsDelegatableResource), [$"failed to find any attributes with value {Urn.Altinn.Resource.Delegable}"]);
+        }
     }
 
     /// <summary>
@@ -126,7 +132,7 @@ public static class AttributeMatchAsserter
                     assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
                     assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
                 assert.AllAttributesHasValues,
-                assert.AttributesAreIntegers([.. Urn.PartyIds]))(errors, values);
+                assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
 
     /// <summary>
     /// summary
@@ -142,7 +148,7 @@ public static class AttributeMatchAsserter
                 assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
                 assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
             assert.AllAttributesHasValues,
-            assert.AttributesAreIntegers([.. Urn.PartyIds]))(errors, values);
+            assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
 
     /// <summary>
     /// some actions

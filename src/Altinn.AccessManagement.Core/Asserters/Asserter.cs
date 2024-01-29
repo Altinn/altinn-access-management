@@ -96,9 +96,9 @@ public class Asserter<TModel> : IAssert<TModel>
 
     private static void AddError(IDictionary<string, string[]> errors, KeyValuePair<string, string[]> entry)
     {
-        if (errors.ContainsKey(entry.Key))
+        if (errors.TryGetValue(entry.Key, out var value))
         {
-            errors[entry.Key] = errors[entry.Key]?.Concat(entry.Value)?.Distinct()?.ToArray() ?? entry.Value;
+            errors[entry.Key] = value == null ? entry.Value : value.Concat(entry.Value)?.Distinct()?.ToArray();
         }
         else
         {

@@ -8,7 +8,7 @@ namespace Altinn.AccessManagement.Resolvers;
 /// <summary>
 /// summary
 /// </summary>
-public class AltinnEnterpriseUserResolver : AttributeResolver, IAttributeResolver
+public class AltinnEnterpriseUserResolver : AttributeResolver
 {
     private readonly IProfileClient _profile;
 

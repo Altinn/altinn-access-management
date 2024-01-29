@@ -7,7 +7,7 @@ namespace Altinn.AccessManagement.Core.Resolvers;
 /// <summary>
 /// test
 /// </summary>
-public class AltinnResourceResolver : AttributeResolver, IAttributeResolver
+public class AltinnResourceResolver : AttributeResolver
 {
     private readonly IContextRetrievalService _contextRetrievalService;
 

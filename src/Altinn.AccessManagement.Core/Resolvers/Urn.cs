@@ -1,6 +1,3 @@
-using Altinn.Platform.Register.Models;
-using Azure.Core;
-
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>

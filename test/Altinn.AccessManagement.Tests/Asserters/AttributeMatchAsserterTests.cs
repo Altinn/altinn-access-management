@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Altinn.AccessManagement.Core.Asserts;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Resolvers;
 using Microsoft.AspNetCore.Mvc;

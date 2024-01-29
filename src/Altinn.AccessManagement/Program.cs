@@ -1,8 +1,8 @@
 using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;

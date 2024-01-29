@@ -1,7 +1,7 @@
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Resolvers;
 
-namespace Altinn.AccessManagement.Core.Asserts;
+namespace Altinn.AccessManagement.Core.Asserters;
 
 /// <summary>
 /// Asserts values for model <see cref="AttributeMatch"/>.

@@ -1,17 +1,18 @@
 using Altinn.AccessManagement.Core.Resolvers;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 
 namespace Altinn.AccessManagement.Resolvers;
 
 /// <summary>
-/// test
+/// Resolves attributes for <see cref="Urn.Altinn.Person"/> 
 /// </summary>
 public class AltinnPersonResolver : AttributeResolver
 {
     private readonly IContextRetrievalService _contextRetrievalService;
 
     /// <summary>
-    /// summary
+    /// ctor
     /// </summary>
     /// <param name="contextRetrievalService">service init</param>
     public AltinnPersonResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Person.String())
@@ -22,12 +23,11 @@ public class AltinnPersonResolver : AttributeResolver
     }
 
     /// <summary>
-    /// Resolve social security number and lastname
+    /// Resolves a person if given <see cref="Urn.Altinn.Person.IdentifierNo"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolveIdentifierNo() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForPerson(GetAttributeString(attributes, Urn.Altinn.Person.IdentifierNo)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyForPerson(attributes.GetRquiredString(Urn.Altinn.Person.IdentifierNo)) is var party && party != null)
         {
             return
             [
@@ -43,12 +43,11 @@ public class AltinnPersonResolver : AttributeResolver
     };
 
     /// <summary>
-    /// summary
+    /// Resolves a person if given <see cref="Urn.Altinn.Person.PartyId"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolvePartyId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(GetAttributeInt(attributes, Urn.Altinn.Person.PartyId)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Person.PartyId)) is var party && party != null)
         {
             return [
                 new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN),

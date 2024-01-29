@@ -1,7 +1,7 @@
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// this is a resolver
+/// Resolves attributes for <see cref="Urn"/> 
 /// </summary>
 public class UrnResolver(AltinnResolver altinn) : AttributeResolver(Urn.String(), altinn)
 {

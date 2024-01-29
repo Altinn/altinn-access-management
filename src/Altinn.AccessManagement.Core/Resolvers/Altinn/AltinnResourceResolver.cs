@@ -1,20 +1,18 @@
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Npgsql;
 
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// test
+/// Resolves attributes for <see cref="Urn.Altinn.Resource"/> 
 /// </summary>
 public class AltinnResourceResolver : AttributeResolver
 {
     private readonly IContextRetrievalService _contextRetrievalService;
 
     /// <summary>
-    /// summary
+    /// ctor
     /// </summary>
-    /// <param name="contextRetrievalService">service init</param>
     public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Resource.String())
     {
         AddLeaf([Urn.Altinn.Resource.AppOwner, Urn.Altinn.Resource.AppId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type, Urn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
@@ -23,12 +21,11 @@ public class AltinnResourceResolver : AttributeResolver
     }
 
     /// <summary>
-    /// Resolve social security number and lastname
+    /// Resolves a resource if given <see cref="Urn.Altinn.Resource.AppOwner"/> and <see cref="Urn.Altinn.Resource.AppId"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolveAppOwnerAndAppId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetString(Urn.Altinn.Resource.AppOwner), attributes.GetString(Urn.Altinn.Resource.AppId), null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetRquiredString(Urn.Altinn.Resource.AppOwner), attributes.GetRquiredString(Urn.Altinn.Resource.AppId), null, null);
         if (resource != null)
         {
             return
@@ -43,12 +40,11 @@ public class AltinnResourceResolver : AttributeResolver
     };
 
     /// <summary>
-    /// summary
+    /// /// Resolves a resource if given <see cref="Urn.Altinn.Resource.ResourceRegistryId"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolveResourceRegistryId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetString(Urn.Altinn.Resource.AppId), null, null, null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRquiredString(Urn.Altinn.Resource.AppId), null, null, null, null);
         if (resource != null)
         {
             return

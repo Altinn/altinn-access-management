@@ -1,8 +1,7 @@
-using Altinn.AccessManagement.Core.Asserts;
 using Altinn.AccessManagement.Core.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Altinn.AccessManagement.Core.Resolvers.Extensions;
+namespace Altinn.AccessManagement.Core.Asserters;
 
 /// <summary>
 /// General extensions for the Asserters

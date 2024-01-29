@@ -1,19 +1,19 @@
 using Altinn.AccessManagement.Core.Resolvers;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 
 namespace Altinn.AccessManagement.Resolvers;
 
 /// <summary>
-/// summary
+/// Resolves attributes for <see cref="Urn.Altinn.Organization"/> 
 /// </summary>
 public class AltinnOrganizationResolver : AttributeResolver
 {
     private readonly IContextRetrievalService _contextRetrievalService;
 
     /// <summary>
-    /// summary
+    /// ctor
     /// </summary>
-    /// <param name="contextRetrievalService">service init</param>
     public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Organization.String())
     {
         AddLeaf([Urn.Altinn.Organization.PartyId], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
@@ -22,12 +22,11 @@ public class AltinnOrganizationResolver : AttributeResolver
     }
 
     /// <summary>
-    /// Resolve Input Party
+    /// Resolves an organization if given <see cref="Urn.Altinn.Organization.PartyId"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolvePartyId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(GetAttributeInt(attributes, Urn.Altinn.Organization.PartyId)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Organization.PartyId)) is var party && party != null)
         {
             return
             [
@@ -40,12 +39,11 @@ public class AltinnOrganizationResolver : AttributeResolver
     };
 
     /// <summary>
-    /// Resolve Organization number
+    /// Resolves an organization if given <see cref="Urn.Altinn.Organization.IdentifierNo"/>
     /// </summary>
-    /// <returns></returns>
     public LeafResolver ResolveOrganizationNumber() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForOrganization(GetAttributeString(attributes, Urn.Altinn.Organization.IdentifierNo)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyForOrganization(attributes.GetRquiredString(Urn.Altinn.Organization.IdentifierNo)) is var party && party != null)
         {
             return
             [

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
-using Altinn.AccessManagement.Core.Asserts;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -314,7 +314,7 @@ namespace Altinn.AccessManagement.Core.Services
             var fromParty = await _resolver.Resolve(delegation.From, Urn.PartyIds, cancellationToken);
             var resource = await _resolver.Resolve(delegation?.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetInt(Urn.PartyIds), toParty.GetInt(Urn.PartyIds));
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetRquiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.PartyIds), toParty.GetRequiredInt(Urn.PartyIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }

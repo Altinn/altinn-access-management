@@ -1,4 +1,4 @@
-using Altinn.AccessManagement.Core.Asserts;
+using Altinn.AccessManagement.Core.Asserters;
 
 namespace Altinn.AccessManagement.Tests.Asserters;
 

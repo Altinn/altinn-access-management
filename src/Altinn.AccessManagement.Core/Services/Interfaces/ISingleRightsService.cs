@@ -30,7 +30,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// Gets all offered single rights delegations for a reportee
         /// </summary>
         /// <param name="reportee">reportee</param>
-        /// <param name="token">cancellation token</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>list of delgations</returns>
         Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch reportee, CancellationToken token = default);
 

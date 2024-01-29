@@ -1,193 +1,188 @@
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// summary
+/// Urn
 /// </summary>
 public static class Urn
 {
     /// <summary>
-    /// summary
+    /// Urn
     /// </summary>
     /// <returns></returns>
     public static string String() => $"{nameof(Urn)}".ToLower();
 
     /// <summary>
-    /// summary
+    /// List of all possible resources that can have a PartyId
     /// </summary>
     public static string[] PartyIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.EnterpriseUser.PartyId];
 
     /// <summary>
-    /// summary
+    /// List of alle possible resource that have a IdentifierNo
     /// </summary>
     public static string[] Identifiers => [Altinn.Organization.IdentifierNo, Altinn.Person.IdentifierNo];
 
     /// <summary>
-    /// altinn
+    /// Resources that belongs to Altinn 
     /// </summary>
     public static class Altinn
     {
         /// <summary>
-        /// summary
+        /// Urn.Altinn
         /// </summary>
         public static string String() => $"{Urn.String()}:{nameof(Altinn)}".ToLower();
 
         /// <summary>
-        /// summary
+        /// Urn.Altinn.Person
         /// </summary>
         public static class Person
         {
             /// <summary>
-            /// summary
+            /// A person Social security number
             /// </summary>
             public static string IdentifierNo => $"{String()}:identifier-no";
 
             /// <summary>
-            /// summary
+            /// Uuid
             /// </summary>
             public static string Uuid => $"{String()}:uuid";
 
             /// <summary>
-            /// summary
+            /// PartyId 
             /// </summary>
             public static string PartyId => $"{String()}:partyid";
 
             /// <summary>
-            /// summary
+            /// A person's first name
             /// </summary>
             public static string Firstname => $"{String()}:firstname";
 
             /// <summary>
-            /// summary
+            /// A Person's shortname
             /// </summary>
             public static string Shortname => $"{String()}:shortname";
 
             /// <summary>
-            /// summary
+            /// A Person's middlename
             /// </summary>
             public static string Middlename => $"{String()}:middlename";
 
             /// <summary>
-            /// summary
+            /// A Person's lastname
             /// </summary>
             public static string Lastname => $"{String()}:lastname";
 
             /// <summary>
-            /// summary
+            /// Urn.Altinn.Person
             /// </summary>
-            /// <returns></returns>
             public static string String() => $"{Altinn.String()}:{nameof(Person)}".ToLower();
         }
 
         /// <summary>
-        /// summary
+        /// Urn.Altinn.Organization
         /// </summary>
         public static class Organization
         {
             /// <summary>
-            /// summary
+            /// An organization brreg number
             /// </summary>
             public static string IdentifierNo => $"{String()}:identifier-no";
 
             /// <summary>
-            /// summary
+            /// Organization's name
             /// </summary>
             public static string Name => $"{String()}:name";
 
             /// <summary>
-            /// summary
+            /// Organzation's Party Id
             /// </summary>
             public static string PartyId => $"{String()}:partyid";
 
             /// <summary>
-            /// summary
+            /// Uuid of organization
             /// </summary>
             public static string Uuid => $"{String()}:uuid";
 
             /// <summary>
-            /// summary
+            /// Urn.Altinn.Organization
             /// </summary>
-            /// <returns></returns>
             public static string String() => $"{Altinn.String()}:{nameof(Organization)}".ToLower();
         }
 
         /// <summary>
-        /// summary
+        /// Urn.Altinn.EnterpriseUser
         /// </summary>
         public static class EnterpriseUser
         {
             /// <summary>
-            /// summary
+            /// username
             /// </summary>
             public static string Username => $"{String()}:username";
 
             /// <summary>
-            /// summary
+            /// uuid
             /// </summary>
             public static string Uuid => $"{String()}:uuid";
 
             /// <summary>
-            /// summary
+            /// partyId
             /// </summary>
             public static string PartyId => $"{String()}:partyid";
 
             /// <summary>
-            /// summary
+            /// Urn.Altinn.EnterpriseUser.Organization
             /// </summary>
             public static class Organization
             {
                 /// <summary>
-                /// summary
+                /// uuid
                 /// </summary>
                 public static string Uuid => $"{String()}:uuid";
 
                 /// <summary>
-                /// summary
+                /// Urn.Altinn.EnterpriseUser.Organization
                 /// </summary>
-                /// <returns></returns>
                 public static string String() => $"{EnterpriseUser.String()}:{nameof(Organization)}".ToLower();
             }
 
             /// <summary>
-            /// summary
+            /// Urn.Altinn.EnterpriseUser
             /// </summary>
-            /// <returns></returns>
             public static string String() => $"{Altinn.String()}:{nameof(EnterpriseUser)}".ToLower();
         }
 
         /// <summary>
-        /// summary
+        /// Urn.Altinn.Resource
         /// </summary>
         public static class Resource
         {
             /// <summary>
-            /// summary
+            /// The resource regigistry identifier
             /// </summary>
             public static string ResourceRegistryId => "urn:altinn:resource";
 
             /// <summary>
-            /// summary
+            /// Owner of the altinn App
             /// </summary>
             public static string AppOwner => "urn:altinn:org";
 
             /// <summary>
-            /// summary
+            /// Altinn AppId
             /// </summary>
             public static string AppId => "urn:altinn:app".ToLower();
 
             /// <summary>
-            /// summary
+            /// Specifies the type of the resource
             /// </summary>
             public static string Type => $"{String()}:type".ToLower();
 
             /// <summary>
-            /// summary
+            /// boolean that specifies of the resource is delegable or not
             /// </summary>
             public static string Delegable => $"{String()}:delegable".ToLower();
 
             /// <summary>
-            /// summary
+            /// Urn.Altinn.Resource
             /// </summary>
-            /// <returns></returns>
             public static string String() => $"{Altinn.String()}:{nameof(Resource)}".ToLower();
         }
     }

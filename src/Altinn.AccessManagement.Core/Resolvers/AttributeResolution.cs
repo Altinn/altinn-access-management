@@ -1,25 +1,22 @@
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// summary
+/// A data container that encapsulates the needed parameters in order to run a resolver.
 /// </summary>
-/// <param name="needs">a</param>
-/// <param name="resolves">b</param>
-/// <param name="resolver">c</param>
 public class AttributeResolution(IEnumerable<string> needs, IEnumerable<string> resolves, LeafResolver resolver)
 {
     /// <summary>
-    /// summary
+    /// The required attributes to be present in order for the attribute to run.
     /// </summary>
     public IEnumerable<string> Needs { get; } = needs;
 
     /// <summary>
-    /// summary
+    /// The attributes the resolver are able to fetch if provided it needs.
     /// </summary>
     public IEnumerable<string> Resolves { get; } = resolves;
 
     /// <summary>
-    /// summary
+    /// A function reference which when called upon does the work.
     /// </summary>
     public LeafResolver Resolver { get; } = resolver;
 }

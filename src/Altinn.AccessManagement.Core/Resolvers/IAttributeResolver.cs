@@ -3,24 +3,17 @@ using Altinn.AccessManagement.Core.Models;
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// resolver nice
+/// Resolves attributes
 /// </summary>
 public interface IAttributeResolver
 {
     /// <summary>
-    /// resolver
+    /// Allows the caller to fetch new requested attributes that are specified by the wants paramaters.
+    /// Given attributes should contains values that allows the user to resolve/fetch wanted attributes.
     /// </summary>
-    /// <param name="attributes">attributes</param>
-    /// <param name="wants">wants</param>
-    /// <param name="cancellationToken">c</param>
-    /// <returns></returns>
+    /// <param name="attributes">Current attributes</param>
+    /// <param name="wants">Attributes that are wanted by the callee</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>New list of attributes containing given attributes and wanted attributes</returns>
     Task<IEnumerable<AttributeMatch>> Resolve(IEnumerable<AttributeMatch> attributes, IEnumerable<string> wants, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// summary
-    /// </summary>
-    /// <param name="needs">a</param>
-    /// <param name="resolves">b</param>
-    /// <param name="resolver">c</param>
-    IAttributeResolver AddLeaf(IEnumerable<string> needs, IEnumerable<string> resolves, LeafResolver resolver);
 }

@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Altinn.AccessManagement.Core.Asserts;
+namespace Altinn.AccessManagement.Core.Asserters;
 
 /// <summary>
-/// summary
+/// Contains the basic methods for combining and nesting assertions.
+/// Use the <see cref="Asserter{TModel}.Evaluate"/> to make assertions for one dataset. If you have multiple datasets,
+/// you can pass the evaluations to the <see cref="Asserter{TModel}.Join"/> to get a single assertions result for all
+/// the datasets.
 /// </summary>
-/// <typeparam name="TModel">a</typeparam>
+/// <typeparam name="TModel">the model that should</typeparam>
 public interface IAssert<TModel>
 {
     /// <summary>

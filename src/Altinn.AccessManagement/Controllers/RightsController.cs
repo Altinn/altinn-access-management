@@ -312,7 +312,7 @@ namespace Altinn.AccessManagement.Controllers
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value.First());
+                        ModelState.AddModelError(error.Key, error.Value[0]);
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
@@ -377,7 +377,7 @@ namespace Altinn.AccessManagement.Controllers
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value.First());
+                        ModelState.AddModelError(error.Key, error.Value[0]);
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));

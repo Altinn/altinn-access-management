@@ -312,7 +312,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             var toParty = await _resolver.Resolve(delegation.To, Urn.PartyIds, cancellationToken);
             var fromParty = await _resolver.Resolve(delegation.From, Urn.PartyIds, cancellationToken);
-            var resource = await _resolver.Resolve(delegation?.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
+            var resource = await _resolver.Resolve(delegation.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
 
             var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetRquiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.PartyIds), toParty.GetRequiredInt(Urn.PartyIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);

@@ -6,6 +6,6 @@ namespace Altinn.AccessManagement.Core.Resolvers;
 /// Resolves attributes for <see cref="Urn.Altinn"/> 
 /// </summary>
 public class AltinnResolver(AltinnPersonResolver person, AltinnOrganizationResolver organization, AltinnResourceResolver resource, AltinnEnterpriseUserResolver enterpriseUserResolver)
-    : AttributeResolver(Urn.Altinn.String(), person, organization, resource, enterpriseUserResolver), IAttributeResolver
+    : AttributeResolver(Urn.Altinn.String(), person, organization, resource, enterpriseUserResolver)
 {
 }

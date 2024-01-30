@@ -1,7 +1,7 @@
 meta {
   name: generic-access-resource_success
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -31,8 +31,8 @@ body:json {
           {
               "resource": [
                   {
-                      "id": "urn:altinn:org",
-                      "value": "{{resource}}"
+                      "id": "urn:altinn:resource",
+                      "value": "{{resourceId}}"
                   }
               ],
               "action": "read"
@@ -42,13 +42,18 @@ body:json {
 }
 
 vars:pre-request {
-  toSsn: 02056260016
+  toSsn: '02056260016'
   toLastName: Rimstad
-  org: generic-access-resource
+  resourceId: generic-access-resource
   auth_tokenType: Personal
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
 }
 
 tests {

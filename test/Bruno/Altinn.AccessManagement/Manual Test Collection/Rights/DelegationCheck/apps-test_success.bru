@@ -1,11 +1,11 @@
 meta {
-  name: altinnapp-badrequest
+  name: apps-test_success
   type: http
-  seq: 2
+  seq: 4
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/delegationcheck
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/rights/delegation/delegationcheck
   body: json
   auth: none
 }
@@ -32,12 +32,12 @@ body:json {
 
 vars:pre-request {
   org: ttd
-  app: apps-test
   party: 50005545
   auth_tokenType: Personal
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
+  app: apps-test
 }
 
 script:pre-request {
@@ -45,12 +45,12 @@ script:pre-request {
 }
 
 tests {
-  test("Should return 400 BADREQUEST", function() {
-    expect(res.status).to.equal(400);
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
   });
   
-  test("Should return error message", function() {
-    const error = res.getBody();
+  test("Should return expected rights", function() {
+    const rights = res.getBody();
     // ToDo Expect Result
   });
 }

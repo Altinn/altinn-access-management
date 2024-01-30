@@ -14,7 +14,7 @@ public static class Urn
     /// <summary>
     /// List of all possible resources that can have a PartyId
     /// </summary>
-    public static string[] PartyIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.EnterpriseUser.PartyId];
+    public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId];
 
     /// <summary>
     /// List of alle possible resource that have a IdentifierNo
@@ -47,7 +47,12 @@ public static class Urn
             public static string Uuid => $"{String()}:uuid";
 
             /// <summary>
-            /// PartyId 
+            /// UserId
+            /// </summary>
+            public static string UserId => $"{String()}:userid";
+
+            /// <summary>
+            /// PartyId
             /// </summary>
             public static string PartyId => $"{String()}:partyid";
 
@@ -124,9 +129,14 @@ public static class Urn
             public static string Uuid => $"{String()}:uuid";
 
             /// <summary>
-            /// partyId
+            /// The organziation's partyId!
             /// </summary>
             public static string PartyId => $"{String()}:partyid";
+
+            /// <summary>
+            /// UserId
+            /// </summary>
+            public static string UserId => $"{String()}:userid";
 
             /// <summary>
             /// Urn.Altinn.EnterpriseUser.Organization

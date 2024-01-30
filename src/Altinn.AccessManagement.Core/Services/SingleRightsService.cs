@@ -222,7 +222,7 @@ namespace Altinn.AccessManagement.Core.Services
                 if (delegation.CoveredByUserId != null)
                 {
                     var profile = await _profile.GetUser(new() { UserId = (int)delegation.CoveredByUserId });
-                    if (profile.UserType == UserType.EnterpriseIdentified)
+                    if (profile?.UserType == UserType.EnterpriseIdentified)
                     {
                         entry.To.Add(
                             new()
@@ -237,7 +237,7 @@ namespace Altinn.AccessManagement.Core.Services
                             new()
                             {
                                 Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
-                                Value = profile.Party.SSN,
+                                Value = profile?.Party?.SSN,
                             });
                     }
                 }
@@ -310,11 +310,11 @@ namespace Altinn.AccessManagement.Core.Services
                 return assertion;
             }
 
-            var toParty = await _resolver.Resolve(delegation.To, Urn.PartyIds, cancellationToken);
-            var fromParty = await _resolver.Resolve(delegation.From, Urn.PartyIds, cancellationToken);
+            var toParty = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
+            var fromParty = await _resolver.Resolve(delegation.From, Urn.InternalIds, cancellationToken);
             var resource = await _resolver.Resolve(delegation.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.PartyIds), toParty.GetRequiredInt(Urn.PartyIds));
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.InternalIds), toParty.GetRequiredInt(Urn.InternalIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }

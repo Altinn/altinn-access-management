@@ -17,7 +17,7 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
     /// </summary>
     public AltinnEnterpriseUserResolver(IProfileClient profile) : base(Urn.Altinn.EnterpriseUser.String())
     {
-        AddLeaf([Urn.Altinn.EnterpriseUser.Username], [Urn.Altinn.EnterpriseUser.PartyId], ResolveUsername());
+        AddLeaf([Urn.Altinn.EnterpriseUser.Username], [Urn.Altinn.EnterpriseUser.UserId], ResolveUsername());
         _profile = profile;
     }
 
@@ -30,7 +30,7 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
         {
             return
             [
-                new(Urn.Altinn.EnterpriseUser.PartyId, party.PartyId),
+                new(Urn.Altinn.EnterpriseUser.UserId, party.PartyId),
             ];
         }
 

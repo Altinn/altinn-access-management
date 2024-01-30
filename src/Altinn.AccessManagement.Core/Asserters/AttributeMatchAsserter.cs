@@ -13,7 +13,6 @@ public static class AttributeMatchAsserter
     /// <summary>
     /// Passes if all the given attribute types are contained in the given list of attributes.
     /// </summary>
-    /// <returns></returns>
     public static Assertion<AttributeMatch> HasAttributeTypes(this IAssert<AttributeMatch> _, params string[] attributes) => (errors, values) =>
     {
         if (!values.All(value => attributes.Any(type => type.Equals(value.Id, StringComparison.InvariantCultureIgnoreCase))))
@@ -27,7 +26,6 @@ public static class AttributeMatchAsserter
     /// </summary>
     /// <param name="assert">list of attributes</param>
     /// <param name="types">URN of the types that should be integers</param>
-    /// <returns></returns>
     public static Assertion<AttributeMatch> AttributesAreIntegers(this IAssert<AttributeMatch> assert, params string[] types) => (errors, values) =>
     {
         var matchingAttributes = values.Where(attribute => types.Any(type => type.Equals(attribute.Id, StringComparison.InvariantCultureIgnoreCase)));
@@ -42,7 +40,6 @@ public static class AttributeMatchAsserter
     /// </summary>
     /// <param name="assert">list of attributes</param>
     /// <param name="types">URN of the types that should be boolean</param>
-    /// <returns></returns>
     public static Assertion<AttributeMatch> AttributesAreBoolean(this IAssert<AttributeMatch> assert, params string[] types) => (errors, values) =>
     {
         var matchingAttributes = values.Where(attribute => types.Any(type => type.Equals(attribute.Id, StringComparison.InvariantCultureIgnoreCase)));
@@ -57,7 +54,6 @@ public static class AttributeMatchAsserter
     /// </summary>
     /// <param name="type">list of attributes</param>
     /// <param name="cmp">compare function</param>
-    /// <returns></returns>
     public static Assertion<AttributeMatch> AttributeCompare(string type, Func<AttributeMatch, bool> cmp) => (errors, values) =>
     {
         if (values.FirstOrDefault(value => value.Id.Equals(type, StringComparison.InvariantCultureIgnoreCase)) is var value && value != null)
@@ -125,12 +121,13 @@ public static class AttributeMatchAsserter
         assert.All(
                 assert.Single(
                     assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                    assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
                     assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
                     assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
                     assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
                     assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
                 assert.AllAttributesHasValues,
-                assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
+                assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 
     /// <summary>
     /// A default list of assertions that contains the baseline for validating in input delegaton from an entity.
@@ -142,11 +139,12 @@ public static class AttributeMatchAsserter
         assert.All(
             assert.Single(
                 assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
                 assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
                 assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
                 assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
             assert.AllAttributesHasValues,
-            assert.AttributesAreIntegers(Urn.PartyIds))(errors, values);
+            assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 
     /// <summary>
     /// A default list of assertions that contains the baseline for validating input for a resource.

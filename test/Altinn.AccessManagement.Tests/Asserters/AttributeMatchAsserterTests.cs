@@ -38,7 +38,7 @@ public class AttributeMatchAsserterTests
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Person.PartyId, "123")],
+                [new(Urn.Altinn.Person.UserId, "123")],
                 Assert.Null
             },
             {
@@ -92,7 +92,7 @@ public class AttributeMatchAsserterTests
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Person.PartyId, "123")],
+                [new(Urn.Altinn.Person.UserId, "123")],
                 Assert.Null
             },
             {

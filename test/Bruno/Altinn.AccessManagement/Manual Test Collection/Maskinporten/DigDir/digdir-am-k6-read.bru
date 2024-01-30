@@ -30,3 +30,7 @@ vars:pre-request {
   auth_orgNo: 991825827
   auth_scopes: altinn:maskinporten/delegations.admin
 }
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

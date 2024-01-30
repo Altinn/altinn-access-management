@@ -1,7 +1,7 @@
 meta {
-  name: ttd-am-k6_badrequest
+  name: ttd-apps-test_success
   type: http
-  seq: 4
+  seq: 2
 }
 
 post {
@@ -46,7 +46,7 @@ body:json {
 }
 
 vars:pre-request {
-  toSsn: 02056260016
+  toSsn: '02056260016'
   toLastName: Rimstad
   org: ttd
   app: apps-test
@@ -54,6 +54,11 @@ vars:pre-request {
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
 }
 
 tests {

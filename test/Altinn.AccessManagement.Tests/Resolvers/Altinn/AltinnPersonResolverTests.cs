@@ -9,7 +9,7 @@ using Xunit;
 namespace Altinn.AccessManagement.Tests.Resolvers.Altinn;
 
 /// <summary>
-/// summary
+/// Resolver tests
 /// </summary>
 [Collection(nameof(AttributeResolver))]
 public class AltinnPersonResolverTests
@@ -17,10 +17,9 @@ public class AltinnPersonResolverTests
     /// <summary>
     /// Person resolver tests
     /// </summary>
-    /// <param name="attributes">a</param>
-    /// <param name="wants">b</param>
-    /// <param name="assert">c</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    /// <param name="attributes">attributes that are given by callee</param>
+    /// <param name="wants">attributes that are wanted by callee</param>
+    /// <param name="assert">assert method that verifies the result</param>
     [Theory]
     [MemberData(nameof(ResolveProfileUsingIdentifierNo), MemberType = typeof(AltinnPersonResolverTests))]
     [MemberData(nameof(ResolveProfileUsingUserId), MemberType = typeof(AltinnPersonResolverTests))]

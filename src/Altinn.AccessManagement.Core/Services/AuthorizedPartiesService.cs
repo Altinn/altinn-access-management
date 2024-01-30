@@ -59,7 +59,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
 
         // Find all needed datasets: A3 delegations (direct and inherited), KeyRole-relations, MainUnits, Subunits and Parties
         List<int> keyRoleUnits = await _contextRetrievalService.GetKeyRolePartyIds(authenticatedUserId, cancellationToken);
-        List<DelegationChange> delegations = await _delegations.GetAllDelegationChangesTo(authenticatedUserId.SingleToList(), keyRoleUnits, cancellationToken: cancellationToken);
+        List<DelegationChange> delegations = await _delegations.GetAllDelegationChangesForAuthorizedParties(authenticatedUserId.SingleToList(), keyRoleUnits, cancellationToken: cancellationToken);
 
         List<int> fromPartyIds = delegations.Select(dc => dc.OfferedByPartyId).Distinct().ToList();
         List<MainUnit> mainUnits = await _contextRetrievalService.GetMainUnits(fromPartyIds, cancellationToken);

@@ -1,7 +1,7 @@
 meta {
-  name: Ørjan
+  name: Asle
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
@@ -21,13 +21,13 @@ headers {
 
 vars:pre-request {
   auth_tokenType: Personal
-  auth_userId: 20001791
-  auth_partyId: 50003899
-  auth_ssn: '27099450067'
+  auth_userId: 20001121
+  auth_partyId: 50003229
+  auth_ssn: '17105431031'
 }
 
 script:pre-request {
-  await helpers.getToken();
+  await tokenGenerator.getToken();
 }
 
 tests {

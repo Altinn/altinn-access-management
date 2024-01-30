@@ -246,7 +246,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetAllDelegationChangesTo(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
+    public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         if (coveredByUserIds == null && coveredByPartyIds == null)
         {
@@ -260,6 +260,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 		                resourceRegistryId,
 		                resourceType
 		            FROM accessmanagement.Resource
+                    WHERE resourceType != 'maskinportenschema'
 	            )
 	            SELECT
 		            resourceRegistryDelegationChangeId,
@@ -332,7 +333,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetAllDelegationChangesTo // Exception");
+            _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetAllDelegationChangesForAuthorizedParties // Exception");
             throw;
         }
     }

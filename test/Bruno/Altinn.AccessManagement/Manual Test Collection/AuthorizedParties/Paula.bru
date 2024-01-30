@@ -27,7 +27,7 @@ vars:pre-request {
 }
 
 script:pre-request {
-  await helpers.getToken();
+  await tokenGenerator.getToken();
 }
 
 tests {

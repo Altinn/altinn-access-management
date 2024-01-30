@@ -320,7 +320,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetAllDelegationChangesTo(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
+    public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
         return Task.FromResult(result);

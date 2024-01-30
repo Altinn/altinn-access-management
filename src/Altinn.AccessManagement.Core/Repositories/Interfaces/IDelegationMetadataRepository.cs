@@ -92,10 +92,10 @@ public interface IDelegationMetadataRepository
     Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType);
 
     /// <summary>
-    /// Gets all the active app or resource delegations for the set of covered userIds or partyIds
+    /// Gets all the active app or resource delegations (except MaskinportenSchema delegations) for the set of covered userIds or partyIds
     /// </summary>
     /// <param name="coveredByUserIds">The user ids of the users to get received delegation for</param>
     /// <param name="coveredByPartyIds">The party ids of the organizations to get received delegation for</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    Task<List<DelegationChange>> GetAllDelegationChangesTo(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default);
+    Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default);
 }

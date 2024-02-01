@@ -26,11 +26,11 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveUsername() => async (attributes, cancellationToken) =>
     {
-        if (await _profile.GetUser(new UserProfileLookup { Username = attributes.GetRequiredString(Urn.Altinn.EnterpriseUser.Username) }) is var party && party != null)
+        if (await _profile.GetUser(new UserProfileLookup { Username = attributes.GetRequiredString(Urn.Altinn.EnterpriseUser.Username) }) is var profile && profile != null)
         {
             return
             [
-                new(Urn.Altinn.EnterpriseUser.UserId, party.PartyId),
+                new(Urn.Altinn.EnterpriseUser.UserId, profile.UserId),
             ];
         }
 

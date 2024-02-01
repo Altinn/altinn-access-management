@@ -44,7 +44,7 @@ public class AltinnResourceResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveResourceRegistryId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRequiredString(Urn.Altinn.Resource.AppId), null, null, null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), null, null, null, null);
         if (resource != null)
         {
             return

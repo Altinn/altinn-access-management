@@ -178,7 +178,7 @@ public static class Urn
             /// <summary>
             /// Altinn AppId
             /// </summary>
-            public static string AppId => "urn:altinn:app".ToLower();
+            public static string AppId => "urn:altinn:app";
 
             /// <summary>
             /// Specifies the type of the resource

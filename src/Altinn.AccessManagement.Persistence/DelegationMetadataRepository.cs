@@ -254,72 +254,72 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
 
         const string QUERY = /*strpsql*/@"
-                WITH res AS (
-		            SELECT
-		                resourceId,
-		                resourceRegistryId,
-		                resourceType
-		            FROM accessmanagement.Resource
-                    WHERE resourceType != 'maskinportenschema'
-	            )
-	            SELECT
-		            resourceRegistryDelegationChangeId,
-		            null AS delegationChangeId,
-		            delegationChangeType,
-		            res.resourceRegistryId,
-		            res.resourceType,
-		            null AS altinnAppId,
-		            offeredByPartyId,
-		            coveredByUserId,
-		            coveredByPartyId,
-		            performedByUserId,
-		            performedByPartyId,
-		            blobStoragePolicyPath,
-		            blobStorageVersionId,
-		            created
-	            FROM delegation.ResourceRegistryDelegationChanges AS rrDelegationChange
-		            INNER JOIN res ON rrDelegationChange.resourceId_fk = res.resourceid
-		            INNER JOIN
-		            (
-			            SELECT MAX(resourceRegistryDelegationChangeId) AS maxChange
-			            FROM delegation.ResourceRegistryDelegationChanges AS rrdc
-				            INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
-			            WHERE
-				            coveredByUserId = ANY (@coveredByUserIds)
-				            OR coveredByPartyId = ANY (@coveredByPartyIds)
-			            GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
-		            ) AS selectMaxChange ON resourceRegistryDelegationChangeId = selectMaxChange.maxChange
-	            WHERE delegationchangetype != 'revoke_last'
-	
-	            UNION ALL
+            WITH resources AS (
+		        SELECT
+			        resourceId,
+			        resourceRegistryId,
+			        resourceType
+		        FROM accessmanagement.Resource
+		        WHERE resourceType != 'maskinportenschema'
+	        ),
+	        latestResourceChanges AS (
+		        SELECT MAX(resourceRegistryDelegationChangeId) as latestId
+		        FROM delegation.ResourceRegistryDelegationChanges
+		        WHERE 
+			        coveredByUserId = ANY (@coveredbyuserids)
+			        OR coveredByPartyId = ANY (@coveredByPartyIds)
+		        GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        ),
+	        latestAppChanges AS (
+		        SELECT MAX(delegationChangeId) as latestId
+		        FROM delegation.delegationchanges
+		        WHERE
+			        coveredByUserId = ANY (@coveredByUserIds)
+			        OR coveredByPartyId = ANY (@coveredByPartyIds)
+		        GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        )
 
-	            SELECT
-		            null AS resourceRegistryDelegationChangeId,
-		            delegationChangeId,
-		            delegationChangeType,
-		            null AS resourceRegistryId,
-		            null AS resourceType,
-		            altinnAppId,
-		            offeredByPartyId,
-		            coveredByUserId,
-		            coveredByPartyId,
-		            performedByUserId,
-		            null AS performedByPartyId,
-		            blobStoragePolicyPath,
-		            blobStorageVersionId,
-		            created
-	              FROM delegation.delegationchanges
-		            INNER JOIN
-		            (
-		              SELECT MAX(delegationChangeId) AS maxChange
-		              FROM delegation.delegationchanges
-		              WHERE
-			            coveredByUserId = ANY (@coveredByUserIds)
-			            OR coveredByPartyId = ANY (@coveredByPartyIds)
-		              GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
-		            ) AS selectMaxChange ON delegationChangeId = selectMaxChange.maxChange
-	            WHERE delegationchangetype != 'revoke_last'
-                ";
+	        SELECT
+		        resourceRegistryDelegationChangeId,
+		        null AS delegationChangeId,
+		        delegationChangeType,
+		        resources.resourceRegistryId,
+		        resources.resourceType,
+		        null AS altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.ResourceRegistryDelegationChanges
+		        INNER JOIN resources ON resourceId_fk = resources.resourceid
+		        INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+
+	        UNION ALL
+
+	        SELECT
+		        null AS resourceRegistryDelegationChangeId,
+		        delegationChangeId,
+		        delegationChangeType,
+		        null AS resourceRegistryId,
+		        null AS resourceType,
+		        altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        null AS performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.delegationchanges
+		        INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+            ";
 
         try
         {

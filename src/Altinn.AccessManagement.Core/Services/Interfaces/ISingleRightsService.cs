@@ -1,4 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -29,7 +30,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// Gets all offered single rights delegations for a reportee
         /// </summary>
         /// <param name="reportee">reportee</param>
-        /// <param name="token">cancellation token</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>list of delgations</returns>
         Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch reportee, CancellationToken token = default);
 
@@ -47,6 +48,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="delegation">delegation</param>
         /// <param name="cancellationToken">http context token</param>
         /// <returns>The result of the deletion</returns>
-        Task<DelegationActionResult> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
+        Task<ValidationProblemDetails> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken);
     }
 }

@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
@@ -250,7 +251,7 @@ namespace Altinn.AccessManagement.Controllers
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegations = await _rights.GetOfferedRightsDelegations(reportee, cancellationToken);
-                var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations); 
+                var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
                 return Ok(response);
             }
             catch (FormatException ex)
@@ -294,13 +295,24 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
+                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+                {
+                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
+                }
+
+                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+                {
+                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
+                }
+
                 delegation.To = reportee.SingleToList();
+
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
-                if (!result.IsValid)
+                if (result != null)
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value);
+                        ModelState.AddModelError(error.Key, error.Value[0]);
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
@@ -349,13 +361,23 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
+                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+                {
+                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
+                }
+
+                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+                {
+                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
+                }
+
                 delegation.From = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
-                if (!result.IsValid)
+                if (result != null)
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(error.Key, error.Value);
+                        ModelState.AddModelError(error.Key, error.Value[0]);
                     }
 
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));

@@ -6,7 +6,6 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -120,7 +119,7 @@ namespace Altinn.AccessManagement.Core.Services
                        .SetPriority(CacheItemPriority.High)
                        .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
                         _memoryCache.Set($"p:{party.PartyId}", party, cacheEntryOptions);
-                    }                    
+                    }
                 }
             }
 
@@ -224,7 +223,7 @@ namespace Altinn.AccessManagement.Core.Services
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
                     _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
-                }                
+                }
             }
 
             return resource;
@@ -244,7 +243,7 @@ namespace Altinn.AccessManagement.Core.Services
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                    .SetPriority(CacheItemPriority.High)
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
-                
+
                     _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
                 }
             }
@@ -301,7 +300,7 @@ namespace Altinn.AccessManagement.Core.Services
                     if (serviceCode != null && serviceEditionCode != null && serviceResource.ResourceType == ResourceType.Altinn2Service &&
                         serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceCode && string.Equals(rf.Reference, $"{serviceCode}", StringComparison.OrdinalIgnoreCase)) &&
                         serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceEditionCode && string.Equals(rf.Reference, $"{serviceEditionCode}", StringComparison.OrdinalIgnoreCase)))
-                    { 
+                    {
                         resource = serviceResource;
                         break;
                     }
@@ -314,7 +313,7 @@ namespace Altinn.AccessManagement.Core.Services
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
                     _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
-                }                    
+                }
             }
 
             return resource;

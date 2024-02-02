@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
 
@@ -32,10 +33,10 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// <returns></returns>
     public static IEnumerable<object[]> FromPersonToPerson() => [[
             NewRevokeReceivedModel(
-                WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, PersonOrjanSSN),
+                WithRevokeReceivedFrom(Urn.Altinn.Person.IdentifierNo, PersonOrjanSSN),
                 WithRevokeReceivedAction("read"),
-                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, ResourceOrg),
-                WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, ResourceAppId)),
+                WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+                WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
             IdentifierUtil.PersonHeader,
             PersonPaulaSSN,
         ]];
@@ -46,10 +47,10 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// <returns></returns>
     public static IEnumerable<object[]> FromPersonToOrganization() => [[
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, PersonPaulaSSN),
+            WithRevokeReceivedFrom(Urn.Altinn.Person.IdentifierNo, PersonPaulaSSN),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, ResourceOrg),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, ResourceAppId)),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
         IdentifierUtil.OrganizationNumberHeader,
         OrganizationOrstadAccounting,
         ]];
@@ -60,10 +61,10 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// <returns></returns>
     public static IEnumerable<object[]> FromOrganizationToOrganization() => [[
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, OrganizationOrstadAccounting),
+            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, ResourceOrg),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, ResourceAppId)),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
         IdentifierUtil.OrganizationNumberHeader,
         OrganizationKolbjorn,
         ]];
@@ -74,10 +75,10 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// <returns></returns>
     public static IEnumerable<object[]> FromOrganizationToPerson() => [[
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, OrganizationOrstadAccounting),
+            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, ResourceOrg),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, ResourceAppId)),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
         IdentifierUtil.PersonHeader,
         PersonPaulaSSN,
     ]];
@@ -88,10 +89,10 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// <returns></returns>
     public static IEnumerable<object[]> FromOrganizationToEnterpriseuser() => [[
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, OrganizationOrstadAccounting),
+            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, ResourceOrg),
-            WithRevokeReceivedResource(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, ResourceAppId)),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
         IdentifierUtil.PersonHeader,
         EnterpriseUsername,
     ]];

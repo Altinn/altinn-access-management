@@ -1285,7 +1285,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
             var client = GetTestClient(token, WithPDPMock);
             client.DefaultRequestHeaders.Add(headerKey, headerValue);
-            
+
             // Act
             var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
             HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));

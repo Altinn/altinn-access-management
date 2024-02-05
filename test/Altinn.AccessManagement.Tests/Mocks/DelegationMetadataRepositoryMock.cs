@@ -323,6 +323,13 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
+        if (coveredByUserIds.Count == 1 && coveredByUserIds.First() == 20000071)
+        {
+            DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
+            result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", 50002511, coveredByPartyId: 20000071, performedByUserId: 20000403, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, 50002511, created, coveredByUserId: 20000071, performedByUserId: 20000002, changeType: DelegationChangeType.Grant));
+        }
+
         return Task.FromResult(result);
     }
 

@@ -1,0 +1,20 @@
+[
+  {
+    "partyId": 50002511,
+    "partyUuid": "326f8db9-f80f-49d3-aa8b-35afe5108d42",
+    "partyTypeName": 1,
+    "orgNumber": "",
+    "ssn": "06094790059",
+    "unitType": null,
+    "name": "WILLIAM LYSE",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "childParties": null,
+    "authorizedResources": [
+      "devtest_gar_authparties-person-to-person",
+      "ttd/am-devtest-person-to-person"
+    ],
+    "authorizedRoles": [],
+    "authorizedAccessPackages": []
+  }
+]

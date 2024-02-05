@@ -67,10 +67,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     /// </summary>
     /// <returns></returns>
     [Theory]
-    [MemberData(nameof(TestDataAuthorizedParties.KasperOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.KasperBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.PaulaOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.PaulaBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedParty> expected)
     {
         var client = GetTestClient(userToken, WithPDPMock);

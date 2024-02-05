@@ -42,6 +42,18 @@ public static class TestDataAuthorizedParties
     ]];
 
     /// <summary>
+    /// Sets up the authenticated user as AMUND ENGELAND DAGL,
+    /// getting only authorized parties from Altinn 3
+    /// where the user has received a person-to-person delegation of both an Altinn App and a Resource
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<object[]> PersonToPerson() => [[
+        PrincipalUtil.GetToken(20000071, 50002179, 3),
+        false,
+        GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
+    ]];
+
+    /// <summary>
     /// Sets up the authenticated user as Kasper Børstad DAGL of ØRSTA OG HEGGEDAL REGNSKAP,
     /// getting only authorized parties from Altinn 3
     /// </summary>
@@ -85,9 +97,9 @@ public static class TestDataAuthorizedParties
         GetExpectedAuthorizedParties(PersonPaula, BothAltinn3AndAltinn2)
     ]];
 
-    private static List<AuthorizedParty> GetExpectedAuthorizedParties(string user, string scenario)
+    private static List<AuthorizedParty> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
     {
-        string content = File.ReadAllText($"Data/Json/AuthorizedParties/{user}/{scenario}.json");
+        string content = File.ReadAllText($"Data/Json/AuthorizedParties/{delegationType}/{retrievalType}.json");
         return (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 }

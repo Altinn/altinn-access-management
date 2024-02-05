@@ -246,6 +246,89 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
+    public async Task<List<DelegationChange>> GetReceivedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    {
+        const string QUERY = /*strpsql*/@"
+            WITH resources AS (
+		        SELECT
+			        resourceId,
+			        resourceRegistryId,
+			        resourceType
+		        FROM accessmanagement.Resource
+		        WHERE resourceType != 'maskinportenschema'
+	        ),
+            latestResourceChanges AS (
+		        SELECT MAX(resourceRegistryDelegationChangeId) as latestId
+		        FROM delegation.ResourceRegistryDelegationChanges
+		        WHERE offeredbypartyid = ANY (@offeredByPartyIds)
+		        GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        ),
+	        latestAppChanges AS (
+		        SELECT MAX(delegationChangeId) as latestId
+		        FROM delegation.delegationchanges
+		        WHERE offeredbypartyid = ANY (@offeredByPartyIds)
+		        GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        )
+
+            SELECT
+		        resourceRegistryDelegationChangeId,
+		        null AS delegationChangeId,
+		        delegationChangeType,
+		        resources.resourceRegistryId,
+		        resources.resourceType,
+		        null AS altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.ResourceRegistryDelegationChanges
+		        INNER JOIN resources ON resourceId_fk = resources.resourceid
+		        INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+
+	        UNION ALL
+
+	        SELECT
+		        null AS resourceRegistryDelegationChangeId,
+		        delegationChangeId,
+		        delegationChangeType,
+		        null AS resourceRegistryId,
+		        null AS resourceType,
+		        altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        null AS performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.delegationchanges
+		        INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+        ";
+
+        try
+        {
+            await using var pgcom = _conn.CreateCommand(QUERY);
+            pgcom.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
+
+            return await pgcom.ExecuteEnumerableAsync(cancellationToken)
+                .SelectAwait(GetDelegationChange)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetReceivedDelegations // Exception");
+            throw;
+        }
+    }
+
+    /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         if (coveredByUserIds == null && coveredByPartyIds == null)
@@ -531,7 +614,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         catch (Exception e)
         {
             return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(e));
-        }            
+        }
     }
 
     private static async ValueTask<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)

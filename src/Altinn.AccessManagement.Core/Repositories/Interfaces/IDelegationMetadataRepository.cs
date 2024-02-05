@@ -65,6 +65,14 @@ public interface IDelegationMetadataRepository
     Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// summary
+    /// </summary>
+    /// <param name="offeredByPartyIds">a</param>
+    /// <param name="cancellationToken">b</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+    Task<List<DelegationChange>> GetReceivedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets all the active resource registry delegations a list of parties have received from others
     /// </summary>
     /// <param name="coveredByPartyIds">The list of party ids of the entities receiving the delegations</param>

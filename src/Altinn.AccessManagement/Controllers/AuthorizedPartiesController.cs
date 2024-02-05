@@ -60,6 +60,10 @@ public class AuthorizedPartiesController : ControllerBase
         try
         {
             int userId = AuthenticationHelper.GetUserId(HttpContext);
+            if (userId == 0)
+            {
+                return Unauthorized();
+            }
 
             List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(userId, includeAltinn2, cancellationToken);
 

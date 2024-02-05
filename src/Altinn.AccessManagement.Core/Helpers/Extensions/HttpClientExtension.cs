@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace Altinn.AccessManagement.Core.Extensions;
 
 /// <summary>

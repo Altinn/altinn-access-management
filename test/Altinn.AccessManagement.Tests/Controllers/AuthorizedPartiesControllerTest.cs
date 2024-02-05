@@ -11,7 +11,6 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Tests.Mocks;
-using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
@@ -31,8 +30,6 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicationFactory<AuthorizedPartiesController>>
 {
     private readonly CustomWebApplicationFactory<AuthorizedPartiesController> _factory;
-    private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
-
     private readonly JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
     /// <summary>
@@ -45,17 +42,36 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     }
 
     /// <summary>
+    /// Test case:  Get AuthorizedParties for an unauthenticated user
+    /// Expected:   - Should return 401 Unauthorized
+    /// </summary>
+    /// <returns></returns>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedNoValidToken), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenWithOutUserContext), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParties_UnauthenticatedUser_Unauthorized(string userToken)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparties?includeAltinn2={false}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    /// <summary>
     /// Test case:  Get AuthorizedParties for authenticated user
     /// Expected:   - Should return 200 OK
     ///             - Should include expected authorized parties incl. authorized resources for each party
     /// </summary>
     /// <returns></returns>
     [Theory]
-    [MemberData(nameof(TestDataAuthorizedPartiesExternal.KasperOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedPartiesExternal))]
-    [MemberData(nameof(TestDataAuthorizedPartiesExternal.KasperBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedPartiesExternal))]
-    [MemberData(nameof(TestDataAuthorizedPartiesExternal.PaulaOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedPartiesExternal))]
-    [MemberData(nameof(TestDataAuthorizedPartiesExternal.PaulaBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedPartiesExternal))]
-    public async Task GetAuthorizedPartiesForAuthenticatedUser(string userToken, bool includeAltinn2, List<AuthorizedParty> expected)
+    [MemberData(nameof(TestDataAuthorizedParties.KasperOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.KasperBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PaulaOnlyAltinn3AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PaulaBothAltinn3AndAltinn2AuthorizedParties), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedParty> expected)
     {
         var client = GetTestClient(userToken, WithPDPMock);
 
@@ -88,7 +104,6 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
                 services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
                 services.AddSingleton<IPDP, PdpPermitMock>();
                 services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
-                services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
 
                 foreach (var action in actions)
                 {

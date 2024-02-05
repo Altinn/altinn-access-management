@@ -7,7 +7,7 @@ using Altinn.AccessManagement.Tests.Util;
 /// <summary>
 /// Test data builder for testing AuthorizedParties
 /// </summary>
-public static class TestDataAuthorizedPartiesExternal
+public static class TestDataAuthorizedParties
 {
     private static string OnlyAltinn3 => "OnlyAltinn3";
 
@@ -24,6 +24,22 @@ public static class TestDataAuthorizedPartiesExternal
     private static int PersonKasperUserId => 20000490;
 
     private static int PersonKasperPartyId => 50002598;
+
+    /// <summary>
+    /// Sets up a request without a valid token
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<object[]> UnauthenticatedNoValidToken() => [[
+        string.Empty
+    ]];
+
+    /// <summary>
+    /// Sets up a request with a valid token but mmissing a valid urn:altinn:userid claim
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<object[]> UnauthenticatedValidTokenWithOutUserContext() => [[
+        PrincipalUtil.GetToken(0, 0, 0)
+    ]];
 
     /// <summary>
     /// Sets up the authenticated user as Kasper Børstad DAGL of ØRSTA OG HEGGEDAL REGNSKAP,

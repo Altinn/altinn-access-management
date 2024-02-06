@@ -1,12 +1,12 @@
 [
   {
-    "partyId": 50002511,
-    "partyUuid": "326f8db9-f80f-49d3-aa8b-35afe5108d42",
+    "partyId": 50100002,
+    "partyUuid": "00000000-0000-0000-0001-000000000002",
     "partyTypeName": 1,
     "orgNumber": "",
-    "ssn": "06094790059",
+    "ssn": "01017170071",
     "unitType": null,
-    "name": "WILLIAM LYSE",
+    "name": "PERSON TO PERSON DELEGATOR",
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
     "childParties": null,

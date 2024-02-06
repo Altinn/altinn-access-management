@@ -544,6 +544,8 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.IsDeleted, actual.IsDeleted);
             Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
+            Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
+            Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
             AssertCollections(expected.ChildParties, actual.ChildParties, AssertAuthorizedPartyEqual);
         }
 

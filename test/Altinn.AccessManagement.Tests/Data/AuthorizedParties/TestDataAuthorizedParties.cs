@@ -13,17 +13,13 @@ public static class TestDataAuthorizedParties
 
     private static string BothAltinn3AndAltinn2 => "BothAltinn3AndAltinn2";
 
-    private static string PersonPaula => "Paula";
+    private static int PersonToPerson_UserId => 20100001;
 
-    private static int PersonPaulaUserId => 20000095;
+    private static int PersonToPerson_PartyId => 50100001;
 
-    private static int PersonPaulaPartyId => 50002203;
+    private static int PersonToOrg_DaglUserId => 20100002;
 
-    private static string PersonKasper => "Kasper";
-
-    private static int PersonKasperUserId => 20000490;
-
-    private static int PersonKasperPartyId => 50002598;
+    private static int PersonToOrg_DaglPartyId => 50100002;
 
     /// <summary>
     /// Sets up a request without a valid token
@@ -42,59 +38,51 @@ public static class TestDataAuthorizedParties
     ]];
 
     /// <summary>
-    /// Sets up the authenticated user as AMUND ENGELAND DAGL,
-    /// getting only authorized parties from Altinn 3
-    /// where the user has received a person-to-person delegation of both an Altinn App and a Resource
+    /// Sets up the authenticated user,
+    /// getting authorized parties from only Altinn 3
+    /// where the user has received delegations from a person,
+    /// of both an Altinn App and a Resource
     /// </summary>
-    /// <returns></returns>
     public static IEnumerable<object[]> PersonToPerson() => [[
-        PrincipalUtil.GetToken(20000071, 50002179, 3),
+        PrincipalUtil.GetToken(PersonToPerson_UserId, PersonToPerson_PartyId, 3),
         false,
         GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
     ]];
 
     /// <summary>
-    /// Sets up the authenticated user as Kasper Børstad DAGL of ØRSTA OG HEGGEDAL REGNSKAP,
-    /// getting only authorized parties from Altinn 3
-    /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> KasperOnlyAltinn3AuthorizedParties() => [[
-        PrincipalUtil.GetToken(PersonKasperUserId, PersonKasperPartyId, 3),
-        false,
-        GetExpectedAuthorizedParties(PersonKasper, OnlyAltinn3)
-    ]];
-
-    /// <summary>
-    /// Sets up the authenticated user as Kasper Børstad DAGL of ØRSTA OG HEGGEDAL REGNSKAP,
+    /// Sets up the authenticated user,
     /// getting authorized parties from both Altinn 3 and Altinn 2
+    /// where the user has received delegations from a person,
+    /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> KasperBothAltinn3AndAltinn2AuthorizedParties() => [[
-        PrincipalUtil.GetToken(PersonKasperUserId, PersonKasperPartyId, 3),
+    public static IEnumerable<object[]> PersonToPersonInclA2() => [[
+        PrincipalUtil.GetToken(PersonToPerson_UserId, PersonToPerson_PartyId, 3),
         true,
-        GetExpectedAuthorizedParties(PersonKasper, BothAltinn3AndAltinn2)
+        GetExpectedAuthorizedParties("PersonToPerson", BothAltinn3AndAltinn2)
     ]];
 
     /// <summary>
-    /// Sets up the authenticated user as Paula Rimstad DAGL of KARLSTAD OG ULØYBUKT REGNSKAP
-    /// getting only authorized parties from Altinn 3
+    /// Sets up the authenticated user as DAGL of an organization,
+    /// getting authorized parties from only Altinn 3
+    /// where the user's organization has received delegations from a person,
+    /// of both an Altinn App and a Resource
     /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> PaulaOnlyAltinn3AuthorizedParties() => [[
-        PrincipalUtil.GetToken(PersonPaulaUserId, PersonPaulaPartyId, 3),
+    public static IEnumerable<object[]> PersonToOrg() => [[
+        PrincipalUtil.GetToken(PersonToOrg_DaglUserId, PersonToOrg_DaglPartyId, 3),
         false,
-        GetExpectedAuthorizedParties(PersonPaula, OnlyAltinn3)
+        GetExpectedAuthorizedParties("PersonToOrg", OnlyAltinn3)
     ]];
 
     /// <summary>
-    /// Sets up the authenticated user as Paula Rimstad DAGL of KARLSTAD OG ULØYBUKT REGNSKAP
+    /// Sets up the authenticated user as DAGL of an organization,
     /// getting authorized parties from both Altinn 3 and Altinn 2
+    /// where the user's organization has received delegations from a person,
+    /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> PaulaBothAltinn3AndAltinn2AuthorizedParties() => [[
-        PrincipalUtil.GetToken(PersonPaulaUserId, PersonPaulaPartyId, 3),
-        true,
-        GetExpectedAuthorizedParties(PersonPaula, BothAltinn3AndAltinn2)
+    public static IEnumerable<object[]> PersonToOrgInclA2() => [[
+        PrincipalUtil.GetToken(PersonToOrg_DaglUserId, PersonToOrg_DaglPartyId, 3),
+        false,
+        GetExpectedAuthorizedParties("PersonToOrg", BothAltinn3AndAltinn2)
     ]];
 
     private static List<AuthorizedParty> GetExpectedAuthorizedParties(string delegationType, string retrievalType)

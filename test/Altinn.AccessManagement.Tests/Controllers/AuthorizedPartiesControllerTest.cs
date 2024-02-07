@@ -69,6 +69,8 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonToOrg), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonToOrgInclA2), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedParty> expected)
     {
         var client = GetTestClient(userToken, WithPDPMock);

@@ -323,11 +323,16 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
-        if (coveredByUserIds.Count == 1 && coveredByUserIds.First() == 20100001)
+        DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
+        if (coveredByUserIds.Count == 1 && coveredByUserIds.First() == TestDataAuthorizedParties.PersonToPerson_ToUserId)
         {
-            DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
-            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, 50100002, created, coveredByUserId: 20100001, performedByUserId: 20100002, changeType: DelegationChangeType.Grant));
-            result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", 50100002, coveredByUserId: 20100001, performedByUserId: 20100002, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToPerson_FromPartyId, created, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", TestDataAuthorizedParties.PersonToPerson_FromPartyId, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
+        }
+        else if (coveredByPartyIds.Count == 1 && coveredByPartyIds.First() == TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId)
+        {
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToOrg_FromPartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, performedByUserId: 20001337, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", TestDataAuthorizedParties.PersonToOrg_FromPartyId, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, performedByUserId: 20001337, changeType: DelegationChangeType.Grant));
         }
 
         return Task.FromResult(result);

@@ -9,17 +9,29 @@ using Altinn.AccessManagement.Tests.Util;
 /// </summary>
 public static class TestDataAuthorizedParties
 {
+#pragma warning disable SA1600 // Elements should be documented
     private static string OnlyAltinn3 => "OnlyAltinn3";
 
     private static string BothAltinn3AndAltinn2 => "BothAltinn3AndAltinn2";
 
-    private static int PersonToPerson_UserId => 20100001;
+    public static int PersonToPerson_FromUserId => 20100001;
 
-    private static int PersonToPerson_PartyId => 50100001;
+    public static int PersonToPerson_FromPartyId => 50100001;
 
-    private static int PersonToOrg_DaglUserId => 20100002;
+    public static int PersonToPerson_ToUserId => 20100002;
 
-    private static int PersonToOrg_DaglPartyId => 50100002;
+    public static int PersonToPerson_ToPartyId => 50100002;
+
+    public static int PersonToOrg_FromUserId => 20100003;
+
+    public static int PersonToOrg_FromPartyId => 50100003;
+
+    public static int PersonToOrg_ToOrgPartyId => 50100004;
+
+    public static int PersonToOrg_ToOrgDaglUserId => 20100005;
+
+    public static int PersonToOrg_ToOrgDaglPartyId => 50100005;
+#pragma warning restore SA1600 // Elements should be documented
 
     /// <summary>
     /// Sets up a request without a valid token
@@ -44,7 +56,7 @@ public static class TestDataAuthorizedParties
     /// of both an Altinn App and a Resource
     /// </summary>
     public static IEnumerable<object[]> PersonToPerson() => [[
-        PrincipalUtil.GetToken(PersonToPerson_UserId, PersonToPerson_PartyId, 3),
+        PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
         false,
         GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
     ]];
@@ -56,7 +68,7 @@ public static class TestDataAuthorizedParties
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
     public static IEnumerable<object[]> PersonToPersonInclA2() => [[
-        PrincipalUtil.GetToken(PersonToPerson_UserId, PersonToPerson_PartyId, 3),
+        PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
         true,
         GetExpectedAuthorizedParties("PersonToPerson", BothAltinn3AndAltinn2)
     ]];
@@ -68,7 +80,7 @@ public static class TestDataAuthorizedParties
     /// of both an Altinn App and a Resource
     /// </summary>
     public static IEnumerable<object[]> PersonToOrg() => [[
-        PrincipalUtil.GetToken(PersonToOrg_DaglUserId, PersonToOrg_DaglPartyId, 3),
+        PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
         false,
         GetExpectedAuthorizedParties("PersonToOrg", OnlyAltinn3)
     ]];
@@ -80,8 +92,8 @@ public static class TestDataAuthorizedParties
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
     public static IEnumerable<object[]> PersonToOrgInclA2() => [[
-        PrincipalUtil.GetToken(PersonToOrg_DaglUserId, PersonToOrg_DaglPartyId, 3),
-        false,
+        PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
+        true,
         GetExpectedAuthorizedParties("PersonToOrg", BothAltinn3AndAltinn2)
     ]];
 

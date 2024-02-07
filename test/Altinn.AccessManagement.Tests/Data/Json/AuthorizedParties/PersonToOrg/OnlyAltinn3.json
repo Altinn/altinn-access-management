@@ -11,8 +11,8 @@
     "onlyHierarchyElementWithNoAccess": false,
     "childParties": null,
     "authorizedResources": [
-      "devtest_gar_authparties-person-to-person",
-      "ttd/am-devtest-person-to-person"
+      "devtest_gar_authparties-person-to-org",
+      "ttd/am-devtest-person-to-org"
     ],
     "authorizedRoles": [],
     "authorizedAccessPackages": []

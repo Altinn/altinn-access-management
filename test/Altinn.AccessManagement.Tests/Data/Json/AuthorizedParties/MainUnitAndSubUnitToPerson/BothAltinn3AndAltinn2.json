@@ -1,0 +1,51 @@
+[
+  {
+    "partyId": 50100008,
+    "partyUuid": "00000000-0000-0000-0001-000000000008",
+    "partyTypeName": 1,
+    "orgNumber": "",
+    "ssn": "01017870071",
+    "unitType": null,
+    "name": "MAINUNIT AND SUBUNIT TO PERSON RECIPIENT",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "childParties": null,
+    "authorizedResources": [],
+    "authorizedRoles": [ "PRIV" ],
+    "authorizedAccessPackages": []
+  },
+  {
+    "partyId": 50100006,
+    "partyUuid": "00000000-0000-0000-0001-000000000006",
+    "partyTypeName": 2,
+    "orgNumber": "901000006",
+    "ssn": null,
+    "unitType": "AS",
+    "name": "AUTHORIZEDPARTIES MAINUNIT",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "childParties": [
+      {
+        "partyId": 50100007,
+        "partyUuid": "00000000-0000-0000-0001-000000000007",
+        "partyTypeName": 2,
+        "orgNumber": "901000007",
+        "ssn": null,
+        "unitType": "BEDR",
+        "name": "AUTHORIZEDPARTIES SUBUNIT",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "childParties": null,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-person",
+          "ttd/am-devtest-sub-to-person"
+        ],
+        "authorizedRoles": [ "REGNA", "SISKD" ],
+        "authorizedAccessPackages": []
+      }
+    ],
+    "authorizedResources": [ "devtest_gar_authparties-main-to-person" ],
+    "authorizedRoles": [ "REGNA" ],
+    "authorizedAccessPackages": []
+  }
+]

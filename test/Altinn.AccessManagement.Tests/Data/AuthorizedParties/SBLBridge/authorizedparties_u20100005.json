@@ -1,15 +1,32 @@
 [
   {
-    "partyId": 50100003,
-    "partyUuid": "00000000-0000-0000-0001-000000000003",
-    "partyTypeName": 1,
-    "orgNumber": "",
-    "ssn": "01017370071",
-    "unitType": null,
-    "name": "PERSON TO ORG DELEGATOR",
-    "isDeleted": false,
-    "onlyHierarchyElementWithNoAccess": false,
-    "childParties": null,
-    "authorizedRoles": ["UTINN"]
+    "PartyTypeName": 1,
+    "SSN": "01017570071",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100005,
+    "PartyUUID": "00000000-0000-0000-0001-000000000005",
+    "UnitType": null,
+    "Name": "PERSON TO ORG DAGL",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null,
+    "AuthorizedRoles": [ "PRIV" ]
+  },
+  {
+    "PartyTypeName": 1,
+    "SSN": "01017370071",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100003,
+    "PartyUUID": "00000000-0000-0000-0001-000000000003",
+    "UnitType": null,
+    "Name": "PERSON TO ORG DELEGATOR",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null,
+    "AuthorizedRoles": [ "UTINN" ]
   }
 ]

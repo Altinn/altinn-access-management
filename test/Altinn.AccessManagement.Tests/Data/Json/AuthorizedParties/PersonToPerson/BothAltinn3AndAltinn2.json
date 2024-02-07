@@ -1,5 +1,20 @@
 [
   {
+    "partyId": 50100002,
+    "partyUuid": "00000000-0000-0000-0001-000000000002",
+    "partyTypeName": 1,
+    "orgNumber": "",
+    "ssn": "01017270071",
+    "unitType": null,
+    "name": "PERSON TO PERSON RECIPIENT",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "childParties": null,
+    "authorizedResources": [],
+    "authorizedRoles": [ "PRIV" ],
+    "authorizedAccessPackages": []
+  },
+  {
     "partyId": 50100001,
     "partyUuid": "00000000-0000-0000-0001-000000000001",
     "partyTypeName": 1,

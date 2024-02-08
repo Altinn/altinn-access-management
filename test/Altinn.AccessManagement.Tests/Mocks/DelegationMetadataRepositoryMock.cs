@@ -135,7 +135,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
-        altinnAppIds ??=[];
+        altinnAppIds ??= [];
         if (altinnAppIds.Count == 0 && offeredByPartyIds.Contains(20001337))
         {
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 20001337, 20001336));
@@ -323,6 +323,28 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
+        return Task.FromResult(result);
+    }
+
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetReceivedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    {
+        var result = new List<DelegationChange>();
+        foreach (var offeredBy in offeredByPartyIds)
+        {
+            if (offeredBy == 50002203)
+            {
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, offeredBy, DateTime.Now, coveredByPartyId: 50005545));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, offeredBy, DateTime.Now, coveredByPartyId: 50005545));
+            }
+
+            if (offeredBy == 50005545)
+            {
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, offeredBy, DateTime.Now, coveredByUserId: 20000095));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, offeredBy, DateTime.Now, coveredByUserId: 20000095));
+            }
+        }
+
         return Task.FromResult(result);
     }
 

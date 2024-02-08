@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Tests.Util;
+using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Data;
 
@@ -53,18 +54,22 @@ public static class TestDataAuthorizedParties
     /// <summary>
     /// Sets up a request without a valid token
     /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> UnauthenticatedNoValidToken() => [[
-        string.Empty
-    ]];
+    public static TheoryData<string> UnauthenticatedNoValidToken() => new()
+    {
+        {
+            string.Empty
+        }
+    };
 
     /// <summary>
     /// Sets up a request with a valid token but mmissing a valid urn:altinn:userid claim
     /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> UnauthenticatedValidTokenWithOutUserContext() => [[
-        PrincipalUtil.GetToken(0, 0, 0)
-    ]];
+    public static TheoryData<string> UnauthenticatedValidTokenWithOutUserContext() => new()
+    {
+        {
+            PrincipalUtil.GetToken(0, 0, 0)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user,
@@ -72,11 +77,14 @@ public static class TestDataAuthorizedParties
     /// where the user has received delegations from a person,
     /// of both an Altinn App and a Resource
     /// </summary>
-    public static IEnumerable<object[]> PersonToPerson() => [[
-        PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
-        false,
-        GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToPerson() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            false,
+            GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user,
@@ -84,11 +92,14 @@ public static class TestDataAuthorizedParties
     /// where the user has received delegations from a person,
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    public static IEnumerable<object[]> PersonToPersonInclA2() => [[
-        PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
-        true,
-        GetExpectedAuthorizedParties("PersonToPerson", BothAltinn3AndAltinn2)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToPersonInclA2() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            true,
+            GetExpectedAuthorizedParties("PersonToPerson", BothAltinn3AndAltinn2)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user as DAGL of an organization,
@@ -96,11 +107,14 @@ public static class TestDataAuthorizedParties
     /// where the user's organization has received delegations from a person,
     /// of both an Altinn App and a Resource
     /// </summary>
-    public static IEnumerable<object[]> PersonToOrg() => [[
-        PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
-        false,
-        GetExpectedAuthorizedParties("PersonToOrg", OnlyAltinn3)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToOrg() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
+            false,
+            GetExpectedAuthorizedParties("PersonToOrg", OnlyAltinn3)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user as DAGL of an organization,
@@ -108,11 +122,14 @@ public static class TestDataAuthorizedParties
     /// where the user's organization has received delegations from a person,
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    public static IEnumerable<object[]> PersonToOrgInclA2() => [[
-        PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
-        true,
-        GetExpectedAuthorizedParties("PersonToOrg", BothAltinn3AndAltinn2)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToOrgInclA2() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
+            true,
+            GetExpectedAuthorizedParties("PersonToOrg", BothAltinn3AndAltinn2)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user,
@@ -123,11 +140,14 @@ public static class TestDataAuthorizedParties
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-person
     /// </summary>
-    public static IEnumerable<object[]> MainUnitAndSubUnitToPerson() => [[
-        PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
-        false,
-        GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", OnlyAltinn3)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToPerson() => new()
+    {
+        {
+            PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
+            false,
+            GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", OnlyAltinn3)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user,
@@ -140,11 +160,14 @@ public static class TestDataAuthorizedParties
     ///         the altinn app: ttd/am-devtest-sub-to-person
     ///         the role: SISKD
     /// </summary>
-    public static IEnumerable<object[]> MainUnitAndSubUnitToPersonInclA2() => [[
-        PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
-        true,
-        GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", BothAltinn3AndAltinn2)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToPersonInclA2() => new()
+    {
+        {
+            PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
+            true,
+            GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", BothAltinn3AndAltinn2)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user as DAGL of an organization,
@@ -155,11 +178,14 @@ public static class TestDataAuthorizedParties
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-org
     /// </summary>
-    public static IEnumerable<object[]> MainUnitAndSubUnitToOrg() => [[
-        PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
-        false,
-        GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", OnlyAltinn3)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToOrg() => new()
+    {
+        {
+            PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
+            false,
+            GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", OnlyAltinn3)
+        }
+    };
 
     /// <summary>
     /// Sets up the authenticated user as DAGL of an organization,
@@ -172,11 +198,14 @@ public static class TestDataAuthorizedParties
     ///         the altinn app: ttd/am-devtest-sub-to-org
     ///         the role: APIADM
     /// </summary>
-    public static IEnumerable<object[]> MainUnitAndSubUnitToOrgInclA2() => [[
-        PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
-        true,
-        GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", BothAltinn3AndAltinn2)
-    ]];
+    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToOrgInclA2() => new()
+    {
+        {
+            PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
+            true,
+            GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", BothAltinn3AndAltinn2)
+        }
+    };
 
     private static List<AuthorizedParty> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
     {

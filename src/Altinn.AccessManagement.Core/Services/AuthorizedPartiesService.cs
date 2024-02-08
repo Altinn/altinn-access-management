@@ -13,7 +13,6 @@ namespace Altinn.AccessManagement.Core.Services;
 public class AuthorizedPartiesService : IAuthorizedPartiesService
 {
     private readonly IContextRetrievalService _contextRetrievalService;
-    private readonly IPolicyInformationPoint _pip;
     private readonly IDelegationMetadataRepository _delegations;
     private readonly IAltinnRolesClient _altinnRolesClient;
 

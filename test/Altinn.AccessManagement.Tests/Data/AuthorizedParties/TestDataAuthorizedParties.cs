@@ -4,6 +4,8 @@ using System.Text.Json;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Tests.Util;
 
+namespace Altinn.AccessManagement.Tests.Data;
+
 /// <summary>
 /// Test data builder for testing AuthorizedParties
 /// </summary>
@@ -152,6 +154,7 @@ public static class TestDataAuthorizedParties
     ///         the resource: devtest_gar_authparties-main-to-org
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-org
+    /// </summary>
     public static IEnumerable<object[]> MainUnitAndSubUnitToOrg() => [[
         PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
         false,
@@ -168,6 +171,7 @@ public static class TestDataAuthorizedParties
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-org
     ///         the role: APIADM
+    /// </summary>
     public static IEnumerable<object[]> MainUnitAndSubUnitToOrgInclA2() => [[
         PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
         true,

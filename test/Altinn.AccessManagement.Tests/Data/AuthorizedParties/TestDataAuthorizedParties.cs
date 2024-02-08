@@ -13,6 +13,8 @@ namespace Altinn.AccessManagement.Tests.Data;
 public static class TestDataAuthorizedParties
 {
 #pragma warning disable SA1600 // Elements should be documented
+    private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
     private static string OnlyAltinn3 => "OnlyAltinn3";
 
     private static string BothAltinn3AndAltinn2 => "BothAltinn3AndAltinn2";
@@ -210,6 +212,6 @@ public static class TestDataAuthorizedParties
     private static List<AuthorizedParty> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
     {
         string content = File.ReadAllText($"Data/Json/AuthorizedParties/{delegationType}/{retrievalType}.json");
-        return (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), JsonOptions);
     }
 }

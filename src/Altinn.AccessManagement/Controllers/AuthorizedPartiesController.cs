@@ -67,7 +67,7 @@ public class AuthorizedPartiesController : ControllerBase
 
             List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(userId, includeAltinn2, cancellationToken);
 
-            return _mapper.Map<List<AuthorizedParty>>(authorizedParties); // Todo: Add External model, paging?
+            return _mapper.Map<List<AuthorizedParty>>(authorizedParties);
         }
         catch (Exception ex)
         {

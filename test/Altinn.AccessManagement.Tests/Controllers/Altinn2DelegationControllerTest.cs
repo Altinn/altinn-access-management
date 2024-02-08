@@ -66,42 +66,42 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     }
 
     /// <summary>
-    /// Case 1. List delegations from an organization using their orgnumber
-    /// Case 2. List delegations from an organization using their partyid
-    /// Case 3. List delegations from a person with no keyroles using their ssn
-    /// Case 4. List delegations from a person with keyroles using their ssn
-    /// Case 5. List delegations from a person with no keyroles using their partyid
+    /// Case 1. List delegations from an organization to person using their orgnumber
+    /// Case 2. List delegations from an organization to person using their partyid
+    /// Case 3. List delegations from a person to org with no keyroles using their ssn
+    /// Case 4. List delegations from a person to org with keyroles using their ssn
+    /// Case 5. List delegations from a person to org with no keyroles using their partyid
     /// </summary>
     public static TheoryData<string, string, Action<HttpResponseMessage>> GetGivenDelegations_ReturnOk_Input() => new()
     {
         {
             IdentifierUtil.OrganizationNumberHeader, "910459880", Assertions(
-                AssertFromContains(new() {Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
-                AssertToContains(new() {Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = "50002203" }),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "20000095"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
         {
             string.Empty, "50005545", response => Assertions(
-                AssertFromContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
-                AssertToContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = "50002203" }),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "20000095"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
         {
             IdentifierUtil.PersonHeader, "02056260016", Assertions(
-                AssertFromContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50002203" }),
-                AssertToContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
         {
             IdentifierUtil.PersonHeader, "02056260016", Assertions(
-                AssertFromContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = "50002203" }),
-                AssertToContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
         {
             string.Empty, "50002203",  Assertions(
-                AssertFromContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = "50002203" }),
-                AssertToContains(new() { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertStatusCode(StatusCodes.Status200OK))
         }
     };
@@ -131,8 +131,8 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     {
         {
             IdentifierUtil.OrganizationNumberHeader, "910459880", Assertions(
-                AssertToContains(new() {Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50002203" }),
-                AssertFromContains(new() {Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = "50005545" }),
+                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
+                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
     };
@@ -150,7 +150,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     };
 
-    private static Action<HttpResponseMessage> AssertToContains(AttributeMatchExternal to) => response =>
+    private static Action<HttpResponseMessage> AssertToContains(string type, string value) => response =>
     {
         var content = response.Content.ReadAsStringAsync().Result;
         var models = JsonSerializer.Deserialize<IEnumerable<RightDelegationExternal>>(content);
@@ -159,17 +159,17 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
         {
             foreach (var attribute in model.To)
             {
-                if (attribute.Id.Equals(to.Id, StringComparison.InvariantCultureIgnoreCase) && attribute.Value.Equals(to.Value))
+                if (attribute.Id.Equals(type, StringComparison.InvariantCultureIgnoreCase) && attribute.Value.Equals(value))
                 {
                     return;
                 }
             }
         }
 
-        Assert.Fail($"Failed to find any attributes in the fild From with type '{to.Id}' and value '{to.Value}'");
+        Assert.Fail($"Failed to find any attributes in the fild From with type '{type}' and value '{value}'");
     };
 
-    private static Action<HttpResponseMessage> AssertFromContains(AttributeMatchExternal from) => response =>
+    private static Action<HttpResponseMessage> AssertFromContains(string type, string value) => response =>
     {
         var content = response.Content.ReadAsStringAsync().Result;
         var models = JsonSerializer.Deserialize<IEnumerable<RightDelegationExternal>>(content);
@@ -178,14 +178,14 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
         {
             foreach (var attribute in model.From)
             {
-                if (attribute.Id.Equals(from.Id, StringComparison.InvariantCultureIgnoreCase) && attribute.Value.Equals(from.Value))
+                if (attribute.Id.Equals(type, StringComparison.InvariantCultureIgnoreCase) && attribute.Value.Equals(value))
                 {
                     return;
                 }
             }
         }
 
-        Assert.Fail($"Failed to find any attributes in the fild From with type '{from.Id}' and value '{from.Value}'");
+        Assert.Fail($"Failed to find any attributes in the fild From with type '{type}' and value '{value}'");
     };
 
     private WebApplicationFactory<Altinn2DelegationController> NewServiceCollection(params Action<IServiceCollection>[] actions)

@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<RightDelegation>> GetOfferedRightsDelegations(AttributeMatch reportee, CancellationToken cancellationToken = default)
         {
-            var delegations = await GetIssuedDelegationsFromRepository(reportee, cancellationToken);
+            var delegations = await GetOfferedDelegationsFromRepository(reportee, cancellationToken);
             return await MapDelegationResponse(delegations, cancellationToken);
         }
 
@@ -45,31 +45,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
             {
-                if (int.TryParse(reportee.Value, out var partyId))
-                {
-                    var party = await _contextRetrievalService.GetPartyAsync(partyId);
-                    if (party.PartyTypeName == PartyType.Person)
-                    {
-                        return await GetReceivedDelegationFromRepository(
-                            new AttributeMatch
-                            {
-                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
-                                Value = party.SSN,
-                            },
-                            cancellationToken);
-                    }
-
-                    if (party.PartyTypeName == PartyType.Organisation)
-                    {
-                        return await GetReceivedDelegationFromRepository(
-                                new AttributeMatch
-                                {
-                                    Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                                    Value = party.Organization.OrgNumber
-                                },
-                                cancellationToken);
-                    }
-                }
+                return await GetDelegationsFromRepositoryUsingParty(reportee, GetReceivedDelegationFromRepository, cancellationToken);
             }
 
             if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
@@ -78,8 +54,8 @@ namespace Altinn.AccessManagement.Core.Services
                 {
                     Ssn = reportee.Value
                 });
-                var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
 
+                var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
                 return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(user.UserId.SingleToList(), keyRoles, cancellationToken);
             }
 
@@ -89,7 +65,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(null, party.PartyId.SingleToList(), cancellationToken);
             }
 
-            throw new ArgumentNullException("msg here");
+            throw new ArgumentException("msg here");
         }
 
         /// <summary>
@@ -98,35 +74,11 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="reportee">a</param>
         /// <param name="cancellationToken">b</param>
         /// <returns></returns>
-        private async Task<IEnumerable<DelegationChange>> GetIssuedDelegationsFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
+        private async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
         {
             if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
             {
-                if (int.TryParse(reportee.Value, out var partyId))
-                {
-                    var party = await _contextRetrievalService.GetPartyAsync(partyId);
-                    if (party.PartyTypeName == PartyType.Person)
-                    {
-                        return await GetReceivedDelegationFromRepository(
-                            new AttributeMatch
-                            {
-                                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute,
-                                Value = party.SSN,
-                            },
-                            cancellationToken);
-                    }
-
-                    if (party.PartyTypeName == PartyType.Organisation)
-                    {
-                        return await GetReceivedDelegationFromRepository(
-                                new AttributeMatch
-                                {
-                                    Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute,
-                                    Value = reportee.Value
-                                },
-                                cancellationToken);
-                    }
-                }
+                return await GetDelegationsFromRepositoryUsingParty(reportee, GetOfferedDelegationsFromRepository, cancellationToken);
             }
 
             if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
@@ -145,16 +97,35 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 var party = await _contextRetrievalService.GetPartyForOrganization(reportee.Value);
                 var mainUnits = await _contextRetrievalService.GetMainUnits(party.PartyId.SingleToList(), cancellationToken);
-                var units = party.PartyId.SingleToList();
+                var parties = party.PartyId.SingleToList();
                 if (mainUnits.FirstOrDefault() is var mainUnit && mainUnit.PartyId != null)
                 {
-                    units.Add((int)mainUnit.PartyId);
+                    parties.Add((int)mainUnit.PartyId);
                 }
 
-                return await _delegationRepository.GetReceivedDelegations(units, cancellationToken);
+                return await _delegationRepository.GetReceivedDelegations(parties, cancellationToken);
             }
 
             throw new ArgumentException("msg here");
+        }
+
+        private async Task<IEnumerable<DelegationChange>> GetDelegationsFromRepositoryUsingParty(AttributeMatch reportee, Func<AttributeMatch, CancellationToken, Task<IEnumerable<DelegationChange>>> callback, CancellationToken cancellationToken)
+        {
+            if (int.TryParse(reportee.Value, out var partyId))
+            {
+                var party = await _contextRetrievalService.GetPartyAsync(partyId);
+                if (party.PartyTypeName == PartyType.Person)
+                {
+                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, party.SSN), cancellationToken);
+                }
+
+                if (party.PartyTypeName == PartyType.Organisation)
+                {
+                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, reportee.Value), cancellationToken);
+                }
+            }
+
+            throw new ArgumentException("given party is not a person, nor an organization");
         }
 
         private async Task<List<RightDelegation>> MapDelegationResponse(IEnumerable<DelegationChange> delegations, CancellationToken cancellationToken = default)
@@ -167,30 +138,15 @@ namespace Altinn.AccessManagement.Core.Services
                 var entry = new RightDelegation();
                 if (delegation.CoveredByUserId != null)
                 {
-                    entry.To.Add(
-                        new()
-                        {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute,
-                            Value = delegation.CoveredByUserId.ToString(),
-                        });
+                    entry.To.Add(new(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, delegation.CoveredByUserId.ToString()));
                 }
 
                 if (delegation.CoveredByPartyId != null)
                 {
-                    entry.To.Add(
-                        new()
-                        {
-                            Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute,
-                            Value = delegation.CoveredByPartyId.ToString(),
-                        });
+                    entry.To.Add(new(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, delegation.CoveredByPartyId.ToString()));
                 }
 
-                entry.From.Add(
-                    new()
-                    {
-                        Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute,
-                        Value = delegation.OfferedByPartyId.ToString(),
-                    });
+                entry.From.Add(new(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, delegation.OfferedByPartyId.ToString()));
 
                 var resourcePath = delegation.ResourceId.Split("/");
                 if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)

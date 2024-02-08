@@ -1,4 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Npgsql;
 using NpgsqlTypes;
@@ -8,6 +11,7 @@ namespace Altinn.AccessManagement.Persistence.Extensions;
 /// <summary>
 /// Helper extensions for Npgsql.
 /// </summary>
+[ExcludeFromCodeCoverage]
 internal static class NpgsqlExtensions
 {
     /// <summary>

@@ -172,12 +172,12 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<int>> GetKeyRolePartyIds(int userId, CancellationToken cancellation = default)
+    public async Task<List<int>> GetKeyRolePartyIds(int userId, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"KeyRolePartyIds_u:{userId}";
         if (!_memoryCache.TryGetValue(cacheKey, out List<int> keyrolePartyIds))
         {
-            keyrolePartyIds = await _partiesClient.GetKeyRoleParties(userId, cancellation);
+            keyrolePartyIds = await _partiesClient.GetKeyRoleParties(userId, cancellationToken);
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
            .SetPriority(CacheItemPriority.High)

@@ -15,6 +15,8 @@ namespace Altinn.AccessManagement.Tests.Mocks;
 /// </summary>
 public class AltinnRolesClientMock : IAltinnRolesClient
 {
+    private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnRolesClientMock"/> class
     /// </summary>
@@ -30,7 +32,7 @@ public class AltinnRolesClientMock : IAltinnRolesClient
         if (File.Exists(rolesPath))
         {
             string content = await File.ReadAllTextAsync(rolesPath, cancellationToken);
-            roles = (List<Role>)JsonSerializer.Deserialize(content, typeof(List<Role>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            roles = (List<Role>)JsonSerializer.Deserialize(content, typeof(List<Role>), jsonOptions);
         }
 
         return roles;
@@ -44,16 +46,24 @@ public class AltinnRolesClientMock : IAltinnRolesClient
         if (File.Exists(rolesPath))
         {
             string content = await File.ReadAllTextAsync(rolesPath, cancellationToken);
-            roles = (List<Role>)JsonSerializer.Deserialize(content, typeof(List<Role>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            roles = (List<Role>)JsonSerializer.Deserialize(content, typeof(List<Role>), jsonOptions);
         }
 
         return roles;
     }
 
     /// <inheritdoc/>
-    public Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken)
+    public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        List<AuthorizedParty> bridgeAuthParties = new List<AuthorizedParty>();
+        string authorizedPartiesPath = GetAltinn2AuthorizedPartiesWithRolesPath(userId);
+        if (File.Exists(authorizedPartiesPath))
+        {
+            string content = await File.ReadAllTextAsync(authorizedPartiesPath, cancellationToken);
+            bridgeAuthParties = (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), jsonOptions);
+        }
+
+        return bridgeAuthParties;
     }
 
     private static string GetRolesPath(int coveredByUserId, int offeredByPartyId)
@@ -66,5 +76,11 @@ public class AltinnRolesClientMock : IAltinnRolesClient
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(AltinnRolesClientMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "RolesForDelegation", $"user_{coveredByUserId}", $"party_{offeredByPartyId}", "roles.json");
-    }        
+    }
+
+    private static string GetAltinn2AuthorizedPartiesWithRolesPath(int userId)
+    {
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(AltinnRolesClientMock).Assembly.Location).LocalPath);
+        return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "AuthorizedParties", "SBLBridge", $"authorizedparties_u{userId}.json");
+    }
 }

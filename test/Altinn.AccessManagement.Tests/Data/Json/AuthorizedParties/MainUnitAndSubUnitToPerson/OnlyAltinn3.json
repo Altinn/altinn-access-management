@@ -1,0 +1,36 @@
+[
+  {
+    "partyId": 50100006,
+    "partyUuid": "00000000-0000-0000-0001-000000000006",
+    "partyTypeName": 2,
+    "orgNumber": "901000006",
+    "ssn": null,
+    "unitType": "AS",
+    "name": "AUTHORIZEDPARTIES MAINUNIT",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "childParties": [
+      {
+        "partyId": 50100007,
+        "partyUuid": "00000000-0000-0000-0001-000000000007",
+        "partyTypeName": 2,
+        "orgNumber": "901000007",
+        "ssn": null,
+        "unitType": "BEDR",
+        "name": "AUTHORIZEDPARTIES SUBUNIT",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "childParties": null,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-person",
+          "ttd/am-devtest-sub-to-person"
+        ],
+        "authorizedRoles": [],
+        "authorizedAccessPackages": []
+      }
+    ],
+    "authorizedResources": [ "devtest_gar_authparties-main-to-person" ],
+    "authorizedRoles": [],
+    "authorizedAccessPackages": []
+  }
+]

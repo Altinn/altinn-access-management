@@ -18,6 +18,6 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// </summary>
         /// <param name="resource">Data to insert</param>
         /// <returns>The inserted data with data generated/fetched in db</returns>
-        Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource);
+        Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default);
     }
 }

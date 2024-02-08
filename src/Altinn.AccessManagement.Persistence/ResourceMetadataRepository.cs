@@ -43,7 +43,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
+        public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default)
         {
             try
             {

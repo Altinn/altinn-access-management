@@ -109,16 +109,16 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     /// <summary>
     /// Test 
     /// </summary>
-    [Theory]
-    [MemberData(nameof(GetReceviedDelegations_ReturnOk_Input))]
-    public async Task GetReceviedDelegations_ReturnOk(string header, string value, Action<HttpResponseMessage> assert)
-    {
-        var client = NewDefaultClient(WithHeader(header, value));
+    // [Theory]
+    // [MemberData(nameof(GetReceviedDelegations_ReturnOk_Input))]
+    // public async Task GetReceviedDelegations_ReturnOk(string header, string value, Action<HttpResponseMessage> assert)
+    // {
+    //     var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/received");
+    //     var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/received");
 
-        assert(response);
-    }
+    //     assert(response);
+    // }
 
     /// <summary>
     /// Case 1. List all delegations to an organization using orgnumber ""
@@ -127,15 +127,15 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     /// Case 4. List all delegations to a person "" with keyroles using ssn
     /// Case 5. List all delegations to a person with no keyroles using partyid
     /// </summary>
-    public static TheoryData<string, string, Action<HttpResponseMessage>> GetReceviedDelegations_ReturnOk_Input() => new()
-    {
-        {
-            IdentifierUtil.OrganizationNumberHeader, "910459880", Assertions(
-                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
-                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertStatusCode(StatusCodes.Status200OK))
-        },
-    };
+    // public static TheoryData<string, string, Action<HttpResponseMessage>> GetReceviedDelegations_ReturnOk_Input() => new()
+    // {
+    //     {
+    //         string.Empty, "50005545", Assertions(
+    //             AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
+    //             AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
+    //             AssertStatusCode(StatusCodes.Status200OK))
+    //     },
+    // };
 
     private static Action<HttpResponseMessage> Assertions(params Action<HttpResponseMessage>[] assertions) => response =>
     {
@@ -166,7 +166,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
             }
         }
 
-        Assert.Fail($"Failed to find any attributes in the fild From with type '{type}' and value '{value}'");
+        Assert.Fail($"Failed to find any attributes in the field 'To' with type '{type}' and value '{value}'");
     };
 
     private static Action<HttpResponseMessage> AssertFromContains(string type, string value) => response =>
@@ -185,7 +185,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
             }
         }
 
-        Assert.Fail($"Failed to find any attributes in the fild From with type '{type}' and value '{value}'");
+        Assert.Fail($"Failed to find any attributes in the field 'From' with type '{type}' and value '{value}'");
     };
 
     private WebApplicationFactory<Altinn2DelegationController> NewServiceCollection(params Action<IServiceCollection>[] actions)

@@ -50,12 +50,12 @@ public class AuthorizedPartiesController : ControllerBase
     [Authorize]
     [Route("authorizedparties")]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(List<AuthorizedParty>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<AuthorizedPartyExternal>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<ActionResult<List<AuthorizedParty>>> GetAuthorizedParties(bool includeAltinn2 = false, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedParties(bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -67,7 +67,7 @@ public class AuthorizedPartiesController : ControllerBase
 
             List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(userId, includeAltinn2, cancellationToken);
 
-            return _mapper.Map<List<AuthorizedParty>>(authorizedParties);
+            return _mapper.Map<List<AuthorizedPartyExternal>>(authorizedParties);
         }
         catch (Exception ex)
         {

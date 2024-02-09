@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Tests.Util;
+using Altinn.AccessManagement.Tests.Utils;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Data;
@@ -79,7 +80,7 @@ public static class TestDataAuthorizedParties
     /// where the user has received delegations from a person,
     /// of both an Altinn App and a Resource
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToPerson() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> PersonToPerson() => new()
     {
         {
             PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
@@ -94,7 +95,7 @@ public static class TestDataAuthorizedParties
     /// where the user has received delegations from a person,
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToPersonInclA2() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> PersonToPersonInclA2() => new()
     {
         {
             PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
@@ -109,7 +110,7 @@ public static class TestDataAuthorizedParties
     /// where the user's organization has received delegations from a person,
     /// of both an Altinn App and a Resource
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToOrg() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> PersonToOrg() => new()
     {
         {
             PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
@@ -124,7 +125,7 @@ public static class TestDataAuthorizedParties
     /// where the user's organization has received delegations from a person,
     /// of both an Altinn App, a Resource and a Role from Altinn 2
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> PersonToOrgInclA2() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> PersonToOrgInclA2() => new()
     {
         {
             PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
@@ -142,7 +143,7 @@ public static class TestDataAuthorizedParties
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-person
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToPerson() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> MainUnitAndSubUnitToPerson() => new()
     {
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
@@ -162,7 +163,7 @@ public static class TestDataAuthorizedParties
     ///         the altinn app: ttd/am-devtest-sub-to-person
     ///         the role: SISKD
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToPersonInclA2() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> MainUnitAndSubUnitToPersonInclA2() => new()
     {
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
@@ -180,7 +181,7 @@ public static class TestDataAuthorizedParties
     ///     from subunit:
     ///         the altinn app: ttd/am-devtest-sub-to-org
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToOrg() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> MainUnitAndSubUnitToOrg() => new()
     {
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
@@ -200,7 +201,7 @@ public static class TestDataAuthorizedParties
     ///         the altinn app: ttd/am-devtest-sub-to-org
     ///         the role: APIADM
     /// </summary>
-    public static TheoryData<string, bool, List<AuthorizedParty>> MainUnitAndSubUnitToOrgInclA2() => new()
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> MainUnitAndSubUnitToOrgInclA2() => new()
     {
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
@@ -209,9 +210,33 @@ public static class TestDataAuthorizedParties
         }
     };
 
-    private static List<AuthorizedParty> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
+    private static List<AuthorizedPartyExternal> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
     {
         string content = File.ReadAllText($"Data/Json/AuthorizedParties/{delegationType}/{retrievalType}.json");
-        return (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), JsonOptions);
+        return (List<AuthorizedPartyExternal>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedPartyExternal>), JsonOptions);
+    }
+
+    /// <summary>
+    /// Assert that two <see cref="AuthorizedParty"/> have the same property in the same positions.
+    /// </summary>
+    /// <param name="expected">An instance with the expected values.</param>
+    /// <param name="actual">The instance to verify.</param>
+    public static void AssertAuthorizedPartyExternalEqual(AuthorizedPartyExternal expected, AuthorizedPartyExternal actual)
+    {
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+
+        Assert.Equal(expected.PartyId, actual.PartyId);
+        Assert.Equal(expected.PartyUuid, actual.PartyUuid);
+        Assert.Equal(expected.PartyType, actual.PartyType);
+        Assert.Equal(expected.OrgNumber, actual.OrgNumber);
+        Assert.Equal(expected.SSN, actual.SSN);
+        Assert.Equal(expected.UnitType, actual.UnitType);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.IsDeleted, actual.IsDeleted);
+        Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
+        Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
+        Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
+        AssertionUtil.AssertCollections(expected.ChildParties, actual.ChildParties, AssertAuthorizedPartyExternalEqual);
     }
 }

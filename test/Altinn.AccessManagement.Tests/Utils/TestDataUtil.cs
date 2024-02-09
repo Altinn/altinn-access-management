@@ -514,7 +514,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             PartyExternal partyExternal = new PartyExternal
             {
                 PartyId = party.PartyId,
-                PartyTypeName = party.PartyTypeName,
+                PartyTypeName = (Enums.PartyTypeExternal)party.PartyTypeName,
                 OrgNumber = party.OrgNumber,
                 SSN = party.SSN,
                 UnitType = party.UnitType,

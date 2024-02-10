@@ -120,6 +120,21 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Enterprise username
             /// </summary>
             public const string EnterpriseUserName = "urn:altinn:enterpriseusername";
+
+            /// <summary>
+            /// Person uuid
+            /// </summary>
+            public const string PersonUuid = "urn:altinn:person:uuid";
+
+            /// <summary>
+            /// Enterprise user uuid
+            /// </summary>
+            public const string EnterpriseUserUuid = "urn:altinn:enterpriseuser:uuid";
+
+            /// <summary>
+            /// Organization uuid
+            /// </summary>
+            public const string OrganizationUuid = "urn:altinn:organization:uuid";
         }
 
         /// <summary>

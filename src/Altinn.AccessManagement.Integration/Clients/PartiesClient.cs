@@ -114,6 +114,34 @@ public class PartiesClient : IPartiesClient
     }
 
     /// <inheritdoc/>
+    public async Task<List<Party>> GetPartiesAsync(List<Guid> parties, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            string endpointUrl = $"parties/partylistbyuuid?fetchSubUnits={includeSubunits}";
+            string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
+            var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
+            StringContent requestBody = new StringContent(JsonSerializer.Serialize(parties), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PostAsync(token, endpointUrl, requestBody, accessToken, cancellationToken);
+            string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
+            }
+
+            _logger.LogError("AccessManagement // PartiesClient // GetPartiesAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+            return new();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
+            throw;
+        }
+    }
+
+    /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesForUserAsync(int userId, CancellationToken cancellationToken = default)
     {
         try

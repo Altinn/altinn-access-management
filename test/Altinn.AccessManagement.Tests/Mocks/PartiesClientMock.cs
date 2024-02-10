@@ -19,90 +19,43 @@ public class PartiesClientMock : IPartiesClient
     /// <inheritdoc/>
     public Task<List<Party>> GetPartiesAsync(List<int> parties, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
-        List<Party> partyList = new List<Party>();
-        List<Party> filteredList = new List<Party>();
-
-        string path = GetPartiesPaths();
-        if (Directory.Exists(path))
-        {
-            string[] files = Directory.GetFiles(path);
-
-            foreach (string file in files)
-            {
-                if (file.Contains("parties"))
-                {
-                    string content = File.ReadAllText(Path.Combine(path, file));                        
-                    partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                }
-            }
-
-            foreach (int partyId in parties.Distinct())
-            {
-                Party party = partyList.Find(p => p.PartyId == partyId);
-                if (party != null)
-                {
-                    filteredList.Add(party);
-                }
-            }
-        }
-
+        List<Party> partyList = GetTestDataParties();
+        List<Party> filteredList = (from int partyId in parties.Distinct()
+                                    let party = partyList.Find(p => p.PartyId == partyId)
+                                    where party != null
+                                    select party).ToList();
         return Task.FromResult(filteredList);
+    }
+
+    /// <inheritdoc/>
+    public Task<List<Party>> GetPartiesAsync(List<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    {
+        List<Party> partyList = GetTestDataParties();
+        return Task.FromResult((from Guid partyUuid in partyUuids.Distinct()
+                                let party = partyList.Find(p => p.PartyUuid == partyUuid)
+                                where party != null
+                                select party).ToList());
     }
 
     /// <inheritdoc/>
     public Task<Party> GetPartyAsync(int partyId, CancellationToken cancellationToken = default)
     {
-        List<Party> partyList = new List<Party>();
-        Party party = null;
-
-        string path = GetPartiesPaths();
-        if (Directory.Exists(path))
-        {
-            string[] files = Directory.GetFiles(path);
-
-            foreach (string file in files)
-            {
-                if (file.Contains("parties"))
-                {
-                    string content = File.ReadAllText(Path.Combine(path, file));
-                    partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                }
-            }
-
-            party = partyList.Find(p => p.PartyId == partyId);
-        }
-
-        return Task.FromResult(party);
+        return Task.FromResult(GetTestDataParties().Find(p => p.PartyId == partyId));
     }
 
     /// <inheritdoc/>
     public Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup, CancellationToken cancellationToken = default)
     {
-        List<Party> partyList = new List<Party>();
+        List<Party> partyList = GetTestDataParties();
         Party party = null;
-
-        string path = GetPartiesPaths();
-        if (Directory.Exists(path))
+        
+        if (!string.IsNullOrWhiteSpace(partyLookup.OrgNo))
         {
-            string[] files = Directory.GetFiles(path);
-
-            foreach (string file in files)
-            {
-                if (file.Contains("parties"))
-                {
-                    string content = File.ReadAllText(Path.Combine(path, file));
-                    partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(partyLookup.OrgNo))
-            {
-                party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);
-            }
-            else if (!string.IsNullOrWhiteSpace(partyLookup.Ssn))
-            {
-                party = partyList.Find(p => p.Person?.SSN == partyLookup.Ssn);
-            }                
+            party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);
+        }
+        else if (!string.IsNullOrWhiteSpace(partyLookup.Ssn))
+        {
+            party = partyList.Find(p => p.Person?.SSN == partyLookup.Ssn);
         }
 
         return Task.FromResult(party);
@@ -145,30 +98,27 @@ public class PartiesClientMock : IPartiesClient
     /// <inheritdoc/>
     public Task<List<Party>> GetPartiesForUserAsync(int userId, CancellationToken cancellationToken = default)
     {
-        List<Party> partyList = new List<Party>();
-
-        string path = GetPartiesPaths();
-        if (Directory.Exists(path))
-        {
-            string[] files = Directory.GetFiles(path);
-
-            foreach (string file in files)
-            {
-                if (file.Contains("parties"))
-                {
-                    string content = File.ReadAllText(Path.Combine(path, file));
-                    partyList = JsonSerializer.Deserialize<List<Party>>(content);
-                }
-            }
-        }
-
-        return Task.FromResult(partyList);
+        return Task.FromResult(GetTestDataParties());
     }
 
-    private static string GetPartiesPaths()
+    private List<Party> GetTestDataParties()
+    {
+        List<Party> partyList = new List<Party>();
+
+        string partiesPath = GetPartiesPath();
+        if (File.Exists(partiesPath))
+        {
+            string content = File.ReadAllText(partiesPath);
+            partyList = JsonSerializer.Deserialize<List<Party>>(content);
+        }
+
+        return partyList;
+    }
+
+    private static string GetPartiesPath()
     {
         string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
-        return Path.Combine(unitTestFolder, "Data", "Parties");
+        return Path.Combine(unitTestFolder, "Data", "Parties", "parties.json");
     }
 
     private static string GetMainUnitsPath(int subunitPartyId)
@@ -181,10 +131,5 @@ public class PartiesClientMock : IPartiesClient
     {
         string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "KeyRoleUnits", $"{userId}", "keyroleunits.json");
-    }
-
-    private static string GetFilterFileName(int offeredByPartyId)
-    {
-        return "parties";
     }
 }

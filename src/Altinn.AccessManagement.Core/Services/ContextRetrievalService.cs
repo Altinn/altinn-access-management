@@ -128,6 +128,57 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
+    public async Task<Party> GetPartyByUuid(Guid partyUuid, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    {
+        Dictionary<string, Party> parties = await GetPartiesByUuids(partyUuid.SingleToList(), includeSubunits, cancellationToken);
+        parties.TryGetValue(partyUuid.ToString(), out Party result);
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, Party>> GetPartiesByUuids(IEnumerable<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    {
+        Dictionary<string, Party> parties = new Dictionary<string, Party>();
+        List<Guid> partyKeysNotInCache = new List<Guid>();
+
+        foreach (Guid partyKey in partyUuids.Distinct())
+        {
+            if (_memoryCache.TryGetValue($"uuid:{partyKey}|inclSubunits:{includeSubunits}", out Party party))
+            {
+                parties.Add($"{party.PartyUuid}", party);
+            }
+            else
+            {
+                partyKeysNotInCache.Add(partyKey);
+            }
+        }
+
+        if (partyKeysNotInCache.Count == 0)
+        {
+            return parties;
+        }
+
+        List<Party> remainingParties = await _partiesClient.GetPartiesAsync(partyKeysNotInCache, includeSubunits, cancellationToken);
+        if (remainingParties.Count > 0)
+        {
+            foreach (Party party in remainingParties)
+            {
+                if (party?.PartyUuid != Guid.Empty)
+                {
+                    parties.Add($"{party.PartyUuid}", party);
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
+                    _memoryCache.Set($"uuid:{party.PartyUuid}|inclSubunits:{includeSubunits}", party, cacheEntryOptions);
+                }
+            }
+        }
+
+        return parties;
+    }
+
+    /// <inheritdoc/>
     public async Task<Party> GetPartyForOrganization(string organizationNumber)
     {
         string cacheKey = $"orgNo:{organizationNumber}";

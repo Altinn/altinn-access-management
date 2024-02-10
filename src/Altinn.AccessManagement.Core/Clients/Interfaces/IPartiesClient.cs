@@ -26,6 +26,15 @@ public interface IPartiesClient
     Task<List<Party>> GetPartiesAsync(List<int> parties, bool includeSubunits = false, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns a list of parties
+    /// </summary>
+    /// <param name="partyUuids">List of party uuids to lookup</param>
+    /// <param name="includeSubunits">(Optional) Whether subunits should be included as ChildParties, if any of the parties are a main unit</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>List of parties</returns>
+    Task<List<Party>> GetPartiesAsync(List<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns a list of parties for user
     /// </summary>
     /// <param name="userId">The user id</param>

@@ -23,5 +23,10 @@
         /// Gets or sets the users social security number or d-number from Folkeregisteret if the lookup is to be performed based on this identifier
         /// </summary>
         public string Ssn { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user uuid if the lookup is to be performed based on this identifier
+        /// </summary>
+        public Guid UserUuid { get; set; }
     }
 }

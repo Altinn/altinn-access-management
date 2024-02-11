@@ -31,7 +31,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private static string GetUserProfilePath(UserProfileLookup userProfileLookup)
         {
-            string userIdentifier = userProfileLookup.UserId?.ToString() ?? userProfileLookup.Ssn ?? userProfileLookup.Username ?? userProfileLookup.UserUuid?.ToString();
+            string userIdentifier = userProfileLookup.UserId > 0 ? userProfileLookup.UserId.ToString() : userProfileLookup.Ssn ?? userProfileLookup.Username ?? userProfileLookup.UserUuid?.ToString();
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ProfileClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "UserProfile", $"{userIdentifier}.json");
         }

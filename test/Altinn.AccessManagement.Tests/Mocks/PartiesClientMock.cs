@@ -17,10 +17,10 @@ namespace Altinn.AccessManagement.Tests.Mocks;
 public class PartiesClientMock : IPartiesClient
 {
     /// <inheritdoc/>
-    public Task<List<Party>> GetPartiesAsync(List<int> parties, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    public Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
         List<Party> partyList = GetTestDataParties();
-        List<Party> filteredList = (from int partyId in parties.Distinct()
+        List<Party> filteredList = (from int partyId in partyIds.Distinct()
                                     let party = partyList.Find(p => p.PartyId == partyId)
                                     where party != null
                                     select party).ToList();
@@ -101,7 +101,7 @@ public class PartiesClientMock : IPartiesClient
         return Task.FromResult(GetTestDataParties());
     }
 
-    private List<Party> GetTestDataParties()
+    private static List<Party> GetTestDataParties()
     {
         List<Party> partyList = new List<Party>();
 

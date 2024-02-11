@@ -575,7 +575,7 @@ namespace Altinn.AccessManagement.Core.Services
                     toParty = await _contextRetrievalService.GetPartyByUuid(toOrganizationUuid);
                 }
 
-                if (toUser != null && toUser.Party.PartyTypeName != PartyType.Organisation)
+                if (toParty != null && toParty.PartyTypeName != PartyType.Organisation)
                 {
                     result.Errors.Add("To", $"The provided To attribute value could not be found as a valid organization.");
                     return (result, resource, null, null);

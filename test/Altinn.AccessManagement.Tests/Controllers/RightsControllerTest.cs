@@ -850,6 +850,41 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
+        /// Test case: Delegation returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the generic-access-resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - The user is delegating:
+        ///                 - generic-access-resource,org-delegation-subtask:mainunit-delegated-action
+        ///            - The recipient is a person identified through user UUID
+        /// Expected: Delegation returns a RightsDelegationResponse matching expected
+        /// </summary>
+        [Fact]
+        public async Task Delegation_GenericAccessResource_FromOrg_ToUserUuid_ByDagl_Success()
+        {
+            // Arrange
+            string resourceId = "generic-access-resource";
+            (string OrgNo, string Ssn, int PartyId, string Uuid) from = ("910459880", string.Empty, 50005545, string.Empty);
+            (string OrgNo, string Ssn, string Uuid) to = (string.Empty, string.Empty, "00000000-0000-0000-0005-000000003899");
+            (int UserId, int PartyId, string OrgNo, string Ssn, string Username, string Uuid) by = (20000490, 0, string.Empty, "07124912037", string.Empty, string.Empty);
+            string scenario = "success";
+
+            string token = PrincipalUtil.GetToken(by.UserId, 0, 3);
+
+            RightsDelegationResponseExternal expectedResponse = GetExpectedRightsDelegationResponse(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
+            StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
         /// Test case: Delegation returns validation problem details when trying to delegate to SSN without specifying last name of recipient
         /// Expected: Delegation returns validation problem details
         /// </summary>
@@ -902,6 +937,42 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             RightsDelegationResponseExternal expectedResponse = GetExpectedRightsDelegationResponse(resourceId, from.Ssn, to.Ssn, by.Ssn, scenario);
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.Ssn, to.Ssn, by.Ssn, scenario);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: Delegation returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of itself (partyId 50002598) for the generic-access-resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20000490 has PRIV role for itself (party 50002598)
+        ///            - The user delegates:
+        ///                 - generic-access-resource:read
+        ///                 - generic-access-resource:write
+        ///            - The To organization is identified by it's organization uuid: 00000000-0000-0000-0001-000000000003
+        /// Expected: Delegation returns a RightsDelegationResponse matching expected
+        /// </summary>
+        [Fact]
+        public async Task Delegation_GenericAccessResource_FromPerson_ToOrganizationUuid_ByPriv_Success()
+        {
+            // Arrange
+            string resourceId = "generic-access-resource";
+            (string OrgNo, string Ssn, int PartyId, string Uuid) from = (string.Empty, "07124912037", 50002598, string.Empty);
+            (string OrgNo, string Ssn, string Uuid) to = (string.Empty, string.Empty, "00000000-0000-0000-0001-000000000003");
+            (int UserId, int PartyId, string OrgNo, string Ssn, string Username, string Uuid) by = (20000490, 0, string.Empty, "07124912037", string.Empty, string.Empty);
+            string scenario = "success";
+
+            var token = PrincipalUtil.GetToken(by.UserId, 0, 3);
+
+            RightsDelegationResponseExternal expectedResponse = GetExpectedRightsDelegationResponse(resourceId, from.Ssn, to.Uuid, by.Ssn, scenario);
+            StreamContent requestContent = GetRightsDelegationContent(resourceId, from.Ssn, to.Uuid, by.Ssn, scenario);
 
             // Act
             HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
@@ -1012,6 +1083,41 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             RightsDelegationResponseExternal expectedResponse = GetExpectedRightsDelegationResponse(resourceId, from.OrgNo, to.Username, by.Ssn, scenario);
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Username, by.Ssn, scenario);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            RightsDelegationResponseExternal actualResponse = JsonSerializer.Deserialize<RightsDelegationResponseExternal>(responseContent, options);
+            AssertionUtil.AssertRightsDelegationResponseExternalEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: Delegation returns a list of rights the authenticated userid 20000095 is authorized to delegate on behalf of the reportee party 50005545 for the generic-access-resource from the resource registry.
+        ///            In this case:
+        ///            - The user 20000490 has the roles ADMAI and UTINN for the From unit 50005545
+        ///            - The UTINN gives the user access to delegate:
+        ///                 - generic-access-resource:admai-delegated-action
+        ///            - The Enterprise user is identified in To attribute by it's user Uuid: 00000000-0000-0000-0002-000000010727
+        /// Expected: Delegation returns a RightsDelegationResponse matching expected
+        /// </summary>
+        [Fact]
+        public async Task Delegation_GenericAccessResource_FromOrg_ToEcUserUuid_ByAdmai_Success()
+        {
+            // Arrange
+            string resourceId = "generic-access-resource";
+            (string OrgNo, string Ssn, int PartyId, string Uuid) from = ("910459880", string.Empty, 50005545, string.Empty);
+            (string OrgNo, string Ssn, string Username, string Uuid) to = (string.Empty, string.Empty, string.Empty, "00000000-0000-0000-0002-000000010727");
+            (int UserId, int PartyId, string OrgNo, string Ssn, string Username, string Uuid) by = (20000095, 0, string.Empty, "02056260016", string.Empty, string.Empty);
+            string scenario = "success";
+
+            var token = PrincipalUtil.GetToken(by.UserId, 0, 3);
+
+            RightsDelegationResponseExternal expectedResponse = GetExpectedRightsDelegationResponse(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
+            StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
 
             // Act
             HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);

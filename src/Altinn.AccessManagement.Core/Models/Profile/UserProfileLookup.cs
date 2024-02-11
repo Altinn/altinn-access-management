@@ -14,21 +14,21 @@ namespace Altinn.AccessManagement.Core.Models.Profile
         /// <summary>
         /// Gets or sets the users UserId if the lookup is to be performed based on this identifier
         /// </summary>
-        public int? UserId { get; set; } = null;
+        public int UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the users Username if the lookup is to be performed based on this identifier
         /// </summary>
-        public string? Username { get; set; } = null;
+        public string? Username { get; set; }
 
         /// <summary>
         /// Gets or sets the users social security number or d-number from Folkeregisteret if the lookup is to be performed based on this identifier
         /// </summary>
-        public string? Ssn { get; set; } = null;
+        public string? Ssn { get; set; }
 
         /// <summary>
         /// Gets or sets the user uuid if the lookup is to be performed based on this identifier
         /// </summary>
-        public Guid? UserUuid { get; set; } = null;
+        public Guid? UserUuid { get; set; }
     }
 }

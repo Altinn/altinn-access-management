@@ -956,7 +956,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         ///            - The user delegates:
         ///                 - generic-access-resource:read
         ///                 - generic-access-resource:write
-        ///            - The To organization is identified by it's organization uuid: 00000000-0000-0000-0001-000000000003
+        ///            - The To organization is identified by it's organization uuid: 00000000-0000-0000-0001-000000000004
         /// Expected: Delegation returns a RightsDelegationResponse matching expected
         /// </summary>
         [Fact]
@@ -965,7 +965,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             // Arrange
             string resourceId = "generic-access-resource";
             (string OrgNo, string Ssn, int PartyId, string Uuid) from = (string.Empty, "07124912037", 50002598, string.Empty);
-            (string OrgNo, string Ssn, string Uuid) to = (string.Empty, string.Empty, "00000000-0000-0000-0001-000000000003");
+            (string OrgNo, string Ssn, string Uuid) to = (string.Empty, string.Empty, "00000000-0000-0000-0001-000000000004");
             (int UserId, int PartyId, string OrgNo, string Ssn, string Username, string Uuid) by = (20000490, 0, string.Empty, "07124912037", string.Empty, string.Empty);
             string scenario = "success";
 

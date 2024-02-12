@@ -96,7 +96,12 @@ public class Altinn2RightsService : IAltinn2RightsService
             });
 
             var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
-            var offeredBy = keyRoles.Concat(user?.PartyId.SingleToList())?.ToList() ?? [user.PartyId];
+            var offeredBy = user?.PartyId.SingleToList();
+            if (keyRoles.Any())
+            {
+                offeredBy.AddRange(keyRoles);
+            }
+
             return await _delegationRepository.GetReceivedDelegations(offeredBy, cancellationToken);
         }
 
@@ -160,8 +165,8 @@ public class Altinn2RightsService : IAltinn2RightsService
             {
                 entry.Resource.AddRange(resources
                     .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
-                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
-                    .First().AuthorizationReference);
+                    .First(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
+                    .AuthorizationReference);
             }
             else
             {

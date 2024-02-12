@@ -83,7 +83,10 @@ public class AltinnOrganizationResolverTests
     {
         foreach (var attribute in attributes)
         {
-            Assert.Contains(attribute, result);
+            foreach (var item in result)
+            {
+                Assert.Contains(attribute, result);
+            }
         }
     };
 }

@@ -6,7 +6,7 @@ namespace Altinn.AccessManagement.Core.Models
     /// <summary>
     /// This model describes a pair of AttributeId and AttributeValue for use in matching in XACML policies, for instance a resource, a user, a party or an action.
     /// </summary>
-    public class AttributeMatch : IEquatable<AttributeMatch>, IEqualityComparer<AttributeMatch>
+    public class AttributeMatch : IEqualityComparer<AttributeMatch>
     {
         /// <summary>
         /// ctor
@@ -39,16 +39,15 @@ namespace Altinn.AccessManagement.Core.Models
         public string Value { get; set; }
 
         /// <inheritdoc/>
-        public bool Equals(AttributeMatch other) => Id.Equals(other?.Id, StringComparison.InvariantCultureIgnoreCase) && Value == other?.Value;
-
-        /// <inheritdoc/>
         public bool Equals(AttributeMatch x, AttributeMatch y) => x.Equals(y);
 
         /// <inheritdoc/>
-        public int GetHashCode([DisallowNull] AttributeMatch obj) => obj.GetHashCode();
+        public override bool Equals(object obj) => Equals(obj as AttributeMatch);
+
+        private bool Equals(AttributeMatch other) => Id.Equals(other?.Id, StringComparison.InvariantCultureIgnoreCase) && Value == other?.Value;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => Equals(obj as AttributeMatch);
+        public int GetHashCode([DisallowNull] AttributeMatch obj) => obj.GetHashCode();
 
         /// <inheritdoc/>
         public override int GetHashCode() => (Id, Value).GetHashCode();

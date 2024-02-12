@@ -11,9 +11,9 @@ public interface IAltinn2RightsService
     /// Gets all offered single rights delegations for a reportee
     /// </summary>
     /// <param name="reportee">reportee</param>
-    /// <param name="token">Cancellation token</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>list of delgations</returns>
-    Task<IEnumerable<RightDelegation>> GetOfferedRights(AttributeMatch reportee, CancellationToken token = default);
+    Task<IEnumerable<RightDelegation>> GetOfferedRights(AttributeMatch reportee, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all received single rights delegations for a reportee

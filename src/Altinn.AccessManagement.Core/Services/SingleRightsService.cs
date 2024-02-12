@@ -29,14 +29,12 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IUserProfileLookupService _profileLookup;
         private readonly IAttributeResolver _resolver;
         private readonly IAssert<AttributeMatch> _asserter;
-        private readonly IDelegationMetadataRepository _delegationRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SingleRightsService"/> class.
         /// </summary>
         /// <param name="resolver">a</param>
         /// <param name="asserter">b</param>
-        /// <param name="delegationRepository">database implementation for fetching and inserting delegations</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
@@ -47,7 +45,6 @@ namespace Altinn.AccessManagement.Core.Services
         {
             _resolver = resolver;
             _asserter = asserter;
-            _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
             _pip = pip;
             _pap = pap;
@@ -163,19 +160,19 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<RightDelegation>> GetGivenRightsDelegations(AttributeMatch reportee, CancellationToken token = default)
+        public Task<IEnumerable<RightDelegation>> GetOfferedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public Task<List<RightDelegation>> GetReceivedRightsDelegations(AttributeMatch reportee, CancellationToken cancellationToken = default)
+        public Task<List<RightDelegation>> GetReceivedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public async Task<ValidationProblemDetails> RevokeRightsDelegation(int authenticatedUserID, DelegationLookup delegation, CancellationToken cancellationToken)
+        public async Task<ValidationProblemDetails> RevokeRightsDelegation(int authenticatedUserId, DelegationLookup delegation, CancellationToken cancellationToken)
         {
             var assertion = AssertRevokeDelegationInput(delegation);
             if (assertion != null)
@@ -187,7 +184,7 @@ namespace Altinn.AccessManagement.Core.Services
             var fromParty = await _resolver.Resolve(delegation.From, Urn.InternalIds, cancellationToken);
             var resource = await _resolver.Resolve(delegation.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserID, resource.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.InternalIds), toParty.GetRequiredInt(Urn.InternalIds));
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserId, resource.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.InternalIds), toParty.GetRequiredInt(Urn.InternalIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }

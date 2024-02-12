@@ -19,16 +19,14 @@ namespace Altinn.AccessManagement.Controllers;
 public class Altinn2Controller : ControllerBase
 {
     private readonly IAltinn2RightsService _delegations;
-    private readonly ILogger<RightsController> _logger;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// ctor
     /// </summary>
-    public Altinn2Controller(IAltinn2RightsService delegations, ILogger<RightsController> logger, IMapper mapper)
+    public Altinn2Controller(IAltinn2RightsService delegations, IMapper mapper)
     {
         _delegations = delegations;
-        _logger = logger;
         _mapper = mapper;
     }
 

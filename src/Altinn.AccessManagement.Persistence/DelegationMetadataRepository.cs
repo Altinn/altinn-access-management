@@ -4,10 +4,8 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
-using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -20,7 +18,6 @@ namespace Altinn.AccessManagement.Persistence;
 public class DelegationMetadataRepository : IDelegationMetadataRepository
 {
     private readonly NpgsqlDataSource _conn;
-    private readonly string _connectionString;
     private readonly ILogger _logger;
 
     // App DelegationChange functions:
@@ -42,16 +39,11 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <summary>
     /// Initializes a new instance of the <see cref="DelegationMetadataRepository"/> class
     /// </summary>
-    /// <param name="postgresSettings">The postgreSQL configurations for AuthorizationDB</param>
     /// <param name="logger">logger</param>
     /// <param name="conn">The database connection</param>
-    public DelegationMetadataRepository(
-        IOptions<PostgreSQLSettings> postgresSettings,
-        ILogger<DelegationMetadataRepository> logger,
-        NpgsqlDataSource conn)
+    public DelegationMetadataRepository(ILogger<DelegationMetadataRepository> logger, NpgsqlDataSource conn)
     {
         _logger = logger;
-        _connectionString = string.Format(postgresSettings.Value.ConnectionString, postgresSettings.Value.AuthorizationDbPwd);
         _conn = conn;
     }
 

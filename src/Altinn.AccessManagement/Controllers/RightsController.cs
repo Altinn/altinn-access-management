@@ -250,7 +250,7 @@ namespace Altinn.AccessManagement.Controllers
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-                var delegations = await _rights.GetGivenRightsDelegations(reportee, cancellationToken);
+                var delegations = await _rights.GetOfferedRights(reportee, cancellationToken);
                 var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
                 return Ok(response);
             }

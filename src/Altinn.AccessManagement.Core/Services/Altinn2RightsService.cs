@@ -32,21 +32,21 @@ public class Altinn2RightsService : IAltinn2RightsService
     public async Task<IEnumerable<RightDelegation>> GetOfferedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
     {
         var delegations = await GetOfferedDelegationsFromRepository(reportee, cancellationToken);
-        return await MapDelegationResponse(delegations, cancellationToken);
+        return await MapDelegationResponse(delegations);
     }
 
     /// <inheritdoc/>
     public async Task<List<RightDelegation>> GetReceivedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
     {
         var delegations = await GetReceivedDelegationFromRepository(reportee, cancellationToken);
-        return await MapDelegationResponse(delegations, cancellationToken);
+        return await MapDelegationResponse(delegations);
     }
 
     /// <summary>
-    /// summary
+    /// returns the reportee's received delegations from db 
     /// </summary>
-    /// <param name="reportee">a</param>
-    /// <param name="cancellationToken">b</param>
+    /// <param name="reportee">reportee</param>
+    /// <param name="cancellationToken">cancellation token</param>
     /// <returns></returns>
     private async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
     {
@@ -76,10 +76,10 @@ public class Altinn2RightsService : IAltinn2RightsService
     }
 
     /// <summary>
-    /// summary
+    /// returns the reportee's offereds delegations from db
     /// </summary>
-    /// <param name="reportee">a</param>
-    /// <param name="cancellationToken">b</param>
+    /// <param name="reportee">reportee</param>
+    /// <param name="cancellationToken">cancellation token</param>
     /// <returns></returns>
     private async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
     {
@@ -96,7 +96,7 @@ public class Altinn2RightsService : IAltinn2RightsService
             });
 
             var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
-            var offeredBy = keyRoles.Concat(user.PartyId.SingleToList()).ToList() ?? [user.PartyId];
+            var offeredBy = keyRoles.Concat(user?.PartyId.SingleToList())?.ToList() ?? [user.PartyId];
             return await _delegationRepository.GetReceivedDelegations(offeredBy, cancellationToken);
         }
 
@@ -135,7 +135,7 @@ public class Altinn2RightsService : IAltinn2RightsService
         throw new ArgumentException("given party is not a person, nor an organization");
     }
 
-    private async Task<List<RightDelegation>> MapDelegationResponse(IEnumerable<DelegationChange> delegations, CancellationToken cancellationToken = default)
+    private async Task<List<RightDelegation>> MapDelegationResponse(IEnumerable<DelegationChange> delegations)
     {
         var result = new List<RightDelegation>();
         var resources = await _contextRetrievalService.GetResourceList();
@@ -159,8 +159,8 @@ public class Altinn2RightsService : IAltinn2RightsService
             if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
             {
                 entry.Resource.AddRange(resources
-                    .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
-                    .Where(a => a.AuthorizationReference.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
+                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
+                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
                     .First().AuthorizationReference);
             }
             else

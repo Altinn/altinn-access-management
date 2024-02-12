@@ -97,7 +97,7 @@ public class Altinn2RightsService : IAltinn2RightsService
 
             var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
             var offeredBy = user.PartyId.SingleToList();
-            if (keyRoles.Any())
+            if (keyRoles.Count > 0)
             {
                 offeredBy.AddRange(keyRoles);
             }

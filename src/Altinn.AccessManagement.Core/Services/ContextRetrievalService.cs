@@ -112,7 +112,7 @@ public class ContextRetrievalService : IContextRetrievalService
         {
             foreach (Party party in remainingParties)
             {
-                if (party?.PartyId != 0)
+                if (party?.PartyId != null)
                 {
                     parties.Add(party);
 

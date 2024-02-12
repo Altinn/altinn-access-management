@@ -29,9 +29,9 @@ using Xunit;
 namespace Altinn.AccessManagement.Tests.Controllers;
 
 /// <summary>
-/// summary
+/// Controller test for <see cref="Altinn2Controller"/>
 /// </summary>
-public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicationFactory<Altinn2Controller>>
+public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFactory<Altinn2Controller>>
 {
     private readonly CustomWebApplicationFactory<Altinn2Controller> _factory;
 
@@ -46,13 +46,13 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     /// Constructor setting up factory, test client and dependencies
     /// </summary>
     /// <param name="factory">CustomWebApplicationFactory</param>
-    public Altinn2DelegationControllerTest(CustomWebApplicationFactory<Altinn2Controller> factory)
+    public Altinn2RightsControllerTest(CustomWebApplicationFactory<Altinn2Controller> factory)
     {
         _factory = factory;
     }
 
     /// <summary>
-    /// Test case: Get all delegations offered from person 22093229405
+    /// Tests <see cref="Altinn2Controller.GetOfferedRights(AuthorizedPartyInput, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetGivenDelegations_ReturnOk_Input))]
@@ -60,7 +60,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     {
         var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/offered");
+        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/altinn2/rights/offered");
 
         assert(response);
     }
@@ -107,7 +107,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     };
 
     /// <summary>
-    /// Test 
+    /// Tests <see cref="Altinn2Controller.GetReceivedRights(AuthorizedPartyInput, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetReceviedDelegations_ReturnOk_Input))]
@@ -115,7 +115,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     {
         var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/received");
+        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/altinn2/rights/received");
 
         assert(response);
     }
@@ -209,7 +209,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     }
 
     private HttpClient NewDefaultClient(params Action<HttpClient>[] actions) =>
-        NewClient(NewServiceCollection(WithServiceMoq), [WithClientToken(), WithClientRoute("accessmanagement/api/v1/altinn2/"), .. actions]);
+        NewClient(NewServiceCollection(WithServiceMoq), [WithClientToken(), WithClientRoute("accessmanagement/api/v1/"), .. actions]);
 
     private static HttpClient NewClient(WebApplicationFactory<Altinn2Controller> factory, params Action<HttpClient>[] actions)
     {

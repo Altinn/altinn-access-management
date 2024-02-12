@@ -250,7 +250,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IKeyVaultService, KeyVaultService>();
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
     services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
-    services.AddSingleton<IAltinn2DelegationsService, Altinn2DelegationsService>();
+    services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
     services.AddAccessManagementPersistence();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))

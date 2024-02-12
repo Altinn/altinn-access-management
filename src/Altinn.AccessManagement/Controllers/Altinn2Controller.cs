@@ -12,20 +12,20 @@ using Microsoft.FeatureManagement.Mvc;
 namespace Altinn.AccessManagement.Controllers;
 
 /// <summary>
-/// summary
+/// Used by Altinn2 for managing delegations
 /// </summary>
 [ApiController]
-[Route("accessmanagement/api/v1/altinn2")]
+[Route("accessmanagement/api/v1")]
 public class Altinn2Controller : ControllerBase
 {
-    private readonly IAltinn2DelegationsService _delegations;
+    private readonly IAltinn2RightsService _delegations;
     private readonly ILogger<RightsController> _logger;
     private readonly IMapper _mapper;
 
     /// <summary>
-    /// summary
+    /// ctor
     /// </summary>
-    public Altinn2Controller(IAltinn2DelegationsService delegations, ILogger<RightsController> logger, IMapper mapper)
+    public Altinn2Controller(IAltinn2RightsService delegations, ILogger<RightsController> logger, IMapper mapper)
     {
         _delegations = delegations;
         _logger = logger;
@@ -39,17 +39,17 @@ public class Altinn2Controller : ControllerBase
     /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-    [HttpGet("{party}/delegations/offered")]
+    [HttpGet("{party}/altinn2/rights/offered")]
     [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<IActionResult> GetOfferedDelegations([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOfferedRights([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
     {
         var reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-        var delegations = await _delegations.GetOfferedRightsDelegations(reportee, cancellationToken);
+        var delegations = await _delegations.GetOfferedRights(reportee, cancellationToken);
         var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
         return Ok(response);
     }
@@ -61,17 +61,17 @@ public class Altinn2Controller : ControllerBase
     /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-    [HttpGet("{party}/delegations/received")]
+    [HttpGet("{party}/altinn2/rights/received")]
     [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<IActionResult> GetReceviedDelegations([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetReceivedRights([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
     {
         var reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-        var delegations = await _delegations.GetReceivedRightsDelegations(reportee, cancellationToken);
+        var delegations = await _delegations.GetReceivedRights(reportee, cancellationToken);
         var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
         return Ok(response);
     }

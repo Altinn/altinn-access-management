@@ -37,9 +37,9 @@ namespace Altinn.AccessManagement.Core.Services
                 List<ServiceResource> resources = await _contextRetrievalService.GetResources();
                 return resources.FindAll(r => r.ResourceType == resourceType);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError("//ResourceAdministrationPoint //GetResources by resourcetype failed to fetch resources", ex);
+                _logger.LogError("//ResourceAdministrationPoint // GetResources by resourcetype failed to fetch resources");
                 throw;
             }
         }

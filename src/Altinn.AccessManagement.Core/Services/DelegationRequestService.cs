@@ -21,7 +21,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status = null, string? continuation = "")
+        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status = null, string continuation = "")
         {
             return await _delegationRequestsWrapper.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }

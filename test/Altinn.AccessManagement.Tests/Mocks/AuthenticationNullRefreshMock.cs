@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Tests.Util;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -10,9 +9,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
     public class AuthenticationNullRefreshMock : IAuthenticationClient
     {
         /// <inheritdoc/>
-        public async Task<string> RefreshToken()
-        {
-            return null;
-        }
+        public async Task<string> RefreshToken() =>
+            await Task.FromResult(string.Empty);
     }
 }

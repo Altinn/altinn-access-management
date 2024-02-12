@@ -162,11 +162,13 @@ namespace Altinn.AccessManagement.Core.Services
             return await Task.FromResult(result);
         }
 
+        /// <inheritdoc/>
         public Task<IEnumerable<RightDelegation>> GetGivenRightsDelegations(AttributeMatch reportee, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public Task<List<RightDelegation>> GetReceivedRightsDelegations(AttributeMatch reportee, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();

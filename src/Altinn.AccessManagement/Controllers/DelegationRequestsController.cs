@@ -37,7 +37,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("accessmanagement/api/v1/delegationrequests/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
+        public async Task<DelegationRequests> Get(string who, [FromQuery] string serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus> status = null, [FromQuery] string continuation = "")
         {
             return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }

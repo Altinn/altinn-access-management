@@ -24,14 +24,5 @@ namespace Altinn.AccessManagement.Core
             : base(message)
         {
         }
-
-        /// <summary>
-        /// Initialize a new instance of the <see cref="TooManyFailedLookupsException"/> class using the
-        /// given <see cref="SerializationInfo"/>.
-        /// </summary>
-        protected TooManyFailedLookupsException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
     }
 }

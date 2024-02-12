@@ -60,7 +60,7 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError("Refreshing JwtToken failed with status code", response.StatusCode);
+                    _logger.LogError("Refreshing JwtToken failed with status code");
                 }
             }
             catch (Exception ex)

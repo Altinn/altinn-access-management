@@ -16,7 +16,7 @@ namespace Altinn.AccessManagement.Controllers;
 /// </summary>
 [ApiController]
 [Route("accessmanagement/api/v1/altinn2")]
-public class Altinn2DelegationController : ControllerBase
+public class Altinn2Controller : ControllerBase
 {
     private readonly IAltinn2DelegationsService _delegations;
     private readonly ILogger<RightsController> _logger;
@@ -25,7 +25,7 @@ public class Altinn2DelegationController : ControllerBase
     /// <summary>
     /// summary
     /// </summary>
-    public Altinn2DelegationController(IAltinn2DelegationsService delegations, ILogger<RightsController> logger, IMapper mapper)
+    public Altinn2Controller(IAltinn2DelegationsService delegations, ILogger<RightsController> logger, IMapper mapper)
     {
         _delegations = delegations;
         _logger = logger;

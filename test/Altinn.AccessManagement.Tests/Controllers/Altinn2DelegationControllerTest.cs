@@ -31,9 +31,9 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 /// <summary>
 /// summary
 /// </summary>
-public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicationFactory<Altinn2DelegationController>>
+public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicationFactory<Altinn2Controller>>
 {
-    private readonly CustomWebApplicationFactory<Altinn2DelegationController> _factory;
+    private readonly CustomWebApplicationFactory<Altinn2Controller> _factory;
 
     private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
@@ -46,7 +46,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     /// Constructor setting up factory, test client and dependencies
     /// </summary>
     /// <param name="factory">CustomWebApplicationFactory</param>
-    public Altinn2DelegationControllerTest(CustomWebApplicationFactory<Altinn2DelegationController> factory)
+    public Altinn2DelegationControllerTest(CustomWebApplicationFactory<Altinn2Controller> factory)
     {
         _factory = factory;
     }
@@ -194,7 +194,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
         Assert.Fail($"Failed to find any attributes in the field 'From' with type '{type}' and value '{value}'");
     };
 
-    private WebApplicationFactory<Altinn2DelegationController> NewServiceCollection(params Action<IServiceCollection>[] actions)
+    private WebApplicationFactory<Altinn2Controller> NewServiceCollection(params Action<IServiceCollection>[] actions)
     {
         return _factory.WithWebHostBuilder(builder =>
        {
@@ -211,7 +211,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     private HttpClient NewDefaultClient(params Action<HttpClient>[] actions) =>
         NewClient(NewServiceCollection(WithServiceMoq), [WithClientToken(), WithClientRoute("accessmanagement/api/v1/altinn2/"), .. actions]);
 
-    private static HttpClient NewClient(WebApplicationFactory<Altinn2DelegationController> factory, params Action<HttpClient>[] actions)
+    private static HttpClient NewClient(WebApplicationFactory<Altinn2Controller> factory, params Action<HttpClient>[] actions)
     {
         var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
         foreach (var action in actions)

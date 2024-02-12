@@ -39,14 +39,14 @@ public class Altinn2DelegationController : ControllerBase
     /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-    [HttpGet("{party}/delegations/given")]
+    [HttpGet("{party}/delegations/offered")]
     [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<IActionResult> GetGivenDelegations([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOfferedDelegations([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
     {
         var reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
         var delegations = await _delegations.GetOfferedRightsDelegations(reportee, cancellationToken);

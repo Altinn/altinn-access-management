@@ -60,7 +60,7 @@ public class Altinn2DelegationControllerTest : IClassFixture<CustomWebApplicatio
     {
         var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/given");
+        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/delegations/offered");
 
         assert(response);
     }

@@ -61,7 +61,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                var party = await _contextRetrievalService.GetPartyAsync(int.Parse(reportee.Value));
+                var party = await _contextRetrievalService.GetPartyForOrganization(reportee.Value);
                 return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(null, party.PartyId.SingleToList(), cancellationToken);
             }
 
@@ -98,7 +98,7 @@ namespace Altinn.AccessManagement.Core.Services
                 var party = await _contextRetrievalService.GetPartyForOrganization(reportee.Value);
                 var mainUnits = await _contextRetrievalService.GetMainUnits(party.PartyId.SingleToList(), cancellationToken);
                 var parties = party.PartyId.SingleToList();
-                if (mainUnits.FirstOrDefault() is var mainUnit && mainUnit.PartyId != null)
+                if (mainUnits?.FirstOrDefault() is var mainUnit && mainUnit?.PartyId != null)
                 {
                     parties.Add((int)mainUnit.PartyId);
                 }
@@ -116,12 +116,12 @@ namespace Altinn.AccessManagement.Core.Services
                 var party = await _contextRetrievalService.GetPartyAsync(partyId);
                 if (party.PartyTypeName == PartyType.Person)
                 {
-                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, party.SSN), cancellationToken);
+                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, party.Person.SSN), cancellationToken);
                 }
 
                 if (party.PartyTypeName == PartyType.Organisation)
                 {
-                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, reportee.Value), cancellationToken);
+                    return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, party.Organization.OrgNumber), cancellationToken);
                 }
             }
 

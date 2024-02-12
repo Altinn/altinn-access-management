@@ -325,7 +325,17 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         List<DelegationChange> result = new List<DelegationChange>();
         DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
-        if (coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
+        if (coveredByPartyIds.Contains(50005545))
+        {
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByPartyId: 50005545));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByPartyId: 50005545));
+        }
+        else if (coveredByUserIds.Contains(20000095))
+        {
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByUserId: 20000095));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByUserId: 20000095));
+        }
+        else if (coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToPerson_FromPartyId, created, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", TestDataAuthorizedParties.PersonToPerson_FromPartyId, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));

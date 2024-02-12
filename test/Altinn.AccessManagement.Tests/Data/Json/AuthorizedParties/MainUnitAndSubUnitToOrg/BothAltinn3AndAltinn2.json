@@ -2,7 +2,7 @@
   {
     "partyId": 50100010,
     "partyUuid": "00000000-0000-0000-0001-000000000010",
-    "partyTypeName": 1,
+    "partyType": "Person",
     "orgNumber": "",
     "ssn": "01018070071",
     "unitType": null,
@@ -11,13 +11,15 @@
     "onlyHierarchyElementWithNoAccess": false,
     "childParties": null,
     "authorizedResources": [],
-    "authorizedRoles": [ "PRIV" ],
+    "authorizedRoles": [
+      "PRIV"
+    ],
     "authorizedAccessPackages": []
   },
   {
     "partyId": 50100006,
     "partyUuid": "00000000-0000-0000-0001-000000000006",
-    "partyTypeName": 2,
+    "partyType": "Organization",
     "orgNumber": "901000006",
     "ssn": null,
     "unitType": "AS",
@@ -28,7 +30,7 @@
       {
         "partyId": 50100007,
         "partyUuid": "00000000-0000-0000-0001-000000000007",
-        "partyTypeName": 2,
+        "partyType": "Organization",
         "orgNumber": "901000007",
         "ssn": null,
         "unitType": "BEDR",
@@ -40,12 +42,19 @@
           "devtest_gar_authparties-main-to-org",
           "ttd/am-devtest-sub-to-org"
         ],
-        "authorizedRoles": [ "UTINN", "APIADM" ],
+        "authorizedRoles": [
+          "UTINN",
+          "APIADM"
+        ],
         "authorizedAccessPackages": []
       }
     ],
-    "authorizedResources": [ "devtest_gar_authparties-main-to-org" ],
-    "authorizedRoles": [ "UTINN" ],
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-org"
+    ],
+    "authorizedRoles": [
+      "UTINN"
+    ],
     "authorizedAccessPackages": []
   }
 ]

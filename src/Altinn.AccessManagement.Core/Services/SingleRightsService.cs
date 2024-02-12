@@ -15,7 +15,6 @@ using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 
 namespace Altinn.AccessManagement.Core.Services
 {

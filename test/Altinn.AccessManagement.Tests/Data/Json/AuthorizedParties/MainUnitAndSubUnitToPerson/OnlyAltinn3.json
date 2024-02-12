@@ -2,7 +2,7 @@
   {
     "partyId": 50100006,
     "partyUuid": "00000000-0000-0000-0001-000000000006",
-    "partyTypeName": 2,
+    "partyType": "Organization",
     "orgNumber": "901000006",
     "ssn": null,
     "unitType": "AS",
@@ -13,7 +13,7 @@
       {
         "partyId": 50100007,
         "partyUuid": "00000000-0000-0000-0001-000000000007",
-        "partyTypeName": 2,
+        "partyType": "Organization",
         "orgNumber": "901000007",
         "ssn": null,
         "unitType": "BEDR",
@@ -29,7 +29,9 @@
         "authorizedAccessPackages": []
       }
     ],
-    "authorizedResources": [ "devtest_gar_authparties-main-to-person" ],
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-person"
+    ],
     "authorizedRoles": [],
     "authorizedAccessPackages": []
   }

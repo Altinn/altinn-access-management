@@ -76,7 +76,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrgInclA2), MemberType = typeof(TestDataAuthorizedParties))]
-    public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedParty> expected)
+    public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedPartyExternal> expected)
     {
         var client = GetTestClient(userToken, WithPDPMock);
 
@@ -86,8 +86,8 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        List<AuthorizedParty> actual = JsonSerializer.Deserialize<List<AuthorizedParty>>(await response.Content.ReadAsStringAsync(), options);
-        AssertionUtil.AssertCollections(expected, actual, AssertionUtil.AssertAuthorizedPartyEqual);
+        List<AuthorizedPartyExternal> actual = JsonSerializer.Deserialize<List<AuthorizedPartyExternal>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertCollections(expected, actual, TestDataAuthorizedParties.AssertAuthorizedPartyExternalEqual);
     }
 
     private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());

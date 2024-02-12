@@ -65,7 +65,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(null, party.PartyId.SingleToList(), cancellationToken);
             }
 
-            throw new ArgumentException("msg here");
+            throw new ArgumentException($"failed to interpret attribute of type '{reportee.Id}'");
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return await _delegationRepository.GetReceivedDelegations(parties, cancellationToken);
             }
 
-            throw new ArgumentException("msg here");
+            throw new ArgumentException($"failed to interpret attribute of type '{reportee.Id}'");
         }
 
         private async Task<IEnumerable<DelegationChange>> GetDelegationsFromRepositoryUsingParty(AttributeMatch reportee, Func<AttributeMatch, CancellationToken, Task<IEnumerable<DelegationChange>>> callback, CancellationToken cancellationToken)

@@ -3,7 +3,6 @@ using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +32,7 @@ public class Altinn2Controller : ControllerBase
     /// <summary>
     /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
     /// </summary>
-    /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+    /// <param name="party">reportee acting on behalf of</param>
     /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
@@ -44,10 +43,9 @@ public class Altinn2Controller : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<IActionResult> GetOfferedRights([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOfferedRights([FromRoute] int party, CancellationToken cancellationToken)
     {
-        var reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-        var delegations = await _delegations.GetOfferedRights(reportee, cancellationToken);
+        var delegations = await _delegations.GetOfferedRights(party, cancellationToken);
         var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
         return Ok(response);
     }
@@ -55,7 +53,7 @@ public class Altinn2Controller : ControllerBase
     /// <summary>
     /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
     /// </summary>
-    /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+    /// <param name="party">reportee acting on behalf of</param>
     /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
@@ -66,10 +64,9 @@ public class Altinn2Controller : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<IActionResult> GetReceivedRights([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetReceivedRights([FromRoute] int party, CancellationToken cancellationToken)
     {
-        var reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-        var delegations = await _delegations.GetReceivedRights(reportee, cancellationToken);
+        var delegations = await _delegations.GetReceivedRights(party, cancellationToken);
         var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
         return Ok(response);
     }

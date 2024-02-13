@@ -7,7 +7,6 @@ using System.Net.Mime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
-using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -52,7 +51,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     }
 
     /// <summary>
-    /// Tests <see cref="Altinn2Controller.GetOfferedRights(AuthorizedPartyInput, System.Threading.CancellationToken)"/>
+    /// Tests <see cref="Altinn2Controller.GetOfferedRights(int, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetGivenDelegations_ReturnOk_Input))]
@@ -75,27 +74,9 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     public static TheoryData<string, string, Action<HttpResponseMessage>> GetGivenDelegations_ReturnOk_Input() => new()
     {
         {
-            IdentifierUtil.OrganizationNumberHeader, "910459880", Assertions(
-                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "20000095"),
-                AssertStatusCode(StatusCodes.Status200OK))
-        },
-        {
             string.Empty, "50005545", response => Assertions(
                 AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "20000095"),
-                AssertStatusCode(StatusCodes.Status200OK))
-        },
-        {
-            IdentifierUtil.PersonHeader, "02056260016", Assertions(
-                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
-                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertStatusCode(StatusCodes.Status200OK))
-        },
-        {
-            IdentifierUtil.PersonHeader, "02056260016", Assertions(
-                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
-                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertStatusCode(StatusCodes.Status200OK))
         },
         {
@@ -107,7 +88,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     };
 
     /// <summary>
-    /// Tests <see cref="Altinn2Controller.GetReceivedRights(AuthorizedPartyInput, System.Threading.CancellationToken)"/>
+    /// Tests <see cref="Altinn2Controller.GetReceivedRights(int, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetReceviedDelegations_ReturnOk_Input))]
@@ -129,12 +110,6 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     /// </summary>
     public static TheoryData<string, string, Action<HttpResponseMessage>> GetReceviedDelegations_ReturnOk_Input() => new()
     {
-        {
-            IdentifierUtil.OrganizationNumberHeader, "910459880", Assertions(
-                AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
-                AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertStatusCode(StatusCodes.Status200OK))
-        },
         {
             string.Empty, "50005545", Assertions(
                 AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),

@@ -12,14 +12,9 @@ public static class Urn
     public static string String() => $"{nameof(Urn)}".ToLower();
 
     /// <summary>
-    /// List of all possible resources that can have a PartyId
+    /// InternalIds of delegatable entities 
     /// </summary>
     public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId];
-
-    /// <summary>
-    /// List of alle possible resource that have a IdentifierNo
-    /// </summary>
-    public static string[] Identifiers => [Altinn.Organization.IdentifierNo, Altinn.Person.IdentifierNo];
 
     /// <summary>
     /// Resources that belongs to Altinn 
@@ -127,11 +122,6 @@ public static class Urn
             /// uuid
             /// </summary>
             public static string Uuid => $"{String()}:uuid";
-
-            /// <summary>
-            /// The organziation's partyId!
-            /// </summary>
-            public static string PartyId => $"{String()}:partyid";
 
             /// <summary>
             /// UserId

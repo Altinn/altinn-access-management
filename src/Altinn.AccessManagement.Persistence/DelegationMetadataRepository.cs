@@ -230,7 +230,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetReceivedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
     {
         const string QUERY = /*strpsql*/@"
             WITH resources AS (

@@ -29,70 +29,63 @@ public class Altinn2RightsService : IAltinn2RightsService
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<RightDelegation>> GetOfferedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RightDelegation>> GetOfferedRights(int partyId, CancellationToken cancellationToken = default)
     {
-        var delegations = await GetOfferedDelegationsFromRepository(reportee, cancellationToken);
+        var delegations = await GetOfferedDelegationsFromRepository(partyId, cancellationToken);
         return await MapDelegationResponse(delegations);
     }
 
     /// <inheritdoc/>
-    public async Task<List<RightDelegation>> GetReceivedRights(AttributeMatch reportee, CancellationToken cancellationToken = default)
+    public async Task<List<RightDelegation>> GetReceivedRights(int partyId, CancellationToken cancellationToken = default)
     {
-        var delegations = await GetReceivedDelegationFromRepository(reportee, cancellationToken);
+        var delegations = await GetReceivedDelegationFromRepository(partyId, cancellationToken);
         return await MapDelegationResponse(delegations);
     }
 
     /// <summary>
     /// returns the reportee's received delegations from db 
     /// </summary>
-    /// <param name="reportee">reportee</param>
+    /// <param name="partyId">reportee</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns></returns>
-    private async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
+    private async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken)
     {
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
-        {
-            return await GetDelegationsFromRepositoryUsingParty(reportee, GetReceivedDelegationFromRepository, cancellationToken);
-        }
+        var party = await _contextRetrievalService.GetPartyAsync(partyId);
 
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+        if (party?.PartyTypeName == PartyType.Person)
         {
             var user = await _profile.GetUser(new()
             {
-                Ssn = reportee.Value
+                Ssn = party.SSN,
             });
 
             var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
             return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(user.UserId.SingleToList(), keyRoles, cancellationToken);
         }
 
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+        if (party?.PartyTypeName == PartyType.Organisation)
         {
-            var party = await _contextRetrievalService.GetPartyForOrganization(reportee.Value);
             return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(null, party.PartyId.SingleToList(), cancellationToken);
         }
 
-        throw new ArgumentException($"failed to interpret attribute of type '{reportee.Id}'");
+        throw new ArgumentException($"failed to handle party with id '{partyId}'");
     }
 
     /// <summary>
     /// returns the reportee's offereds delegations from db
     /// </summary>
-    /// <param name="reportee">reportee</param>
+    /// <param name="partyId">reportee</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns></returns>
-    private async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(AttributeMatch reportee, CancellationToken cancellationToken)
+    private async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken)
     {
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
-        {
-            return await GetDelegationsFromRepositoryUsingParty(reportee, GetOfferedDelegationsFromRepository, cancellationToken);
-        }
+        var party = await _contextRetrievalService.GetPartyAsync(partyId);
 
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+        if (party.PartyTypeName == PartyType.Person)
         {
             var user = await _profile.GetUser(new()
             {
-                Ssn = reportee.Value
+                Ssn = party.SSN
             });
 
             var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
@@ -102,12 +95,11 @@ public class Altinn2RightsService : IAltinn2RightsService
                 offeredBy.AddRange(keyRoles);
             }
 
-            return await _delegationRepository.GetReceivedDelegations(offeredBy, cancellationToken);
+            return await _delegationRepository.GetOfferedDelegations(offeredBy, cancellationToken);
         }
 
-        if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+        if (party.PartyTypeName == PartyType.Organisation)
         {
-            var party = await _contextRetrievalService.GetPartyForOrganization(reportee.Value);
             var mainUnits = await _contextRetrievalService.GetMainUnits(party.PartyId.SingleToList(), cancellationToken);
             var parties = party.PartyId.SingleToList();
             if (mainUnits?.FirstOrDefault() is var mainUnit && mainUnit?.PartyId != null)
@@ -115,29 +107,10 @@ public class Altinn2RightsService : IAltinn2RightsService
                 parties.Add((int)mainUnit.PartyId);
             }
 
-            return await _delegationRepository.GetReceivedDelegations(parties, cancellationToken);
+            return await _delegationRepository.GetOfferedDelegations(parties, cancellationToken);
         }
 
-        throw new ArgumentException($"failed to interpret attribute of type '{reportee.Id}'");
-    }
-
-    private async Task<IEnumerable<DelegationChange>> GetDelegationsFromRepositoryUsingParty(AttributeMatch reportee, Func<AttributeMatch, CancellationToken, Task<IEnumerable<DelegationChange>>> callback, CancellationToken cancellationToken)
-    {
-        if (int.TryParse(reportee.Value, out var partyId))
-        {
-            var party = await _contextRetrievalService.GetPartyAsync(partyId);
-            if (party.PartyTypeName == PartyType.Person)
-            {
-                return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, party.Person.SSN), cancellationToken);
-            }
-
-            if (party.PartyTypeName == PartyType.Organisation)
-            {
-                return await callback(new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute, party.Organization.OrgNumber), cancellationToken);
-            }
-        }
-
-        throw new ArgumentException("given party is not a person, nor an organization");
+        throw new ArgumentException($"failed to handle party with id '{partyId}'");
     }
 
     private async Task<List<RightDelegation>> MapDelegationResponse(IEnumerable<DelegationChange> delegations)

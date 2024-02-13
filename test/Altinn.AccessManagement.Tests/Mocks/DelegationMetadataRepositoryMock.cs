@@ -360,7 +360,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetReceivedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    public Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
     {
         var result = new List<DelegationChange>();
         foreach (var offeredBy in offeredByPartyIds)

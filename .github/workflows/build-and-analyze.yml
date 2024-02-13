@@ -24,7 +24,7 @@ jobs:
             7.0.x
       - name: Build & Test
         run: |
-           dotnet build Altinn.AccessManagement.sln -v m
+           dotnet build Altinn.AccessManagement.sln -v m -warnaserror
            dotnet test Altinn.AccessManagement.sln -v m
   analyze:
     name: Analyze

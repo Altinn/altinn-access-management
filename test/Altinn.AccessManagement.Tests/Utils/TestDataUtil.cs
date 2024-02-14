@@ -149,7 +149,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"{altinnAppId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now                
+                Created = DateTime.Now
             };
         }
 
@@ -253,7 +253,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         public static DelegationChange GetResourceRegistryDelegationChange(string resourceRegistryId, ResourceType resourceType, int offeredByPartyId, DateTime? created, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
-           
+
             return new DelegationChange
             {
                 DelegationChangeId = changeId,
@@ -266,7 +266,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"resourceregistry/{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = created                
+                Created = created
             };
         }
 
@@ -299,7 +299,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         public static List<MaskinportenSchemaDelegationExternal> GetOfferedMaskinportenSchemaDelegations(int offeredByPartyId)
         {
             List<MaskinportenSchemaDelegationExternal> delegations = null;
-            
+
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             string path = Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema", "Offered.json");
             if (File.Exists(path))
@@ -531,19 +531,19 @@ namespace Altinn.AccessManagement.Tests.Utils
 
         private static string GetDelegationPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema");
         }
 
         private static string GetPartiesPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Parties");
         }
 
         private static string GetResourcesPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Resources");
         }
     }

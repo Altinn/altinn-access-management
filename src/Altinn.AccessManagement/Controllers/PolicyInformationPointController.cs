@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;

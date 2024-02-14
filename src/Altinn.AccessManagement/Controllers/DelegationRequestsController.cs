@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Resolvers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
@@ -36,7 +37,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("accessmanagement/api/v1/delegationrequests/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
+        public async Task<DelegationRequests> Get(string who, [FromQuery] string serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus> status = null, [FromQuery] string continuation = "")
         {
             return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }

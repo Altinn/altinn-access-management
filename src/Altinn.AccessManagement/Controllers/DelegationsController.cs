@@ -26,8 +26,8 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="policyAdministrationPoint">The policy administration point</param>
         public DelegationsController(
-            ILogger<DelegationsController> logger, 
-            IPolicyInformationPoint policyInformationPoint, 
+            ILogger<DelegationsController> logger,
+            IPolicyInformationPoint policyInformationPoint,
             IPolicyAdministrationPoint policyAdministrationPoint)
         {
             _logger = logger;
@@ -127,7 +127,7 @@ namespace Altinn.AccessManagement.Controllers
                 return StatusCode(400, $"Unable to get the rules: Missing offeredbyPartyId value.");
             }
 
-            if (offeredByPartyIds.Count == 0 && coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
+            if (coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
             {
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }

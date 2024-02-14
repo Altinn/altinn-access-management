@@ -112,7 +112,7 @@ public class ContextRetrievalService : IContextRetrievalService
         {
             foreach (Party party in remainingParties)
             {
-                if (party?.PartyId != 0)
+                if (party?.PartyId != null)
                 {
                     parties.Add(party);
 
@@ -120,7 +120,7 @@ public class ContextRetrievalService : IContextRetrievalService
                    .SetPriority(CacheItemPriority.High)
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.PartyCacheTimeout, 0));
                     _memoryCache.Set($"p:{party.PartyId}|inclSubunits:{includeSubunits}", party, cacheEntryOptions);
-                }                    
+                }
             }
         }
 
@@ -251,7 +251,7 @@ public class ContextRetrievalService : IContextRetrievalService
                    .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
                 _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
-            }                
+            }
         }
 
         return resource;
@@ -271,7 +271,7 @@ public class ContextRetrievalService : IContextRetrievalService
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                .SetPriority(CacheItemPriority.High)
                .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
-            
+
                 _memoryCache.Set(cacheKey, resources, cacheEntryOptions);
             }
         }
@@ -328,7 +328,7 @@ public class ContextRetrievalService : IContextRetrievalService
                 if (serviceCode != null && serviceEditionCode != null && serviceResource.ResourceType == ResourceType.Altinn2Service &&
                     serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceCode && string.Equals(rf.Reference, $"{serviceCode}", StringComparison.OrdinalIgnoreCase)) &&
                     serviceResource.ResourceReferences.Exists(rf => rf.ReferenceType == ReferenceType.ServiceEditionCode && string.Equals(rf.Reference, $"{serviceEditionCode}", StringComparison.OrdinalIgnoreCase)))
-                { 
+                {
                     resource = serviceResource;
                     break;
                 }
@@ -341,7 +341,7 @@ public class ContextRetrievalService : IContextRetrievalService
                .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistryResourceCacheTimeout, 0));
 
                 _memoryCache.Set(cacheKey, resource, cacheEntryOptions);
-            }                    
+            }
         }
 
         return resource;

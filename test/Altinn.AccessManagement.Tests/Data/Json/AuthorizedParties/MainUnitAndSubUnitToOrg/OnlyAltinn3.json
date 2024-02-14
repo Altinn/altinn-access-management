@@ -29,7 +29,9 @@
         "authorizedAccessPackages": []
       }
     ],
-    "authorizedResources": [ "devtest_gar_authparties-main-to-org" ],
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-org"
+    ],
     "authorizedRoles": [],
     "authorizedAccessPackages": []
   }

@@ -31,7 +31,7 @@ public class PartiesClientMock : IPartiesClient
             {
                 if (file.Contains("parties"))
                 {
-                    string content = File.ReadAllText(Path.Combine(path, file));                        
+                    string content = File.ReadAllText(Path.Combine(path, file));
                     partyList = JsonSerializer.Deserialize<List<Party>>(content);
                 }
             }
@@ -102,7 +102,7 @@ public class PartiesClientMock : IPartiesClient
             else if (!string.IsNullOrWhiteSpace(partyLookup.Ssn))
             {
                 party = partyList.Find(p => p.Person?.SSN == partyLookup.Ssn);
-            }                
+            }
         }
 
         return Task.FromResult(party);
@@ -167,19 +167,19 @@ public class PartiesClientMock : IPartiesClient
 
     private static string GetPartiesPaths()
     {
-        string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "Parties");
     }
 
     private static string GetMainUnitsPath(int subunitPartyId)
     {
-        string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "MainUnits", $"{subunitPartyId}", "mainunits.json");
     }
 
     private static string GetKeyRoleUnitsPaths(int userId)
     {
-        string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "KeyRoleUnits", $"{userId}", "keyroleunits.json");
     }
 

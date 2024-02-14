@@ -31,7 +31,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// <summary>
         /// The homepage
         /// </summary>
-        public string? Homepage { get; set; }
+        public string Homepage { get; set; }
 
         /// <summary>
         /// The status
@@ -42,7 +42,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// spatial coverage
         /// This property represents that area(s) a Public Service is likely to be available only within, typically the area(s) covered by a particular public authority.
         /// </summary>
-        public List<string>? Spatial { get; set; }
+        public List<string> Spatial { get; set; }
 
         /// <summary>
         /// List of possible contact points
@@ -52,22 +52,22 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// <summary>
         /// Linkes to the outcome of a public service
         /// </summary>
-        public List<string>? Produces { get; set; }
+        public List<string> Produces { get; set; }
 
         /// <summary>
         /// IsPartOf
         /// </summary>
-        public string? IsPartOf { get; set; }
+        public string IsPartOf { get; set; }
 
         /// <summary>
         /// ThematicAreas
         /// </summary>
-        public List<string>? ThematicAreas { get; set; }
+        public List<string> ThematicAreas { get; set; }
 
         /// <summary>
         /// ResourceReference
         /// </summary>
-        public List<ResourceReference>? ResourceReferences { get; set; }
+        public List<ResourceReference> ResourceReferences { get; set; }
 
         /// <summary>
         /// Is this resource possible to delegate to others or not
@@ -87,7 +87,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// <summary>
         /// Keywords
         /// </summary>
-        public List<Keyword>? Keywords { get; set; }
+        public List<Keyword> Keywords { get; set; }
 
         /// <summary>
         /// Defines if the resource is limited by Resource Rights Registry
@@ -113,12 +113,12 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// <summary>
         /// Available for type defines which type of entity / person that resource targets
         /// </summary>
-        public List<ResourcePartyType>? AvailableForType { get; set; }
+        public List<ResourcePartyType> AvailableForType { get; set; }
 
         /// <summary>
         /// List of autorizationReference attributes to reference this resource in authorization API
         /// </summary>
-        public List<AttributeMatch>? AuthorizationReference { get; set; }
+        public List<AttributeMatch> AuthorizationReference { get; set; }
 
         /// <summary>
         /// Writes key information when this object is written to Log.

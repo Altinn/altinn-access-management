@@ -11,7 +11,9 @@
     "onlyHierarchyElementWithNoAccess": false,
     "childParties": null,
     "authorizedResources": [],
-    "authorizedRoles": [ "PRIV" ],
+    "authorizedRoles": [
+      "PRIV"
+    ],
     "authorizedAccessPackages": []
   },
   {
@@ -40,12 +42,19 @@
           "devtest_gar_authparties-main-to-org",
           "ttd/am-devtest-sub-to-org"
         ],
-        "authorizedRoles": [ "UTINN", "APIADM" ],
+        "authorizedRoles": [
+          "UTINN",
+          "APIADM"
+        ],
         "authorizedAccessPackages": []
       }
     ],
-    "authorizedResources": [ "devtest_gar_authparties-main-to-org" ],
-    "authorizedRoles": [ "UTINN" ],
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-org"
+    ],
+    "authorizedRoles": [
+      "UTINN"
+    ],
     "authorizedAccessPackages": []
   }
 ]

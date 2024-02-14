@@ -22,37 +22,37 @@ namespace Altinn.AccessManagement.Core.Models
         ///  Gets or sets The OrgID/personalID for who gets the delegation when the delegationRequest is approved
         /// </summary>
         [DataMember(IsRequired = true)]
-        public string? CoveredBy { get; set; }
+        public string CoveredBy { get; set; }
 
         /// <summary>
         ///  Gets or sets The OrgID/personalID for who gets the delegation when the delegationRequest is approved
         /// </summary>
         [DataMember(IsRequired = true)]
-        public string? CoveredByName { get; set; }
+        public string CoveredByName { get; set; }
 
         /// <summary>
         ///  Gets or sets The personalID who offer the delegation
         /// </summary>
         [DataMember(IsRequired = true)]
-        public string? OfferedBy { get; set; }
+        public string OfferedBy { get; set; }
 
         /// <summary>
         ///  Gets or sets The name who offer the delegation
         /// </summary>
         [DataMember(IsRequired = true)]
-        public string? OfferedByName { get; set; }
+        public string OfferedByName { get; set; }
 
         /// <summary>
         ///  Gets or sets The RedirectUrl is a link that sends the user back to the external website after he/she made an operation in Altinn
         /// </summary>
         [DataMember]
-        public string? RedirectUrl { get; set; }
+        public string RedirectUrl { get; set; }
 
         /// <summary>
         ///  Gets or sets the RequestMessage if any
         /// </summary>
         [DataMember(IsRequired = false, EmitDefaultValue = false)]
-        public string? RequestMessage { get; set; }
+        public string RequestMessage { get; set; }
 
         /// <summary>
         ///  Gets or sets a value indicating whether the session should be kept alive after a redirect

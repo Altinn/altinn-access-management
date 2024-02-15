@@ -645,7 +645,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesOfferedByPartyId);
+            await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByUserIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);

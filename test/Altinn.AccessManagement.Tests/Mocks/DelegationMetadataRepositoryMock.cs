@@ -136,7 +136,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
-        altinnAppIds ??=[];
+        altinnAppIds ??= [];
         if (altinnAppIds.Count == 0 && offeredByPartyIds.Contains(20001337))
         {
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("org1/app1", 20001337, 20001336));
@@ -325,7 +325,17 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         List<DelegationChange> result = new List<DelegationChange>();
         DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
-        if (coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
+        if (coveredByPartyIds.Contains(50005545))
+        {
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByPartyId: 50005545));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByPartyId: 50005545));
+        }
+        else if (coveredByUserIds.Contains(20000095))
+        {
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByUserId: 20000095));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByUserId: 20000095));
+        }
+        else if (coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToPerson_FromPartyId, created, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", TestDataAuthorizedParties.PersonToPerson_FromPartyId, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
@@ -349,15 +359,37 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(result);
     }
 
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    {
+        var result = new List<DelegationChange>();
+        foreach (var offeredBy in offeredByPartyIds)
+        {
+            if (offeredBy == 50002203)
+            {
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, offeredBy, DateTime.Now, coveredByPartyId: 50005545));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, offeredBy, DateTime.Now, coveredByPartyId: 50005545));
+            }
+
+            if (offeredBy == 50005545)
+            {
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, offeredBy, DateTime.Now, coveredByUserId: 20000095));
+                result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, offeredBy, DateTime.Now, coveredByUserId: 20000095));
+            }
+        }
+
+        return Task.FromResult(result);
+    }
+
     private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId)
     {
-        string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"p{coveredByPartyId}", "delegationchange.json");
     }
 
     private static string GetResourceRegistryDelegationPath_ForCoveredByUserId(string resourceRegistryId, int offeredByPartyId, int coveredByUserId)
     {
-        string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
+        string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");
     }
 }

@@ -1,8 +1,10 @@
 using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
@@ -174,6 +176,8 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     logger.LogInformation("Startup // ConfigureServices");
+    services.ConfigureAsserters();
+    services.ConfigureResolvers();
     services.AddAutoMapper(typeof(Program));
     services.AddControllersWithViews();
 
@@ -216,7 +220,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
     services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
     services.AddHttpClient<AuthorizationApiClient>();
-    
+
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -246,6 +250,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IKeyVaultService, KeyVaultService>();
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
     services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
+    services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
     services.AddAccessManagementPersistence();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
@@ -287,8 +292,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
     });
-    
-    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
+
+    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
 
@@ -310,7 +315,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
-    }    
+    }
 }
 
 void Configure()
@@ -355,7 +360,7 @@ void ConfigurePostgreSql()
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-        
+
         string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
         if (builder.Environment.IsDevelopment())
         {

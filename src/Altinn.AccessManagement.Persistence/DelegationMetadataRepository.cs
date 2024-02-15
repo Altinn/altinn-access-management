@@ -4,10 +4,8 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
-using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -20,7 +18,6 @@ namespace Altinn.AccessManagement.Persistence;
 public class DelegationMetadataRepository : IDelegationMetadataRepository
 {
     private readonly NpgsqlDataSource _conn;
-    private readonly string _connectionString;
     private readonly ILogger _logger;
 
     // App DelegationChange functions:
@@ -42,19 +39,11 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <summary>
     /// Initializes a new instance of the <see cref="DelegationMetadataRepository"/> class
     /// </summary>
-    /// <param name="postgresSettings">The postgreSQL configurations for AuthorizationDB</param>
     /// <param name="logger">logger</param>
     /// <param name="conn">The database connection</param>
-    public DelegationMetadataRepository(
-        IOptions<PostgreSQLSettings> postgresSettings,
-        ILogger<DelegationMetadataRepository> logger,
-        NpgsqlDataSource conn)
+    public DelegationMetadataRepository(ILogger<DelegationMetadataRepository> logger, NpgsqlDataSource conn)
     {
         _logger = logger;
-        _connectionString = string.Format(
-            postgresSettings.Value.ConnectionString,
-            postgresSettings.Value.AuthorizationDbPwd);
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
         _conn = conn;
     }
 
@@ -85,10 +74,8 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getAllAppDelegationChanges);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getAllAppDelegationChanges, conn);
             pgcom.Parameters.AddWithValue("_altinnAppId", altinnAppId);
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
@@ -96,7 +83,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 delegationChanges.Add(await GetAppDelegationChange(reader));
@@ -161,16 +148,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync(cancellationToken);
-
-            NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesOfferedByPartyId, conn);
+            await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesOfferedByPartyId);
+            
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
             List<DelegationChange> delegatedResources = new List<DelegationChange>();
-            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync(cancellationToken);
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 delegatedResources.Add(await GetResourceRegistryDelegationChange(reader));
@@ -190,17 +175,15 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds, conn);
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, (offeredByPartyIds == null || !offeredByPartyIds.Any()) ? DBNull.Value : offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 receivedDelegations.Add(await GetResourceRegistryDelegationChange(reader));
@@ -220,17 +203,15 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByUserId);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChangesForCoveredByUserId, conn);
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, (offeredByPartyIds == null || !offeredByPartyIds.Any()) ? DBNull.Value : offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 receivedDelegations.Add(await GetResourceRegistryDelegationChange(reader));
@@ -241,6 +222,89 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         catch (Exception e)
         {
             _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetReceivedResourceRegistryDelegationsForCoveredByParty // Exception");
+            throw;
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+    {
+        const string QUERY = /*strpsql*/@"
+            WITH resources AS (
+		        SELECT
+			        resourceId,
+			        resourceRegistryId,
+			        resourceType
+		        FROM accessmanagement.Resource
+		        WHERE resourceType != 'maskinportenschema'
+	        ),
+            latestResourceChanges AS (
+		        SELECT MAX(resourceRegistryDelegationChangeId) as latestId
+		        FROM delegation.ResourceRegistryDelegationChanges
+		        WHERE offeredbypartyid = ANY (@offeredByPartyIds)
+		        GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        ),
+	        latestAppChanges AS (
+		        SELECT MAX(delegationChangeId) as latestId
+		        FROM delegation.delegationchanges
+		        WHERE offeredbypartyid = ANY (@offeredByPartyIds)
+		        GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        )
+
+            SELECT
+		        resourceRegistryDelegationChangeId,
+		        null AS delegationChangeId,
+		        delegationChangeType,
+		        resources.resourceRegistryId,
+		        resources.resourceType,
+		        null AS altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.ResourceRegistryDelegationChanges
+		        INNER JOIN resources ON resourceId_fk = resources.resourceid
+		        INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+
+	        UNION ALL
+
+	        SELECT
+		        null AS resourceRegistryDelegationChangeId,
+		        delegationChangeId,
+		        delegationChangeType,
+		        null AS resourceRegistryId,
+		        null AS resourceType,
+		        altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        null AS performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.delegationchanges
+		        INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+        ";
+
+        try
+        {
+            await using var pgcom = _conn.CreateCommand(QUERY);
+            pgcom.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
+
+            return await pgcom.ExecuteEnumerableAsync(cancellationToken)
+                .SelectAwait(GetDelegationChange)
+                .ToListAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Authorization // DelegationMetadataRepository // GetReceivedDelegations // Exception");
             throw;
         }
     }
@@ -342,10 +406,8 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(insertAppDelegationChange);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(insertAppDelegationChange, conn);
             pgcom.Parameters.AddWithValue("_delegationChangeType", delegationChange.DelegationChangeType);
             pgcom.Parameters.AddWithValue("_altinnAppId", delegationChange.ResourceId);
             pgcom.Parameters.AddWithValue("_offeredByPartyId", delegationChange.OfferedByPartyId);
@@ -374,10 +436,8 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            NpgsqlCommand pgcom = new NpgsqlCommand(insertResourceRegistryDelegationChange, conn);
+            await using var pgcom = _conn.CreateCommand(insertResourceRegistryDelegationChange);
+            
             pgcom.Parameters.AddWithValue("_delegationChangeType", delegationChange.DelegationChangeType);
             pgcom.Parameters.AddWithValue("_resourceRegistryId", delegationChange.ResourceId);
             pgcom.Parameters.AddWithValue("_offeredByPartyId", delegationChange.OfferedByPartyId);
@@ -408,16 +468,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-            NpgsqlCommand pgcom = new NpgsqlCommand(getCurrentAppDelegationChange, conn);
-
+            await using var pgcom = _conn.CreateCommand(getCurrentAppDelegationChange);
+            
             pgcom.Parameters.AddWithValue("_altinnAppId", resourceId);
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
             pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId.HasValue ? coveredByPartyId.Value : DBNull.Value);
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
             {
                 return await GetAppDelegationChange(reader);
@@ -436,16 +494,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-            NpgsqlCommand pgcom = new NpgsqlCommand(getCurrentResourceRegistryDelegationChange, conn);
+            await using var pgcom = _conn.CreateCommand(getCurrentResourceRegistryDelegationChange);
 
             pgcom.Parameters.AddWithValue("_resourceRegistryId", resourceId);
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
             pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId.HasValue ? coveredByPartyId.Value : DBNull.Value);
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
             {
                 return await GetResourceRegistryDelegationChange(reader);
@@ -465,17 +521,15 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChanges);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getResourceRegistryDelegationChanges, conn);
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyId == 0 ? DBNull.Value : new List<int> { coveredByPartyId });
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyId == 0 ? DBNull.Value : new List<int> { offeredByPartyId });
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 receivedDelegations.Add(await GetResourceRegistryDelegationChange(reader));
@@ -531,7 +585,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         catch (Exception e)
         {
             return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(e));
-        }            
+        }
     }
 
     private static async ValueTask<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)
@@ -564,17 +618,15 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByPartyIds);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getAppDelegationChangesForCoveredByPartyIds, conn);
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 delegationChanges.Add(await GetAppDelegationChange(reader));
@@ -593,17 +645,15 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
+            await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByUserIds);
 
-            NpgsqlCommand pgcom = new NpgsqlCommand(getAppDelegationChangesForCoveredByUserIds, conn);
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 delegationChanges.Add(await GetAppDelegationChange(reader));
@@ -622,16 +672,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         try
         {
-            await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            NpgsqlCommand pgcom = new NpgsqlCommand(getAppDelegationChangesOfferedByPartyIds, conn);
+            await using var pgcom = _conn.CreateCommand(getAppDelegationChangesOfferedByPartyIds);
+            
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
-            using NpgsqlDataReader reader = pgcom.ExecuteReader();
+            using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {
                 delegationChanges.Add(await GetAppDelegationChange(reader));

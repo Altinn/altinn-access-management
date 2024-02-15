@@ -32,7 +32,7 @@ namespace Altinn.AccessManagement.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
+        public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status, string continuation)
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/DelegationRequests");
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);

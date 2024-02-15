@@ -11,7 +11,9 @@
     "onlyHierarchyElementWithNoAccess": false,
     "childParties": null,
     "authorizedResources": [],
-    "authorizedRoles": [ "PRIV" ],
+    "authorizedRoles": [
+      "PRIV"
+    ],
     "authorizedAccessPackages": []
   },
   {
@@ -29,7 +31,9 @@
       "devtest_gar_authparties-person-to-person",
       "ttd/am-devtest-person-to-person"
     ],
-    "authorizedRoles": [ "UTINN" ],
+    "authorizedRoles": [
+      "UTINN"
+    ],
     "authorizedAccessPackages": []
   }
 ]

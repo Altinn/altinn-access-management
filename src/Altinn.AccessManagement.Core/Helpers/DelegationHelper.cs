@@ -142,22 +142,6 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Trys to get both username and last name attribute value from a list of AttributeMatch models
-        /// </summary>
-        /// <returns>The true if both username and last name is found as the only attributes in the collection</returns>
-        public static bool TryGetUsernameAttributeMatch(List<AttributeMatch> match, out string username)
-        {
-            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
-
-            if (match.Count == 1 && !string.IsNullOrWhiteSpace(username))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Trys to get enterprise username attribute value from a list of AttributeMatch models
         /// </summary>
         /// <returns>The true if both enterprise username is found as the only attributes in the collection</returns>
@@ -333,7 +317,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 catch (Exception)
                 {
                     return false;
-                }                
+                }
             }
 
             return false;

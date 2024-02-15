@@ -24,6 +24,6 @@ public record AuthorizedPartyInput
     /// <summary>
     /// Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.
     /// </summary>
-    [FromRoute(Name = "party")] 
+    [FromRoute(Name = "party")]
     public string Party { get; set; }
 }

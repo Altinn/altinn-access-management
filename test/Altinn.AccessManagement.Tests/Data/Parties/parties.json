@@ -21,6 +21,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50006078,
+    "PartyUuid": "00000000-0000-0000-0005-000000006078",
     "UnitType": "AS",
     "Name": "LEPSØY OG TONSTAD",
     "IsDeleted": false,
@@ -48,6 +49,7 @@
           "BusinessPostalCity": null
         },
         "PartyId": 50004646,
+        "PartyUuid": "00000000-0000-0000-0005-000000004646",
         "UnitType": "AS",
         "Name": "ROGNE OG HERØY",
         "IsDeleted": false,
@@ -78,6 +80,7 @@
       "BusinessPostalCity": ""
     },
     "PartyId": 50004216,
+    "PartyUuid": "00000000-0000-0000-0005-000000004216",
     "UnitType": "ANS",
     "Name": "TYNSET OG OPPDAL",
     "IsDeleted": false,
@@ -106,6 +109,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004219,
+    "PartyUuid": "00000000-0000-0000-0005-000000004219",
     "UnitType": "AS",
     "Name": "KOLSAAS OG FLAAM",
     "IsDeleted": true,
@@ -134,6 +138,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004220,
+    "PartyUuid": "00000000-0000-0000-0005-000000004220",
     "UnitType": "AS",
     "Name": "NORDRE FROGN OG MORTENHALS",
     "IsDeleted": false,
@@ -162,6 +167,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004221,
+    "PartyUuid": "00000000-0000-0000-0005-000000004221",
     "UnitType": "AS",
     "Name": "LUNDAMO OG FLEINVAR",
     "IsDeleted": true,
@@ -190,6 +196,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004222,
+    "PartyUuid": "00000000-0000-0000-0005-000000004222",
     "UnitType": "AS",
     "Name": "KARLSTAD OG ULOYBUKT",
     "IsDeleted": false,
@@ -218,6 +225,7 @@
       "BusinessPostalCity": ""
     },
     "PartyId": 50004223,
+    "PartyUuid": "00000000-0000-0000-0005-000000004223",
     "UnitType": "AS",
     "Name": "HAMAR OG GJESVÆR",
     "IsDeleted": false,
@@ -246,6 +254,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004224,
+    "PartyUuid": "00000000-0000-0000-0005-000000004224",
     "UnitType": "AS",
     "Name": "STJORDAL OG HOMBORSUND",
     "IsDeleted": false,
@@ -274,6 +283,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004225,
+    "PartyUuid": "00000000-0000-0000-0005-000000004225",
     "UnitType": "AS",
     "Name": "ROSSFJORDSTRAUMEN OG EIKEFJORD",
     "IsDeleted": false,
@@ -302,6 +312,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50004226,
+    "PartyUuid": "00000000-0000-0000-0005-000000004226",
     "UnitType": "AS",
     "Name": "KOLBJORNSVIK OG ROAN",
     "IsDeleted": false,
@@ -330,6 +341,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50002182,
+    "PartyUuid": "00000000-0000-0000-0005-000000002182",
     "UnitType": null,
     "Name": "KARI GUNNERUD",
     "IsDeleted": false,
@@ -358,6 +370,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50005545,
+    "PartyUuid": "00000000-0000-0000-0005-000000005545",
     "UnitType": "AS",
     "Name": "ØRSTA OG HEGGEDAL REGNSKAP",
     "IsDeleted": false,
@@ -386,6 +399,7 @@
       "BusinessPostalCity": null
     },
     "PartyId": 50001337,
+    "PartyUuid": "00000000-0000-0000-0005-000000001337",
     "UnitType": "AS",
     "Name": "1337",
     "IsDeleted": false,
@@ -422,7 +436,7 @@
   },
   {
     "PartyTypeName": 1,
-    "SSN": "210330411331",
+    "SSN": "21033041133",
     "OrgNumber": "",
     "Person": {
       "SSN": "21033041133",
@@ -478,6 +492,7 @@
     },
     "Organization": null,
     "PartyId": 50002598,
+    "PartyUuid": "00000000-0000-0000-0005-000000002598",
     "UnitType": null,
     "Name": "KASPER BØRSTAD",
     "IsDeleted": false,
@@ -510,6 +525,7 @@
     },
     "Organization": null,
     "PartyId": 50002203,
+    "PartyUuid": "00000000-0000-0000-0005-000000002203",
     "UnitType": null,
     "Name": "PAULA RIMSTAD",
     "IsDeleted": false,
@@ -542,6 +558,7 @@
     },
     "Organization": null,
     "PartyId": 50003899,
+    "PartyUuid": "00000000-0000-0000-0005-000000003899",
     "UnitType": null,
     "Name": "ØRJAN RAVNÅS",
     "IsDeleted": false,

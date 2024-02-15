@@ -1,0 +1,21 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:enterpriseuser:uuid",
+      "value": "00000000-0000-0000-0002-000000010727"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "generic-access-resource:admai-delegated-action",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "admai-delegated-action",
+      "status": "Delegated"
+    }
+  ]
+}

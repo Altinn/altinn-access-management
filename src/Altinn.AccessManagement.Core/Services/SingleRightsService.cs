@@ -333,9 +333,48 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 toUser = await _profile.GetUser(new UserProfileLookup { Username = enterpriseUserName });
 
-                if (toUser != null && toUser.Party.PartyId != fromParty.PartyId)
+                if (toUser != null && toUser.Party.PartyTypeName != PartyType.Organisation && toUser.Party.PartyId != fromParty.PartyId)
                 {
                     result.Errors.Add("To", $"Enterpriseuser either does not exist or does not belong to the From party and cannot be delegated to.");
+                    return (result, resource, null, null);
+                }
+            }
+            else if (DelegationHelper.TryGetSingleAttributeMatchValue(delegation.To, AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid, out string toPersonUuidAttrValue))
+            {
+                if (Guid.TryParse(toPersonUuidAttrValue, out Guid toPersonUuid))
+                {
+                    toUser = await _profile.GetUser(new UserProfileLookup { UserUuid = toPersonUuid });
+                }
+
+                if (toUser != null && toUser.Party.PartyTypeName != PartyType.Person)
+                {
+                    result.Errors.Add("To", $"The provided To attribute value could not be found as a valid person.");
+                    return (result, resource, null, null);
+                }
+            }
+            else if (DelegationHelper.TryGetSingleAttributeMatchValue(delegation.To, AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid, out string toEnterpriseUserUuidAttrValue))
+            {
+                if (Guid.TryParse(toEnterpriseUserUuidAttrValue, out Guid toEnterpriseUserUuid))
+                {
+                    toUser = await _profile.GetUser(new UserProfileLookup { UserUuid = toEnterpriseUserUuid });
+                }
+
+                if (toUser != null && toUser.Party.PartyTypeName != PartyType.Organisation && toUser.Party.PartyId != fromParty.PartyId)
+                {
+                    result.Errors.Add("To", $"Enterpriseuser either does not exist or does not belong to the From party and cannot be delegated to.");
+                    return (result, resource, null, null);
+                }
+            }
+            else if (DelegationHelper.TryGetSingleAttributeMatchValue(delegation.To, AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid, out string toOrganizationUuidAttrValue))
+            {
+                if (Guid.TryParse(toOrganizationUuidAttrValue, out Guid toOrganizationUuid))
+                {
+                    toParty = await _contextRetrievalService.GetPartyByUuid(toOrganizationUuid);
+                }
+
+                if (toParty != null && toParty.PartyTypeName != PartyType.Organisation)
+                {
+                    result.Errors.Add("To", $"The provided To attribute value could not be found as a valid organization.");
                     return (result, resource, null, null);
                 }
             }

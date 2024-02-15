@@ -43,6 +43,21 @@ public interface IContextRetrievalService
     Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets a single party by its party uuid
+    /// </summary>
+    /// <returns>Party</returns>
+    Task<Party> GetPartyByUuid(Guid partyUuid, bool includeSubunits = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a dictionary of parties by their party uuids
+    /// </summary>
+    /// <param name="partyUuids">Collection of party uuids to lookup</param>
+    /// <param name="includeSubunits">(Optional) Whether subunits should be included as ChildParties, if any of the parties are a main unit</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>Dictionary of parties</returns>
+    Task<Dictionary<string, Party>> GetPartiesByUuids(IEnumerable<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the party of an organization
     /// </summary>
     /// <param name="organizationNumber">The organization number to lookup party</param>

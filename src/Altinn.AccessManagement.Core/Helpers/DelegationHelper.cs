@@ -158,6 +158,22 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Trys to get an single specific attribute value from a list of AttributeMatch models, if it's the only attribute in the list
+        /// </summary>
+        /// <returns>The true if person uuid is found as the only attributes in the collection</returns>
+        public static bool TryGetSingleAttributeMatchValue(List<AttributeMatch> match, string matchAttributeIdentifier, out string value)
+        {
+            value = string.Empty;
+            if (match != null && match.Count == 1 && match[0].Id == matchAttributeIdentifier)
+            {
+                value = match[0].Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets a int representation of the CoveredByUserId and CoverdByPartyId from an AttributeMatch list.
         /// This works under the asumptions that any valid search for å valid policy contains a CoveredBy and this must be in the form
         /// of a PartyId or a UserId. So any valid search containing a PartyId should not contain a USerId and vice versa.

@@ -31,12 +31,12 @@ using Xunit;
 namespace Altinn.AccessManagement.Tests.Controllers
 {
     /// <summary>
-    /// Test class for <see cref="RightsController"></see>
+    /// Test class for <see cref="RightsInternalController"></see>
     /// </summary>
-    [Collection("RightsController Tests")]
-    public class RightsControllerTest : IClassFixture<CustomWebApplicationFactory<RightsController>>
+    [Collection("RightsInternalController Tests")]
+    public class RightsInternalControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
     {
-        private readonly CustomWebApplicationFactory<RightsController> _factory;
+        private readonly CustomWebApplicationFactory<RightsInternalController> _factory;
         private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
@@ -48,7 +48,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Constructor setting up factory, test client and dependencies
         /// </summary>
         /// <param name="factory">CustomWebApplicationFactory</param>
-        public RightsControllerTest(CustomWebApplicationFactory<RightsController> factory)
+        public RightsInternalControllerTest(CustomWebApplicationFactory<RightsInternalController> factory)
         {
             _factory = factory;
         }
@@ -68,7 +68,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -93,7 +93,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000095");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -116,7 +116,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -140,7 +140,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -163,7 +163,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -188,7 +188,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -215,7 +215,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -242,7 +242,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -266,7 +266,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -291,7 +291,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -314,7 +314,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -338,7 +338,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/rights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -361,7 +361,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -385,7 +385,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("ttd_rf-0002", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -411,7 +411,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -438,7 +438,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50004221", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -461,7 +461,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -486,7 +486,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("digdirs_company_car", "p50005545", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -511,7 +511,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -536,7 +536,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("org1_app1", "p50001337", "u20001337");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/delegablerights/?returnAllPolicyRights=true", requestContent);
+            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/delegablerights/?returnAllPolicyRights=true", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -572,7 +572,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -608,7 +608,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -645,7 +645,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -680,7 +680,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -711,7 +711,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -742,7 +742,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -772,7 +772,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -802,7 +802,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetDelegationCheckContent(resourceId);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -839,7 +839,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Ssn, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -874,7 +874,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -904,7 +904,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Ssn, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -939,7 +939,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.Ssn, to.Ssn, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -975,7 +975,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.Ssn, to.Uuid, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1014,7 +1014,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Ssn, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1051,7 +1051,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.OrgNo, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1085,7 +1085,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Username, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1120,7 +1120,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Uuid, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1157,7 +1157,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.OrgNo, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1194,7 +1194,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.Ssn, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1226,7 +1226,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.OrgNo, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1258,7 +1258,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsDelegationContent(resourceId, from.OrgNo, to.OrgNo, by.Ssn, scenario);
 
             // Act
-            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/{from.PartyId}/rights/delegation/offered", requestContent);
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{from.PartyId}/rights/delegation/offered", requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -1287,7 +1287,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
-            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{reporteeType}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -1312,7 +1312,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
-            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);

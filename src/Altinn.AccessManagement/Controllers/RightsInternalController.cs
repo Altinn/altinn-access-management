@@ -23,26 +23,29 @@ namespace Altinn.AccessManagement.Controllers
     /// </summary>
     [ApiController]
     [Route("accessmanagement/api/v1/")]
-    public class RightsController : ControllerBase
+    public class RightsInternalController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IPolicyInformationPoint _pip;
         private readonly ISingleRightsService _rights;
+        private readonly IAltinn2RightsService _rightsForAltinn2;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RightsController"/> class.
+        /// Initializes a new instance of the <see cref="RightsInternalController"/> class.
         /// </summary>
         /// <param name="logger">the logger</param>
         /// <param name="mapper">handler for mapping between internal and external models</param>
         /// <param name="policyInformationPoint">The policy information point</param>
-        /// <param name="singleRightsService">Service implementation for single rights operations</param>
-        public RightsController(ILogger<RightsController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint, ISingleRightsService singleRightsService)
+        /// <param name="singleRightsService">Service implementation for providing rights operations for BFF and external integrations</param>
+        /// <param name="rightsForAltinn2">Service implementation for providing rights operations for Altinn 2 integrations</param>
+        public RightsInternalController(ILogger<RightsInternalController> logger, IMapper mapper, IPolicyInformationPoint policyInformationPoint, ISingleRightsService singleRightsService, IAltinn2RightsService rightsForAltinn2)
         {
             _logger = logger;
             _mapper = mapper;
             _pip = policyInformationPoint;
             _rights = singleRightsService;
+            _rightsForAltinn2 = rightsForAltinn2;
         }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("internal/rights")]
+        [Route("internal/query/rights/")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
@@ -88,7 +91,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
-        [Route("internal/delegablerights")]
+        [Route("internal/query/delegablerights")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
         {
@@ -122,6 +125,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [Route("internal/{party}/rights/delegation/delegationcheck")]
         [Route("{party}/rights/delegation/delegationcheck")]
         [ApiExplorerSettings(IgnoreApi = false)]
         [Produces("application/json")]
@@ -180,7 +184,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
-        [Route("{party}/rights/delegation/offered")]
+        [Route("internal/{party}/rights/delegation/offered")]
         [ApiExplorerSettings(IgnoreApi = false)]
         [Produces("application/json")]
         [ProducesResponseType(200)]
@@ -233,42 +237,43 @@ namespace Altinn.AccessManagement.Controllers
         /// <summary>
         /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
         /// </summary>
-        /// <param name="input">Used to specify the reportee party the authenticated user is acting on behalf of. Can either be the PartyId, or the placeholder values: 'person' or 'organization' in combination with providing the social security number or the organization number using the header values.</param>
+        /// <param name="party">reportee acting on behalf of</param>
         /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
-        [ActionName("ListOfferedDelegations")]
-        [HttpGet("{party}/rights/delegation/offered")]
+        [HttpGet("internal/{party}/rights/delegation/offered")]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [FeatureGate(FeatureFlags.RightsDelegationApi)]
-        public async Task<IActionResult> GetDelegationOfferedList([FromRoute, FromHeader] AuthorizedPartyInput input, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetOfferedRights([FromRoute] int party, CancellationToken cancellationToken)
         {
-            try
-            {
-                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
-                var delegations = await _rights.GetOfferedRights(reportee, cancellationToken);
-                var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
-                return Ok(response);
-            }
-            catch (FormatException ex)
-            {
-                ModelState.AddModelError("Validation Error", ex.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
-            catch (ValidationException ex)
-            {
-                ModelState.AddModelError("Validation Error", ex.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(StatusCodes.Status500InternalServerError, ex, "Internal exception occurred during Rights Delegation");
-                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
-            }
+            var delegations = await _rightsForAltinn2.GetOfferedRights(party, cancellationToken);
+            var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Gets a list of all recipients having received right delegations from the reportee party including the resource/app/service info, but not specific rights
+        /// </summary>
+        /// <param name="party">reportee acting on behalf of</param>
+        /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ)]
+        [HttpGet("internal/{party}/rights/delegation/received")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<RightDelegationExternal>))]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<IActionResult> GetReceivedRights([FromRoute] int party, CancellationToken cancellationToken)
+        {
+            var delegations = await _rightsForAltinn2.GetReceivedRights(party, cancellationToken);
+            var response = _mapper.Map<IEnumerable<RightDelegationExternal>>(delegations);
+            return Ok(response);
         }
 
         /// <summary>
@@ -280,7 +285,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
         [ActionName(nameof(RevokeReceivedDelegation))]
-        [HttpPost("{party}/rights/delegation/received/revoke")]
+        [HttpPost("internal/{party}/rights/delegation/received/revoke")]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -346,7 +351,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
         [ActionName(nameof(RevokeOfferedDelegation))]
-        [HttpPost("{party}/rights/delegation/offered/revoke")]
+        [HttpPost("internal/{party}/rights/delegation/offered/revoke")]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

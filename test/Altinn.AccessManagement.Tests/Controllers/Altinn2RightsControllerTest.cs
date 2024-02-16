@@ -28,11 +28,11 @@ using Xunit;
 namespace Altinn.AccessManagement.Tests.Controllers;
 
 /// <summary>
-/// Controller test for <see cref="Altinn2Controller"/>
+/// Controller test for <see cref="RightsInternalController"/>
 /// </summary>
-public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFactory<Altinn2Controller>>
+public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
 {
-    private readonly CustomWebApplicationFactory<Altinn2Controller> _factory;
+    private readonly CustomWebApplicationFactory<RightsInternalController> _factory;
 
     private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
@@ -45,13 +45,13 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     /// Constructor setting up factory, test client and dependencies
     /// </summary>
     /// <param name="factory">CustomWebApplicationFactory</param>
-    public Altinn2RightsControllerTest(CustomWebApplicationFactory<Altinn2Controller> factory)
+    public Altinn2RightsControllerTest(CustomWebApplicationFactory<RightsInternalController> factory)
     {
         _factory = factory;
     }
 
     /// <summary>
-    /// Tests <see cref="Altinn2Controller.GetOfferedRights(int, System.Threading.CancellationToken)"/>
+    /// Tests <see cref="RightsInternalController.GetOfferedRights(int, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetGivenDelegations_ReturnOk_Input))]
@@ -59,7 +59,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     {
         var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/altinn2/rights/offered");
+        var response = await client.GetAsync($"internal/{GetUrlParameter(header, value)}/rights/delegation/offered");
 
         assert(response);
     }
@@ -88,7 +88,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     };
 
     /// <summary>
-    /// Tests <see cref="Altinn2Controller.GetReceivedRights(int, System.Threading.CancellationToken)"/>
+    /// Tests <see cref="RightsInternalController.GetReceivedRights(int, System.Threading.CancellationToken)"/>
     /// </summary>
     [Theory]
     [MemberData(nameof(GetReceviedDelegations_ReturnOk_Input))]
@@ -96,7 +96,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     {
         var client = NewDefaultClient(WithHeader(header, value));
 
-        var response = await client.GetAsync($"{GetUrlParameter(header, value)}/altinn2/rights/received");
+        var response = await client.GetAsync($"internal/{GetUrlParameter(header, value)}/rights/delegation/received");
 
         assert(response);
     }
@@ -169,7 +169,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
         Assert.Fail($"Failed to find any attributes in the field 'From' with type '{type}' and value '{value}'");
     };
 
-    private WebApplicationFactory<Altinn2Controller> NewServiceCollection(params Action<IServiceCollection>[] actions)
+    private WebApplicationFactory<RightsInternalController> NewServiceCollection(params Action<IServiceCollection>[] actions)
     {
         return _factory.WithWebHostBuilder(builder =>
        {
@@ -186,7 +186,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     private HttpClient NewDefaultClient(params Action<HttpClient>[] actions) =>
         NewClient(NewServiceCollection(WithServiceMoq), [WithClientToken(), WithClientRoute("accessmanagement/api/v1/"), .. actions]);
 
-    private static HttpClient NewClient(WebApplicationFactory<Altinn2Controller> factory, params Action<HttpClient>[] actions)
+    private static HttpClient NewClient(WebApplicationFactory<RightsInternalController> factory, params Action<HttpClient>[] actions)
     {
         var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
         foreach (var action in actions)

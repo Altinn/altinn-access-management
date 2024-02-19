@@ -48,13 +48,13 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Trys to get the PartyId attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The party id if found as the single attribute in the collection</returns>
+        /// <returns>The true if party id is found as the single attribute in the collection</returns>
         public static bool TryGetPartyIdFromAttributeMatch(List<AttributeMatch> match, out int partyid)
         {
             partyid = 0;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
             {
-                return int.TryParse(match.First().Value, out partyid) && partyid != 0;
+                return int.TryParse(match[0].Value, out partyid) && partyid != 0;
             }
 
             return false;
@@ -63,13 +63,13 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Trys to get the UserId attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The user id if found as the single attribute in the collection</returns>
+        /// <returns>The true if user id is found as the single attribute in the collection</returns>
         public static bool TryGetUserIdFromAttributeMatch(List<AttributeMatch> match, out int userid)
         {
             userid = 0;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
             {
-                return int.TryParse(match.First().Value, out userid) && userid != 0;
+                return int.TryParse(match[0].Value, out userid) && userid != 0;
             }
 
             return false;
@@ -78,13 +78,13 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Trys to get the organization number attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The organization number if found as the single attribute in the collection</returns>
+        /// <returns>The true if organization number is found as the single attribute in the collection</returns>
         public static bool TryGetOrganizationNumberFromAttributeMatch(List<AttributeMatch> match, out string orgNo)
         {
             orgNo = string.Empty;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
             {
-                orgNo = match.First().Value;
+                orgNo = match[0].Value;
                 return true;
             }
 
@@ -94,13 +94,79 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Trys to get the social security number attribute value from a list of AttributeMatch models
         /// </summary>
-        /// <returns>The social security number if found as the single attribute in the collection</returns>
+        /// <returns>The true if social security number is found as the single attribute in the collection</returns>
         public static bool TryGetSocialSecurityNumberAttributeMatch(List<AttributeMatch> match, out string ssn)
         {
             ssn = string.Empty;
-            if (match?.Count == 1 && match.First().Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
             {
-                ssn = match.First().Value;
+                ssn = match[0].Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get both social security number and last name attribute value from a list of AttributeMatch models
+        /// </summary>
+        /// <returns>The true if both social security number and last name is found as the only attributes in the collection</returns>
+        public static bool TryGetSocialSecurityNumberAndLastNameAttributeMatch(List<AttributeMatch> match, out string ssn, out string lastName)
+        {
+            ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+
+            if (match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get both username and last name attribute value from a list of AttributeMatch models
+        /// </summary>
+        /// <returns>The true if both username and last name is found as the only attributes in the collection</returns>
+        public static bool TryGetUsernameAndLastNameAttributeMatch(List<AttributeMatch> match, out string username, out string lastName)
+        {
+            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+
+            if (match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get enterprise username attribute value from a list of AttributeMatch models
+        /// </summary>
+        /// <returns>The true if both enterprise username is found as the only attributes in the collection</returns>
+        public static bool TryGetEnterpriseUserNameAttributeMatch(List<AttributeMatch> match, out string enterpriseUserName)
+        {
+            enterpriseUserName = string.Empty;
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName)
+            {
+                enterpriseUserName = match[0].Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get an single specific attribute value from a list of AttributeMatch models, if it's the only attribute in the list
+        /// </summary>
+        /// <returns>The true if person uuid is found as the only attributes in the collection</returns>
+        public static bool TryGetSingleAttributeMatchValue(List<AttributeMatch> match, string matchAttributeIdentifier, out string value)
+        {
+            value = string.Empty;
+            if (match != null && match.Count == 1 && match[0].Id == matchAttributeIdentifier)
+            {
+                value = match[0].Value;
                 return true;
             }
 
@@ -139,24 +205,30 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Gets the resource attributes as out params from a single Resource
+        /// Gets the resource attribute values as out params from a Resource specified as a List of AttributeMatches
         /// </summary>
         /// <param name="input">The resource to fetch org and app from</param>
         /// <param name="resourceMatchType">the resource match type</param>
         /// <param name="resourceId">the resource id. Either a resource registry id or org/app</param>
         /// <param name="org">the org part of the resource</param>
         /// <param name="app">the app part of the resource</param>
+        /// <param name="serviceCode">altinn 2 service code</param>
+        /// <param name="serviceEditionCode">altinn 2 service edition code</param>
         /// <returns>A bool indicating whether params where found</returns>
-        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app)
+        public static bool TryGetResourceFromAttributeMatch(List<AttributeMatch> input, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
         {
             resourceMatchType = ResourceAttributeMatchType.None;
             resourceId = null;
             org = null;
             app = null;
+            serviceCode = null;
+            serviceEditionCode = null;
 
-            AttributeMatch resourceRegistryMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
-            AttributeMatch orgMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
-            AttributeMatch appMatch = input.FirstOrDefault(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            AttributeMatch resourceRegistryMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute);
+            AttributeMatch orgMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            AttributeMatch appMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            AttributeMatch serviceCodeMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceCodeAttribute);
+            AttributeMatch serviceEditionMatch = input.Find(am => am.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ServiceEditionCodeAttribute);
 
             if (resourceRegistryMatch != null && orgMatch == null && appMatch == null)
             {
@@ -172,7 +244,15 @@ namespace Altinn.AccessManagement.Core.Helpers
                 app = appMatch.Value;
                 resourceId = $"{org}/{app}";
                 return true;
-            }            
+            }
+
+            if (serviceCodeMatch != null && serviceEditionMatch != null && resourceRegistryMatch == null && orgMatch == null && appMatch == null)
+            {
+                resourceMatchType = ResourceAttributeMatchType.Altinn2Service;
+                serviceCode = serviceCodeMatch.Value;
+                serviceEditionCode = serviceEditionMatch.Value;
+                return true;
+            }
 
             return false;
         }
@@ -196,7 +276,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             try
             {
-                TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app);
+                TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app, out string _, out string _);
                 offeredByPartyId = rule.OfferedByPartyId;
                 coveredByPartyId = TryGetPartyIdFromAttributeMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
                 coveredByUserId = TryGetUserIdFromAttributeMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
@@ -237,7 +317,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 catch (Exception)
                 {
                     return false;
-                }                
+                }
             }
 
             return false;
@@ -406,6 +486,36 @@ namespace Altinn.AccessManagement.Core.Helpers
                     }
                 }
             };
+        }
+
+        /// <summary>
+        /// Gets the list of Rules as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rules">The rules output from a delegation to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static List<RightDelegationResult> GetRightDelegationResultsFromRules(List<Rule> rules)
+        {
+            return rules.Select(rule => new RightDelegationResult
+            {
+                Resource = rule.Resource,
+                Action = rule.Action,
+                Status = rule.CreatedSuccessfully ? DelegationStatus.Delegated : DelegationStatus.NotDelegated
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Gets the list of Rights as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rights">The rights to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static List<RightDelegationResult> GetRightDelegationResultsFromFailedRights(List<Right> rights)
+        {
+            return rights.Select(right => new RightDelegationResult
+            {
+                Resource = right.Resource,
+                Action = right.Action,
+                Status = DelegationStatus.NotDelegated
+            }).ToList();
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

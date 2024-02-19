@@ -19,6 +19,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     {
         private readonly HttpClient _httpClient = new();
         private readonly ILogger<IResourceRegistryClient> _logger;
+        private readonly JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
@@ -38,21 +39,16 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId)
         {
-            ServiceResource? result = null;
             string endpointUrl = $"resource/{resourceId}";
 
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                };
                 string content = await response.Content.ReadAsStringAsync();
-                result = JsonSerializer.Deserialize<ServiceResource>(content, options);
+                return JsonSerializer.Deserialize<ServiceResource>(content, options);
             }
 
-            return await Task.FromResult(result);
+            return null;
         }
 
         /// <inheritdoc/>
@@ -67,10 +63,6 @@ namespace Altinn.AccessManagement.Integration.Clients
                 HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var options = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                    };
                     string content = await response.Content.ReadAsStringAsync();
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                 }
@@ -99,12 +91,33 @@ namespace Altinn.AccessManagement.Integration.Clients
             HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                };
                 string content = await response.Content.ReadAsStringAsync();
                 resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+            }
+
+            return resources;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ServiceResource>> GetResourceList()
+        {
+            List<ServiceResource> resources = new();
+
+            try
+            {
+                string endpointUrl = $"resource/resourcelist";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccessManagement // ResourceRegistryClient // GetResourceList // Exception");
+                throw;
             }
 
             return resources;

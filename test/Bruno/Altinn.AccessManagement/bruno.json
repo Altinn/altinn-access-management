@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Altinn.AccessManagement",
+  "type": "collection",
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "{{baseUrl}}/accessmanagement/api/v1"
+  }
+}

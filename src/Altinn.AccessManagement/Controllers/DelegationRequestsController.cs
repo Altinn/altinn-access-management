@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Resolvers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
@@ -36,9 +37,9 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("accessmanagement/api/v1/delegationrequests/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<DelegationRequests> Get(string who, [FromQuery] string? serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus>? status = null, [FromQuery] string? continuation = "")
+        public async Task<DelegationRequests> Get(string who, [FromQuery] string serviceCode = "", [FromQuery] int? serviceEditionCode = null, [FromQuery] RestAuthorizationRequestDirection direction = RestAuthorizationRequestDirection.Both, [FromQuery] List<RestAuthorizationRequestStatus> status = null, [FromQuery] string continuation = "")
         {
-           return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
+            return await _delegationRequests.GetDelegationRequestsAsync(who, serviceCode, serviceEditionCode, direction, status, continuation);
         }
 
         /// <summary>
@@ -49,12 +50,17 @@ namespace Altinn.AccessManagement.Controllers
         [HttpGet("accessmanagement/api/v1/delegationrequests/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<ActionResult<DelegationRequest>> Get(string id)
+        public Task<ActionResult<DelegationRequest>> Get(string id)
         {
-            DelegationRequest delegationRequest = new DelegationRequest();
-            delegationRequest.RequestResources = new List<AuthorizationRequestResource>();
-            delegationRequest.RequestResources.Add(new AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 });
-            return delegationRequest;
+            DelegationRequest delegationRequest = new()
+            {
+                RequestResources =
+                [
+                    new AuthorizationRequestResource() { ServiceCode = "asdf", ServiceEditionCode = 435 },
+                ]
+            };
+
+            return Task.FromResult<ActionResult<DelegationRequest>>(delegationRequest);
         }
     }
 }

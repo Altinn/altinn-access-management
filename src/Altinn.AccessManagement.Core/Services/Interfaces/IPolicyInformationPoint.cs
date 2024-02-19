@@ -25,5 +25,12 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="getDelegableRights">Whether the query is only rights the user is allowed to delegate to others</param>
         /// <returns>A list of rights</returns>
         Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false, bool getDelegableRights = false);
+
+        /// <summary>
+        /// Finds all delegation changes for a given user, reportee and app/resource context
+        /// </summary>
+        /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
+        /// <returns>A list of delegation changes that's stored in the database</returns>
+        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request);
     }
 }

@@ -1,0 +1,36 @@
+meta {
+  name: digdir-am-k6-read
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/maskinporten/delegations?supplierOrg={{supplierOrg}}&consumerOrg={{consumerOrg}}&scope={{scope}}
+  body: none
+  auth: none
+}
+
+query {
+  supplierOrg: {{supplierOrg}}
+  consumerOrg: {{consumerOrg}}
+  scope: {{scope}}
+}
+
+headers {
+  Accept: application/json
+}
+
+vars:pre-request {
+  supplierOrg: 
+  consumerOrg: 
+  scope: test:am/k6.read
+  auth_tokenType: Enterprise
+  auth_partyId: 50088610
+  auth_org: digdir
+  auth_orgNo: 991825827
+  auth_scopes: altinn:maskinporten/delegations.admin
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

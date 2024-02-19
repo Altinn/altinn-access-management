@@ -1,6 +1,9 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Models;
+using Altinn.Authorization.ABAC.Constants;
+using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Mappers
@@ -13,7 +16,7 @@ namespace Altinn.AccessManagement.Mappers
         /// <summary>
         /// Configuration for accessmanagement mapper
         /// </summary>
-        public AccessManagementMapper() 
+        public AccessManagementMapper()
         {
             AllowNullCollections = true;
             CreateMap<Party, PartyExternal>();
@@ -26,17 +29,6 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Scopes, act => act.MapFrom(src => src.ResourceReferences.Where(rf => string.Equals(rf.ReferenceType, ReferenceType.MaskinportenScope)).Select(rf => rf.Reference).ToList()))
                 .ForMember(dest => dest.Created, act => act.MapFrom(src => src.Created))
                 .ForMember(dest => dest.ResourceId, act => act.MapFrom(src => src.ResourceId));
-            CreateMap<ServiceResource, ServiceResourceExternal>()
-                .ForMember(dest => dest.Identifier, act => act.MapFrom(src => src.Identifier))
-                .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
-                .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Description))
-                .ForMember(dest => dest.RightDescription, act => act.MapFrom(src => src.RightDescription))
-                .ForMember(dest => dest.ValidFrom, act => act.MapFrom(src => src.ValidFrom))
-                .ForMember(dest => dest.ValidTo, act => act.MapFrom(src => src.ValidTo))
-                .ForMember(dest => dest.Status, act => act.MapFrom(src => src.Status))
-                .ForMember(dest => dest.ResourceType, act => act.MapFrom(src => src.ResourceType))
-                .ForMember(dest => dest.ResourceReferences, act => act.MapFrom(src => src.ResourceReferences))
-                .ForMember(dest => dest.HasCompetentAuthority, act => act.MapFrom(src => src.HasCompetentAuthority));
             CreateMap<CompetentAuthority, CompetentAuthorityExternal>()
                 .ForMember(dest => dest.Orgcode, act => act.MapFrom(src => src.Orgcode))
                 .ForMember(dest => dest.Organization, act => act.MapFrom(src => src.Organization))
@@ -54,17 +46,37 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<RightsQueryExternal, RightsQuery>();
             CreateMap<RightSource, RightSourceExternal>();
             CreateMap<RightSourceExternal, RightSource>();
-            CreateMap<Right, RightExternal>();
-            CreateMap<BaseRightExternal, Right>();
+            CreateMap<RightsDelegationCheckRequestExternal, RightsDelegationCheckRequest>();
+            CreateMap<RightDelegationCheckResult, RightDelegationCheckResultExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<Detail, DetailExternal>();
+            CreateMap<Right, RightExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<BaseRightExternal, Right>()
+                .ForMember(dest => dest.Action, opt => opt.MapFrom(src =>
+                    new AttributeMatch
+                    {
+                        Id = XacmlConstants.MatchAttributeIdentifiers.ActionId,
+                        Value = src.Action
+                    }));
+            CreateMap<Right, BaseRightExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<RightDelegation, RightDelegationExternal>();
 
             // Delegation
-            CreateMap<DelegationInputExternal, DelegationLookup>();
-            CreateMap<Right, BaseRightExternal>();
-            CreateMap<DelegationActionResult, DelegationOutputExternal>()
-                .ForMember(dest => dest.To, act => act.MapFrom(src => src.To))
-                .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
+            CreateMap<RightsDelegationRequestExternal, DelegationLookup>();
             CreateMap<RevokeOfferedDelegationExternal, DelegationLookup>();
             CreateMap<RevokeReceivedDelegationExternal, DelegationLookup>();
+            CreateMap<DelegationActionResult, RightsDelegationResponseExternal>()
+                .ForMember(dest => dest.RightDelegationResults, act => act.MapFrom(src => src.Rights));
+            CreateMap<RightDelegationResult, RightDelegationResultExternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
+            CreateMap<DelegationChange, DelegationChangeExternal>();
+            CreateMap<DelegationChangeType, DelegationChangeTypeExternal>();
+
+            CreateMap<AuthorizedParty, AuthorizedPartyExternal>()
+                .ForMember(dest => dest.PartyType, act => act.MapFrom(src => src.PartyTypeName));
+            CreateMap<PartyType, PartyTypeExternal>();
         }
     }
 }

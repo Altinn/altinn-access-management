@@ -1,0 +1,68 @@
+meta {
+  name: ttd-apps-test_success
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:ssn",
+              "value": "{{toSsn}}"
+          },
+          {
+              "id": "urn:altinn:lastname",
+              "value": "{{toLastName}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:org",
+                      "value": "{{org}}"
+                  },
+                  {
+                      "id": "urn:altinn:app",
+                      "value": "{{app}}"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toSsn: '02056260016'
+  toLastName: Rimstad
+  org: ttd
+  app: apps-test
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 201 CREATED", function() {
+    expect(res.status).to.equal(201);
+  });
+}

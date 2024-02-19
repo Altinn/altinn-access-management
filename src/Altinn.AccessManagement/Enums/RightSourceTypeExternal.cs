@@ -1,4 +1,4 @@
-﻿namespace Altinn.AccessManagement.Core.Enums
+﻿namespace Altinn.AccessManagement.Enums
 {
     /// <summary>
     /// Enum for different the source types exist for a right in Altinn Authorization

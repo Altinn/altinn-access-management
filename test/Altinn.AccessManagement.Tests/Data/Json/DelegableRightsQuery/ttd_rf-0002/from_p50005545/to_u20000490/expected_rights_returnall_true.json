@@ -11,10 +11,7 @@
         "value": "rf-0002"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "instantiate"
-    },
+    "action": "instantiate",
     "canDelegate": true,
     "rightSources": [
       {
@@ -159,10 +156,7 @@
         "value": "rf-0002"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "canDelegate": true,
     "rightSources": [
       {
@@ -311,10 +305,7 @@
         "value": "Task_1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "canDelegate": true,
     "rightSources": [
       {
@@ -456,10 +447,7 @@
         "value": "Task_1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    },
+    "action": "write",
     "canDelegate": true,
     "rightSources": [
       {
@@ -601,10 +589,7 @@
         "value": "EndEvent_1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "read"
-    },
+    "action": "read",
     "canDelegate": true,
     "rightSources": [
       {
@@ -746,10 +731,7 @@
         "value": "EndEvent_1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    },
+    "action": "write",
     "canDelegate": true,
     "rightSources": [
       {
@@ -887,10 +869,7 @@
         "value": "rf-0002"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "delete"
-    },
+    "action": "delete",
     "canDelegate": true,
     "rightSources": [
       {
@@ -1028,10 +1007,7 @@
         "value": "rf-0002"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "write"
-    },
+    "action": "write",
     "canDelegate": false,
     "rightSources": [
       {
@@ -1166,10 +1142,7 @@
         "value": "EndEvent_1"
       }
     ],
-    "action": {
-      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-      "value": "complete"
-    },
+    "action": "complete",
     "canDelegate": false,
     "rightSources": [
       {

@@ -1,15 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Filters;
-using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Utilities;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +18,6 @@ namespace Altinn.AccessManagement.Controllers
         private readonly ILogger _logger;
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
-        private readonly IMaskinportenSchemaService _maskinportenSchemaSvc;
-        private readonly IMapper _mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationsController"/> class.
@@ -33,20 +25,14 @@ namespace Altinn.AccessManagement.Controllers
         /// <param name="logger">the logger.</param>
         /// <param name="policyInformationPoint">The policy information point</param>
         /// <param name="policyAdministrationPoint">The policy administration point</param>
-        /// <param name="maskinportenSchemaSvc">Handler for the maskinporten schema service</param>
-        /// <param name="mapper">mapper handler</param>
         public DelegationsController(
-            ILogger<DelegationsController> logger, 
-            IPolicyInformationPoint policyInformationPoint, 
-            IPolicyAdministrationPoint policyAdministrationPoint,
-            IMaskinportenSchemaService maskinportenSchemaSvc,
-            IMapper mapper)
+            ILogger<DelegationsController> logger,
+            IPolicyInformationPoint policyInformationPoint,
+            IPolicyAdministrationPoint policyAdministrationPoint)
         {
             _logger = logger;
             _pap = policyAdministrationPoint;
             _pip = policyInformationPoint;
-            _maskinportenSchemaSvc = maskinportenSchemaSvc;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -116,7 +102,7 @@ namespace Altinn.AccessManagement.Controllers
 
             foreach (List<AttributeMatch> resource in ruleQuery.Resources)
             {
-                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _))
+                if (DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out _, out _, out _, out _))
                 {
                     resourceIds.Add(resourceId);
                 }
@@ -141,7 +127,7 @@ namespace Altinn.AccessManagement.Controllers
                 return StatusCode(400, $"Unable to get the rules: Missing offeredbyPartyId value.");
             }
 
-            if (offeredByPartyIds.Count == 0 && coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
+            if (coveredByPartyIds.Count == 0 && coveredByUserIds.Count == 0)
             {
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
@@ -225,74 +211,6 @@ namespace Altinn.AccessManagement.Controllers
 
             _logger.LogInformation("Deletion could not be completed. None of the rules could be processed, indicating invalid or incomplete input:\n{policiesToDeleteSerialized}", policiesToDeleteSerialized);
             return StatusCode(400, $"Unable to complete deletion");
-        }
-
-        /// <summary>
-        /// Endpoint for retrieving delegated Maskinporten resources offered by the reportee party to others
-        /// </summary>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public async Task<ActionResult<List<DelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
-        {
-            try
-            {
-                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _maskinportenSchemaSvc.GetOfferedMaskinportenSchemaDelegations(partyMatch);
-                return _mapper.Map<List<DelegationExternal>>(delegations);
-            }
-            catch (ArgumentException argEx)
-            {
-                ModelState.AddModelError("Validation Error", argEx.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
-            catch (Exception ex) 
-            {
-                string errorMessage = ex.Message;
-                _logger.LogError(ex, "Failed to fetch offered delegations, See the error message for more details {errorMessage}", errorMessage);
-                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
-            }
-        }
-
-        /// <summary>
-        /// Endpoint for retrieving received Maskinporten resource delegation to the reportee party from others
-        /// </summary>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public async Task<ActionResult<List<DelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
-        {
-            try
-            {
-                AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _maskinportenSchemaSvc.GetReceivedMaskinportenSchemaDelegations(partyMatch);
-                return _mapper.Map<List<DelegationExternal>>(delegations);
-            }
-            catch (ArgumentException argEx)
-            {
-                ModelState.AddModelError("Validation Error", argEx.Message);
-                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = ex.Message;
-                _logger.LogError(ex, "Failed to fetch received delegations, See the error message for more details {errorMessage}", errorMessage);
-                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext));
-            }
         }
     }
 }

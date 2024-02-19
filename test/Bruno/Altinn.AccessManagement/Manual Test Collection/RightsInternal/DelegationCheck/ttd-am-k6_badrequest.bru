@@ -1,0 +1,63 @@
+meta {
+  name: ttd-am-k6_badrequest
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/delegationcheck
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "{{resourceId}}"
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  resourceId: ttd-am-k6
+  party: 50005545
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+}
+
+vars:post-response {
+  errors: res.body.errors
+}
+
+assert {
+  res.status: eq 400
+  res.body.type: eq https://tools.ietf.org/html/rfc7231#section-6.5.1
+  res.body.title: eq One or more validation errors occurred.
+  res.body.status: eq 400
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 400 BADREQUEST", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("Should return expected error message", function() {
+    const valError = res.getBody();
+    // ToDo Expect Result
+    expect(valError.type).to.equal('https://tools.ietf.org/html/rfc7231#section-6.5.1');
+  });
+}

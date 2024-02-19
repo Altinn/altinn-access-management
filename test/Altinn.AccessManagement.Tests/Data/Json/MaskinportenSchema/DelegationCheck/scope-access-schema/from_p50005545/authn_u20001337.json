@@ -1,0 +1,27 @@
+[
+  {
+    "rightKey": "scope-access-schema:ScopeAccess",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "scope-access-schema"
+      }
+    ],
+    "action": "ScopeAccess",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

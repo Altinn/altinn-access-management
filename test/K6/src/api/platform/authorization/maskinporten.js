@@ -75,6 +75,8 @@ export function postMaskinportenSchema(altinnToken, offeredByPartyId, resourceid
   body.push(makeRequestBody(resourceid, attributeId, attributeValue));
   var bodystring = JSON.stringify(body);
   bodystring = bodystring.substring(1, bodystring.length-1)
+  console.log("body: ");
+  console.log(bodystring);
   return http.post(endpoint, bodystring, params);
 }
 

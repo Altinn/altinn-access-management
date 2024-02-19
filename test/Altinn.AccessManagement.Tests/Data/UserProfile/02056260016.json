@@ -1,0 +1,47 @@
+{
+  "UserId": 20000095,
+  "UserUuid": "00000000-0000-0000-0005-000000002203",
+  "UserType": 1,
+  "UserName": "",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50002203,
+  "Party": {
+    "PartyTypeName": 1,
+    "SSN": "02056260016",
+    "OrgNumber": "",
+    "Person": {
+      "SSN": "02056260016",
+      "Name": "PAULA RIMSTAD",
+      "FirstName": "PAULA",
+      "MiddleName": "",
+      "LastName": "RIMSTAD",
+      "TelephoneNumber": "",
+      "MobileNumber": "",
+      "MailingAddress": " Brannpostveien 15 3014 DRAMMEN",
+      "MailingPostalCode": "3014",
+      "MailingPostalCity": "DRAMMEN",
+      "AddressMunicipalNumber": "",
+      "AddressMunicipalName": "",
+      "AddressStreetName": "",
+      "AddressHouseNumber": "",
+      "AddressHouseLetter": "",
+      "AddressPostalCode": "3014",
+      "AddressCity": "DRAMMEN",
+      "DateOfDeath": null
+    },
+    "Organization": null,
+    "PartyId": 50002203,
+    "UnitType": null,
+    "Name": "PAULA RIMSTAD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

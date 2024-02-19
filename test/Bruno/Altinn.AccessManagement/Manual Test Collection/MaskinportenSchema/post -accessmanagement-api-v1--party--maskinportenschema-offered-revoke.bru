@@ -1,0 +1,22 @@
+meta {
+  name: post -accessmanagement-api-v1--party--maskinportenschema-offered-revoke
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://accessmanagement/api/v1/{party}/maskinportenschema/offered/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  {
+    "to": [],
+    "rights": []
+  }
+}

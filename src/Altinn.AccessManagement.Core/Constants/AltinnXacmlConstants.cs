@@ -82,6 +82,11 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string ResourceRegistryAttribute = "urn:altinn:resource";
 
             /// <summary>
+            /// Organization name
+            /// </summary>
+            public const string OrganizationName = "urn:altinn:organization:name";
+
+            /// <summary>
             /// Organization number attribute match indentifier 
             /// </summary>
             public const string OrganizationNumberAttribute = "urn:altinn:organizationnumber";
@@ -90,6 +95,46 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Social security number attribute match indentifier 
             /// </summary>
             public const string SocialSecurityNumberAttribute = "urn:altinn:ssn";
+
+            /// <summary>
+            /// Altinn 2 service code attribute match indentifier 
+            /// </summary>
+            public const string ServiceCodeAttribute = "urn:altinn:servicecode";
+
+            /// <summary>
+            /// Altinn 2 service edition code attribute match indentifier 
+            /// </summary>
+            public const string ServiceEditionCodeAttribute = "urn:altinn:serviceeditioncode";
+
+            /// <summary>
+            /// Last name of a person 
+            /// </summary>
+            public const string LastName = "urn:altinn:lastname";
+
+            /// <summary>
+            /// Username
+            /// </summary>
+            public const string UserName = "urn:altinn:username";
+
+            /// <summary>
+            /// Enterprise username
+            /// </summary>
+            public const string EnterpriseUserName = "urn:altinn:enterpriseusername";
+
+            /// <summary>
+            /// Person uuid
+            /// </summary>
+            public const string PersonUuid = "urn:altinn:person:uuid";
+
+            /// <summary>
+            /// Enterprise user uuid
+            /// </summary>
+            public const string EnterpriseUserUuid = "urn:altinn:enterpriseuser:uuid";
+
+            /// <summary>
+            /// Organization uuid
+            /// </summary>
+            public const string OrganizationUuid = "urn:altinn:organization:uuid";
         }
 
         /// <summary>

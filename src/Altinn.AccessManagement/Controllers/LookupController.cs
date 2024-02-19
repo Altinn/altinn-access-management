@@ -36,40 +36,6 @@ namespace Altinn.AccessManagement.Controllers
         }
 
         /// <summary>
-        /// Endpoint for retrieving the party of an organization
-        /// </summary>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Route("accessmanagement/api/v1/lookup/org/{orgNummer}")]
-        public async Task<ActionResult<PartyExternal>> GetOrganisation(string orgNummer)
-        {
-            try
-            {
-                if (!IdentifierUtil.IsValidOrganizationNumber(orgNummer))
-                {
-                    return BadRequest("The organisation number is not valid");
-                }
-
-                Party party = await _contextRetrieval.GetParty(orgNummer);
-
-                if (party == null)
-                {
-                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState, 400));
-                }
-                else
-                {
-                    return _mapper.Map<PartyExternal>(party);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "GetOrganisation failed to fetch organisation information");
-                return StatusCode(500);
-            }
-        }
-
-        /// <summary>
         /// Endpoint for retrieving party if party exists in the authenticated users reporteelist
         /// </summary>
         /// <param name="partyId">The partyId for the reportee to look up</param>

@@ -1,0 +1,28 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organization:uuid",
+      "value": "00000000-0000-0000-0001-000000000004"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "read"
+    },
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "write"
+    }
+  ]
+}

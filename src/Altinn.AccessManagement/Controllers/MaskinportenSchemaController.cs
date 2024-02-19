@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -10,6 +11,7 @@ using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
 {
@@ -17,6 +19,7 @@ namespace Altinn.AccessManagement.Controllers
     /// Controller responsible for all operations regarding Maskinporten Schema
     /// </summary>
     [ApiController]
+    [Route("accessmanagement/api/v1/")]
     public class MaskinportenSchemaController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -45,17 +48,15 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Route(
-            "accessmanagement/api/v1/admin/delegations/maskinportenschema")] // Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
-        [Route("accessmanagement/api/v1/maskinporten/delegations/")]
+        [Route("admin/delegations/maskinportenschema")]// Old path to be removed later (after maskinporten no longer use A2 proxy or A2 updated with new endpoint)
+        [Route("maskinporten/delegations/")]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY)]
         [Produces("application/json")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations(
-            [FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
         {
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
@@ -95,6 +96,62 @@ namespace Altinn.AccessManagement.Controllers
         }
 
         /// <summary>
+        /// Endpoint for performing a query of what rights a user can delegate to others on behalf of a specified reportee and maskinporten schema.
+        /// </summary>
+        /// <param name="party">The reportee party</param>
+        /// <param name="rightsDelegationCheckRequest">Request model for user rights delegation check</param>
+        /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpPost]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        [Route("{party}/maskinportenschema/delegationcheck")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(500)]
+        public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
+        {
+            int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
+            int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
+
+            try
+            {
+                AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
+
+                RightsDelegationCheckRequest rightDelegationStatusRequestInternal = _mapper.Map<RightsDelegationCheckRequest>(rightsDelegationCheckRequest);
+                rightDelegationStatusRequestInternal.From = reportee.SingleToList();
+
+                DelegationCheckResponse delegationCheckResultInternal = await _delegation.DelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                if (!delegationCheckResultInternal.IsValid)
+                {
+                    foreach (var error in delegationCheckResultInternal.Errors)
+                    {
+                        ModelState.AddModelError(error.Key, error.Value);
+                    }
+
+                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+                }
+
+                return _mapper.Map<List<RightDelegationCheckResultExternal>>(delegationCheckResultInternal.RightDelegationCheckResults);
+            }
+            catch (ValidationException valEx)
+            {
+                ModelState.AddModelError("Validation Error", valEx.Message);
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(500, ex, "Internal exception occurred during DelegationCheck");
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
+            }
+        }
+
+        /// <summary>
         /// Endpoint for delegating maskinporten scheme resources between two parties
         /// </summary>
         /// <response code="201">Created</response>
@@ -102,18 +159,17 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/")] // Old path to be removed later (after BFF update)
-        [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered")]
+        [Route("{party}/maskinportenschema/offered")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<DelegationOutputExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] DelegationInputExternal delegation)
+        public async Task<ActionResult<RightsDelegationResponseExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal delegation)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
-
+            
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
@@ -131,10 +187,9 @@ namespace Altinn.AccessManagement.Controllers
                     return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
                 }
 
-                DelegationOutputExternal delegationOutput = _mapper.Map<DelegationOutputExternal>(response);
-                DelegationHelper.TryGetResourceFromAttributeMatch(response.Rights.First().Resource, out var _, out string resourceId, out var _, out var _);
-                DelegationHelper.TryGetPartyIdFromAttributeMatch(internalDelegation.To, out int toPartyId);
-                return Created(new Uri($"https://{Request.Host}/accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered?to={toPartyId}&resourceId={resourceId}"), delegationOutput);
+                RightsDelegationResponseExternal delegationResponse = _mapper.Map<RightsDelegationResponseExternal>(response);
+                
+                return StatusCode(201, delegationResponse);
             }
             catch (Exception ex)
             {
@@ -156,8 +211,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        ////[Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered")] // Old path to be removed later (after BFF update)
-        [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered")]
+        [Route("{party}/maskinportenschema/offered")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(200)]
@@ -192,8 +246,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/offered/revoke")] // Old path to be removed later (after BFF update)
-        [Route("accessmanagement/api/v1/{party}/maskinportenschema/offered/revoke")]
+        [Route("{party}/maskinportenschema/offered/revoke")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(204)]
@@ -242,8 +295,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
-        ////[Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received")] // Old path to be removed later (after BFF update)
-        [Route("accessmanagement/api/v1/{party}/maskinportenschema/received")]
+        [Route("{party}/maskinportenschema/received")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(200)]
@@ -278,8 +330,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
-        [Route("accessmanagement/api/v1/{party}/delegations/maskinportenschema/received/revoke")] // Old path to be removed later (after BFF update)
-        [Route("accessmanagement/api/v1/{party}/maskinportenschema/received/revoke")]
+        [Route("{party}/maskinportenschema/received/revoke")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(204)]

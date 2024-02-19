@@ -1,0 +1,19 @@
+meta {
+  name: post -accessmanagement-api-v1-policyinformation-getdelegationchanges
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subject": "",
+    "party": "",
+    "resource": []
+  }
+}

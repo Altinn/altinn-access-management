@@ -1,0 +1,47 @@
+{
+  "UserId": 20001337,
+  "UserUuid": "00000000-0000-0000-0005-000000003899",
+  "UserType": 1,
+  "UserName": "",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50003899,
+  "Party": {
+    "PartyTypeName": 1,
+    "SSN": "27099450067",
+    "OrgNumber": "",
+    "Person": {
+      "SSN": "27099450067",
+      "Name": "ØRJAN RAVNÅS",
+      "FirstName": "ØRJAN",
+      "MiddleName": "",
+      "LastName": "RAVNÅS",
+      "TelephoneNumber": "",
+      "MobileNumber": "",
+      "MailingAddress": " Bjerkeveien 23 1726 SARPSBORG",
+      "MailingPostalCode": "1726",
+      "MailingPostalCity": "SARPSBORG",
+      "AddressMunicipalNumber": "",
+      "AddressMunicipalName": "",
+      "AddressStreetName": "",
+      "AddressHouseNumber": "",
+      "AddressHouseLetter": "",
+      "AddressPostalCode": "1726",
+      "AddressCity": "SARPSBORG",
+      "DateOfDeath": null
+    },
+    "Organization": null,
+    "PartyId": 50003899,
+    "UnitType": null,
+    "Name": "ØRJAN RAVNÅS",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

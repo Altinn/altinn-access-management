@@ -1,0 +1,8 @@
+{
+  "resource": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "scope-access-schema"
+    }
+  ]
+}

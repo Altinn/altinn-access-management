@@ -27,6 +27,9 @@ bld/
 [Oo]bj/
 msbuild.log
 
+#
+.vscode
+
 # Cross building rootfs
 cross/rootfs/
 
@@ -375,3 +378,12 @@ nb-configuration.xml
 .idea
 src/Altinn.Apps/AppTemplates/AspNet/App/Properties/launchSettings.json
 *.iml
+
+# Bruno
+/test/Bruno/Altinn.AccessManagement/.env
+/test/Bruno/Altinn.AccessManagement/results.json
+/test/Bruno/Altinn.AccessManagement/results.xml
+
+# vscode
+.vscode
+.fake

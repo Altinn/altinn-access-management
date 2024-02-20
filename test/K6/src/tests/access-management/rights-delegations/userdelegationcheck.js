@@ -101,8 +101,6 @@ export function daglForOrgHasScopeAccessForResource() {
     const offeredByPartyId = org1.partyid;
     const appid = 'k6-userdelegationcheck-apiadm';
     var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
-    console.log(res.status);
-    console.log(res.body);
 
       // Assert
   var success = check(res, {
@@ -126,8 +124,6 @@ export function daglStatusIsNotDelegableForPrivResource() {
   const offeredByPartyId = org1.partyid;
   const appid = 'k6-userdelegationcheck-priv';
   var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
-  console.log(res.status);
-  console.log(res.body);
 
     // Assert
 var success = check(res, {
@@ -152,8 +148,6 @@ export function hadmForOrgHasScopeAccess() {
   const offeredByPartyId = org1.hadm.partyid;
   const appid = 'k6-userdelegationcheck-apiadm';
   var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
-  console.log(res.status);
-  console.log(res.body);
 
     // Assert
 var success = check(res, {
@@ -176,8 +170,6 @@ export function privUserHasScopeAccessForResource() {
   const offeredByPartyId = org1.dagl.partyid;
   const appid = 'k6-userdelegationcheck-priv';
   var res = userDelegationCheck.resourceUserDelegationCheck(offeredByToken, offeredByPartyId, appid);
-  console.log(res.status);
-  console.log(res.body);
 
     // Assert
 var success = check(res, {

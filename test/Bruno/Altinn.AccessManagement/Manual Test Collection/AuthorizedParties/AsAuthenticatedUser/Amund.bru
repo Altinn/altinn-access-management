@@ -1,17 +1,17 @@
 meta {
-  name: Asle
+  name: Amund
   type: http
-  seq: 4
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=true
   body: json
   auth: none
 }
 
 query {
-  includeAltinn2: false
+  includeAltinn2: true
 }
 
 headers {
@@ -21,9 +21,9 @@ headers {
 
 vars:pre-request {
   auth_tokenType: Personal
-  auth_userId: 20001121
-  auth_partyId: 50003229
-  auth_ssn: '17105431031'
+  auth_userId: 20000071
+  auth_partyId: 50002179
+  auth_ssn: '01114270071'
 }
 
 script:pre-request {

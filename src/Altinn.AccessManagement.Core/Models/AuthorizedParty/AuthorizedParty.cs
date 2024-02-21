@@ -80,11 +80,6 @@ public class AuthorizedParty
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets the value of ChildParties
-    /// </summary>
-    public List<AuthorizedParty> ChildParties { get; set; } = [];
-
-    /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized actor has been authorized with some right for, on behalf of this party
     /// </summary>
     public List<string> AuthorizedResources { get; set; } = [];
@@ -95,9 +90,9 @@ public class AuthorizedParty
     public List<string> AuthorizedRoles { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets a collection of all access packages from Altinn 3 which the authorized actor has been authorized for, on behalf of this party
+    /// Gets or sets the value of ChildParties
     /// </summary>
-    public List<string> AuthorizedAccessPackages { get; set; } = [];
+    public List<AuthorizedParty> ChildParties { get; set; } = [];
 
     /// <summary>
     /// Enriches this authorized party and any child/subunits with the list of authorized resources

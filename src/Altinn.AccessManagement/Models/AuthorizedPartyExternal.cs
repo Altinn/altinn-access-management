@@ -63,11 +63,6 @@ public class AuthorizedPartyExternal
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets the value of ChildParties
-    /// </summary>
-    public List<AuthorizedPartyExternal> ChildParties { get; set; } = [];
-
-    /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized actor has been authorized with some right for, on behalf of this party
     /// </summary>
     public List<string> AuthorizedResources { get; set; } = [];
@@ -76,4 +71,9 @@ public class AuthorizedPartyExternal
     /// Gets or sets a collection of all rolecodes for roles from either Enhetsregisteret or Altinn 2 which the authorized actor has been authorized for, on behalf of this party
     /// </summary>
     public List<string> AuthorizedRoles { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the value of ChildParties
+    /// </summary>
+    public List<AuthorizedPartyExternal> ChildParties { get; set; } = [];
 }

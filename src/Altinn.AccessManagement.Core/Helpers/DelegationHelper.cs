@@ -98,7 +98,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetSocialSecurityNumberAttributeMatch(List<AttributeMatch> match, out string ssn)
         {
             ssn = string.Empty;
-            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId)
             {
                 ssn = match[0].Value;
                 return true;
@@ -113,8 +113,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>The true if both social security number and last name is found as the only attributes in the collection</returns>
         public static bool TryGetSocialSecurityNumberAndLastNameAttributeMatch(List<AttributeMatch> match, out string ssn, out string lastName)
         {
-            ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)?.Value;
-            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+            ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName)?.Value;
 
             if (match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
             {
@@ -130,8 +130,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>The true if both username and last name is found as the only attributes in the collection</returns>
         public static bool TryGetUsernameAndLastNameAttributeMatch(List<AttributeMatch> match, out string username, out string lastName)
         {
-            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
-            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName)?.Value;
 
             if (match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
             {

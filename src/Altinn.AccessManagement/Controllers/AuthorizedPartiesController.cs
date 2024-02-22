@@ -4,7 +4,8 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Models;
+using Altinn.Platform.Register.Enums;
+using Altinn.Platform.Register.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ public class AuthorizedPartiesController : ControllerBase
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly IAuthorizedPartiesService _authorizedPartiesService;
+    private readonly IContextRetrievalService _contextRetrievalService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizedPartiesController"/> class.
@@ -29,14 +31,17 @@ public class AuthorizedPartiesController : ControllerBase
     /// <param name="logger">logger service</param>
     /// <param name="mapper">mapper service</param>
     /// <param name="authorizedPartiesService">service implementation for authorized parties</param>
+    /// <param name="contextRetrievalService">service implementation for getting information regaring users, party etc.</param>
     public AuthorizedPartiesController(
         ILogger<AuthorizedPartiesController> logger,
         IMapper mapper,
-        IAuthorizedPartiesService authorizedPartiesService)
+        IAuthorizedPartiesService authorizedPartiesService,
+        IContextRetrievalService contextRetrievalService)
     {
         _logger = logger;
         _mapper = mapper;
         _authorizedPartiesService = authorizedPartiesService;
+        _contextRetrievalService = contextRetrievalService;
     }
 
     /// <summary>
@@ -112,7 +117,8 @@ public class AuthorizedPartiesController : ControllerBase
 
             if (authorizedParty == null)
             {
-                return Forbid();
+                ModelState.AddModelError("InvalidParty", "The party id is either invalid or is not an authorized party for the authenticated user");
+                return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
 
             return _mapper.Map<AuthorizedPartyExternal>(authorizedParty);
@@ -143,13 +149,19 @@ public class AuthorizedPartiesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedPartiesAsAccessManager([FromRoute] string party, bool includeAltinn2 = false, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedPartiesAsAccessManager([FromRoute] int party, bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
         try
         {
-            BaseAttribute subject = new() { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = party };
+            int authenticatedUserPartyId = AuthenticationHelper.GetPartyId(HttpContext);
 
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(subject, includeAltinn2, cancellationToken);
+            Party subject = await _contextRetrievalService.GetPartyAsync(party);
+            if (subject.PartyTypeName == PartyType.Person && subject.PartyId != authenticatedUserPartyId)
+            {
+                return Forbid();
+            }
+
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForParty(subject.PartyId, includeAltinn2, cancellationToken);
 
             return _mapper.Map<List<AuthorizedPartyExternal>>(authorizedParties);
         }

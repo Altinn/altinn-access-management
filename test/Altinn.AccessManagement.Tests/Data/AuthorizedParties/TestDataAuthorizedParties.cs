@@ -4,6 +4,7 @@ using System.Text.Json;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Data;
@@ -85,7 +86,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
             false,
-            GetExpectedAuthorizedParties("PersonToPerson", OnlyAltinn3)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("PersonToPerson", OnlyAltinn3)
         }
     };
 
@@ -100,7 +101,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
             true,
-            GetExpectedAuthorizedParties("PersonToPerson", BothAltinn3AndAltinn2)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("PersonToPerson", BothAltinn3AndAltinn2)
         }
     };
 
@@ -115,7 +116,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
             false,
-            GetExpectedAuthorizedParties("PersonToOrg", OnlyAltinn3)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("PersonToOrg", OnlyAltinn3)
         }
     };
 
@@ -130,7 +131,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(PersonToOrg_ToOrgDaglUserId, PersonToOrg_ToOrgDaglPartyId, 3),
             true,
-            GetExpectedAuthorizedParties("PersonToOrg", BothAltinn3AndAltinn2)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("PersonToOrg", BothAltinn3AndAltinn2)
         }
     };
 
@@ -148,7 +149,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
             false,
-            GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", OnlyAltinn3)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("MainUnitAndSubUnitToPerson", OnlyAltinn3)
         }
     };
 
@@ -168,7 +169,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToPerson_ToUserId, MainUnitAndSubUnitToPerson_ToPartyId, 3),
             true,
-            GetExpectedAuthorizedParties("MainUnitAndSubUnitToPerson", BothAltinn3AndAltinn2)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("MainUnitAndSubUnitToPerson", BothAltinn3AndAltinn2)
         }
     };
 
@@ -186,7 +187,7 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
             false,
-            GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", OnlyAltinn3)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("MainUnitAndSubUnitToOrg", OnlyAltinn3)
         }
     };
 
@@ -206,14 +207,131 @@ public static class TestDataAuthorizedParties
         {
             PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
             true,
-            GetExpectedAuthorizedParties("MainUnitAndSubUnitToOrg", BothAltinn3AndAltinn2)
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("MainUnitAndSubUnitToOrg", BothAltinn3AndAltinn2)
         }
     };
 
-    private static List<AuthorizedPartyExternal> GetExpectedAuthorizedParties(string delegationType, string retrievalType)
+    /// <summary>
+    /// Sets up the authenticated user,
+    /// getting it's own authorized party
+    /// without including Altinn 2 authorized parties
+    /// 
+    /// Expected result: empty response since Altinn 2 is required in order to get self through PRIV role
+    /// </summary>
+    public static TheoryData<string, int, bool, ValidationProblemDetails> PersonGettingSelf_BadRequest() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_ToPartyId,
+            false,
+            GetExpectedResponse<ValidationProblemDetails>("PersonGettingSelf", OnlyAltinn3)
+        }
+    };
+
+    /// <summary>
+    /// Sets up the authenticated user,
+    /// getting it's own authorized party
+    /// including Altinn 2 authorized parties
+    /// 
+    /// Expected result: success, own authorized party is found including the PRIV authorized role
+    /// </summary>
+    public static TheoryData<string, int, bool, AuthorizedPartyExternal> PersonGettingSelfInclA2_Success() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_ToPartyId,
+            true,
+            GetExpectedResponse<AuthorizedPartyExternal>("PersonGettingSelf", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  GET AuthorizedParty/{A3DelegatorPartyId} for authenticated user, without including Altinn 2 authorized parties
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party model of the authenticated user
+    /// Reason:     Since Altinn 3 delegation exists A2 authorized parties is not needed to find Authorized Party with an authorized resource connection
+    /// </summary>
+    public static TheoryData<string, int, bool, AuthorizedPartyExternal> PersonGettingA3Delegator_Success() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_ToPartyId,
+            true,
+            GetExpectedResponse<AuthorizedPartyExternal>("PersonGettingSelf", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  GET AuthorizedParty/{A3DelegatorPartyId} for authenticated user, including Altinn 2 authorized parties
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party model of the authenticated user
+    /// Reason:     Since Altinn 3 delegation exists Altinn 2 authorized parties is not needed to find Authorized Party with an authorized resource connection,
+    ///             but will enrich the Authorized Party with any authorized roles from Altinn 2
+    /// </summary>
+    public static TheoryData<string, int, bool, AuthorizedPartyExternal> PersonGettingA3DelegatorInclA2_Success() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_ToPartyId,
+            true,
+            GetExpectedResponse<AuthorizedPartyExternal>("PersonGettingSelf", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  GET {party}/authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with the authenticated user and getting the authorized party list for it's own {party}
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party list of the authenticated user
+    /// Reason:     Authenticated users are authorized for getting own authorized party list
+    /// </summary>
+    public static TheoryData<string, int, bool, List<AuthorizedPartyExternal>> PersonGettingOwnList_Success() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_ToPartyId,
+            true,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("PersonGettingOwnList", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  GET {party}/authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with the authenticated user being an authorized Access Manager for the {party} organization
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party list of the organization
+    /// Reason:     Authenticated users who are authorized as Access Manager for organizations should be allowed to get the organizations authorized party list
+    /// </summary>
+    public static TheoryData<string, int, bool, List<AuthorizedPartyExternal>> AccessManagerGettingOrgList_Success() => new()
+    {
+        {
+            PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
+            MainUnitAndSubUnitToOrg_ToOrgPartyId,
+            true,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("AccessManagerGettingOrgList", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  GET {party}/authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with the authenticated user being an authorized Access Manager for the {party} person
+    /// Expected:   - Should return 403 Forbidden
+    ///             - Should include expected authorized party list of the organization
+    /// Reason:     Authenticated users who are authorized as Access Manager for organizations should be allowed to get the organizations authorized party list
+    /// </summary>
+    public static TheoryData<string, int, bool> AccessManagerGettingPersonList_Forbidden() => new()
+    {
+        {
+            PrincipalUtil.GetToken(PersonToPerson_ToUserId, PersonToPerson_ToPartyId, 3),
+            PersonToPerson_FromPartyId,
+            true
+        }
+    };
+
+    private static T GetExpectedResponse<T>(string delegationType, string retrievalType)
     {
         string content = File.ReadAllText($"Data/Json/AuthorizedParties/{delegationType}/{retrievalType}.json");
-        return (List<AuthorizedPartyExternal>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedPartyExternal>), JsonOptions);
+        return (T)JsonSerializer.Deserialize(content, typeof(T), JsonOptions);
     }
 
     /// <summary>

@@ -1,11 +1,11 @@
 meta {
-  name: Paula
+  name: PaulaForKasper_Forbidden
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=true
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/authorizedparties?includeAltinn2=true
   body: json
   auth: none
 }
@@ -24,6 +24,7 @@ vars:pre-request {
   auth_userId: 20000095
   auth_partyId: 50002203
   auth_ssn: '02056260016'
+  party: 50002598
 }
 
 script:pre-request {
@@ -31,7 +32,7 @@ script:pre-request {
 }
 
 tests {
-  test("Should return 200 OK", function() {
-    expect(res.status).to.equal(200);
+  test("Should return 403 Forbidden", function() {
+    expect(res.status).to.equal(403);
   });
 }

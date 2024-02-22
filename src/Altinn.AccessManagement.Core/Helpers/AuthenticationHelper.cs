@@ -33,6 +33,29 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Gets the authenticated user's party id
+        /// </summary>
+        /// <param name="context">the http context</param>
+        /// <returns>the logged in users party id</returns>
+        public static int GetPartyId(HttpContext context)
+        {
+            int partyId = 0;
+
+            if (context.User != null)
+            {
+                foreach (Claim claim in context.User.Claims)
+                {
+                    if (claim.Type.Equals(AltinnCoreClaimTypes.PartyID))
+                    {
+                        partyId = Convert.ToInt32(claim.Value);
+                    }
+                }
+            }
+
+            return partyId;
+        }
+
+        /// <summary>
         /// Gets the users authentication level
         /// </summary>
         /// <param name="context">the http context</param>

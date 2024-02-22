@@ -1,0 +1,17 @@
+{
+  "partyId": 50100002,
+  "partyUuid": "00000000-0000-0000-0001-000000000002",
+  "partyType": "Person",
+  "orgNumber": "",
+  "ssn": "01017270071",
+  "unitType": null,
+  "name": "PERSON TO PERSON RECIPIENT",
+  "isDeleted": false,
+  "onlyHierarchyElementWithNoAccess": false,
+  "childParties": null,
+  "authorizedResources": [],
+  "authorizedRoles": [
+    "PRIV"
+  ],
+  "authorizedAccessPackages": []
+}

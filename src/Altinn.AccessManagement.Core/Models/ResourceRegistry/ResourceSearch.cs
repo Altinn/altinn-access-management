@@ -8,17 +8,17 @@
         /// <summary>
         /// ID
         /// </summary>
-        public string? Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Title
         /// </summary>
-        public string? Title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// ResourceType
@@ -28,6 +28,6 @@
         /// <summary>
         /// Keywords
         /// </summary>
-        public string? Keyword { get; set; }
+        public string Keyword { get; set; }
     }
 }

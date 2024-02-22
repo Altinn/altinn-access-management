@@ -1,9 +1,10 @@
 using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
@@ -11,9 +12,10 @@ using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Services;
-using Altinn.AccessManagement.Interfaces;
+using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
@@ -34,10 +36,11 @@ using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql.Logging;
+using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -46,8 +49,6 @@ using KeyVaultSettings = AltinnCore.Authentication.Constants.KeyVaultSettings;
 ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
-
-NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Trace, true, true);
 
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
@@ -59,15 +60,6 @@ await SetConfigurationProviders(builder.Configuration);
 ConfigureLogging(builder.Logging);
 
 ConfigureServices(builder.Services, builder.Configuration);
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000", "http://devenv.altinn.no");
-        });
-});
 
 var app = builder.Build();
 ConfigurePostgreSql();
@@ -89,6 +81,8 @@ void ConfigureSetupLogging()
     });
 
     logger = logFactory.CreateLogger<Program>();
+
+    NpgsqlLoggingConfiguration.InitializeLogging(logFactory);
 }
 
 void ConfigureLogging(ILoggingBuilder logging)
@@ -126,12 +120,12 @@ async Task SetConfigurationProviders(ConfigurationManager config)
 {
     string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
-    logger.LogInformation($"Program // Loading Configuration from basePath={basePath}");
+    logger.LogInformation("Program // Loading Configuration from basePath={basePath}", basePath);
 
     config.SetBasePath(basePath);
     string configJsonFile1 = $"{basePath}/altinn-appsettings/altinn-dbsettings-secret.json";
 
-    logger.LogInformation($"Loading configuration file: '{configJsonFile1}'");
+    logger.LogInformation("Loading configuration file: '{configJsonFile1}'", configJsonFile1);
     config.AddJsonFile(configJsonFile1, optional: true, reloadOnChange: true);
 
     config.AddEnvironmentVariables();
@@ -182,16 +176,20 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
     logger.LogInformation("Startup // ConfigureServices");
+    services.ConfigureAsserters();
+    services.ConfigureResolvers();
     services.AddAutoMapper(typeof(Program));
     services.AddControllersWithViews();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
 
+    builder.Services.AddFeatureManagement();
+
     services.AddHealthChecks().AddCheck<HealthCheck>("authorization_admin_health_check");
     services.AddSwaggerGen(options =>
     {
-        options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
             Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
             In = ParameterLocation.Header,
@@ -202,7 +200,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     });
     services.AddMvc();
 
-    GeneralSettings generalSettings = config.GetSection("GeneralSettings").Get<GeneralSettings>();
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
@@ -213,14 +210,17 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
     services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
     services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
+    services.Configure<KeyVaultSettings>(config.GetSection("kvSetting"));
     services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
+    services.Configure<UserProfileLookupSettings>(config.GetSection("UserProfileLookupSettings"));
 
     services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
     services.AddHttpClient<IPartiesClient, PartiesClient>();
     services.AddHttpClient<IProfileClient, ProfileClient>();
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
+    services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
     services.AddHttpClient<AuthorizationApiClient>();
-    
+
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -238,15 +238,20 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
-    services.AddSingleton<IDelegationsService, DelegationsService>();
+    services.AddSingleton<IMaskinportenSchemaService, MaskinportenSchemaService>();
     services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
-    services.AddTransient<ISigningKeysResolver, SigningKeysResolver>();
+    services.AddTransient<IPublicSigningKeyProvider, PublicSigningKeyProvider>();
     services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
     services.AddTransient<ISigningCredentialsResolver, SigningCredentialsResolver>();
     services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
-    services.AddSingleton<IRegister, RegisterService>();
-    services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
     services.AddSingleton<IPDP, PDPAppSI>();
+    services.AddSingleton<ISingleRightsService, SingleRightsService>();
+    services.AddSingleton<IUserProfileLookupService, UserProfileLookupService>();
+    services.AddSingleton<IKeyVaultService, KeyVaultService>();
+    services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
+    services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
+    services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
+    services.AddAccessManagementPersistence();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {
@@ -284,9 +289,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_maskinporten_scope_delegation")));
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_maskinporten_scope_delegation")));
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { "altinn:maskinporten/delegations", "altinn:maskinporten/delegations.admin" })));
+        options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
+        options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
     });
-    
-    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
+
+    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
 
@@ -308,7 +315,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
-    }    
+    }
 }
 
 void Configure()
@@ -330,14 +337,11 @@ void Configure()
     }
 
     app.UseRouting();
-
     app.UseAuthentication();
     app.UseAuthorization();
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapControllers();
-        endpoints.MapHealthChecks("/health");
-    });
+    app.MapControllers();
+    app.MapHealthChecks("/health");
+    app.UseCors();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
@@ -345,9 +349,6 @@ void Configure()
         app.UseSwagger();
         app.UseSwaggerUI();
     }
-
-    app.UseCors();
-    app.MapControllers();
 }
 
 void ConfigurePostgreSql()
@@ -359,7 +360,7 @@ void ConfigurePostgreSql()
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-        
+
         string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
         if (builder.Environment.IsDevelopment())
         {
@@ -370,7 +371,7 @@ void ConfigurePostgreSql()
             new PostgreSqlDataService(traceService),
             new PostgreSqlBulkImportService(traceService),
             traceService,
-            new Yuniql.AspNetCore.Configuration
+            new Configuration
             {
                 Workspace = workspacePath,
                 ConnectionString = connectionString,

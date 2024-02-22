@@ -1,0 +1,25 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:person:uuid",
+      "value": "00000000-0000-0000-0005-000000003899"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        },
+        {
+          "id": "urn:altinn:task",
+          "value": "org-delegation-subtask"
+        }
+      ],
+      "action": "mainunit-delegated-action",
+      "status": "Delegated"
+    }
+  ]
+}

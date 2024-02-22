@@ -1,0 +1,166 @@
+[
+  {
+    "RightKey": "1337:1338:read",
+    "Resource": [
+      {
+        "Id": "urn:altinn:servicecode",
+        "Value": "1337"
+      },
+      {
+        "Id": "urn:altinn:serviceeditioncode",
+        "Value": "1338"
+      }
+    ],
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "read"
+    },
+    "Status": "Delegable",
+    "Details": [
+      {
+        "Code": "RoleAccess",
+        "Description": "User has a role giving right to delegate this right",
+        "Parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "RightKey": "1337:1338:write",
+    "Resource": [
+      {
+        "Id": "urn:altinn:servicecode",
+        "Value": "1337"
+      },
+      {
+        "Id": "urn:altinn:serviceeditioncode",
+        "Value": "1338"
+      }
+    ],
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "write"
+    },
+    "Status": "Delegable",
+    "Details": [
+      {
+        "Code": "RoleAccess",
+        "Description": "User has a role giving right to delegate this right",
+        "Parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            },
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "RightKey": "1337:1338:archiveread",
+    "Resource": [
+      {
+        "Id": "urn:altinn:servicecode",
+        "Value": "1337"
+      },
+      {
+        "Id": "urn:altinn:serviceeditioncode",
+        "Value": "1338"
+      }
+    ],
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "archiveread"
+    },
+    "Status": "Delegable",
+    "Details": [
+      {
+        "Code": "RoleAccess",
+        "Description": "User has a role giving right to delegate this right",
+        "Parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "RightKey": "1337:1338:archivedelete",
+    "Resource": [
+      {
+        "Id": "urn:altinn:servicecode",
+        "Value": "1337"
+      },
+      {
+        "Id": "urn:altinn:serviceeditioncode",
+        "Value": "1338"
+      }
+    ],
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "archivedelete"
+    },
+    "Status": "Delegable",
+    "Details": [
+      {
+        "Code": "RoleAccess",
+        "Description": "User has a role giving right to delegate this right",
+        "Parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "RightKey": "1337:1338:sign",
+    "Resource": [
+      {
+        "Id": "urn:altinn:servicecode",
+        "Value": "1337"
+      },
+      {
+        "Id": "urn:altinn:serviceeditioncode",
+        "Value": "1338"
+      }
+    ],
+    "Action": {
+      "Id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "Value": "sign"
+    },
+    "Status": "Delegable",
+    "Details": [
+      {
+        "Code": "RoleAccess",
+        "Description": "User has a role giving right to delegate this right",
+        "Parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "Id": "urn:altinn:rolecode",
+              "Value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

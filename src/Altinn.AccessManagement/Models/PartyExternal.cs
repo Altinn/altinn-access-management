@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Altinn.Platform.Register.Enums;
+using Altinn.AccessManagement.Enums;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Models
@@ -18,7 +18,7 @@ namespace Altinn.AccessManagement.Models
         /// <summary>
         /// Gets or sets the type of party
         /// </summary>
-        public PartyType PartyTypeName { get; set; }
+        public PartyTypeExternal PartyTypeName { get; set; }
 
         /// <summary>
         /// Gets the parties org number

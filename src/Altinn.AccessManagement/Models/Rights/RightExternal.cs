@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Models
 {

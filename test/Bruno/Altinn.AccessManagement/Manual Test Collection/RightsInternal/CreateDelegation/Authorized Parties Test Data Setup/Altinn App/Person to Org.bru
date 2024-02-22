@@ -1,0 +1,63 @@
+meta {
+  name: Person to Org
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:organizationnumber",
+              "value": "{{toOrg}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:org",
+                      "value": "{{org}}"
+                  },
+                  {
+                      "id": "urn:altinn:app",
+                      "value": "{{app}}"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toOrg: 910434217
+  org: ttd
+  app: am-devtest-person-to-org
+  auth_tokenType: Personal
+  auth_userId: 20000542
+  auth_partyId: 50002650
+  auth_ssn: '08109412032'
+  party: 50002650
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 201 CREATED", function() {
+    expect(res.status).to.equal(201);
+  });
+}

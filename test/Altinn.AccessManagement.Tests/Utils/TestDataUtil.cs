@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Controllers;
 using Altinn.AccessManagement.Tests.Mocks;
@@ -148,7 +149,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"{altinnAppId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = DateTime.Now                
+                Created = DateTime.Now
             };
         }
 
@@ -168,7 +169,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "KOLSAAS OG FLAAM",
-                CoveredByOrganizationNumber = 810418192,
+                CoveredByOrganizationNumber = "810418192",
                 CoveredByPartyId = 50004219,
             });
             delegations.Add(new Delegation
@@ -176,7 +177,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "NORDRE FROGN OG MORTENHALS",
-                CoveredByOrganizationNumber = 810418362,
+                CoveredByOrganizationNumber = "810418362",
                 CoveredByPartyId = 50004220,
             });
             delegations.Add(new Delegation
@@ -184,7 +185,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 OfferedByPartyId = offeredByPartyId,
                 PerformedByUserId = performedByUserId,
                 CoveredByName = "LUNDAMO OG FLEINVAR",
-                CoveredByOrganizationNumber = 810418532,
+                CoveredByOrganizationNumber = "810418532",
                 CoveredByPartyId = 50004221,
             });
             return delegations;
@@ -218,8 +219,6 @@ namespace Altinn.AccessManagement.Tests.Utils
                 {
                     { "Description", resourceTitle }
                 },
-                    ValidFrom = Convert.ToDateTime(validFrom),
-                    ValidTo = Convert.ToDateTime(validTo),
                     Status = "NA",
                     ResourceType = resourceType,
                 };
@@ -241,46 +240,10 @@ namespace Altinn.AccessManagement.Tests.Utils
                     { "nb-no", description },
                     { "nn-no", description }
                 },
-                    ValidFrom = Convert.ToDateTime(validFrom),
-                    ValidTo = Convert.ToDateTime(validTo),
                     Status = status,
                     ResourceType = resourceType,
                 };
             }
-        }
-
-        /// <summary>
-        /// Gets a list of service resources
-        /// </summary>
-        /// <param name="resourceType">the resource type.</param>
-        /// <returns>Returns thelist of service resources.</returns>
-        public static List<ServiceResourceExternal> GetResources(ResourceType resourceType)
-        {
-            List<ServiceResourceExternal> resources = new List<ServiceResourceExternal>();
-            List<ServiceResourceExternal> filteredResources = null;
-
-            string path = GetResourcesPath();
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
-
-                foreach (string file in files)
-                {
-                    if (file.Contains("resources"))
-                    {
-                        string content = File.ReadAllText(Path.Combine(path, file));
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                        };
-                        resources = JsonSerializer.Deserialize<List<ServiceResourceExternal>>(content, options);
-                    }
-                }
-
-                filteredResources = resources.FindAll(r => r.ResourceType == resourceType);
-            }
-
-            return filteredResources;
         }
 
         /// <summary>
@@ -290,7 +253,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         public static DelegationChange GetResourceRegistryDelegationChange(string resourceRegistryId, ResourceType resourceType, int offeredByPartyId, DateTime? created, int? coveredByUserId = null, int? coveredByPartyId = null, int performedByUserId = 20001336, DelegationChangeType changeType = DelegationChangeType.Grant, int changeId = 1337)
         {
             string coveredBy = coveredByPartyId != null ? $"p{coveredByPartyId}" : $"u{coveredByUserId}";
-           
+
             return new DelegationChange
             {
                 DelegationChangeId = changeId,
@@ -303,7 +266,7 @@ namespace Altinn.AccessManagement.Tests.Utils
                 PerformedByUserId = performedByUserId,
                 BlobStoragePolicyPath = $"resourceregistry/{resourceRegistryId}/{offeredByPartyId}/{coveredBy}/delegationpolicy.xml",
                 BlobStorageVersionId = "CorrectLeaseId",
-                Created = created                
+                Created = created
             };
         }
 
@@ -329,67 +292,71 @@ namespace Altinn.AccessManagement.Tests.Utils
         }
 
         /// <summary>
-        /// Sets up mock data for delegation list 
+        /// Sets up mock data for offered maskinporten schema delegations
         /// </summary>
-        /// <param name="offeredByPartyId">partyid of the reportee that delegated the resource</param>
-        /// <param name="coveredByPartyId">partyid of the reportee that received the delegation</param>
-        /// <param name="resourceIds">resource id</param>
-        /// <returns>Received delegations</returns>
-        public static List<DelegationExternal> GetDelegations(int offeredByPartyId, int coveredByPartyId, List<string> resourceIds = null)
+        /// <param name="offeredByPartyId">The party id of the reportee to retrieve offered delegations for</param>
+        /// <returns>Offered maskinporten schema delegations</returns>
+        public static List<MaskinportenSchemaDelegationExternal> GetOfferedMaskinportenSchemaDelegations(int offeredByPartyId)
         {
-            List<DelegationExternal> delegations = null;
-            List<DelegationExternal> filteredDelegations = new List<DelegationExternal>();
-            string fileName;
+            List<MaskinportenSchemaDelegationExternal> delegations = null;
 
-            if (resourceIds != null)
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string path = Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema", "Offered.json");
+            if (File.Exists(path))
             {
-                fileName = "admindelegations";
-            }
-            else
-            {
-                fileName = offeredByPartyId != 0 ? "outbounddelegation" : "inbounddelegation";
-            }
-            
-            string path = GetDelegationPath();
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
+                string content = File.ReadAllText(path);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-                foreach (string file in files)
+                try
                 {
-                    if (file.Contains(fileName))
-                    {
-                        string content = File.ReadAllText(Path.Combine(path, file));
-                        var options = new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true,
-                        };
-                        try
-                        {
-                            delegations = JsonSerializer.Deserialize<List<DelegationExternal>>(content, options);
-                        }
-                        catch (Exception ex)
-                        { 
-                            Console.WriteLine(ex);
-                        }
-                    }
+                    delegations = JsonSerializer.Deserialize<List<MaskinportenSchemaDelegationExternal>>(content, options);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
                 }
 
-                if (offeredByPartyId != 0 && coveredByPartyId != 0)
+                if (offeredByPartyId != 0)
                 {
-                    filteredDelegations.AddRange(delegations?.FindAll(od => od.OfferedByPartyId == offeredByPartyId && od.CoveredByPartyId == coveredByPartyId && resourceIds.Contains(od.ResourceId)));
-                }
-                else if (offeredByPartyId != 0)
-                {
-                    filteredDelegations.AddRange(delegations.FindAll(od => od.OfferedByPartyId == offeredByPartyId));
-                }
-                else if (coveredByPartyId != 0)
-                {
-                    filteredDelegations.AddRange(delegations.FindAll(od => od.CoveredByPartyId == coveredByPartyId));
+                    return delegations.FindAll(d => d.OfferedByPartyId == offeredByPartyId);
                 }
             }
 
-            return filteredDelegations;
+            return delegations;
+        }
+
+        /// <summary>
+        /// Sets up mock data for received maskinporten schema delegations
+        /// </summary>
+        /// <param name="coveredByPartyId">The party id of the reportee to retrieve received delegations for</param>
+        /// <returns>Received maskinporten schema delegations</returns>
+        public static List<MaskinportenSchemaDelegationExternal> GetReceivedMaskinportenSchemaDelegations(int coveredByPartyId)
+        {
+            List<MaskinportenSchemaDelegationExternal> delegations = null;
+
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string path = Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema", "Received.json");
+            if (File.Exists(path))
+            {
+                string content = File.ReadAllText(path);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                try
+                {
+                    delegations = JsonSerializer.Deserialize<List<MaskinportenSchemaDelegationExternal>>(content, options);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+
+                if (coveredByPartyId != 0)
+                {
+                    return delegations.FindAll(d => d.CoveredByPartyId == coveredByPartyId);
+                }
+            }
+
+            return delegations;
         }
 
         /// <summary>
@@ -547,7 +514,7 @@ namespace Altinn.AccessManagement.Tests.Utils
             PartyExternal partyExternal = new PartyExternal
             {
                 PartyId = party.PartyId,
-                PartyTypeName = party.PartyTypeName,
+                PartyTypeName = (Enums.PartyTypeExternal)party.PartyTypeName,
                 OrgNumber = party.OrgNumber,
                 SSN = party.SSN,
                 UnitType = party.UnitType,
@@ -564,19 +531,19 @@ namespace Altinn.AccessManagement.Tests.Utils
 
         private static string GetDelegationPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Json", "Delegation");
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            return Path.Combine(unitTestFolder, "Data", "Json", "MaskinportenSchema");
         }
 
         private static string GetPartiesPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Parties");
         }
 
         private static string GetResourcesPath()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Resources");
         }
     }

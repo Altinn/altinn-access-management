@@ -1,0 +1,37 @@
+meta {
+  name: Asle
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: false
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20001121
+  auth_partyId: 50003229
+  auth_ssn: '17105431031'
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

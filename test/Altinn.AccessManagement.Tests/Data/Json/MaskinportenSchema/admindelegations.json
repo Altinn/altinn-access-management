@@ -1,0 +1,24 @@
+[
+  {
+    "consumer_org": "810418672",
+    "supplier_org": "810418192",
+    "delegation_scheme_Id": null,
+    "scopes": [
+      "altinn:test/theworld.write",
+      "urn:altinn:maskinporten:nav_aa"
+    ],
+    "created": "2022-09-27T15:02:23.7860720+02:00",
+    "resourceid": "nav_aa_distribution"
+  },
+  {
+    "consumer_org": "810418672",
+    "supplier_org": "810418192",
+    "delegation_scheme_Id": "3cb27d7b-9e2c-475c-ba91-e1fc359bc717",
+    "scopes": [
+      "altinn:test/theworld.write",
+      "altinn:test/theworld.admin"
+    ],
+    "created": "2022-09-27T15:02:23.7860720+02:00",
+    "resourceid": "appid-123"
+  }
+]

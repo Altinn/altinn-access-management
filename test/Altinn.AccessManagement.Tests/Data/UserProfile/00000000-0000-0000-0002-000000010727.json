@@ -1,0 +1,44 @@
+{
+  "UserId": 20010727,
+  "UserUuid": "00000000-0000-0000-0002-000000010727",
+  "UserType": 3,
+  "UserName": "OrstaECUser",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50005545,
+  "Party": {
+    "PartyTypeName": 2,
+    "SSN": "",
+    "OrgNumber": "910459880",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "910459880",
+      "Name": "ØRSTA OG HEGGEDAL",
+      "UnitType": "AS",
+      "TelephoneNumber": "12345678",
+      "MobileNumber": "99999999",
+      "FaxNumber": "12345679",
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": "",
+      "MailingPostalCity": "",
+      "BusinessAddress": null,
+      "BusinessPostalCode": "",
+      "BusinessPostalCity": "",
+      "UnitStatus": "N"
+    },
+    "PartyId": 50005545,
+    "UnitType": "AS",
+    "Name": "ØRSTA OG HEGGEDAL ",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

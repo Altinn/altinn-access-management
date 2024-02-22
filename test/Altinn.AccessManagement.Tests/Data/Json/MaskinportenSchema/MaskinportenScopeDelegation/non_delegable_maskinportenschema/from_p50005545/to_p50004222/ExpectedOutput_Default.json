@@ -1,0 +1,11 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-27cf2819f526d884b56a1c8fd44a09ad-5fe2af21a90ad213-00",
+  "errors": {
+    "right[0].Resource": [
+      "Authenticated user does not have any delegable rights for the resource: non_delegable_maskinportenschema"
+    ]
+  }
+}

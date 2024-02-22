@@ -1,0 +1,266 @@
+[
+  {
+    "rightKey": "generic-access-resource:read",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource:write",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "write",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,priv-delegation-subtask:delegated-action-to-user",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "priv-delegation-subtask"
+      }
+    ],
+    "action": "delegated-action-to-user",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,priv-delegation-subtask:delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "priv-delegation-subtask"
+      }
+    ],
+    "action": "delegated-action-to-keyroleunit",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "subunit-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "mainunit-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "subunit-delegated-action-to-keyroleunit",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "mainunit-delegated-action-to-keyroleunit",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource:admai-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "admai-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:UTINN. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

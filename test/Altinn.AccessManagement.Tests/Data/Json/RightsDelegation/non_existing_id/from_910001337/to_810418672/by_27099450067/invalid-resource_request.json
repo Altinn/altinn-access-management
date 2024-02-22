@@ -1,0 +1,19 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organizationnumber",
+      "value": "810418672"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "non_existing_id"
+        }
+      ],
+      "action": "read"
+    }
+  ]
+}

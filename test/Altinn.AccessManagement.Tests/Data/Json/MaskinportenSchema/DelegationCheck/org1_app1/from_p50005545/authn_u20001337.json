@@ -1,0 +1,9 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-00954cfe03029a84f48b6958264c3630-88574e5f628738d5-00",
+  "errors": {
+    "right[0].Resource": [ "This operation only supports MaskinportenSchema resources. Please use the Single Rights DelegationCheck API. Invalid resource: org1/app1. Invalid resource type: AltinnApp" ]
+  }
+}

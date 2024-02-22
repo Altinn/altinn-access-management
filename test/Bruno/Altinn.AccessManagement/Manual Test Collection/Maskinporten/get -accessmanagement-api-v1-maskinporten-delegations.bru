@@ -1,0 +1,21 @@
+meta {
+  name: get -accessmanagement-api-v1-maskinporten-delegations
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://accessmanagement/api/v1/maskinporten/delegations
+  body: none
+  auth: none
+}
+
+query {
+  ~supplierOrg: 
+  ~consumerOrg: 
+  ~scope: 
+}
+
+headers {
+  Authorization: {{apiKey}}
+}

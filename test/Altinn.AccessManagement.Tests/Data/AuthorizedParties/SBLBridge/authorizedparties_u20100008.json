@@ -1,0 +1,48 @@
+[
+  {
+    "PartyTypeName": 1,
+    "SSN": "01017870071",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100008,
+    "PartyUUID": "00000000-0000-0000-0001-000000000008",
+    "UnitType": null,
+    "Name": "MAINUNIT AND SUBUNIT TO PERSON RECIPIENT",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null,
+    "AuthorizedRoles": [ "PRIV" ]
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": null,
+    "OrgNumber": "901000006",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100006,
+    "PartyUUID": "00000000-0000-0000-0001-000000000006",
+    "UnitType": "AS",
+    "Name": "AUTHORIZEDPARTIES MAINUNIT",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": [
+      {
+        "PartyTypeName": 2,
+        "SSN": null,
+        "OrgNumber": "901000007",
+        "Person": null,
+        "Organization": null,
+        "PartyId": 50100007,
+        "PartyUUID": "00000000-0000-0000-0001-000000000007",
+        "UnitType": "BEDR",
+        "Name": "AUTHORIZEDPARTIES SUBUNIT",
+        "IsDeleted": false,
+        "OnlyHierarchyElementWithNoAccess": false,
+        "ChildParties": null,
+        "AuthorizedRoles": [ "REGNA", "SISKD" ]
+      }
+    ],
+    "AuthorizedRoles": [ "REGNA" ]
+  }
+]

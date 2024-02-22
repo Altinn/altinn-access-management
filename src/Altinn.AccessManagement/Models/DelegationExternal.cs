@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Models
 {
@@ -64,6 +64,6 @@ namespace Altinn.AccessManagement.Models
         /// Gets or sets the resource type of the delegation
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ResourceType ResourceType { get; set; }
+        public ResourceTypeExternal ResourceType { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Enums.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
 {
@@ -16,7 +17,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// <summary>
         /// The reference identifier
         /// </summary>
-        public string? Reference { get; set; }
+        public string Reference { get; set; }
 
         /// <summary>
         /// The reference type

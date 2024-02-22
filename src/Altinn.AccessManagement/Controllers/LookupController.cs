@@ -1,6 +1,5 @@
 ﻿using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
 using Altinn.Platform.Register.Models;
@@ -18,7 +17,6 @@ namespace Altinn.AccessManagement.Controllers
     {
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IRegister _register;
         private readonly IContextRetrievalService _contextRetrieval;
 
         /// <summary>
@@ -26,53 +24,15 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="logger">the logger.</param>
         /// <param name="mapper">mapper handler</param>
-        /// <param name="register">handler for register</param>
         /// <param name="contextRetrieval">handler for context retrieval</param>
         public LookupController(
             ILogger<DelegationsController> logger,
             IMapper mapper,
-            IRegister register,
             IContextRetrievalService contextRetrieval)
         {
             _logger = logger;
             _mapper = mapper;
-            _register = register;
             _contextRetrieval = contextRetrieval;
-        }
-
-        /// <summary>
-        /// Endpoint for retrieving delegated rules between parties
-        /// </summary>
-        /// <response code="400">Bad Request</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [Authorize]
-        [Route("accessmanagement/api/v1/lookup/org/{orgNummer}")]
-        public async Task<ActionResult<PartyExternal>> GetOrganisation(string orgNummer)
-        {
-            try
-            {
-                if (!IdentifierUtil.IsValidOrganizationNumber(orgNummer))
-                {
-                    return BadRequest("The organisation number is not valid");
-                }
-
-                Party party = await _register.GetOrganisation(orgNummer);
-
-                if (party == null)
-                {
-                    return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState, 400));
-                }
-                else
-                {
-                    return _mapper.Map<PartyExternal>(party);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "GetOrganisation failed to fetch organisation information");
-                return StatusCode(500);
-            }
         }
 
         /// <summary>

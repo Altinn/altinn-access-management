@@ -18,6 +18,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="status">Optional filter parameter for status. (created, unopened, approved, rejected, deleted)</param>
         /// <param name="continuation">Optional filter parameter for continuationToken</param>
         /// <returns>List of delegation requests</returns>
-        Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation);
+        Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status, string continuation);
     }
 }

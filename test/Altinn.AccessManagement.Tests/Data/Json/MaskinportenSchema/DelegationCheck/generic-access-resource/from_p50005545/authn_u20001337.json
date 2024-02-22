@@ -1,0 +1,9 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-4ab72739dcb5cd3d84df7e4d46859e71-4ef2957ed15cf74d-00",
+  "errors": {
+    "right[0].Resource": [ "This operation only supports MaskinportenSchema resources. Please use the Single Rights DelegationCheck API. Invalid resource: generic-access-resource. Invalid resource type: GenericAccessResource" ]
+  }
+}

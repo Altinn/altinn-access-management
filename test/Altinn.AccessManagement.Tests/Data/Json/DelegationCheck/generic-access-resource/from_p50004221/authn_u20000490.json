@@ -1,0 +1,280 @@
+[
+  {
+    "rightKey": "generic-access-resource:read",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "read",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV, urn:altinn:rolecode:DAGL), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource:write",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "write",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,priv-delegation-subtask:delegated-action-to-user",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "priv-delegation-subtask"
+      }
+    ],
+    "action": "delegated-action-to-user",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,priv-delegation-subtask:delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "priv-delegation-subtask"
+      }
+    ],
+    "action": "delegated-action-to-keyroleunit",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:PRIV), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "PRIV"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "subunit-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "DelegationAccess",
+        "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:userid:20000490",
+        "parameters": {
+          "DelegationRecipients": [
+            {
+              "id": "urn:altinn:userid",
+              "value": "20000490"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "mainunit-delegated-action",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "DelegationAccess",
+        "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:userid:20000490",
+        "parameters": {
+          "DelegationRecipients": [
+            {
+              "id": "urn:altinn:userid",
+              "value": "20000490"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:subunit-delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "subunit-delegated-action-to-keyroleunit",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "DelegationAccess",
+        "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:partyid:50005545",
+        "parameters": {
+          "DelegationRecipients": [
+            {
+              "id": "urn:altinn:partyid",
+              "value": "50005545"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource,org-delegation-subtask:mainunit-delegated-action-to-keyroleunit",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+    ],
+    "action": "mainunit-delegated-action-to-keyroleunit",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "DelegationAccess",
+        "description": "The user have access through delegation(s) of the right to the following recipient(s): urn:altinn:partyid:50005545",
+        "parameters": {
+          "DelegationRecipients": [
+            {
+              "id": "urn:altinn:partyid",
+              "value": "50005545"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-access-resource:admai-delegated-action",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ],
+    "action": "admai-delegated-action",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:UTINN), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "UTINN"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "RightKey": "2802,2203:read",
+    "Resource": [
+      {
+        "id": "urn:altinn:servicecode",
+        "value": "2802"
+      },
+      {
+        "id": "urn:altinn:serviceeditioncode",
+        "value": "2203"
+      }
+    ],
+    "Action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "read"
+    },
+    "Status": "Delegated",
+    "Details": [
+      {
+        "Code": "DelegationAccess",
+        "Description": null,
+        "Parameters": {}
+      }
+    ]
+  },
+  {
+    "RightKey": "2802,2203:write",
+    "Resource": [
+      {
+        "id": "urn:altinn:servicecode",
+        "value": "2802"
+      },
+      {
+        "id": "urn:altinn:serviceeditioncode",
+        "value": "2203"
+      }
+    ],
+    "Action": {
+      "id": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+      "value": "write"
+    },
+    "Status": "Delegated",
+    "Details": [
+      {
+        "Code": "DelegationAccess",
+        "Description": null,
+        "Parameters": {}
+      }
+    ]
+  }
+]

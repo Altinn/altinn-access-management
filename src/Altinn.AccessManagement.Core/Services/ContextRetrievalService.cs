@@ -40,13 +40,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId)
+    public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"Roles_u:{coveredByUserId}_p:{offeredByPartyId}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out List<Role> roles))
         {
-            roles = await _altinnRolesClient.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId) ?? new List<Role>();
+            roles = await _altinnRolesClient.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId, cancellationToken) ?? new List<Role>();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
            .SetPriority(CacheItemPriority.High)
@@ -59,13 +59,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId)
+    public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"DelgRoles_u:{coveredByUserId}_p:{offeredByPartyId}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out List<Role> roles))
         {
-            roles = await _altinnRolesClient.GetRolesForDelegation(coveredByUserId, offeredByPartyId) ?? new List<Role>();
+            roles = await _altinnRolesClient.GetRolesForDelegation(coveredByUserId, offeredByPartyId, cancellationToken) ?? new List<Role>();
 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
            .SetPriority(CacheItemPriority.High)
@@ -78,9 +78,9 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<Party> GetPartyAsync(int partyId)
+    public async Task<Party> GetPartyAsync(int partyId, CancellationToken cancellationToken = default)
     {
-        Party result = await _partiesClient.GetPartyAsync(partyId);
+        Party result = await _partiesClient.GetPartyAsync(partyId, cancellationToken);
         return result;
     }
 
@@ -179,13 +179,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<Party> GetPartyForOrganization(string organizationNumber)
+    public async Task<Party> GetPartyForOrganization(string organizationNumber, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"orgNo:{organizationNumber}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out Party party))
         {
-            party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { OrgNo = organizationNumber });
+            party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { OrgNo = organizationNumber }, cancellationToken);
 
             if (party != null)
             {
@@ -201,13 +201,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<Party> GetPartyForPerson(string ssn)
+    public async Task<Party> GetPartyForPerson(string ssn, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"ssn:{ssn}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out Party party))
         {
-            party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { Ssn = ssn });
+            party = await _partiesClient.LookupPartyBySSNOrOrgNo(new PartyLookup { Ssn = ssn }, cancellationToken);
 
             if (party != null)
             {
@@ -287,13 +287,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<ServiceResource> GetResource(string resourceRegistryId)
+    public async Task<ServiceResource> GetResource(string resourceRegistryId, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"rrId:{resourceRegistryId}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out ServiceResource resource))
         {
-            resource = await _resourceRegistryClient.GetResource(resourceRegistryId);
+            resource = await _resourceRegistryClient.GetResource(resourceRegistryId, cancellationToken);
 
             if (resource != null)
             {
@@ -309,13 +309,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<ServiceResource>> GetResources()
+    public async Task<List<ServiceResource>> GetResources(CancellationToken cancellationToken = default)
     {
         string cacheKey = $"resources:all";
 
         if (!_memoryCache.TryGetValue(cacheKey, out List<ServiceResource> resources))
         {
-            resources = await _resourceRegistryClient.GetResources();
+            resources = await _resourceRegistryClient.GetResources(cancellationToken);
 
             if (resources?.Count > 0)
             {
@@ -331,13 +331,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<ServiceResource>> GetResourceList()
+    public async Task<List<ServiceResource>> GetResourceList(CancellationToken cancellationToken = default)
     {
         string cacheKey = $"resources:resourceList";
 
         if (!_memoryCache.TryGetValue(cacheKey, out List<ServiceResource> resources))
         {
-            resources = await _resourceRegistryClient.GetResourceList();
+            resources = await _resourceRegistryClient.GetResourceList(cancellationToken);
 
             if (resources?.Count > 0)
             {
@@ -353,13 +353,13 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<ServiceResource> GetResourceFromResourceList(string resourceId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null)
+    public async Task<ServiceResource> GetResourceFromResourceList(string resourceId = null, string org = null, string app = null, string serviceCode = null, string serviceEditionCode = null, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"r:{resourceId},o:{org},a:{app},sc:{serviceCode},sec:{serviceEditionCode}";
 
         if (!_memoryCache.TryGetValue(cacheKey, out ServiceResource resource))
         {
-            List<ServiceResource> resources = await GetResourceList();
+            List<ServiceResource> resources = await GetResourceList(cancellationToken);
             foreach (ServiceResource serviceResource in resources)
             {
                 if (resourceId != null && (serviceResource.ResourceType != ResourceType.Altinn2Service || serviceResource.ResourceType != ResourceType.AltinnApp) &&
@@ -399,9 +399,9 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<Party> GetPartyForUser(int userId, int partyId)
+    public async Task<Party> GetPartyForUser(int userId, int partyId, CancellationToken cancellationToken = default)
     {
-        List<Party> partyList = await GetPartiesForUser(userId);
+        List<Party> partyList = await GetPartiesForUser(userId, cancellationToken);
 
         foreach (Party party in partyList)
         {
@@ -420,7 +420,7 @@ public class ContextRetrievalService : IContextRetrievalService
         return null;
     }
 
-    private async Task<List<Party>> GetPartiesForUser(int userId)
+    private async Task<List<Party>> GetPartiesForUser(int userId, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"userId:{userId}";
 
@@ -429,7 +429,7 @@ public class ContextRetrievalService : IContextRetrievalService
             return partyListFromCache;
         }
 
-        List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId);
+        List<Party> partyList = await _partiesClient.GetPartiesForUserAsync(userId, cancellationToken);
 
         var cacheEntryOptions = new MemoryCacheEntryOptions()
           .SetPriority(CacheItemPriority.High)

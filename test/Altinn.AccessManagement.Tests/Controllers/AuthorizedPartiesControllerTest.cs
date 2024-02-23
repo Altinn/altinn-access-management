@@ -15,7 +15,6 @@ using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
-using Altinn.Platform.Register.Models;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -205,7 +204,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
-    private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
+    private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
 
     private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
     {

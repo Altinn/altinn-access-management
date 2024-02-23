@@ -40,13 +40,13 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
+        public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup, CancellationToken cancellationToken = default)
         {
             UriBuilder endpoint = new UriBuilder($"{_settings.ApiProfileEndpoint}internal/user/");
 
             StringContent requestBody = new StringContent(JsonSerializer.Serialize(userProfileLookup), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody, cancellationToken);
+            string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {

@@ -53,10 +53,10 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
     /// <inheritdoc/>
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesForParty(int subjectPartyId, bool includeAltinn2AuthorizedParties, CancellationToken cancellationToken)
     {
-        Party subject = await _contextRetrievalService.GetPartyAsync(subjectPartyId);
+        Party subject = await _contextRetrievalService.GetPartyAsync(subjectPartyId, cancellationToken);
         if (subject?.PartyTypeName == PartyType.Person)
         {
-            UserProfile user = await _profile.GetUser(new() { Ssn = subject.SSN });
+            UserProfile user = await _profile.GetUser(new() { Ssn = subject.SSN }, cancellationToken);
             if (user != null)
             {
                 return await GetAuthorizedPartiesForUser(user.UserId, includeAltinn2AuthorizedParties, cancellationToken);
@@ -81,7 +81,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
     /// <inheritdoc/>
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesForPerson(string subjectNationalId, bool includeAltinn2AuthorizedParties, CancellationToken cancellationToken)
     {
-        UserProfile user = await _profile.GetUser(new() { Ssn = subjectNationalId });
+        UserProfile user = await _profile.GetUser(new() { Ssn = subjectNationalId }, cancellationToken);
         if (user != null)
         {
             return await GetAuthorizedPartiesForUser(user.UserId, includeAltinn2AuthorizedParties, cancellationToken);
@@ -98,7 +98,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             throw new ArgumentException(message: $"Not a well-formed uuid: {subjectPersonUuid}", paramName: nameof(subjectPersonUuid));
         }
 
-        UserProfile user = await _profile.GetUser(new() { UserUuid = personUuid });
+        UserProfile user = await _profile.GetUser(new() { UserUuid = personUuid }, cancellationToken);
         if (user != null && user.Party.PartyTypeName == PartyType.Person)
         {
             return await GetAuthorizedPartiesForUser(user.UserId, includeAltinn2AuthorizedParties, cancellationToken);
@@ -110,7 +110,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
     /// <inheritdoc/>
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesForOrganization(string subjectOrganizationNumber, bool includeAltinn2AuthorizedParties, CancellationToken cancellationToken)
     {
-        Party subject = await _contextRetrievalService.GetPartyForOrganization(subjectOrganizationNumber);
+        Party subject = await _contextRetrievalService.GetPartyForOrganization(subjectOrganizationNumber, cancellationToken);
         if (subject != null)
         {
             return await BuildAuthorizedParties(0, subject.PartyId.SingleToList(), includeAltinn2AuthorizedParties, cancellationToken);
@@ -127,7 +127,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             throw new ArgumentException(message: $"Not a well-formed uuid: {subjectOrganizationUuid}", paramName: nameof(subjectOrganizationUuid));
         }
 
-        Party subject = await _contextRetrievalService.GetPartyByUuid(orgUuid);
+        Party subject = await _contextRetrievalService.GetPartyByUuid(orgUuid, cancellationToken: cancellationToken);
         if (subject != null && subject.PartyTypeName == PartyType.Organisation)
         {
             return await BuildAuthorizedParties(0, subject.PartyId.SingleToList(), includeAltinn2AuthorizedParties, cancellationToken);
@@ -139,7 +139,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
     /// <inheritdoc/>
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesForEnterpriseUser(string subjectEnterpriseUsername, bool includeAltinn2AuthorizedParties, CancellationToken cancellationToken)
     {
-        UserProfile user = await _profile.GetUser(new() { Username = subjectEnterpriseUsername });
+        UserProfile user = await _profile.GetUser(new() { Username = subjectEnterpriseUsername }, cancellationToken);
         if (user != null && user.Party.PartyTypeName == PartyType.Organisation)
         {
             return await GetAuthorizedPartiesForUser(user.UserId, includeAltinn2AuthorizedParties, cancellationToken);
@@ -156,7 +156,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             throw new ArgumentException(message: $"Not a well-formed uuid: {subjectEnterpriseUserUuid}", paramName: nameof(subjectEnterpriseUserUuid));
         }
 
-        UserProfile user = await _profile.GetUser(new() { UserUuid = enterpriseUserUuid });
+        UserProfile user = await _profile.GetUser(new() { UserUuid = enterpriseUserUuid }, cancellationToken);
         if (user != null && user.Party.PartyTypeName == PartyType.Organisation)
         {
             return await GetAuthorizedPartiesForUser(user.UserId, includeAltinn2AuthorizedParties, cancellationToken);

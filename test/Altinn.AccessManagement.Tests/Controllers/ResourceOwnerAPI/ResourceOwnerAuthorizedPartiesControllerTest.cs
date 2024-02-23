@@ -115,7 +115,7 @@ public class ResourceOwnerAuthorizedPartiesControllerTest : IClassFixture<Custom
         AssertionUtil.AssertCollections(expected, actual, TestDataAuthorizedParties.AssertAuthorizedPartyExternalEqual);
     }
 
-    private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
+    private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
 
     private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
     {

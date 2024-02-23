@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     /// <summary>
     /// A client for retrieving profiles from Altinn Platform.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ProfileClient : IProfileClient
     {
         private readonly ILogger _logger;

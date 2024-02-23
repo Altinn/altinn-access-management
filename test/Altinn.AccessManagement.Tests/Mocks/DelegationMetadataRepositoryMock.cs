@@ -354,6 +354,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-main-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.MainUnit_PartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-sub-to-org", TestDataAuthorizedParties.SubUnit_PartyId, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-sub-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.SubUnit_PartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
         }
 
         return Task.FromResult(result);

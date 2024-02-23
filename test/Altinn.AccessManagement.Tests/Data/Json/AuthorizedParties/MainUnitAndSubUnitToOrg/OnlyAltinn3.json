@@ -23,7 +23,8 @@
         "childParties": null,
         "authorizedResources": [
           "devtest_gar_authparties-main-to-org",
-          "ttd/am-devtest-sub-to-org"
+          "ttd/am-devtest-sub-to-org",
+          "devtest_gar_authparties-sub-to-org"
         ],
         "authorizedRoles": [],
         "authorizedAccessPackages": []

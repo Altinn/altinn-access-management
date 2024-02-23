@@ -155,7 +155,7 @@ public class AuthorizedPartiesController : ControllerBase
         {
             int authenticatedUserPartyId = AuthenticationHelper.GetPartyId(HttpContext);
 
-            Party subject = await _contextRetrievalService.GetPartyAsync(party);
+            Party subject = await _contextRetrievalService.GetPartyAsync(party, cancellationToken);
             if (subject.PartyTypeName == PartyType.Person && subject.PartyId != authenticatedUserPartyId)
             {
                 return Forbid();

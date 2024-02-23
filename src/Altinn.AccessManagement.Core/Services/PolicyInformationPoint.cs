@@ -148,14 +148,11 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken)
         {
-            var party = await _contextRetrievalService.GetPartyAsync(partyId);
+            var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
 
             if (party?.PartyTypeName == PartyType.Person)
             {
-                var user = await _profile.GetUser(new()
-                {
-                    Ssn = party.SSN,
-                });
+                var user = await _profile.GetUser(new() { Ssn = party.SSN }, cancellationToken);
 
                 var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
                 return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(user.UserId.SingleToList(), keyRoles, cancellationToken);
@@ -172,14 +169,11 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken)
         {
-            var party = await _contextRetrievalService.GetPartyAsync(partyId);
+            var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
 
             if (party.PartyTypeName == PartyType.Person)
             {
-                var user = await _profile.GetUser(new()
-                {
-                    Ssn = party.SSN
-                });
+                var user = await _profile.GetUser(new() { Ssn = party.SSN }, cancellationToken);
 
                 var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
                 var offeredBy = user.PartyId.SingleToList();

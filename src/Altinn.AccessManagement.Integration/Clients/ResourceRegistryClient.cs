@@ -85,10 +85,10 @@ namespace Altinn.AccessManagement.Integration.Clients
             {
                 string endpointUrl = $"resource/resourcelist";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl, cancellationToken);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                 }
             }

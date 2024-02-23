@@ -47,7 +47,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid => await GetAuthorizedPartiesForEnterpriseUserUuid(subjectAttribute.Value, includeAltinn2AuthorizedParties, cancellationToken),
         AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute => await GetAuthorizedPartiesForParty(int.Parse(subjectAttribute.Value), includeAltinn2AuthorizedParties, cancellationToken),
         AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute => await GetAuthorizedPartiesForUser(int.Parse(subjectAttribute.Value), includeAltinn2AuthorizedParties, cancellationToken),
-        _ => throw new ArgumentException(message: $"Unknown attribute type: {subjectAttribute.Type}", paramName: nameof(subjectAttribute.Type))
+        _ => throw new ArgumentException(message: $"Unknown attribute type: {subjectAttribute.Type}", paramName: nameof(subjectAttribute))
     };
 
     /// <inheritdoc/>

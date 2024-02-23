@@ -52,7 +52,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     /// </summary>
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedNoValidToken), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenWithOutUserContext), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenMissingUserContext), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_UnauthenticatedUser_Unauthorized(string userToken)
     {
         var client = GetTestClient(userToken);
@@ -72,7 +72,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     /// </summary>
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedNoValidToken), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenWithOutUserContext), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenMissingUserContext), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParty_UnauthenticatedUser_Unauthorized(string userToken)
     {
         var client = GetTestClient(userToken);

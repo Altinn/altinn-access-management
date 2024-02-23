@@ -9,10 +9,6 @@
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
-    "Value": "PRIUT"
-  },
-  {
-    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
     "Value": "REGNA"
   },
   {
@@ -33,7 +29,15 @@
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
-    "Value": "PRIV"
+    "Value": "KLADM"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "ATTST"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "HVASK"
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
@@ -41,15 +45,35 @@
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "SIGNE"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "UIHTL"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
     "Value": "KOMAB"
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
-    "Value": "BOADM"
+    "Value": "LEDE"
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
-    "Value": "TUL02"
+    "Value": "DAGL"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "ECKEYROLE"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "HADM"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "PASIG"
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
@@ -65,6 +89,14 @@
   },
   {
     "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
-    "Value": "A0282"
+    "Value": "A0293"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "A0294"
+  },
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "APIADM"
   }
 ]

@@ -265,7 +265,20 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
 
             if (authorizedParty.OnlyHierarchyElementWithNoAccess)
             {
-                // MainUnit which has been added as hierarchy element. Need to add all children before resource enrichment
+                // Delegation is from a MainUnit which has been added previously as hierarchy element. All children need to be added before resource enrichment
+                if (!delegationParties.TryGetValue(authorizedParty.PartyId, out Party mainUnitParty))
+                {
+                    throw new UnreachableException($"Get AuthorizedParties failed to find mainunit party: {authorizedParty.PartyId} already added previously. Should not be possible.");
+                }
+
+                foreach (Party subunit in mainUnitParty.ChildParties)
+                {
+                    // Only add subunits which so far has not been already processed with some authorized access
+                    if (!authorizedPartyDict.TryGetValue(subunit.PartyId, out AuthorizedParty authorizedSubUnit))
+                    {
+                        authorizedParty.ChildParties.Add(new(subunit));
+                    }
+                }
             }
 
             authorizedParty.EnrichWithResourceAccess(delegation.ResourceId);

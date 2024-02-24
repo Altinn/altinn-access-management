@@ -12,9 +12,7 @@
     "authorizedResources": [
       "devtest_gar_authparties-main-to-person"
     ],
-    "authorizedRoles": [
-      "REGNA"
-    ],
+    "authorizedRoles": [],
     "childParties": [
       {
         "partyId": 50100007,
@@ -30,10 +28,7 @@
           "devtest_gar_authparties-main-to-person",
           "ttd/am-devtest-sub-to-person"
         ],
-        "authorizedRoles": [
-          "REGNA",
-          "SISKD"
-        ],
+        "authorizedRoles": [],
         "childParties": null
       },
       {
@@ -49,9 +44,7 @@
         "authorizedResources": [
           "devtest_gar_authparties-main-to-person"
         ],
-        "authorizedRoles": [
-          "REGNA"
-        ],
+        "authorizedRoles": [],
         "childParties": null
       }
     ]

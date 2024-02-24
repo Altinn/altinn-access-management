@@ -1,20 +1,19 @@
 [
   {
-    "partyId": 50100008,
-    "partyUuid": "00000000-0000-0000-0001-000000000008",
+    "partyId": 50100009,
+    "partyUuid": "00000000-0000-0000-0001-000000000009",
     "partyType": "Person",
     "orgNumber": "",
-    "ssn": "01017870071",
+    "ssn": "01017970071",
     "unitType": null,
     "name": "MAINUNIT AND SUBUNIT TO PERSON RECIPIENT",
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
-    "childParties": null,
     "authorizedResources": [],
     "authorizedRoles": [
       "PRIV"
     ],
-    "authorizedAccessPackages": []
+    "childParties": null
   },
   {
     "partyId": 50100006,
@@ -26,6 +25,12 @@
     "name": "AUTHORIZEDPARTIES MAINUNIT",
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-person"
+    ],
+    "authorizedRoles": [
+      "REGNA"
+    ],
     "childParties": [
       {
         "partyId": 50100007,
@@ -34,7 +39,7 @@
         "orgNumber": "901000007",
         "ssn": null,
         "unitType": "BEDR",
-        "name": "AUTHORIZEDPARTIES SUBUNIT",
+        "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "childParties": null,
@@ -45,16 +50,26 @@
         "authorizedRoles": [
           "REGNA",
           "SISKD"
+        ]
+      },
+      {
+        "partyId": 50100008,
+        "partyUuid": "00000000-0000-0000-0001-000000000008",
+        "partyType": "Organization",
+        "orgNumber": "901000008",
+        "ssn": null,
+        "unitType": "BEDR",
+        "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "childParties": null,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-person"
         ],
-        "authorizedAccessPackages": []
+        "authorizedRoles": [
+          "REGNA"
+        ]
       }
-    ],
-    "authorizedResources": [
-      "devtest_gar_authparties-main-to-person"
-    ],
-    "authorizedRoles": [
-      "REGNA"
-    ],
-    "authorizedAccessPackages": []
+    ]
   }
 ]

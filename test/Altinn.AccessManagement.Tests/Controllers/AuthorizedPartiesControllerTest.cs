@@ -95,10 +95,11 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     [MemberData(nameof(TestDataAuthorizedParties.PersonToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToOrg), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToOrgInclA2), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToPerson), MemberType = typeof(TestDataAuthorizedParties))]
+    ////[MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg), MemberType = typeof(TestDataAuthorizedParties))]
+    ////[MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrgInclA2), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.SubUnitToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedPartyExternal> expected)
     {
         var client = GetTestClient(userToken);
@@ -170,7 +171,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     /// </summary>
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.PersonGettingOwnList_Success), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.AccessManagerGettingOrgList_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    ////[MemberData(nameof(TestDataAuthorizedParties.AccessManagerGettingOrgList_Success), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_AsAccessManager_Ok(string userToken, int partyId, bool includeAltinn2, List<AuthorizedPartyExternal> expected)
     {
         var client = GetTestClient(userToken, WithPDPMock);

@@ -1,6 +1,7 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -125,6 +126,20 @@ public class ContextRetrievalService : IContextRetrievalService
         }
 
         return parties;
+    }
+
+    /// <inheritdoc/>
+    public async Task<SortedDictionary<int, Party>> GetPartiesAsSortedDictionaryAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
+    {
+        SortedDictionary<int, Party> dict = [];
+
+        List<Party> parties = await GetPartiesAsync(partyIds, includeSubunits, cancellationToken);
+        foreach (Party party in parties)
+        {
+            dict.Add(party.PartyId, party);
+        }
+
+        return dict;
     }
 
     /// <inheritdoc/>
@@ -281,9 +296,15 @@ public class ContextRetrievalService : IContextRetrievalService
     }
 
     /// <inheritdoc/>
-    public async Task<List<MainUnit>> GetMainUnits(int subunitPartyId, CancellationToken cancellationToken = default)
+    public async Task<MainUnit> GetMainUnit(int subunitPartyId, CancellationToken cancellationToken = default)
     {
-        return await GetMainUnits(subunitPartyId.SingleToList(), cancellationToken);
+        if (_memoryCache.TryGetValue($"subunit:{subunitPartyId}", out MainUnit mainUnit))
+        {
+            return mainUnit;
+        }
+
+        List<MainUnit> mainUnits = await GetMainUnits(subunitPartyId.SingleToList(), cancellationToken);
+        return mainUnits.FirstOrDefault();
     }
 
     /// <inheritdoc/>

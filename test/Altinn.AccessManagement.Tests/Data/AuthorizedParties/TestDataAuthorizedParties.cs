@@ -45,29 +45,35 @@ public static class TestDataAuthorizedParties
 
     public static int SubUnit_PartyId => 50100007;
 
-    public static int MainUnitAndSubUnitToPerson_ToUserId => 20100008;
+    public static int SubUnitTwo_PartyId => 50100008;
 
-    public static int MainUnitAndSubUnitToPerson_ToPartyId => 50100008;
+    public static int MainUnitAndSubUnitToPerson_ToUserId => 20100009;
 
-    public static string MainUnitAndSubUnitToOrg_ToOrgOrganizationNumber => "901000009";
+    public static int MainUnitAndSubUnitToPerson_ToPartyId => 50100009;
 
-    public static string MainUnitAndSubUnitToOrg_ToOrgOrganizationUuid => "00000000-0000-0000-0001-000000000009";
+    public static string MainUnitAndSubUnitToOrg_ToOrgOrganizationNumber => "901000010";
 
-    public static int MainUnitAndSubUnitToOrg_ToOrgPartyId => 50100009;
+    public static string MainUnitAndSubUnitToOrg_ToOrgOrganizationUuid => "00000000-0000-0000-0001-000000000010";
 
-    public static string MainUnitAndSubUnitToOrg_ToOrgDaglPersonId => "01018070071";
+    public static int MainUnitAndSubUnitToOrg_ToOrgPartyId => 50100010;
 
-    public static string MainUnitAndSubUnitToOrg_ToOrgDaglPersonUuid => "00000000-0000-0000-0001-000000000010";
+    public static string MainUnitAndSubUnitToOrg_ToOrgDaglPersonId => "01018170071";
 
-    public static int MainUnitAndSubUnitToOrg_ToOrgDaglUserId => 20100010;
+    public static string MainUnitAndSubUnitToOrg_ToOrgDaglPersonUuid => "00000000-0000-0000-0001-000000000011";
 
-    public static int MainUnitAndSubUnitToOrg_ToOrgDaglPartyId => 50100010;
+    public static int MainUnitAndSubUnitToOrg_ToOrgDaglUserId => 20100011;
+
+    public static int MainUnitAndSubUnitToOrg_ToOrgDaglPartyId => 50100011;
 
     public static string MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUsername => "MainUnit_And_SubUnit_ToOrg_EcKeyRole_User";
 
-    public static string MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserUuid => "00000000-0000-0000-0002-000000000009";
+    public static string MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserUuid => "00000000-0000-0000-0002-000000000010";
 
-    public static int MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserId => 20100009;
+    public static int MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserId => 20100010;
+
+    public static int SubUnitToPerson_ToUserId => 20100012;
+
+    public static int SubUnitToPerson_ToPartyId => 50100012;
 
 #pragma warning restore SA1600 // Elements should be documented
 
@@ -234,6 +240,23 @@ public static class TestDataAuthorizedParties
             PrincipalUtil.GetToken(MainUnitAndSubUnitToOrg_ToOrgDaglUserId, MainUnitAndSubUnitToOrg_ToOrgDaglPartyId, 3),
             true,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("MainUnitAndSubUnitToOrg", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Sets up the authenticated user,
+    /// getting authorized parties from only Altinn 3
+    /// where the user has received the following delegations:
+    ///     from subunit:
+    ///         the altinn app: ttd/am-devtest-sub-to-person
+    ///         the resource: devtest_gar_authparties-sub-to-person
+    /// </summary>
+    public static TheoryData<string, bool, List<AuthorizedPartyExternal>> SubUnitToPerson() => new()
+    {
+        {
+            PrincipalUtil.GetToken(SubUnitToPerson_ToUserId, SubUnitToPerson_ToPartyId, 3),
+            false,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("SubUnitToPerson", OnlyAltinn3)
         }
     };
 

@@ -170,6 +170,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         List<AuthorizedParty> result = new();
         List<AuthorizedParty> a3AuthParties = new();
         SortedDictionary<int, AuthorizedParty> authorizedPartyDict = [];
+        SortedDictionary<int, List<string>> authorizedResourcesDict = [];
 
         if (includeAltinn2AuthorizedParties && subjectUserId != 0)
         {
@@ -196,61 +197,75 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         List<int> fromPartyIds = delegations.Select(dc => dc.OfferedByPartyId).Distinct().ToList();
         List<MainUnit> mainUnits = await _contextRetrievalService.GetMainUnits(fromPartyIds, cancellationToken);
 
-        fromPartyIds.AddRange(mainUnits.Where(m => m.PartyId.HasValue).Select(m => m.PartyId.Value));
-        List<Party> delegationParties = await _contextRetrievalService.GetPartiesAsync(fromPartyIds, true, cancellationToken);
+        fromPartyIds.AddRange(mainUnits.Where(m => m.PartyId > 0).Select(m => m.PartyId.Value));
+        SortedDictionary<int, Party> delegationParties = await _contextRetrievalService.GetPartiesAsSortedDictionaryAsync(fromPartyIds, true, cancellationToken);
 
         foreach (var delegation in delegations)
         {
             if (!authorizedPartyDict.TryGetValue(delegation.OfferedByPartyId, out AuthorizedParty authorizedParty))
             {
-                // Check if offering party has a main unit / is itself a subunit
-                MainUnit mainUnit = mainUnits.Find(mu => mu.SubunitPartyId == delegation.OfferedByPartyId);
+                // Check if offering party has a main unit / is itself a subunit. 
+                MainUnit mainUnit = await _contextRetrievalService.GetMainUnit(delegation.OfferedByPartyId, cancellationToken); // Since all mainunits were retrieved earlier results are in cache.
                 if (mainUnit?.PartyId > 0)
                 {
-                    if (!authorizedPartyDict.TryGetValue(mainUnit.PartyId.Value, out AuthorizedParty mainUnitAuthParty))
+                    if (authorizedPartyDict.TryGetValue(mainUnit.PartyId.Value, out AuthorizedParty mainUnitAuthParty))
                     {
-                        Party mainUnitParty = delegationParties.Find(p => p.PartyId == mainUnit.PartyId.Value);
-                        mainUnitParty.OnlyHierarchyElementWithNoAccess = true;
+                        authorizedParty = mainUnitAuthParty.ChildParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
 
-                        // Find the authorized party as a subunit on the main unit
-                        foreach (Party subunit in mainUnitParty.ChildParties)
+                        if (authorizedParty == null)
                         {
-                            if (subunit.PartyId == delegation.OfferedByPartyId)
+                            if (!delegationParties.TryGetValue(delegation.OfferedByPartyId, out Party party))
                             {
-                                authorizedParty = new AuthorizedParty(subunit);
+                                throw new UnreachableException($"Get AuthorizedParties failed to find subunit party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
                             }
-                            else
-                            {
-                                subunit.OnlyHierarchyElementWithNoAccess = true;
-                            }
+
+                            authorizedParty = new AuthorizedParty(party);
+                            mainUnitAuthParty.ChildParties.Add(authorizedParty);
                         }
 
-                        mainUnitAuthParty = new AuthorizedParty(mainUnitParty);
-                        authorizedPartyDict.Add(mainUnitParty.PartyId, mainUnitAuthParty);
                         authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
-                        a3AuthParties.Add(mainUnitAuthParty);
                     }
                     else
                     {
-                        authorizedParty = mainUnitAuthParty.ChildParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
+                        if (!delegationParties.TryGetValue(mainUnit.PartyId.Value, out Party mainUnitParty))
+                        {
+                            throw new UnreachableException($"Get AuthorizedParties failed to find mainunit party: {mainUnit.PartyId.Value} for an existing active delegation from subunit OfferedByPartyId: {delegation.OfferedByPartyId}");
+                        }
+
+                        mainUnitParty.OnlyHierarchyElementWithNoAccess = true;
+                        mainUnitAuthParty = new AuthorizedParty(mainUnitParty, false);
+
+                        // Find the authorized party as a subunit on the main unit
+                        Party subunit = mainUnitParty.ChildParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
+                        if (subunit == null)
+                        {
+                            throw new UnreachableException($"Get AuthorizedParties failed to find subunit party: {delegation.OfferedByPartyId}, as child on the mainunit: {mainUnitParty.PartyId}");
+                        }
+
+                        authorizedParty = new(subunit);
+                        mainUnitAuthParty.ChildParties = new() { authorizedParty };
+                        authorizedPartyDict.Add(mainUnitParty.PartyId, mainUnitAuthParty);
                         authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
+                        a3AuthParties.Add(mainUnitAuthParty);
                     }
                 }
                 else
                 {
                     // Authorized party is not a subunit. Find party to add.
-                    Party party = delegationParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
-                    if (party != null)
+                    if (!delegationParties.TryGetValue(delegation.OfferedByPartyId, out Party party))
                     {
-                        authorizedParty = new AuthorizedParty(party);
-                        authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
-                        a3AuthParties.Add(authorizedParty);
+                        throw new UnreachableException($"Get AuthorizedParties failed to find party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
                     }
-                    else
-                    {
-                        throw new UnreachableException($"Get AuthorizedParties failed to find Party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
-                    }
+
+                    authorizedParty = new AuthorizedParty(party);
+                    authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
+                    a3AuthParties.Add(authorizedParty);
                 }
+            }
+
+            if (authorizedParty.OnlyHierarchyElementWithNoAccess)
+            {
+                // MainUnit which has been added as hierarchy element. Need to add all children before resource enrichment
             }
 
             authorizedParty.EnrichWithResourceAccess(delegation.ResourceId);

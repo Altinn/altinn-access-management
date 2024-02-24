@@ -9,6 +9,12 @@
     "name": "AUTHORIZEDPARTIES MAINUNIT",
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-person"
+    ],
+    "authorizedRoles": [
+      "REGNA"
+    ],
     "childParties": [
       {
         "partyId": 50100007,
@@ -17,22 +23,37 @@
         "orgNumber": "901000007",
         "ssn": null,
         "unitType": "BEDR",
-        "name": "AUTHORIZEDPARTIES SUBUNIT",
+        "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
-        "childParties": null,
         "authorizedResources": [
           "devtest_gar_authparties-main-to-person",
           "ttd/am-devtest-sub-to-person"
         ],
-        "authorizedRoles": [],
-        "authorizedAccessPackages": []
+        "authorizedRoles": [
+          "REGNA",
+          "SISKD"
+        ],
+        "childParties": null
+      },
+      {
+        "partyId": 50100008,
+        "partyUuid": "00000000-0000-0000-0001-000000000008",
+        "partyType": "Organization",
+        "orgNumber": "901000008",
+        "ssn": null,
+        "unitType": "BEDR",
+        "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-person"
+        ],
+        "authorizedRoles": [
+          "REGNA"
+        ],
+        "childParties": null
       }
-    ],
-    "authorizedResources": [
-      "devtest_gar_authparties-main-to-person"
-    ],
-    "authorizedRoles": [],
-    "authorizedAccessPackages": []
+    ]
   }
 ]

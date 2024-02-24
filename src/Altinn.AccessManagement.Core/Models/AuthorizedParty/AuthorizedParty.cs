@@ -20,7 +20,8 @@ public class AuthorizedParty
     /// Initializes a new instance of the <see cref="AuthorizedParty"/> class based on a <see cref="Party"/> class.
     /// </summary>
     /// <param name="party">Party model from registry</param>
-    public AuthorizedParty(Party party)
+    /// <param name="includeChildParties">Whether model should also build list of child parties if any exists</param>
+    public AuthorizedParty(Party party, bool includeChildParties = true)
     {
         PartyId = party.PartyId;
         PartyUuid = party.PartyUuid;
@@ -31,7 +32,7 @@ public class AuthorizedParty
         Name = party.Name;
         IsDeleted = party.IsDeleted;
         OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess;
-        ChildParties = party.ChildParties?.Select(child => new AuthorizedParty(child)).ToList();
+        ChildParties = includeChildParties ? party.ChildParties?.Select(child => new AuthorizedParty(child)).ToList() : null;
     }
 
     /// <summary>

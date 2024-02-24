@@ -47,6 +47,15 @@ public interface IContextRetrievalService
     Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets a dictionary of parties by their party ids
+    /// </summary>
+    /// <param name="partyIds">List of partyIds to lookup</param>
+    /// <param name="includeSubunits">(Optional) Whether subunits should be included as ChildParties, if any of the lookup party IDs are for a main unit</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>List of parties</returns>
+    Task<SortedDictionary<int, Party>> GetPartiesAsSortedDictionaryAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets a single party by its party uuid
     /// </summary>
     /// <param name="partyUuid">The party uuid</param>
@@ -101,8 +110,8 @@ public interface IContextRetrievalService
     /// </summary>
     /// <param name="subunitPartyId">The PartyId to check and retrieve any main unit for</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    /// <returns>main units</returns>
-    Task<List<MainUnit>> GetMainUnits(int subunitPartyId, CancellationToken cancellationToken = default);
+    /// <returns>main unit</returns>
+    Task<MainUnit> GetMainUnit(int subunitPartyId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets a single resoure by it's resource id if registered in the Resource Registry

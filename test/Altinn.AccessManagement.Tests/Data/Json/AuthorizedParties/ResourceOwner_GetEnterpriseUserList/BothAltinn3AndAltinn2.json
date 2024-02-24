@@ -1,9 +1,9 @@
 [
   {
-    "partyId": 50100009,
-    "partyUuid": "00000000-0000-0000-0001-000000000009",
+    "partyId": 50100010,
+    "partyUuid": "00000000-0000-0000-0001-000000000010",
     "partyType": "Organization",
-    "orgNumber": "901000009",
+    "orgNumber": "901000010",
     "ssn": "",
     "unitType": "AS",
     "name": "MAINUNIT AND SUBUNIT TO ORG RECIPIENT",
@@ -37,13 +37,29 @@
         "orgNumber": "901000007",
         "ssn": null,
         "unitType": "BEDR",
-        "name": "AUTHORIZEDPARTIES SUBUNIT",
+        "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
-          "devtest_gar_authparties-main-to-org",
           "ttd/am-devtest-sub-to-org",
+          "devtest_gar_authparties-main-to-org",
           "devtest_gar_authparties-sub-to-org"
+        ],
+        "authorizedRoles": [],
+        "childParties": null
+      },
+      {
+        "partyId": 50100008,
+        "partyUuid": "00000000-0000-0000-0001-000000000008",
+        "partyType": "Organization",
+        "orgNumber": "901000008",
+        "ssn": null,
+        "unitType": "BEDR",
+        "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-org"
         ],
         "authorizedRoles": [],
         "childParties": null

@@ -248,15 +248,13 @@ namespace Altinn.AccessManagement.Core.Services
             delegations.AddRange(userDelegations);
 
             // 2. Direct user delegations from main unit
-            List<MainUnit> mainunits = await _contextRetrievalService.GetMainUnits(reporteePartyId);
-            List<int> mainunitPartyIds = mainunits.Where(m => m.PartyId.HasValue).Select(m => m.PartyId.Value).ToList();
-
-            if (mainunitPartyIds.Any())
+            MainUnit mainunit = await _contextRetrievalService.GetMainUnit(reporteePartyId);
+            if (mainunit?.PartyId > 0)
             {
-                offeredByPartyIds.AddRange(mainunitPartyIds);
+                offeredByPartyIds.Add(mainunit.PartyId.Value);
                 List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
-                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
-                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserId: subjectUserId);
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserId: subjectUserId);
 
                 if (directMainUnitDelegations.Any())
                 {

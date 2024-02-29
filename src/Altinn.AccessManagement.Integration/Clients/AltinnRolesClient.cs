@@ -6,7 +6,6 @@ using Altinn.AccessManagement.Integration.Configuration;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace Altinn.AccessManagement.Integration.Clients;
 

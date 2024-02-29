@@ -537,16 +537,16 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.PartyId, actual.PartyId);
             Assert.Equal(expected.PartyUuid, actual.PartyUuid);
-            Assert.Equal(expected.PartyTypeName, actual.PartyTypeName);
-            Assert.Equal(expected.OrgNumber, actual.OrgNumber);
-            Assert.Equal(expected.SSN, actual.SSN);
+            Assert.Equal(expected.Type, actual.Type);
+            Assert.Equal(expected.OrganizationNumber, actual.OrganizationNumber);
+            Assert.Equal(expected.PersonId, actual.PersonId);
             Assert.Equal(expected.UnitType, actual.UnitType);
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.IsDeleted, actual.IsDeleted);
             Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
             Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
             Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
-            AssertCollections(expected.ChildParties, actual.ChildParties, AssertAuthorizedPartyEqual);
+            AssertCollections(expected.Subunits, actual.Subunits, AssertAuthorizedPartyEqual);
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

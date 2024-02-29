@@ -1,14 +1,13 @@
 {
-  "partyId": 50100001,
   "partyUuid": "00000000-0000-0000-0001-000000000001",
-  "partyType": "Person",
-  "orgNumber": "",
-  "ssn": "01017170071",
-  "unitType": null,
   "name": "PERSON TO PERSON DELEGATOR",
+  "organizationNumber": null,
+  "personId": "01017170071",
+  "partyId": 50100001,
+  "type": "Person",
+  "unitType": null,
   "isDeleted": false,
   "onlyHierarchyElementWithNoAccess": false,
-  "childParties": null,
   "authorizedResources": [
     "devtest_gar_authparties-person-to-person",
     "ttd/am-devtest-person-to-person"
@@ -16,5 +15,5 @@
   "authorizedRoles": [
     "UTINN"
   ],
-  "authorizedAccessPackages": []
+  "subunits": []
 }

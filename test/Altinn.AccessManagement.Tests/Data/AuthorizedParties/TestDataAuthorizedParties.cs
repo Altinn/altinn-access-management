@@ -585,15 +585,15 @@ public static class TestDataAuthorizedParties
 
         Assert.Equal(expected.PartyId, actual.PartyId);
         Assert.Equal(expected.PartyUuid, actual.PartyUuid);
-        Assert.Equal(expected.PartyType, actual.PartyType);
-        Assert.Equal(expected.OrgNumber, actual.OrgNumber);
-        Assert.Equal(expected.SSN, actual.SSN);
+        Assert.Equal(expected.Type, actual.Type);
+        Assert.Equal(expected.OrganizationNumber, actual.OrganizationNumber);
+        Assert.Equal(expected.PersonId, actual.PersonId);
         Assert.Equal(expected.UnitType, actual.UnitType);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.IsDeleted, actual.IsDeleted);
         Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
         Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
         Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
-        AssertionUtil.AssertCollections(expected.ChildParties, actual.ChildParties, AssertAuthorizedPartyExternalEqual);
+        AssertionUtil.AssertCollections(expected.Subunits, actual.Subunits, AssertAuthorizedPartyExternalEqual);
     }
 }

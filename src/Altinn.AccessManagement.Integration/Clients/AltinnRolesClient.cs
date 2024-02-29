@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Integration.Configuration;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Altinn.AccessManagement.Integration.Clients;
 
@@ -95,7 +96,8 @@ public class AltinnRolesClient : IAltinnRolesClient
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return JsonSerializer.Deserialize<List<AuthorizedParty>>(content, _serializerOptions);
+                List<SblAuthorizedParty> sblAuthorizedParties = JsonSerializer.Deserialize<List<SblAuthorizedParty>>(content, _serializerOptions);
+                return sblAuthorizedParties.Select(sblAuthorizedParty => new AuthorizedParty(sblAuthorizedParty)).ToList();
             }
 
             _logger.LogError("AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Unexpected HttpStatusCode: {StatusCode} Response: {Content}", response.StatusCode, content);

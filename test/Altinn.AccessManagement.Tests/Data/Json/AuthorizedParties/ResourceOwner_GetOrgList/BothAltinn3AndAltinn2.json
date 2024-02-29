@@ -1,27 +1,27 @@
 [
   {
-    "partyId": 50100006,
     "partyUuid": "00000000-0000-0000-0001-000000000006",
-    "partyType": "Organization",
-    "orgNumber": "901000006",
-    "ssn": null,
-    "unitType": "AS",
     "name": "AUTHORIZEDPARTIES MAINUNIT",
+    "organizationNumber": "901000006",
+    "personId": null,
+    "partyId": 50100006,
+    "type": "Organization",
+    "unitType": "AS",
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
     "authorizedResources": [
       "devtest_gar_authparties-main-to-org"
     ],
     "authorizedRoles": [],
-    "childParties": [
+    "subunits": [
       {
-        "partyId": 50100007,
         "partyUuid": "00000000-0000-0000-0001-000000000007",
-        "partyType": "Organization",
-        "orgNumber": "901000007",
-        "ssn": null,
-        "unitType": "BEDR",
         "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
+        "organizationNumber": "901000007",
+        "personId": null,
+        "partyId": 50100007,
+        "type": "Organization",
+        "unitType": "BEDR",
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
@@ -30,23 +30,23 @@
           "devtest_gar_authparties-sub-to-org"
         ],
         "authorizedRoles": [],
-        "childParties": null
+        "subunits": []
       },
       {
-        "partyId": 50100008,
         "partyUuid": "00000000-0000-0000-0001-000000000008",
-        "partyType": "Organization",
-        "orgNumber": "901000008",
-        "ssn": null,
-        "unitType": "BEDR",
         "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "organizationNumber": "901000008",
+        "personId": null,
+        "partyId": 50100008,
+        "type": "Organization",
+        "unitType": "BEDR",
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
           "devtest_gar_authparties-main-to-org"
         ],
         "authorizedRoles": [],
-        "childParties": null
+        "subunits": []
       }
     ]
   }

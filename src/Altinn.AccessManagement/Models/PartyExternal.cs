@@ -18,7 +18,7 @@ namespace Altinn.AccessManagement.Models
         /// <summary>
         /// Gets or sets the type of party
         /// </summary>
-        public PartyTypeExternal PartyTypeName { get; set; }
+        public AuthorizedPartyTypeExternal PartyTypeName { get; set; }
 
         /// <summary>
         /// Gets the parties org number

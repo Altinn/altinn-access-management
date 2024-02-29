@@ -175,12 +175,12 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         if (includeAltinn2AuthorizedParties && subjectUserId != 0)
         {
             List<AuthorizedParty> a2AuthParties = await _altinnRolesClient.GetAuthorizedPartiesWithRoles(subjectUserId, cancellationToken);
-            foreach (AuthorizedParty a2Party in a2AuthParties)
+            foreach (AuthorizedParty a2AuthParty in a2AuthParties)
             {
-                authorizedPartyDict.Add(a2Party.PartyId, a2Party);
-                if (a2Party.ChildParties != null)
+                authorizedPartyDict.Add(a2AuthParty.PartyId, a2AuthParty);
+                if (a2AuthParty.Subunits != null)
                 {
-                    foreach (AuthorizedParty a2PartySubunit in a2Party.ChildParties)
+                    foreach (AuthorizedParty a2PartySubunit in a2AuthParty.Subunits)
                     {
                         authorizedPartyDict.Add(a2PartySubunit.PartyId, a2PartySubunit);
                     }
@@ -210,7 +210,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                 {
                     if (authorizedPartyDict.TryGetValue(mainUnit.PartyId.Value, out AuthorizedParty mainUnitAuthParty))
                     {
-                        authorizedParty = mainUnitAuthParty.ChildParties.Find(p => p.PartyId == delegation.OfferedByPartyId);
+                        authorizedParty = mainUnitAuthParty.Subunits.Find(p => p.PartyId == delegation.OfferedByPartyId);
 
                         if (authorizedParty == null)
                         {
@@ -220,7 +220,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                             }
 
                             authorizedParty = new AuthorizedParty(party);
-                            mainUnitAuthParty.ChildParties.Add(authorizedParty);
+                            mainUnitAuthParty.Subunits.Add(authorizedParty);
                         }
 
                         authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
@@ -243,7 +243,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                         }
 
                         authorizedParty = new(subunit);
-                        mainUnitAuthParty.ChildParties = new() { authorizedParty };
+                        mainUnitAuthParty.Subunits = new() { authorizedParty };
                         authorizedPartyDict.Add(mainUnitParty.PartyId, mainUnitAuthParty);
                         authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
                         a3AuthParties.Add(mainUnitAuthParty);
@@ -276,7 +276,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                     // Only add subunits which so far has not been already processed with some authorized access
                     if (!authorizedPartyDict.TryGetValue(subunit.PartyId, out AuthorizedParty authorizedSubUnit))
                     {
-                        authorizedParty.ChildParties.Add(new(subunit));
+                        authorizedParty.Subunits.Add(new(subunit));
                     }
                 }
             }

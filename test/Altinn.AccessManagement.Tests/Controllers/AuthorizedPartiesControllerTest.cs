@@ -16,6 +16,7 @@ using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,30 +44,52 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     }
 
     /// <summary>
-    /// Test case:  Get AuthorizedParties for an unauthenticated user
+    /// Test case:  GET /authorizedparties?includeAltinn2={includeAltinn2}
+    ///             for an unauthenticated user
     /// Expected:   - Should return 401 Unauthorized
+    /// Reason:     Operation requires valid user authentication
     /// </summary>
-    /// <returns></returns>
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedNoValidToken), MemberType = typeof(TestDataAuthorizedParties))]
-    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenWithOutUserContext), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenMissingUserContext), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_UnauthenticatedUser_Unauthorized(string userToken)
     {
         var client = GetTestClient(userToken);
 
         // Act
-        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparties?includeAltinn2={false}");
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparties?includeAltinn2={true}");
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     /// <summary>
-    /// Test case:  Get AuthorizedParties for authenticated user
-    /// Expected:   - Should return 200 OK
-    ///             - Should include expected authorized parties incl. authorized resources for each party
+    /// Test case:  GET /authorizedparty/{partyId}?includeAltinn2={includeAltinn2}
+    ///             for an unauthenticated user
+    /// Expected:   - Should return 401 Unauthorized
+    /// Reason:     Operation requires valid user authentication
     /// </summary>
-    /// <returns></returns>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedNoValidToken), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.UnauthenticatedValidTokenMissingUserContext), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParty_UnauthenticatedUser_Unauthorized(string userToken)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparty/{123}?includeAltinn2={true}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    /// <summary>
+    /// Test case:  GET /authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with an authenticated user
+    /// Expected:   - Should return 200 OK
+    ///             - Should return the expected list of authorized party models
+    /// Reason:     See individual test case description in <see cref="TestDataAuthorizedParties"></see>
+    /// </summary>
     [Theory]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.PersonToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
@@ -76,9 +99,10 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToPersonInclA2), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.MainUnitAndSubUnitToOrgInclA2), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.SubUnitToPerson), MemberType = typeof(TestDataAuthorizedParties))]
     public async Task GetAuthorizedParties_AuthenticatedUser_Ok(string userToken, bool includeAltinn2, List<AuthorizedPartyExternal> expected)
     {
-        var client = GetTestClient(userToken, WithPDPMock);
+        var client = GetTestClient(userToken);
 
         // Act
         HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparties?includeAltinn2={includeAltinn2}");
@@ -90,7 +114,98 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
         AssertionUtil.AssertCollections(expected, actual, TestDataAuthorizedParties.AssertAuthorizedPartyExternalEqual);
     }
 
-    private void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
+    /// <summary>
+    /// Test case:  GET /authorizedparty/{partyId}?includeAltinn2={includeAltinn2}
+    ///             with an authenticated user
+    /// Expected:   - Should return 200 OK
+    ///             - Should return the expected authorized party model
+    /// Reason:     See individual test case description in <see cref="TestDataAuthorizedParties"></see>
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonGettingSelfInclA2_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonGettingA3Delegator_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonGettingA3DelegatorInclA2_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParty_AuthenticatedUser_Ok(string userToken, int partyId, bool includeAltinn2, AuthorizedPartyExternal expected)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparty/{partyId}?includeAltinn2={includeAltinn2}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        AuthorizedPartyExternal actual = JsonSerializer.Deserialize<AuthorizedPartyExternal>(await response.Content.ReadAsStringAsync(), options);
+        TestDataAuthorizedParties.AssertAuthorizedPartyExternalEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  GET /authorizedparty/{partyId}?includeAltinn2={includeAltinn2}
+    ///             with an authenticated user
+    /// Expected:   - Should return 400 BadRequest
+    ///             - Should return the expected ValidationProblemDetails response
+    /// Reason:     See individual test case description in <see cref="TestDataAuthorizedParties"></see>
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonGettingSelf_BadRequest), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParty_AuthenticatedUser_BadRequest(string userToken, int partyId, bool includeAltinn2, ValidationProblemDetails expected)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparty/{partyId}?includeAltinn2={includeAltinn2}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        ValidationProblemDetails actual = JsonSerializer.Deserialize<ValidationProblemDetails>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertValidationProblemDetailsEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  GET {party}/authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with an authenticated and authorized Access Manager for the {party}
+    /// Expected:   - Should return 200 OK
+    ///             - Should return the expected list of authorized party models
+    /// Reason:     See individual test case description in <see cref="TestDataAuthorizedParties"></see>
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.PersonGettingOwnList_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.AccessManagerGettingOrgList_Success), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParties_AsAccessManager_Ok(string userToken, int partyId, bool includeAltinn2, List<AuthorizedPartyExternal> expected)
+    {
+        var client = GetTestClient(userToken, WithPDPMock);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/{partyId}/authorizedparties?includeAltinn2={includeAltinn2}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        List<AuthorizedPartyExternal> actual = JsonSerializer.Deserialize<List<AuthorizedPartyExternal>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertCollections(expected, actual, TestDataAuthorizedParties.AssertAuthorizedPartyExternalEqual);
+    }
+
+    /// <summary>
+    /// Test case:  GET {party}/authorizedparties?includeAltinn2={includeAltinn2}
+    ///             with an authenticated and authorized Access Manager for the {party} which is a person
+    /// Expected:   - Should return 403 Forbidden
+    /// Reason:     See individual test case description in <see cref="TestDataAuthorizedParties"></see>
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.AccessManagerGettingPersonList_Forbidden), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthorizedParties_AsAccessManager_Forbidden(string userToken, int partyId, bool includeAltinn2)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/{partyId}/authorizedparties?includeAltinn2={includeAltinn2}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
 
     private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
     {

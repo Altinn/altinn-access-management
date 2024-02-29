@@ -1,7 +1,7 @@
 {
   "to": [
     {
-      "id": "urn:altinn:ssn",
+      "id": "urn:altinn:person:identifier-no",
       "value": "02056260016"
     }
   ],

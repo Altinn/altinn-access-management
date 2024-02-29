@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +15,7 @@ namespace Altinn.AccessManagement.Integration.Clients
     /// <summary>
     /// A client for retrieving profiles from Altinn Platform.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ProfileClient : IProfileClient
     {
         private readonly ILogger _logger;
@@ -40,13 +42,13 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
+        public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup, CancellationToken cancellationToken = default)
         {
             UriBuilder endpoint = new UriBuilder($"{_settings.ApiProfileEndpoint}internal/user/");
 
             StringContent requestBody = new StringContent(JsonSerializer.Serialize(userProfileLookup), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await _client.PostAsync(endpoint.Uri, requestBody, cancellationToken);
+            string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {

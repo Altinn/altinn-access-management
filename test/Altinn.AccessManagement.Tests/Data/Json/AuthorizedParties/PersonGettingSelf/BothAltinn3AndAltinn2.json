@@ -1,0 +1,16 @@
+{
+  "partyUuid": "00000000-0000-0000-0001-000000000002",
+  "name": "PERSON TO PERSON RECIPIENT",
+  "organizationNumber": null,
+  "personId": "01017270071",
+  "partyId": 50100002,
+  "type": "Person",
+  "unitType": null,
+  "isDeleted": false,
+  "onlyHierarchyElementWithNoAccess": false,
+  "authorizedResources": [],
+  "authorizedRoles": [
+    "PRIV"
+  ],
+  "subunits": []
+}

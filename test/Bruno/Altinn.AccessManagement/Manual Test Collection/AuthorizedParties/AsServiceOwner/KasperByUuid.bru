@@ -1,0 +1,44 @@
+meta {
+  name: KasperByUuid
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2=true
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: true
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "type": "urn:altinn:person:uuid",
+    "value": "ee007db6-0db4-4e55-ac21-2a888f04d846"
+  }
+}
+
+vars:pre-request {
+  auth_tokenType: Enterprise
+  auth_org: digdir
+  auth_orgNo: 991825827
+  auth_scopes: altinn:resourceowner/authorizedparties
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

@@ -1,12 +1,12 @@
 [
   {
     "PartyTypeName": 1,
-    "SSN": "01017870071",
+    "SSN": "01017970071",
     "OrgNumber": "",
     "Person": null,
     "Organization": null,
-    "PartyId": 50100008,
-    "PartyUUID": "00000000-0000-0000-0001-000000000008",
+    "PartyId": 50100009,
+    "PartyUUID": "00000000-0000-0000-0001-000000000009",
     "UnitType": null,
     "Name": "MAINUNIT AND SUBUNIT TO PERSON RECIPIENT",
     "IsDeleted": false,
@@ -26,6 +26,7 @@
     "Name": "AUTHORIZEDPARTIES MAINUNIT",
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
+    "AuthorizedRoles": [ "REGNA" ],
     "ChildParties": [
       {
         "PartyTypeName": 2,
@@ -36,13 +37,27 @@
         "PartyId": 50100007,
         "PartyUUID": "00000000-0000-0000-0001-000000000007",
         "UnitType": "BEDR",
-        "Name": "AUTHORIZEDPARTIES SUBUNIT",
+        "Name": "AUTHORIZEDPARTIES SUBUNIT ONE",
         "IsDeleted": false,
         "OnlyHierarchyElementWithNoAccess": false,
-        "ChildParties": null,
-        "AuthorizedRoles": [ "REGNA", "SISKD" ]
+        "AuthorizedRoles": [ "REGNA", "SISKD" ],
+        "ChildParties": null
+      },
+      {
+        "PartyTypeName": 2,
+        "SSN": null,
+        "OrgNumber": "901000008",
+        "Person": null,
+        "Organization": null,
+        "PartyId": 50100008,
+        "PartyUUID": "00000000-0000-0000-0001-000000000008",
+        "UnitType": "BEDR",
+        "Name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "IsDeleted": false,
+        "OnlyHierarchyElementWithNoAccess": false,
+        "AuthorizedRoles": [ "REGNA" ],
+        "ChildParties": null
       }
-    ],
-    "AuthorizedRoles": [ "REGNA" ]
+    ]
   }
 ]

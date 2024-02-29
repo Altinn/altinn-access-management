@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,15 +56,15 @@ public class AltinnRolesClientMock : IAltinnRolesClient
     /// <inheritdoc/>
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken)
     {
-        List<AuthorizedParty> bridgeAuthParties = new List<AuthorizedParty>();
         string authorizedPartiesPath = GetAltinn2AuthorizedPartiesWithRolesPath(userId);
         if (File.Exists(authorizedPartiesPath))
         {
             string content = await File.ReadAllTextAsync(authorizedPartiesPath, cancellationToken);
-            bridgeAuthParties = (List<AuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<AuthorizedParty>), jsonOptions);
+            List<SblAuthorizedParty> bridgeAuthParties = (List<SblAuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<SblAuthorizedParty>), jsonOptions);
+            return bridgeAuthParties.Select(sblAuthorizedParty => new AuthorizedParty(sblAuthorizedParty)).ToList();
         }
 
-        return bridgeAuthParties;
+        return new();
     }
 
     private static string GetRolesPath(int coveredByUserId, int offeredByPartyId)

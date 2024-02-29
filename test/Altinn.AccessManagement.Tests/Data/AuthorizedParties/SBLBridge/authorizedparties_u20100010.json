@@ -1,48 +1,18 @@
 [
   {
-    "PartyTypeName": 1,
-    "SSN": "01018070071",
-    "OrgNumber": "",
-    "Person": null,
-    "Organization": null,
-    "PartyId": 50100010,
-    "PartyUUID": "00000000-0000-0000-0001-000000000010",
-    "UnitType": null,
-    "Name": "MAINUNIT AND SUBUNIT TO ORG DAGL",
-    "IsDeleted": false,
-    "OnlyHierarchyElementWithNoAccess": false,
-    "ChildParties": null,
-    "AuthorizedRoles": [ "PRIV" ]
-  },
-  {
     "PartyTypeName": 2,
-    "SSN": null,
-    "OrgNumber": "901000006",
-    "Person": null,
-    "Organization": null,
-    "PartyId": 50100006,
-    "PartyUUID": "00000000-0000-0000-0001-000000000006",
+    "SSN": "",
+    "OrgNumber": "901000010",
+    "PartyId": 50100010,
+    "PartyUuid": "00000000-0000-0000-0001-000000000010",
     "UnitType": "AS",
-    "Name": "AUTHORIZEDPARTIES MAINUNIT",
+    "Name": "MAINUNIT AND SUBUNIT TO ORG RECIPIENT",
     "IsDeleted": false,
     "OnlyHierarchyElementWithNoAccess": false,
-    "ChildParties": [
-      {
-        "PartyTypeName": 2,
-        "SSN": null,
-        "OrgNumber": "901000007",
-        "Person": null,
-        "Organization": null,
-        "PartyId": 50100007,
-        "PartyUUID": "00000000-0000-0000-0001-000000000007",
-        "UnitType": "BEDR",
-        "Name": "AUTHORIZEDPARTIES SUBUNIT",
-        "IsDeleted": false,
-        "OnlyHierarchyElementWithNoAccess": false,
-        "ChildParties": null,
-        "AuthorizedRoles": [ "UTINN", "APIADM" ]
-      }
+    "authorizedResources": [],
+    "authorizedRoles": [
+      "ECKEYROLE"
     ],
-    "AuthorizedRoles": [ "UTINN" ]
+    "ChildParties": null
   }
 ]

@@ -1,4 +1,5 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -24,6 +25,8 @@ public class AltinnPersonResolver : AttributeResolver
         AddLeaf([Urn.Altinn.Person.UserId], [Urn.Altinn.Person.IdentifierNo, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingUserId());
         AddLeaf([Urn.Altinn.Person.PartyId], [Urn.Altinn.Person.IdentifierNo, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolvePartyUsingPartyId());
         AddLeaf([Urn.Altinn.Person.PartyId], [Urn.Altinn.Person.UserId, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingPartyId());
+        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Person.IdentifierNo, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolvePartyUsingPartyId());
+        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Person.UserId, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingPartyId());
 
         _contextRetrievalService = contextRetrievalService;
         _profile = profile;
@@ -36,7 +39,7 @@ public class AltinnPersonResolver : AttributeResolver
     {
         var user = await _profile.GetUser(new()
         {
-            Ssn = attributes.GetRequiredString(Urn.Altinn.Person.IdentifierNo)
+            Ssn = attributes.GetString(Urn.Altinn.Person.IdentifierNo)
         });
 
         if (user?.Party?.Person != null)
@@ -91,19 +94,23 @@ public class AltinnPersonResolver : AttributeResolver
     };
 
     /// <summary>
-    /// Resolves a person if given <see cref="Urn.Altinn.Person.PartyId"/>
+    /// Resolves a person if given <see cref="Urn.Altinn.Person.PartyId"/> or <see cref="AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute"/>
     /// </summary>
     public LeafResolver ResolvePartyUsingPartyId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Person.PartyId)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Person.PartyId, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)) is var party && party != null)
         {
-            return [
-                new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN),
-                new(Urn.Altinn.Person.Shortname, party.Person.Name),
-                new(Urn.Altinn.Person.Firstname, party.Person.FirstName),
-                new(Urn.Altinn.Person.Middlename, party.Person.MiddleName),
-                new(Urn.Altinn.Person.Lastname, party.Person.LastName),
-            ];
+            if (party.Person != null)
+            {
+                return 
+                [
+                    new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN),
+                    new(Urn.Altinn.Person.Shortname, party.Person.Name),
+                    new(Urn.Altinn.Person.Firstname, party.Person.FirstName),
+                    new(Urn.Altinn.Person.Middlename, party.Person.MiddleName),
+                    new(Urn.Altinn.Person.Lastname, party.Person.LastName),
+                ];
+            }
         }
 
         return [];

@@ -1,0 +1,54 @@
+meta {
+  name: Noa Revoke Offered from Natvik
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  
+    {
+      "to": [
+        {
+          "id": "urn:altinn:person:identifier-no",
+          "value": "02056260016"
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "ttd"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "apps-test"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000542
+  auth_partyId: 50002650
+  auth_ssn: '08109412032'
+  party: 50006037
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

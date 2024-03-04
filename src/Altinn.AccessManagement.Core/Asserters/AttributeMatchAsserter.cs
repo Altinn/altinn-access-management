@@ -1,3 +1,4 @@
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Resolvers;
 
@@ -8,17 +9,21 @@ namespace Altinn.AccessManagement.Core.Asserters;
 /// </summary>
 public static class AttributeMatchAsserter
 {
-    private static string StringifyAttributeIds(IEnumerable<AttributeMatch> values) => $"[{string.Join(",", values.Select(v => v.Id))}]";
+    private static string StringifyAttributeIds(IEnumerable<AttributeMatch> values) => $"[{string.Join(",", values.Select(v => v.Id).OrderDescending())}]";
+    private static string StringifyStrings(IEnumerable<string> values) => $"[{string.Join(",", values.OrderDescending())}]";
 
     /// <summary>
     /// Passes if all the given attribute types are contained in the given list of attributes.
     /// </summary>
     public static Assertion<AttributeMatch> HasAttributeTypes(this IAssert<AttributeMatch> _, params string[] attributes) => (errors, values) =>
     {
-        if (!values.All(value => attributes.Any(type => type.Equals(value.Id, StringComparison.InvariantCultureIgnoreCase))))
+        IEnumerable<string> intersection = values.Select(v => v.Id).Intersect(attributes);
+        if (intersection.Count() == attributes.Count() && intersection.Count() == values.Count())
         {
-            errors.Add(nameof(HasAttributeTypes), [$"attributes {StringifyAttributeIds(values)} is not configured as an interpretable combination"]);
+            return;
         }
+
+        errors.Add(nameof(HasAttributeTypes), [$"attributes {StringifyAttributeIds(values)} is not a combination of {StringifyStrings(attributes)}"]);
     };
 
     /// <summary>
@@ -121,11 +126,15 @@ public static class AttributeMatchAsserter
         assert.All(
                 assert.Single(
                     assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                    assert.HasAttributeTypes(Urn.Altinn.Person.Uuid),
                     assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
                     assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
                     assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
+                    assert.HasAttributeTypes(Urn.Altinn.Organization.Uuid),
                     assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
-                    assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
+                    assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Uuid),
+                    assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                    assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)),
                 assert.AllAttributesHasValues,
                 assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 
@@ -139,10 +148,15 @@ public static class AttributeMatchAsserter
         assert.All(
             assert.Single(
                 assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
+                assert.HasAttributeTypes(Urn.Altinn.Person.Uuid),
                 assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
                 assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
                 assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
-                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId)),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.Uuid),
+                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
+                assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Uuid),
+                assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)),
             assert.AllAttributesHasValues,
             assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 

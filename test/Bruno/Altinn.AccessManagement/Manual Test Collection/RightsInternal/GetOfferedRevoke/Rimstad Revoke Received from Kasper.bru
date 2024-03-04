@@ -1,0 +1,58 @@
+meta {
+  name: Rimstad Revoke Received from Kasper
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:person:partyid",
+          "value": "{{fromPartyId}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "{{org}}"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "{{app}}"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000095
+  auth_partyId: 50002203
+  auth_ssn: '02056260016'
+  party: 50005545
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 50002598
+  ~toSsn: 02056260016
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

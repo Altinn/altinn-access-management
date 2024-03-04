@@ -46,6 +46,24 @@ public static class ResolverExtensions
     }
 
     /// <summary>
+    /// Gets first match of specific attribute value as string
+    /// </summary>
+    /// <param name="values">list of attributes</param>
+    /// <param name="attributes">attributes types / URN's</param>
+    /// <returns></returns>
+    public static string GetString(this IEnumerable<AttributeMatch> values, params string[] attributes)
+    {
+        foreach (var attribute in attributes)
+        {
+            if (values.FirstOrDefault(value => value.Id.Equals(attribute, StringComparison.InvariantCultureIgnoreCase)) is var result && result != null)
+            {
+                return result.Value;
+            }
+        }
+        return string.Empty;
+    }
+
+    /// <summary>
     /// Gets first match of specific attribute value as integer.
     /// </summary>
     /// <param name="values">list of attributes</param>

@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        // [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("{party}/maskinportenschema/delegationcheck")]
         [Produces("application/json")]
         [ProducesResponseType(200)]
@@ -210,7 +210,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
-        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]
+        /*[Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ)]*/
         [Route("{party}/maskinportenschema/offered")]
         [Consumes("application/json")]
         [Produces("application/json")]

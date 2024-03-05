@@ -222,23 +222,23 @@ public class ContextRetrievalService : IContextRetrievalService
         return party;
     }
 
-        /// <inheritdoc/>
-        public async Task<List<int>> GetKeyRolePartyIds(int userId)
+    /// <inheritdoc/>
+    public async Task<List<int>> GetKeyRolePartyIds(int userId, CancellationToken cancellationToken = default)
+    {
+        string cacheKey = $"KeyRolePartyIds_u:{userId}";
+        return new ();
+        if (!_memoryCache.TryGetValue(cacheKey, out List<int> keyrolePartyIds))
         {
-            string cacheKey = $"KeyRolePartyIds_u:{userId}";
-            return new ();
-            /* if (!_memoryCache.TryGetValue(cacheKey, out List<int> keyrolePartyIds))
-            {
-                keyrolePartyIds = await _partiesClient.GetKeyRoleParties(userId);
+            keyrolePartyIds = await _partiesClient.GetKeyRoleParties(userId);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-               .SetPriority(CacheItemPriority.High)
-               .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.KeyRolePartyIdsCacheTimeout, 0));
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+           .SetPriority(CacheItemPriority.High)
+           .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.KeyRolePartyIdsCacheTimeout, 0));
 
-                _memoryCache.Set(cacheKey, keyrolePartyIds, cacheEntryOptions);
-            }
-            return keyrolePartyIds; */
+            _memoryCache.Set(cacheKey, keyrolePartyIds, cacheEntryOptions);
         }
+        return keyrolePartyIds;
+    }
 
     /// <inheritdoc/>
     public async Task<List<MainUnit>> GetMainUnits(List<int> subunitPartyIds, CancellationToken cancellationToken = default)

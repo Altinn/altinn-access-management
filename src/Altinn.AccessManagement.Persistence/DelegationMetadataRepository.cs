@@ -79,7 +79,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
             await using var pgcom = _conn.CreateCommand(getAllAppDelegationChanges);
@@ -161,9 +161,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("offeredByPartyId", offeredByPartyId);
+            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
+            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
+
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesOfferedByPartyId);
             
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
@@ -196,9 +200,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
+            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
+            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
+
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds);
 
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
@@ -232,9 +241,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("coveredByUserId", coveredByUserId);
+            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
+            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
+
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByUserId);
 
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId);
@@ -268,7 +282,9 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
+        activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+
         const string QUERY = /*strpsql*/@"
             WITH resources AS (
 		        SELECT
@@ -356,7 +372,10 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
+        activity.AddTag("coveredByUserIds", string.Join(',', coveredByUserIds));
+        activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
+
         if (coveredByUserIds == null && coveredByPartyIds == null)
         {
             return await Task.FromResult(new List<DelegationChange>());
@@ -453,7 +472,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<DelegationChange> InsertAppDelegation(DelegationChange delegationChange)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
             await using var pgcom = _conn.CreateCommand(insertAppDelegationChange);
@@ -488,7 +507,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<DelegationChange> InsertResourceRegistryDelegation(DelegationChange delegationChange)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
             await using var pgcom = _conn.CreateCommand(insertResourceRegistryDelegationChange);
@@ -525,7 +544,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<DelegationChange> GetCurrentAppDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
+        
+        activity.AddTag("resourceId", resourceId);
+        activity.AddTag("offeredByPartyId", offeredByPartyId);
+        activity.AddTag("coveredByPartyId", coveredByPartyId);
+        activity.AddTag("coveredByUserId", coveredByUserId);
+
         try
         {
             await using var pgcom = _conn.CreateCommand(getCurrentAppDelegationChange);
@@ -556,9 +581,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<DelegationChange> GetCurrentResourceRegistryDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("resourceId", resourceId);
+            activity.AddTag("offeredByPartyId", offeredByPartyId);
+            activity.AddTag("coveredByPartyId", coveredByPartyId);
+            activity.AddTag("coveredByUserId", coveredByUserId);
+
             await using var pgcom = _conn.CreateCommand(getCurrentResourceRegistryDelegationChange);
 
             pgcom.Parameters.AddWithValue("_resourceRegistryId", resourceId);
@@ -588,9 +618,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("resourceIds", string.Join(',', resourceIds));
+            activity.AddTag("offeredByPartyId", offeredByPartyId);
+            activity.AddTag("coveredByPartyId", coveredByPartyId);
+            activity.AddTag("coveredByUserId", resourceType);
+
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChanges);
 
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyId == 0 ? DBNull.Value : new List<int> { coveredByPartyId });
@@ -642,7 +677,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private static async ValueTask<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
             return new DelegationChange
@@ -670,7 +705,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private static async ValueTask<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
             return new DelegationChange
@@ -699,9 +734,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<List<DelegationChange>> GetAllCurrentAppDelegationChangesCoveredByPartyIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByPartyIds = null)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
+            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+            activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
+
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByPartyIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
@@ -734,9 +773,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<List<DelegationChange>> GetAllCurrentAppDelegationChangesCoveredByUserIds(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null, List<int> coveredByUserIds = null)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
+            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+            activity.AddTag("coveredByUserIds", string.Join(',', coveredByUserIds));
+
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByUserIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
@@ -769,9 +812,12 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private async Task<List<DelegationChange>> GetAllCurrentAppDelegationChangesOfferedByPartyIdOnly(List<string> altinnAppIds = null, List<int> offeredByPartyIds = null)
     {
-        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity();
+        using var activity = Configuration.TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
         try
         {
+            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
+            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
+
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesOfferedByPartyIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
@@ -800,3 +846,4 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
     }
 }
+

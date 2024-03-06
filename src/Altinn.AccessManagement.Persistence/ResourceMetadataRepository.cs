@@ -35,7 +35,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
-            using var activity = TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
             try
             {
                 activity.AddTag("resourceRegistryId", resource.ResourceRegistryId);

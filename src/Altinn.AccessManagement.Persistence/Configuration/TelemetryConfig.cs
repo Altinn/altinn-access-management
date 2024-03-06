@@ -1,14 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace Altinn.AccessManagement.Persistence.Configuration
 {
+    /// <summary>
+    /// Config to be used for Telemetry in Altinn.AccessManagement.Persistence
+    /// </summary>
     public static class TelemetryConfig
     {
-        public static readonly ActivitySource activitySource = new ActivitySource("Altinn.AccessManagement.Persistence");
+        /// <summary>
+        /// Used as source for the current project
+        /// </summary>
+        public static readonly ActivitySource _activitySource = new("Altinn.AccessManagement.Persistence");
+
+        /// <summary>
+        /// Used as source for the current project
+        /// </summary>
+        public static readonly Meter _meter = new("Altinn.AccessManagement.Persistence");
     }
 }

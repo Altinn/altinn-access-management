@@ -10,6 +10,7 @@ namespace Altinn.AccessManagement.Core.Asserters;
 public static class AttributeMatchAsserter
 {
     private static string StringifyAttributeIds(IEnumerable<AttributeMatch> values) => $"[{string.Join(",", values.Select(v => v.Id).OrderDescending())}]";
+
     private static string StringifyStrings(IEnumerable<string> values) => $"[{string.Join(",", values.OrderDescending())}]";
 
     /// <summary>

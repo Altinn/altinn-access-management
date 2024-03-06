@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using OpenTelemetry.Trace;
 
 namespace Altinn.AccessManagement.Persistence
 {
@@ -23,7 +18,6 @@ namespace Altinn.AccessManagement.Persistence
     public class ResourceMetadataRepository : IResourceMetadataRepository
     {
         private readonly string _connectionString;
-        private readonly ILogger _logger;
 
         private readonly string insertResorceAccessManagment = "select * from accessmanagement.upsert_resourceregistryresource(@_resourceregistryid, @_resourcetype)";
 
@@ -31,12 +25,8 @@ namespace Altinn.AccessManagement.Persistence
         /// Initializes a new instance of the <see cref="ResourceMetadataRepository"/> class
         /// </summary>
         /// <param name="postgresSettings">The postgreSQL configurations for AuthorizationDB</param>
-        /// <param name="logger">logger</param>
-        public ResourceMetadataRepository(
-            IOptions<PostgreSQLSettings> postgresSettings,
-            ILogger<ResourceMetadataRepository> logger)
+        public ResourceMetadataRepository(IOptions<PostgreSQLSettings> postgresSettings)
         {
-            _logger = logger;
             _connectionString = string.Format(
                 postgresSettings.Value.ConnectionString,
                 postgresSettings.Value.AuthorizationDbPwd);
@@ -45,15 +35,22 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
+            using var activity = TelemetryConfig.activitySource.StartActivity(ActivityKind.Client);
             try
             {
+                activity.AddTag("resourceRegistryId", resource.ResourceRegistryId);
+                activity.AddTag("resourceType", resource.ResourceType.ToString().ToLower());
+
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
                 NpgsqlCommand pgcom = new NpgsqlCommand(insertResorceAccessManagment, conn);
                 pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
                 pgcom.Parameters.AddWithValue("_resourcetype", NpgsqlTypes.NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
-                
+
+                activity?.SetTag("db.system", "Postgres");
+                activity?.SetTag("db.statement", pgcom.CommandText);
+
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())
                 {
@@ -62,9 +59,10 @@ namespace Altinn.AccessManagement.Persistence
 
                 return null;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, "Authorization // ResourceMetadataRepository // InsertAccessManagementResource // Exception");
+                activity?.RecordException(ex);
+                activity?.SetStatus(Status.Error);
                 throw;
             }
         }

@@ -327,6 +327,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
                 {
                     Sdk.CreateTracerProviderBuilder()
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name))
+                    .AddNpgsql()
                     .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name)
                 }
             };

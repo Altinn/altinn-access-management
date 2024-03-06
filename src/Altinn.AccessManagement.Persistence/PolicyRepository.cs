@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Altinn.AccessManagement.Persistence.Extensions;
 using Azure;
 using Azure.Storage;
 using Azure.Storage.Blobs;
@@ -103,13 +104,11 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
+                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
+                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
             }
 
             return null;
@@ -135,8 +134,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
+                activity?.ErrorWithException(ex, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
             }
 
             return false;
@@ -164,14 +162,12 @@ namespace Altinn.AccessManagement.Persistence
                     errorMsg = $"Failed to delete version {version} of policy file at {filepath}. RequestFailedException";
                 }
 
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, errorMsg);
+                activity?.ErrorWithException(ex, errorMsg);
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
+                activity?.ErrorWithException(ex, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
                 throw;
             }
         }
@@ -214,8 +210,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to read policy file at {blobClient.Name}");
+                activity?.ErrorWithException(ex, $"Failed to read policy file at {blobClient.Name}");
                 throw;
             }
         }
@@ -233,14 +228,12 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
+                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(ActivityStatusCode.Error, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
+                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
                 throw;
             }
         }

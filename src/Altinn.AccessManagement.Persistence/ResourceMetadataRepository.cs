@@ -5,6 +5,7 @@ using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Altinn.AccessManagement.Persistence.Extensions;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry.Trace;
@@ -38,9 +39,6 @@ namespace Altinn.AccessManagement.Persistence
             using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
             try
             {
-                activity.AddTag("resourceRegistryId", resource.ResourceRegistryId);
-                activity.AddTag("resourceType", resource.ResourceType.ToString().ToLower());
-
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
@@ -48,8 +46,7 @@ namespace Altinn.AccessManagement.Persistence
                 pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
                 pgcom.Parameters.AddWithValue("_resourcetype", NpgsqlTypes.NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
 
-                activity?.SetTag("db.system", "Postgres");
-                activity?.SetTag("db.statement", pgcom.CommandText);
+                activity.AddSqlTags(pgcom);
 
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())
@@ -61,8 +58,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.RecordException(ex);
-                activity?.SetStatus(Status.Error);
+                activity?.ErrorWithException(ex);
                 throw;
             }
         }

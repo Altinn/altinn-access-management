@@ -80,10 +80,9 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
             pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId.HasValue ? coveredByPartyId.Value : DBNull.Value);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
-
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
+
+            activity.AddSqlTags(pgcom);
 
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
@@ -98,8 +97,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -155,18 +153,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("offeredByPartyId", offeredByPartyId);
-            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
-            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
-
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesOfferedByPartyId);
             
             pgcom.Parameters.AddWithValue("_offeredByPartyId", offeredByPartyId);
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> delegatedResources = new List<DelegationChange>();
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
@@ -182,8 +175,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -194,11 +186,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
-            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
-            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
-            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
-
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByPartyIds);
 
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
@@ -206,8 +193,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
@@ -223,8 +209,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -235,11 +220,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("coveredByUserId", coveredByUserId);
-            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
-            activity.AddTag("resourceRegistryIds", string.Join(',', resourceRegistryIds));
-            activity.AddTag("resourceTypes", string.Join(',', resourceTypes));
-
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChangesForCoveredByUserId);
 
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId);
@@ -247,8 +227,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceRegistryIds == null || !resourceRegistryIds.Any()) ? DBNull.Value : resourceRegistryIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, (resourceTypes == null || !resourceTypes.Any()) ? DBNull.Value : resourceTypes.Select(rt => rt.ToString().ToLower()).ToList());
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
@@ -264,8 +243,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -274,7 +252,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
-        activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
 
         const string QUERY = /*strpsql*/@"
             WITH resources AS (
@@ -345,8 +322,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             await using var pgcom = _conn.CreateCommand(QUERY);
             pgcom.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             return await pgcom.ExecuteEnumerableAsync(cancellationToken)
                 .SelectAwait(GetDelegationChange)
@@ -354,8 +330,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -364,8 +339,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
-        activity.AddTag("coveredByUserIds", string.Join(',', coveredByUserIds));
-        activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
 
         if (coveredByUserIds == null && coveredByPartyIds == null)
         {
@@ -446,8 +419,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithNullableValue("coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
             pgcom.Parameters.AddWithNullableValue("coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             return await pgcom.ExecuteEnumerableAsync(cancellationToken)
                 .SelectAwait(GetDelegationChange)
@@ -455,8 +427,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -477,8 +448,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath);
             pgcom.Parameters.AddWithValue("_blobStorageVersionId", delegationChange.BlobStorageVersionId);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
@@ -490,8 +460,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -514,8 +483,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_blobStorageVersionId", delegationChange.BlobStorageVersionId);
             pgcom.Parameters.AddWithValue("_delegatedTime", delegationChange.Created.HasValue ? delegationChange.Created.Value : DateTime.UtcNow);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
@@ -527,8 +495,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -537,11 +504,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         
-        activity.AddTag("resourceId", resourceId);
-        activity.AddTag("offeredByPartyId", offeredByPartyId);
-        activity.AddTag("coveredByPartyId", coveredByPartyId);
-        activity.AddTag("coveredByUserId", coveredByUserId);
-
         try
         {
             await using var pgcom = _conn.CreateCommand(getCurrentAppDelegationChange);
@@ -551,8 +513,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
             pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId.HasValue ? coveredByPartyId.Value : DBNull.Value);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
@@ -564,8 +525,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -575,11 +535,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("resourceId", resourceId);
-            activity.AddTag("offeredByPartyId", offeredByPartyId);
-            activity.AddTag("coveredByPartyId", coveredByPartyId);
-            activity.AddTag("coveredByUserId", coveredByUserId);
-
             await using var pgcom = _conn.CreateCommand(getCurrentResourceRegistryDelegationChange);
 
             pgcom.Parameters.AddWithValue("_resourceRegistryId", resourceId);
@@ -587,8 +542,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_coveredByUserId", coveredByUserId.HasValue ? coveredByUserId.Value : DBNull.Value);
             pgcom.Parameters.AddWithValue("_coveredByPartyId", coveredByPartyId.HasValue ? coveredByPartyId.Value : DBNull.Value);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             if (reader.Read())
@@ -600,8 +554,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -612,11 +565,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("resourceIds", string.Join(',', resourceIds));
-            activity.AddTag("offeredByPartyId", offeredByPartyId);
-            activity.AddTag("coveredByPartyId", coveredByPartyId);
-            activity.AddTag("coveredByUserId", resourceType);
-
             await using var pgcom = _conn.CreateCommand(getResourceRegistryDelegationChanges);
 
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyId == 0 ? DBNull.Value : new List<int> { coveredByPartyId });
@@ -624,8 +572,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
@@ -641,8 +588,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -668,7 +614,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
 
     private static async ValueTask<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
     {
-        using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+        using var activity = Configuration.TelemetryConfig._activitySource.StartActivity();
         try
         {
             return new DelegationChange
@@ -688,15 +634,14 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(ex));
         }
     }
 
     private static async ValueTask<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)
     {
-        using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+        using var activity = Configuration.TelemetryConfig._activitySource.StartActivity();
         try
         {
             return new DelegationChange
@@ -717,8 +662,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(ex));
         }
     }
@@ -728,18 +672,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
-            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
-            activity.AddTag("coveredByPartyIds", string.Join(',', coveredByPartyIds));
-
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByPartyIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
@@ -756,8 +695,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -767,18 +705,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
-            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
-            activity.AddTag("coveredByUserIds", string.Join(',', coveredByUserIds));
-
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesForCoveredByUserIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
             pgcom.Parameters.AddWithValue("_coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
@@ -795,8 +728,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }
@@ -806,16 +738,12 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
         {
-            activity.AddTag("altinnAppIds", string.Join(',', altinnAppIds));
-            activity.AddTag("offeredByPartyIds", string.Join(',', offeredByPartyIds));
-
             await using var pgcom = _conn.CreateCommand(getAppDelegationChangesOfferedByPartyIds);
 
             pgcom.Parameters.AddWithValue("_altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds?.Count > 0 ? altinnAppIds : DBNull.Value);
             pgcom.Parameters.AddWithValue("_offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
 
-            activity?.SetTag("db.system", "Postgres");
-            activity?.SetTag("db.statement", pgcom.CommandText);
+            activity.AddSqlTags(pgcom);
 
             List<DelegationChange> delegationChanges = new List<DelegationChange>();
 
@@ -831,8 +759,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
         catch (Exception ex)
         {
-            activity?.RecordException(ex);
-            activity?.SetStatus(Status.Error);
+            activity?.ErrorWithException(ex);
             throw;
         }
     }

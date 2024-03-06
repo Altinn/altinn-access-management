@@ -1,11 +1,11 @@
 {
   "to": [
     {
-      "id": "urn:altinn:ssn",
+      "id": "urn:altinn:person:identifier-no",
       "value": "27099450067"
     },
     {
-      "id": "urn:altinn:lastname",
+      "id": "urn:altinn:person:lastname",
       "value": "RAVNÅS"
     }
   ],

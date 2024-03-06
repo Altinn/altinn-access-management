@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
@@ -10,6 +11,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ABAC;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Register.Enums;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
 
@@ -24,6 +26,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IPolicyRetrievalPoint _prp;
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IContextRetrievalService _contextRetrievalService;
+        private readonly IProfileClient _profile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyInformationPoint"/> class.
@@ -32,12 +35,14 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="policyRetrievalPoint">The policy retrieval point</param>
         /// <param name="delegationRepository">The delegation change repository</param>
         /// <param name="contextRetrievalService">Service for retrieving context information</param>
-        public PolicyInformationPoint(ILogger<IPolicyInformationPoint> logger, IPolicyRetrievalPoint policyRetrievalPoint, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService)
+        /// <param name="profile">Service for retrieving user profile information</param>
+        public PolicyInformationPoint(ILogger<IPolicyInformationPoint> logger, IPolicyRetrievalPoint policyRetrievalPoint, IDelegationMetadataRepository delegationRepository, IContextRetrievalService contextRetrievalService, IProfileClient profile)
         {
             _logger = logger;
             _prp = policyRetrievalPoint;
             _delegationRepository = delegationRepository;
             _contextRetrievalService = contextRetrievalService;
+            _profile = profile;
         }
 
         /// <inheritdoc/>
@@ -139,7 +144,62 @@ namespace Altinn.AccessManagement.Core.Services
 
             return result.Values.Where(r => r.HasPermit.HasValue && r.HasPermit.Value).ToList();
         }
-        
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken)
+        {
+            var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
+
+            if (party?.PartyTypeName == PartyType.Person)
+            {
+                var user = await _profile.GetUser(new() { Ssn = party.SSN }, cancellationToken);
+
+                var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
+                return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(user.UserId.SingleToList(), keyRoles, cancellationToken);
+            }
+
+            if (party?.PartyTypeName == PartyType.Organisation)
+            {
+                return await _delegationRepository.GetAllDelegationChangesForAuthorizedParties(null, party.PartyId.SingleToList(), cancellationToken);
+            }
+
+            throw new ArgumentException($"failed to handle party with id '{partyId}'");
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken)
+        {
+            var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
+
+            if (party.PartyTypeName == PartyType.Person)
+            {
+                var user = await _profile.GetUser(new() { Ssn = party.SSN }, cancellationToken);
+
+                var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
+                var offeredBy = user.PartyId.SingleToList();
+                if (keyRoles.Count > 0)
+                {
+                    offeredBy.AddRange(keyRoles);
+                }
+
+                return await _delegationRepository.GetOfferedDelegations(offeredBy, cancellationToken);
+            }
+
+            if (party.PartyTypeName == PartyType.Organisation)
+            {
+                var mainUnits = await _contextRetrievalService.GetMainUnits(party.PartyId.SingleToList(), cancellationToken);
+                var parties = party.PartyId.SingleToList();
+                if (mainUnits?.FirstOrDefault() is var mainUnit && mainUnit?.PartyId != null)
+                {
+                    parties.Add((int)mainUnit.PartyId);
+                }
+
+                return await _delegationRepository.GetOfferedDelegations(parties, cancellationToken);
+            }
+
+            throw new ArgumentException($"failed to handle party with id '{partyId}'");
+        }
+
         /// <inheritdoc/>
         public async Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request)
         {
@@ -188,15 +248,13 @@ namespace Altinn.AccessManagement.Core.Services
             delegations.AddRange(userDelegations);
 
             // 2. Direct user delegations from main unit
-            List<MainUnit> mainunits = await _contextRetrievalService.GetMainUnits(reporteePartyId);
-            List<int> mainunitPartyIds = mainunits.Where(m => m.PartyId.HasValue).Select(m => m.PartyId.Value).ToList();
-
-            if (mainunitPartyIds.Any())
+            MainUnit mainunit = await _contextRetrievalService.GetMainUnit(reporteePartyId);
+            if (mainunit?.PartyId > 0)
             {
-                offeredByPartyIds.AddRange(mainunitPartyIds);
+                offeredByPartyIds.Add(mainunit.PartyId.Value);
                 List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
-                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
-                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunitPartyIds, resourceIds, coveredByUserId: subjectUserId);
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                    : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserId: subjectUserId);
 
                 if (directMainUnitDelegations.Any())
                 {

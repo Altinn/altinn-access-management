@@ -325,35 +325,42 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         List<DelegationChange> result = new List<DelegationChange>();
         DateTime created = Convert.ToDateTime("2024-02-05T21:05:00.00Z");
-        if (coveredByPartyIds.Contains(50005545))
+        if (coveredByPartyIds != null && coveredByPartyIds.Contains(50005545))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByPartyId: 50005545));
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByPartyId: 50005545));
         }
-        else if (coveredByUserIds.Contains(20000095))
+        else if (coveredByUserIds != null && coveredByUserIds.Contains(20000095))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("altinn_access_management", ResourceType.Systemresource, 50002203, DateTime.Now, coveredByUserId: 20000095));
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("org1/app1", ResourceType.AltinnApp, 50002203, DateTime.Now, coveredByUserId: 20000095));
         }
-        else if (coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
+        else if (coveredByUserIds != null && coveredByUserIds.Contains(TestDataAuthorizedParties.PersonToPerson_ToUserId))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToPerson_FromPartyId, created, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-person", TestDataAuthorizedParties.PersonToPerson_FromPartyId, coveredByUserId: TestDataAuthorizedParties.PersonToPerson_ToUserId, performedByUserId: TestDataAuthorizedParties.PersonToPerson_FromUserId, changeType: DelegationChangeType.Grant));
         }
-        else if (coveredByPartyIds.Contains(TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId))
+        else if (coveredByPartyIds != null && coveredByPartyIds.Contains(TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-person-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.PersonToOrg_FromPartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, performedByUserId: TestDataAuthorizedParties.PersonToOrg_FromUserId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-person-to-org", TestDataAuthorizedParties.PersonToOrg_FromPartyId, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, performedByUserId: TestDataAuthorizedParties.PersonToOrg_FromUserId, changeType: DelegationChangeType.Grant));
         }
-        else if (coveredByUserIds.Contains(TestDataAuthorizedParties.MainUnitAndSubUnitToPerson_ToUserId))
+        else if (coveredByUserIds != null && coveredByUserIds.Contains(TestDataAuthorizedParties.MainUnitAndSubUnitToPerson_ToUserId))
         {
             result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-main-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.MainUnit_PartyId, created, coveredByUserId: TestDataAuthorizedParties.MainUnitAndSubUnitToPerson_ToUserId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-sub-to-person", TestDataAuthorizedParties.SubUnit_PartyId, coveredByUserId: TestDataAuthorizedParties.MainUnitAndSubUnitToPerson_ToUserId, changeType: DelegationChangeType.Grant));
         }
-        else if (coveredByPartyIds.Contains(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg_ToOrgPartyId))
+        else if (coveredByPartyIds != null && coveredByPartyIds.Contains(TestDataAuthorizedParties.MainUnitAndSubUnitToOrg_ToOrgPartyId))
         {
-            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-main-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.MainUnit_PartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
             result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-sub-to-org", TestDataAuthorizedParties.SubUnit_PartyId, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-main-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.MainUnit_PartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-sub-to-org", ResourceType.GenericAccessResource, TestDataAuthorizedParties.SubUnit_PartyId, created, coveredByPartyId: TestDataAuthorizedParties.PersonToOrg_ToOrgPartyId, changeType: DelegationChangeType.Grant));
+        }
+        else if (coveredByUserIds != null && coveredByUserIds.Contains(TestDataAuthorizedParties.SubUnitToPerson_ToUserId))
+        {
+            result.Add(TestDataUtil.GetAltinnAppDelegationChange("ttd/am-devtest-sub-to-person", TestDataAuthorizedParties.SubUnit_PartyId, coveredByUserId: TestDataAuthorizedParties.SubUnitToPerson_ToUserId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-sub-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.SubUnit_PartyId, created, coveredByUserId: TestDataAuthorizedParties.SubUnitToPerson_ToUserId, changeType: DelegationChangeType.Grant));
+            result.Add(TestDataUtil.GetResourceRegistryDelegationChange("devtest_gar_authparties-sub2-to-person", ResourceType.GenericAccessResource, TestDataAuthorizedParties.SubUnitTwo_PartyId, created, coveredByUserId: TestDataAuthorizedParties.SubUnitToPerson_ToUserId, changeType: DelegationChangeType.Grant));
         }
 
         return Task.FromResult(result);

@@ -1,4 +1,4 @@
-﻿using Altinn.Platform.Register.Enums;
+﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Core.Models;
@@ -20,49 +20,59 @@ public class AuthorizedParty
     /// Initializes a new instance of the <see cref="AuthorizedParty"/> class based on a <see cref="Party"/> class.
     /// </summary>
     /// <param name="party">Party model from registry</param>
-    public AuthorizedParty(Party party)
+    /// <param name="includeSubunits">Whether model should also build list of subunits if any exists</param>
+    public AuthorizedParty(Party party, bool includeSubunits = true)
     {
         PartyId = party.PartyId;
-        PartyUuid = party.PartyUuid;
-        PartyTypeName = party.PartyTypeName;
-        OrgNumber = party.OrgNumber;
-        SSN = party.SSN;
-        UnitType = party.UnitType;
+        PartyUuid = party.PartyUuid.Value;
         Name = party.Name;
-        IsDeleted = party.IsDeleted;
-        OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess;
-        ChildParties = party.ChildParties?.Select(child => new AuthorizedParty(child)).ToList();
+        Type = (AuthorizedPartyType)party.PartyTypeName;
+
+        if (Type == AuthorizedPartyType.Organization)
+        {
+            OrganizationNumber = party.OrgNumber;
+            UnitType = party.UnitType;
+            IsDeleted = party.IsDeleted;
+            OnlyHierarchyElementWithNoAccess = party.OnlyHierarchyElementWithNoAccess;
+            Subunits = includeSubunits ? party.ChildParties?.Select(subunit => new AuthorizedParty(subunit)).ToList() ?? [] : [];
+        }
+        else if (Type == AuthorizedPartyType.Person)
+        {
+            PersonId = party.SSN;
+        }
     }
 
     /// <summary>
-    /// Gets or sets the ID of the party
+    /// Initializes a new instance of the <see cref="AuthorizedParty"/> class based on a <see cref="SblAuthorizedParty"/> class.
     /// </summary>
-    public int PartyId { get; set; }
+    /// <param name="sblAuthorizedParty">Authorized Party model from Altinn 2 SBL Bridge</param>
+    /// <param name="includeSubunits">Whether model should also build list of subunits if any exists</param>
+    public AuthorizedParty(SblAuthorizedParty sblAuthorizedParty, bool includeSubunits = true)
+    {
+        PartyId = sblAuthorizedParty.PartyId;
+        PartyUuid = sblAuthorizedParty.PartyUuid.Value;
+        Name = sblAuthorizedParty.Name;
+        Type = (AuthorizedPartyType)sblAuthorizedParty.PartyTypeName;
+        AuthorizedRoles = sblAuthorizedParty.AuthorizedRoles;
+
+        if (Type == AuthorizedPartyType.Organization)
+        {
+            OrganizationNumber = sblAuthorizedParty.OrgNumber;
+            UnitType = sblAuthorizedParty.UnitType;
+            IsDeleted = sblAuthorizedParty.IsDeleted;
+            OnlyHierarchyElementWithNoAccess = sblAuthorizedParty.OnlyHierarchyElementWithNoAccess;
+            Subunits = includeSubunits ? sblAuthorizedParty.ChildParties?.Select(subunit => new AuthorizedParty(subunit)).ToList() ?? [] : [];
+        }
+        else if (Type == AuthorizedPartyType.Person)
+        {
+            PersonId = sblAuthorizedParty.SSN;
+        }
+    }
 
     /// <summary>
-    /// Gets or sets the UUID of the party
+    /// Gets or sets the universally unique identifier of the party
     /// </summary>
-    public Guid? PartyUuid { get; set; }
-
-    /// <summary>
-    /// Gets or sets the type of party
-    /// </summary>
-    public PartyType PartyTypeName { get; set; }
-
-    /// <summary>
-    /// Gets the parties org number
-    /// </summary>
-    public string OrgNumber { get; set; }
-
-    /// <summary>
-    /// Gets the parties ssn of the party is a person
-    /// </summary>
-    public string SSN { get; set; }
-
-    /// <summary>
-    /// Gets or sets the UnitType if the party is an organization
-    /// </summary>
-    public string UnitType { get; set; }
+    public Guid PartyUuid { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the party
@@ -70,37 +80,57 @@ public class AuthorizedParty
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this party is marked as deleted in Enhetsregisteret
+    /// Gets the organization number if the party is an organization
+    /// </summary>
+    public string OrganizationNumber { get; set; }
+
+    /// <summary>
+    /// Gets the national identity number if the party is a person
+    /// </summary>
+    public string PersonId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the party id
+    /// </summary>
+    public int PartyId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of party
+    /// </summary>
+    public AuthorizedPartyType Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unit type if the party is an organization
+    /// </summary>
+    public string UnitType { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this party is marked as deleted in the Central Coordinating Register for Legal Entities
     /// </summary>
     public bool IsDeleted { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the party is only for showing the hierarchy (a parent unit with no access)
+    /// Gets or sets a value indicating whether the party is only included as a hierarchy element without any access. Meaning a main unit where the authorized subject only have access to one or more of the subunits.
     /// </summary>
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets the value of ChildParties
-    /// </summary>
-    public List<AuthorizedParty> ChildParties { get; set; } = [];
-
-    /// <summary>
-    /// Gets or sets a collection of all resource identifier the authorized actor has been authorized with some right for, on behalf of this party
+    /// Gets or sets a collection of all resource identifier the authorized subject has some access to on behalf of this party
     /// </summary>
     public List<string> AuthorizedResources { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets a collection of all rolecodes for roles from either Enhetsregisteret or Altinn 2 which the authorized actor has been authorized for, on behalf of this party
+    /// Gets or sets a collection of all rolecodes for roles from either Enhetsregisteret or Altinn 2 which the authorized subject has been authorized for on behalf of this party
     /// </summary>
     public List<string> AuthorizedRoles { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets a collection of all access packages from Altinn 3 which the authorized actor has been authorized for, on behalf of this party
+    /// Gets or sets a set of subunits of this party, which the authorized subject also has some access to.
     /// </summary>
-    public List<string> AuthorizedAccessPackages { get; set; } = [];
+    public List<AuthorizedParty> Subunits { get; set; } = [];
 
     /// <summary>
-    /// Enriches this authorized party and any child/subunits with the list of authorized resources
+    /// Enriches this authorized party and any subunits with the list of authorized resources
     /// </summary>
     /// <param name="resourceId">The list of resource IDs to add to the authorized party (and any subunits) list of authorized resources</param>
     public void EnrichWithResourceAccess(string resourceId)
@@ -108,9 +138,9 @@ public class AuthorizedParty
         OnlyHierarchyElementWithNoAccess = false;
         AuthorizedResources.Add(resourceId);
 
-        if (ChildParties != null)
+        if (Subunits != null)
         {
-            foreach (var subunit in ChildParties)
+            foreach (var subunit in Subunits)
             {
                 subunit.EnrichWithResourceAccess(resourceId);
             }

@@ -39,6 +39,21 @@
         /// Policy tag for scope authorization on the proxy API from Altinn II for the maskinporten integration API
         /// </summary>
         public const string POLICY_MASKINPORTEN_DELEGATIONS_PROXY = "MaskinportenDelegationsProxy";
+        
+        /// <summary>
+        /// Policy tag for scope authorization on the resource owner API for getting the Authorized Party list for a third party
+        /// </summary>
+        public const string POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES = "ResourceOwnerAuthorizedParty";
+
+        /// <summary>
+        /// Scope giving access to getting authorized parties for a third party, for which the third party have access to one or more of the resource owners services, apps or resources.
+        /// </summary>
+        public const string SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES = "altinn:resourceowner/authorizedparties";
+
+        /// <summary>
+        /// Scope giving access to getting all authorized parties for a third party
+        /// </summary>
+        public const string SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES_ADMIN = "altinn:resourceowner/authorizedparties.admin";
 
         /// <summary>
         /// Scope giving access to delegations for Maskinporten schemes owned by authenticated party 

@@ -1,0 +1,6 @@
+[
+  {
+    "Type": "http://schemas.altinn.no/rest/2019/05/identity/claims/role",
+    "Value": "ADMAI"
+  }
+]

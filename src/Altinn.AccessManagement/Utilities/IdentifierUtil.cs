@@ -171,12 +171,12 @@ namespace Altinn.AccessManagement.Utilities
             {
                 if (!context.Request.Headers.ContainsKey(PersonHeader))
                 {
-                    throw new ArgumentException($"When using the '{PersonHeaderTrigger}' path parameter the social security number must be provided as a request header value: '{PersonHeader}'");
+                    throw new ArgumentException($"When using the '{PersonHeaderTrigger}' path parameter the national identity number must be provided as a request header value: '{PersonHeader}'");
                 }
 
                 if (!IsValidSSN(context.Request.Headers[PersonHeader]))
                 {
-                    throw new ArgumentException($"The request header '{PersonHeader}' does not provide a well-formed social security number value: '{context.Request.Headers[PersonHeader]}'");
+                    throw new ArgumentException($"The request header '{PersonHeader}' does not provide a well-formed national identity number value: '{context.Request.Headers[PersonHeader]}'");
                 }
 
                 return new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute, Value = context.Request.Headers[PersonHeader] };

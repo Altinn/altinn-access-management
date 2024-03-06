@@ -381,7 +381,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (toParty == null && toUser == null)
             {
-                result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.LastName} attributes, or {AltinnXacmlConstants.MatchAttributeIdentifiers.UserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.LastName} attributes.");
+                result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes, or {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes.");
                 return (result, resource, null, null);
             }
 

@@ -28,6 +28,7 @@ using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -41,6 +42,9 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -315,6 +319,30 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddApplicationInsightsTelemetryProcessor<HealthTelemetryFilter>();
         services.AddApplicationInsightsTelemetryProcessor<IdentityTelemetryFilter>();
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
+
+        if (config.GetSection("FeatureManagement").GetValue<bool>("OpenTelementry"))
+        {
+            var telemetry = new List<TracerProviderBuilder>()
+            {
+                {
+                    Sdk.CreateTracerProviderBuilder()
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name))
+                    .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name)
+                }
+            };
+
+            foreach (var t in telemetry)
+            {
+                t.SetSampler(new AlwaysOnSampler());
+                if (builder.Environment.IsDevelopment())
+                {
+                    t.AddConsoleExporter();
+                }
+
+                t.AddAzureMonitorTraceExporter(opt => { opt.ConnectionString = applicationInsightsConnectionString; });
+                t.Build();
+            }
+        }
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
     }

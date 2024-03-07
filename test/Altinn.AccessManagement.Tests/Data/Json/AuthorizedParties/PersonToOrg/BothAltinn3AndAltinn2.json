@@ -1,32 +1,30 @@
 [
   {
-    "partyId": 50100005,
     "partyUuid": "00000000-0000-0000-0001-000000000005",
-    "partyType": "Person",
-    "orgNumber": "",
-    "ssn": "01017570071",
-    "unitType": null,
     "name": "PERSON TO ORG DAGL",
+    "organizationNumber": null,
+    "personId": "01017570071",
+    "partyId": 50100005,
+    "type": "Person",
+    "unitType": null,
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
-    "childParties": null,
     "authorizedResources": [],
     "authorizedRoles": [
       "PRIV"
     ],
-    "authorizedAccessPackages": []
+    "subunits": []
   },
   {
-    "partyId": 50100003,
     "partyUuid": "00000000-0000-0000-0001-000000000003",
-    "partyType": "Person",
-    "orgNumber": "",
-    "ssn": "01017370071",
-    "unitType": null,
     "name": "PERSON TO ORG DELEGATOR",
+    "organizationNumber": null,
+    "personId": "01017370071",
+    "partyId": 50100003,
+    "type": "Person",
+    "unitType": null,
     "isDeleted": false,
     "onlyHierarchyElementWithNoAccess": false,
-    "childParties": null,
     "authorizedResources": [
       "devtest_gar_authparties-person-to-org",
       "ttd/am-devtest-person-to-org"
@@ -34,6 +32,6 @@
     "authorizedRoles": [
       "UTINN"
     ],
-    "authorizedAccessPackages": []
+    "subunits": []
   }
 ]

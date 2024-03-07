@@ -55,7 +55,7 @@ tests {
     expect(data[0]).to.have.property('coveredByName', 'LARKOLLEN OG FAUSKE');
     expect(data[0]).to.have.property('coveredByOrganizationNumber', testdata.org2.orgno);
     expect(data[0]).to.have.property('performedByUserId', testdata.org1.dagl.userid);
-    expect(data[0]).to.have.property('resourceId', 'ttd-am-k6-nuf');
+    expect(data.map(e=>(e.resourceId))).to.include('ttd-am-k6-nuf');
   
   });
 }

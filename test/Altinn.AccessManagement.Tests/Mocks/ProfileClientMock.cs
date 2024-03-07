@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.Profile;
@@ -14,7 +15,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
     public class ProfileClientMock : IProfileClient
     {
         /// <inheritdoc/>
-        public Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
+        public Task<UserProfile> GetUser(UserProfileLookup userProfileLookup, CancellationToken cancellationToken = default)
         {
             UserProfile userProfile = null;
 

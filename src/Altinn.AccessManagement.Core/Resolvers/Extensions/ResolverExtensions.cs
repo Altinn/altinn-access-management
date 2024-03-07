@@ -60,6 +60,7 @@ public static class ResolverExtensions
                 return result.Value;
             }
         }
+
         return string.Empty;
     }
 

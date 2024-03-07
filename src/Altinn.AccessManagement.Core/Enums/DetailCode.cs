@@ -46,6 +46,11 @@ namespace Altinn.AccessManagement.Core.Enums
         /// <summary>
         /// The service requires explicit authentication level and the reportee is missing this
         /// </summary>
-        InsufficientAuthenticationLevel = 7
+        InsufficientAuthenticationLevel = 7,
+        
+        /// <summary>
+        /// The receiver already has the right
+        /// </summary>
+        AlreadyDelegated = 8
     }
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Amund
+  name: KasperGetSelf
   type: http
-  seq: 4
+  seq: 1
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=true
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparty/{{partyId}}?includeAltinn2=true
   body: json
   auth: none
 }
@@ -21,9 +21,10 @@ headers {
 
 vars:pre-request {
   auth_tokenType: Personal
-  auth_userId: 20000071
-  auth_partyId: 50002179
-  auth_ssn: '01114270071'
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  partyId: 50002598
 }
 
 script:pre-request {

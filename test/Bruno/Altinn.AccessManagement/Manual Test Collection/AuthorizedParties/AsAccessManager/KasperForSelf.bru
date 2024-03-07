@@ -1,17 +1,17 @@
 meta {
-  name: Kasper
+  name: KasperForSelf
   type: http
   seq: 1
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/authorizedparties?includeAltinn2=true
   body: json
   auth: none
 }
 
 query {
-  includeAltinn2: false
+  includeAltinn2: true
 }
 
 headers {
@@ -24,6 +24,7 @@ vars:pre-request {
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
+  party: 50002598
 }
 
 script:pre-request {

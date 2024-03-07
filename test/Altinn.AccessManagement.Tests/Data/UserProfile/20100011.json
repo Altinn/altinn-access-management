@@ -1,0 +1,48 @@
+{
+  "UserId": 20100011,
+  "UserUuid": "00000000-0000-0000-0001-000000000011",
+  "UserType": 1,
+  "UserName": "",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50100011,
+  "Party": {
+    "PartyTypeName": 1,
+    "SSN": "01018170071",
+    "OrgNumber": "",
+    "Person": {
+      "SSN": "01018170071",
+      "Name": "MAINUNIT AND SUBUNIT TO ORG DAGL",
+      "FirstName": "MAINUNIT AND SUBUNIT TO ORG",
+      "MiddleName": null,
+      "LastName": "DAGL",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "MailingAddress": "",
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "AddressMunicipalNumber": null,
+      "AddressMunicipalName": null,
+      "AddressStreetName": null,
+      "AddressHouseNumber": null,
+      "AddressHouseLetter": null,
+      "AddressPostalCode": null,
+      "AddressCity": null,
+      "DateOfDeath": null
+    },
+    "Organization": null,
+    "PartyId": 50100011,
+    "PartyUuid": "00000000-0000-0000-0001-000000000011",
+    "UnitType": null,
+    "Name": "MAINUNIT AND SUBUNIT TO ORG DAGL",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

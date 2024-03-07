@@ -24,7 +24,8 @@ public static class ActivityExtensions
         {
             try
             {
-                if (IsList(param.Value))
+                if (param.Value == null) { continue; }
+                if (param.Value is IList)
                 {
                     activity?.SetTag(param.ParameterName, string.Join(',', (IList)param.Value));
                 }
@@ -33,13 +34,10 @@ public static class ActivityExtensions
                     activity?.SetTag(param.ParameterName, param.Value);
                 }
             }
-            catch { }
-        }
-
-        bool IsList(object o)
-        {
-            if (o == null) { return false; }
-            return o is IList && o.GetType().IsGenericType && o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+            catch (Exception ex) 
+            { 
+                activity.RecordException(ex);
+            }
         }
     }
 

@@ -152,16 +152,9 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                string errorMsg;
-                if (ex.Status == (int)HttpStatusCode.Forbidden && ex.ErrorCode == "OperationNotAllowedOnRootBlob")
-                {
-                    errorMsg = $"Failed to delete version {version} of policy file at {filepath}. Not allowed to delete current version.";
-                }
-                else
-                {
-                    errorMsg = $"Failed to delete version {version} of policy file at {filepath}. RequestFailedException";
-                }
-
+                var errorMsg = ex.Status == (int)HttpStatusCode.Forbidden && ex.ErrorCode == "OperationNotAllowedOnRootBlob" ?
+                $"Failed to delete version {version} of policy file at {filepath}. Not allowed to delete current version." :
+                $"Failed to delete version {version} of policy file at {filepath}. RequestFailedException";
                 activity?.ErrorWithException(ex, errorMsg);
                 throw;
             }

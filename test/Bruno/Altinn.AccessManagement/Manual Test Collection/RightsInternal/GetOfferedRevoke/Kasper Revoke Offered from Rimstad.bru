@@ -19,8 +19,8 @@ body:json {
     {
       "to": [
         {
-          "id": "urn:altinn:person:partyid",
-          "value": "{{toPartyId}}" 
+          "id": "urn:altinn:userid",
+          "value": "{{toUserId}}" 
         }
       ],
       "rights": [
@@ -49,7 +49,7 @@ vars:pre-request {
   party: 50005545
   org: ttd
   app: apps-test-prod
-  toPartyId: 50002203
+  toUserId: 20000095
   ~toSsn: 02056260016
 }
 

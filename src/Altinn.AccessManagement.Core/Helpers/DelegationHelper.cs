@@ -493,7 +493,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a RequestToDelete request model for revoking all delegated rules for a resource registry service
         /// </summary>
-        public static List<RequestToDelete> GetRequestToDeleteResourceRegistryService(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, IEnumerable<AttributeMatch> to)
+        public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, IEnumerable<AttributeMatch> to)
         {
             var coveredBy = to.Any(p => p.Id == Urn.Altinn.Person.UserId) 
                 ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, to.First(p => p.Id == Urn.Altinn.Person.UserId).Value) 

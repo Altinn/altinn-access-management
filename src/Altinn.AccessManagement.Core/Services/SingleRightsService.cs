@@ -183,7 +183,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             var toParty = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
             var fromParty = await _resolver.Resolve(delegation.From, Urn.InternalIds, cancellationToken);
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserId, delegation.Rights.First().Resource, fromParty.GetRequiredInt(Urn.InternalIds), toParty);
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights.First().Resource, fromParty.GetRequiredInt(Urn.InternalIds), toParty);
 
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;

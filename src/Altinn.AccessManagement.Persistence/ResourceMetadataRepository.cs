@@ -46,8 +46,6 @@ namespace Altinn.AccessManagement.Persistence
                 pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
                 pgcom.Parameters.AddWithValue("_resourcetype", NpgsqlTypes.NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
 
-                activity.AddSqlTags(pgcom);
-
                 using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
                 if (reader.Read())
                 {

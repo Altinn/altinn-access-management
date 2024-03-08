@@ -217,6 +217,7 @@ namespace Altinn.AccessManagement.Persistence
                 {
                     return await blobClient.UploadAsync(fileStream, blobUploadOptions);
                 }
+
                 return await blobClient.UploadAsync(fileStream, true);
             }
             catch (RequestFailedException ex)

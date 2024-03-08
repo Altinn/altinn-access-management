@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Npgsql;
 using OpenTelemetry.Trace;
 
@@ -8,6 +9,7 @@ namespace Altinn.AccessManagement.Persistence.Extensions;
 /// <summary>
 /// Extension for Activity used in Altinn.AccessManagement.Persistence
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class ActivityExtensions
 {
     /// <summary>

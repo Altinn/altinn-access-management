@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 
 namespace Altinn.AccessManagement.Persistence.Configuration
@@ -6,6 +7,7 @@ namespace Altinn.AccessManagement.Persistence.Configuration
     /// <summary>
     /// Config to be used for Telemetry in Altinn.AccessManagement.Persistence
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class TelemetryConfig
     {
         /// <summary>

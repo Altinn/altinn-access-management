@@ -27,6 +27,7 @@ public class AltinnPersonResolver : AttributeResolver
         AddLeaf([Urn.Altinn.Person.PartyId], [Urn.Altinn.Person.UserId, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingPartyId());
         AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Person.IdentifierNo, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolvePartyUsingPartyId());
         AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Person.UserId, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingPartyId());
+        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute], [Urn.Altinn.Person.IdentifierNo, Urn.Altinn.Person.PartyId, Urn.Altinn.Person.Shortname, Urn.Altinn.Person.Firstname, Urn.Altinn.Person.Middlename, Urn.Altinn.Person.Lastname], ResolveProfileUsingUserId());
 
         _contextRetrievalService = contextRetrievalService;
         _profile = profile;
@@ -74,7 +75,7 @@ public class AltinnPersonResolver : AttributeResolver
     {
         var user = await _profile.GetUser(new()
         {
-            UserId = attributes.GetRequiredInt(Urn.Altinn.Person.UserId)
+            UserId = attributes.GetRequiredInt(Urn.Altinn.Person.UserId, AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
         });
 
         if (user?.Party?.Person != null)

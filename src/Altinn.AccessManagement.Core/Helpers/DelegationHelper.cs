@@ -495,8 +495,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, IEnumerable<AttributeMatch> to)
         {
-            var coveredBy = to.Any(p => p.Id == Urn.Altinn.Person.UserId) 
-                ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, to.First(p => p.Id == Urn.Altinn.Person.UserId).Value) 
+            var coveredBy = to.Any(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute) 
+                ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, to.First(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value) 
                 : new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, to.First(p => p.Id == Urn.Altinn.Organization.PartyId).Value);
 
             return new List<RequestToDelete>

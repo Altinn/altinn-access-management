@@ -136,7 +136,7 @@ public static class AttributeMatchAsserter
                     assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Uuid),
                     assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
                     assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
-                assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)),
+                    assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)),
                 assert.AllAttributesHasValues,
                 assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 

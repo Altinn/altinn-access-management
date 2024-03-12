@@ -1,3 +1,4 @@
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -17,6 +18,7 @@ public class AltinnOrganizationResolver : AttributeResolver
     public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Organization.String())
     {
         AddLeaf([Urn.Altinn.Organization.PartyId], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
+        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
         AddLeaf([Urn.Altinn.Organization.IdentifierNo], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.PartyId], ResolveOrganizationNumber());
         _contextRetrievalService = contextRetrievalService;
     }
@@ -28,11 +30,14 @@ public class AltinnOrganizationResolver : AttributeResolver
     {
         if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Organization.PartyId)) is var party && party != null)
         {
-            return
-            [
-                new(Urn.Altinn.Organization.Name, party.Name),
-                new(Urn.Altinn.Organization.IdentifierNo, party.Organization.OrgNumber),
-            ];
+            if (party.Organization != null)
+            {
+                return
+                [
+                    new(Urn.Altinn.Organization.Name, party.Name),
+                    new(Urn.Altinn.Organization.IdentifierNo, party.Organization.OrgNumber),
+                ];
+            }
         }
 
         return [];

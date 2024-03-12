@@ -15,6 +15,7 @@ using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Azure;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -182,9 +183,8 @@ namespace Altinn.AccessManagement.Core.Services
 
             var toParty = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
             var fromParty = await _resolver.Resolve(delegation.From, Urn.InternalIds, cancellationToken);
-            var resource = await _resolver.Resolve(delegation.Rights?.FirstOrDefault()?.Resource ?? [], [Urn.Altinn.Resource.ResourceRegistryId], cancellationToken);
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights.First().Resource, fromParty.GetRequiredInt(Urn.InternalIds), toParty);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResourceRegistryService(authenticatedUserId, resource.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), fromParty.GetRequiredInt(Urn.InternalIds), toParty.GetRequiredInt(Urn.InternalIds));
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
         }

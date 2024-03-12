@@ -1,3 +1,5 @@
+using Altinn.AccessManagement.Core.Constants;
+
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
@@ -14,7 +16,7 @@ public static class Urn
     /// <summary>
     /// InternalIds of delegatable entities 
     /// </summary>
-    public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId];
+    public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
 
     /// <summary>
     /// Resources that belongs to Altinn 

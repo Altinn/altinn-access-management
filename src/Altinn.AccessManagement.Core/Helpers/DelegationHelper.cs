@@ -3,8 +3,10 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using static Altinn.AccessManagement.Core.Resolvers.Urn.Altinn;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -483,6 +485,30 @@ namespace Altinn.AccessManagement.Core.Helpers
                         OfferedByPartyId = fromPartyId,
                         CoveredBy = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toPartyId.ToString() }.SingleToList(),
                         Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
+                    }
+                }
+            };
+        }
+
+        /// <summary>
+        /// Builds a RequestToDelete request model for revoking all delegated rules for a resource registry service
+        /// </summary>
+        public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, IEnumerable<AttributeMatch> to)
+        {
+            var coveredBy = to.Any(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute) 
+                ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, to.First(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value) 
+                : new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, to.First(p => p.Id == Urn.Altinn.Organization.PartyId).Value);
+
+            return new List<RequestToDelete>
+            {
+                new RequestToDelete
+                {
+                    DeletedByUserId = authenticatedUserId,
+                    PolicyMatch = new PolicyMatch
+                    {
+                        OfferedByPartyId = fromPartyId,
+                        CoveredBy = coveredBy.SingleToList(),
+                        Resource = resource.ToList()
                     }
                 }
             };

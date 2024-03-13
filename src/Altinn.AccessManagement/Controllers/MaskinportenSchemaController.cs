@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System.ComponentModel.DataAnnotations;
-using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -11,7 +10,6 @@ using Altinn.AccessManagement.Utilities;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.FeatureManagement.Mvc;
 
 namespace Altinn.AccessManagement.Controllers
 {
@@ -106,7 +104,7 @@ namespace Altinn.AccessManagement.Controllers
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        // [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
+        [Authorize(Policy = AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_WRITE)]
         [Route("{party}/maskinportenschema/delegationcheck")]
         [Produces("application/json")]
         [ProducesResponseType(200)]

@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Npgsql;
 using OpenTelemetry.Trace;
 
-namespace Altinn.AccessManagement.Persistence.Extensions;
-#nullable enable
+namespace Altinn.AccessManagement.Core.Telemetry;
+
 /// <summary>
 /// Extension for Activity used in Altinn.AccessManagement.Persistence
 /// </summary>
@@ -20,8 +18,11 @@ public static class ActivityExtensions
     /// <param name="statusDescription">Optional description/message for error</param>
     public static void ErrorWithException(this Activity? activity, Exception ex, string? statusDescription = null)
     {
-        activity?.RecordException(ex);
-        activity?.SetStatus(ActivityStatusCode.Error, statusDescription);
+        if (activity?.Recorded ?? false)
+        {
+            activity.RecordException(ex);
+            activity.SetStatus(ActivityStatusCode.Error, statusDescription);
+        }
     }
 
     /// <summary>
@@ -30,13 +31,16 @@ public static class ActivityExtensions
     /// <param name="activity">Current activity</param>
     /// <param name="statusDescription">Optional description/message for error</param>
     /// <param name="resultSize">Optional metric of resultsize</param>
-    public static void FinishedOk(this Activity? activity, string? statusDescription = null, int? resultSize = null)
+    public static void FinishedOk(this Activity? activity, string statusDescription = null, int? resultSize = null)
     {
-        if (resultSize != null) 
+        if (activity?.Recorded ?? false)
         {
-            activity?.SetTag("ResultSize", resultSize.Value);
-        }
+            if (resultSize != null)
+            {
+                activity.SetTag("ResultSize", resultSize.Value);
+            }
 
-        activity?.SetStatus(ActivityStatusCode.Ok, statusDescription);
+            activity.SetStatus(ActivityStatusCode.Ok, statusDescription);
+        }
     }
 }

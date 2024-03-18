@@ -7,7 +7,6 @@ using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -15,7 +14,6 @@ using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Azure;
 
 namespace Altinn.AccessManagement.Core.Services
 {
@@ -180,10 +178,15 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 return assertion;
             }
+            
+            var fromAttribute = await _resolver.Resolve(delegation.From, [AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], cancellationToken);
+            var toAttribute = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
 
-            var toParty = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
-            var fromParty = await _resolver.Resolve(delegation.From, Urn.InternalIds, cancellationToken);
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights.First().Resource, fromParty.GetRequiredInt(Urn.InternalIds), toParty);
+            var to = toAttribute.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
+                ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, toAttribute.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value)
+                : new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, toAttribute.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute).Value);
+
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights.First().Resource, fromAttribute.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), to);
 
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;
@@ -198,10 +201,10 @@ namespace Altinn.AccessManagement.Core.Services
             _asserter.Join(
                 _asserter.Evaluate(
                     delegation.From,
-                    _asserter.DefaultFrom),
+                    _asserter.Altinn2InternalIds),
                 _asserter.Evaluate(
                     delegation.To,
-                    _asserter.DefaultTo),
+                    _asserter.Altinn2InternalIds),
                 _asserter.Evaluate(
                     delegation.Rights?.FirstOrDefault()?.Resource ?? [],
                     _asserter.DefaultResource));

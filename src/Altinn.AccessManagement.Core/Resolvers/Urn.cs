@@ -16,7 +16,12 @@ public static class Urn
     /// <summary>
     /// InternalIds of delegatable entities 
     /// </summary>
-    public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
+    public static string[] InternalIds => [AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
+
+    /// <summary>
+    /// InternalIds from Altinn 2
+    /// </summary>
+    public static string[] Altinn2InternalIds => [AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
 
     /// <summary>
     /// Resources that belongs to Altinn 

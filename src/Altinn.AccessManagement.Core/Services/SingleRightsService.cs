@@ -180,7 +180,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             
             var fromAttribute = await _resolver.Resolve(delegation.From, [AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], cancellationToken);
-            var toAttribute = await _resolver.Resolve(delegation.To, Urn.InternalIds, cancellationToken);
+            var toAttribute = await _resolver.Resolve(delegation.To, Urn.Altinn2InternalIds, cancellationToken);
 
             var to = toAttribute.Any(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
                 ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, toAttribute.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value)

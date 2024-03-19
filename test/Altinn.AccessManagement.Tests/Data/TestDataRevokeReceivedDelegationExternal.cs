@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Models;
-using Altinn.AccessManagement.Utilities;
+using Altinn.AccessManagement.Tests.Util;
 
 /// <summary>
 /// testdata
@@ -14,15 +13,33 @@ public static class TestDataRevokeReceivedDelegationExternal
 {
     private static string PersonPaulaSSN => "02056260016";
 
+    private static int PersonPaulaUserId => 20000095;
+
+    private static int PersonPaulaPartyId => 50002203;
+
     private static string PersonOrjanSSN => "27099450067";
+
+    private static int PersonOrjanUserId => 20001337;
+
+    private static int PersonOrjanPartyId => 50003899;
 
     private static string ResourceOrg => "org1";
 
     private static string ResourceAppId => "app1";
 
-    private static string OrganizationOrstadAccounting => "910459880";
+    private static string OrganizationOrstaAccounting => "910459880";
+
+    private static int OrganizationOrstaPartyId => 50005545;
+
+    private static string PersonKasperSSN => "07124912037";
+
+    private static int PersonKasperUserId => 20000490;
+
+    private static int PersonKasperPartyId => 50002598;
 
     private static string OrganizationKolbjorn => "810419342";
+
+    private static int OrganizationKolbjornPartyId => 50004226;
 
     private static string EnterpriseUsername => "OrstaECUser";
 
@@ -32,69 +49,55 @@ public static class TestDataRevokeReceivedDelegationExternal
     /// </summary>
     /// <returns></returns>
     public static IEnumerable<object[]> FromPersonToPerson() => [[
-            NewRevokeReceivedModel(
-                WithRevokeReceivedFrom(Urn.Altinn.Person.IdentifierNo, PersonOrjanSSN),
-                WithRevokeReceivedAction("read"),
-                WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-                WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
-            IdentifierUtil.PersonHeader,
-            PersonPaulaSSN,
-        ]];
+        PrincipalUtil.GetToken(PersonOrjanUserId, PersonOrjanPartyId, 3),
+        NewRevokeReceivedModel(
+            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
+            WithRevokeReceivedAction("read"),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+        PersonOrjanPartyId
+    ]];
 
     /// <summary>
     /// An input model that specifies an delegation from Paula
     /// </summary>
     /// <returns></returns>
     public static IEnumerable<object[]> FromPersonToOrganization() => [[
+        PrincipalUtil.GetToken(PersonOrjanUserId, PersonOrjanPartyId, 3),
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(Urn.Altinn.Person.IdentifierNo, PersonPaulaSSN),
+            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
             WithRevokeReceivedAction("read"),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
-        IdentifierUtil.OrganizationNumberHeader,
-        OrganizationOrstadAccounting,
-        ]];
+        OrganizationOrstaPartyId
+    ]];
 
     /// <summary>
     /// a
     /// </summary>
     /// <returns></returns>
     public static IEnumerable<object[]> FromOrganizationToOrganization() => [[
+        PrincipalUtil.GetToken(PersonOrjanUserId, PersonOrjanPartyId, 3),
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
+            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationOrstaPartyId),
             WithRevokeReceivedAction("read"),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
-        IdentifierUtil.OrganizationNumberHeader,
-        OrganizationKolbjorn,
-        ]];
-
-    /// <summary>
-    /// summary
-    /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<object[]> FromOrganizationToPerson() => [[
-        NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
-            WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
-        IdentifierUtil.PersonHeader,
-        PersonPaulaSSN,
+        OrganizationKolbjornPartyId
     ]];
 
     /// <summary>
     /// summary
     /// </summary>
     /// <returns></returns>
-    public static IEnumerable<object[]> FromOrganizationToEnterpriseuser() => [[
+    public static IEnumerable<object[]> FromOrganizationToPerson() => [[
+        PrincipalUtil.GetToken(PersonPaulaUserId, PersonPaulaPartyId, 3),
         NewRevokeReceivedModel(
-            WithRevokeReceivedFrom(Urn.Altinn.Organization.IdentifierNo, OrganizationOrstadAccounting),
+            WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationOrstaPartyId),
             WithRevokeReceivedAction("read"),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
             WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
-        IdentifierUtil.PersonHeader,
-        EnterpriseUsername,
+        PersonPaulaPartyId
     ]];
 
     private static RevokeReceivedDelegationExternal NewRevokeReceivedModel(params Action<RevokeReceivedDelegationExternal>[] actions)

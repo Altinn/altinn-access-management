@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Configuration;
 using AltinnCore.Authentication.Utils;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Integration.Clients
@@ -16,7 +16,6 @@ namespace Altinn.AccessManagement.Integration.Clients
     [ExcludeFromCodeCoverage]
     public class AuthenticationClient : IAuthenticationClient
     {
-        private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HttpClient _client;
         private readonly PlatformSettings _platformSettings;
@@ -25,16 +24,10 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// Initializes a new instance of the <see cref="AuthenticationClient"/> class
         /// </summary>
         /// <param name="platformSettings">The current platform settings.</param>
-        /// <param name="logger">the logger</param>
         /// <param name="httpContextAccessor">The http context accessor </param>
         /// <param name="httpClient">A HttpClient provided by the HttpClientFactory.</param>
-        public AuthenticationClient(
-            IOptions<PlatformSettings> platformSettings,
-            ILogger<AuthenticationClient> logger,
-            IHttpContextAccessor httpContextAccessor,
-            HttpClient httpClient)
+        public AuthenticationClient(IOptions<PlatformSettings> platformSettings, IHttpContextAccessor httpContextAccessor, HttpClient httpClient)
         {
-            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _platformSettings = platformSettings.Value;
             httpClient.BaseAddress = new Uri(platformSettings.Value.ApiAuthenticationEndpoint);
@@ -45,6 +38,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc />
         public async Task<string> RefreshToken()
         {
+            using var activity = TelemetryConfig._activitySource.StartActivity();
             try
             {
                 string endpointUrl = $"refresh";
@@ -60,12 +54,14 @@ namespace Altinn.AccessManagement.Integration.Clients
                 }
                 else
                 {
-                    _logger.LogError("Refreshing JwtToken failed with status code");
+                    activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response)); 
+                    
+                    // Review: Original: _logger.LogError("Refreshing JwtToken failed with status code"); Fix: New ActivityType for JwtToken failed
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AccessManagement // AuthenticationClient // Refresh // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
 

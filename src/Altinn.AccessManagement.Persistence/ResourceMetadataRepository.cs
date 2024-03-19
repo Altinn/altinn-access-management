@@ -57,7 +57,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex);
+                activity?.StopWithError(ex);
                 throw;
             }
         }

@@ -4,14 +4,12 @@ using System.Net;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Persistence.Configuration;
-using Altinn.AccessManagement.Persistence.Extensions;
 using Azure;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Options;
-using OpenTelemetry.Trace;
 
 namespace Altinn.AccessManagement.Persistence
 {
@@ -105,11 +103,11 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
+                activity?.StopWithError(ex, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
+                activity?.StopWithError(ex, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
             }
 
             return null;
@@ -135,7 +133,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
+                activity?.StopWithError(ex, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
             }
 
             return false;
@@ -156,12 +154,12 @@ namespace Altinn.AccessManagement.Persistence
                 var errorMsg = ex.Status == (int)HttpStatusCode.Forbidden && ex.ErrorCode == "OperationNotAllowedOnRootBlob" ?
                 $"Failed to delete version {version} of policy file at {filepath}. Not allowed to delete current version." :
                 $"Failed to delete version {version} of policy file at {filepath}. RequestFailedException";
-                activity?.ErrorWithException(ex, errorMsg);
+                activity?.StopWithError(ex, errorMsg);
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
+                activity?.StopWithError(ex, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
                 throw;
             }
         }
@@ -204,7 +202,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to read policy file at {blobClient.Name}");
+                activity?.StopWithError(ex, $"Failed to read policy file at {blobClient.Name}");
                 throw;
             }
         }
@@ -223,12 +221,12 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
+                activity?.StopWithError(ex, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
+                activity?.StopWithError(ex, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
                 throw;
             }
         }

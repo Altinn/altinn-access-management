@@ -491,14 +491,10 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Builds a RequestToDelete request model for revoking all delegated rules for a resource registry service
+        /// Builds a RequestToDelete request model for revoking all delegated rules for the resource if delegated between the from and to parties
         /// </summary>
-        public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, IEnumerable<AttributeMatch> to)
+        public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, AttributeMatch to)
         {
-            var coveredBy = to.Any(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute) 
-                ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, to.First(p => p.Id == Urn.Altinn.Person.UserId || p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value) 
-                : new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, to.First(p => p.Id == Urn.Altinn.Organization.PartyId).Value);
-
             return new List<RequestToDelete>
             {
                 new RequestToDelete
@@ -507,7 +503,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     PolicyMatch = new PolicyMatch
                     {
                         OfferedByPartyId = fromPartyId,
-                        CoveredBy = coveredBy.SingleToList(),
+                        CoveredBy = to.SingleToList(),
                         Resource = resource.ToList()
                     }
                 }

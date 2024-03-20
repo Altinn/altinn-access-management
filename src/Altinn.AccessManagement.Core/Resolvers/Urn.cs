@@ -19,6 +19,11 @@ public static class Urn
     public static string[] InternalIds => [Altinn.Organization.PartyId, Altinn.Person.PartyId, Altinn.Person.UserId, Altinn.EnterpriseUser.UserId, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
 
     /// <summary>
+    /// InternalIds from Altinn 2
+    /// </summary>
+    public static string[] Altinn2InternalIds => [AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute];
+
+    /// <summary>
     /// Resources that belongs to Altinn 
     /// </summary>
     public static class Altinn

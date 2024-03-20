@@ -300,15 +300,6 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
-                }
-
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
-                }
 
                 delegation.To = reportee.SingleToList();
 
@@ -366,15 +357,6 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
-                }
-
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
-                }
 
                 delegation.From = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);

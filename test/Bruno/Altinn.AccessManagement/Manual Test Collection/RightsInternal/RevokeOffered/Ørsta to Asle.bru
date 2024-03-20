@@ -1,0 +1,58 @@
+meta {
+  name: Ørsta to Asle
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:userid",
+              "value": "{{toUserId}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:resource",
+                      "value": "{{resourceId}}"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toUserId: 20001121
+  resourceId: devtest_gar_authparties-main-to-person
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 204 No Content", function() {
+    expect(res.status).to.equal(204);
+  });
+}

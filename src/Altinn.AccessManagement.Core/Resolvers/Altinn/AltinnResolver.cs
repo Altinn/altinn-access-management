@@ -5,7 +5,7 @@ namespace Altinn.AccessManagement.Core.Resolvers;
 /// <summary>
 /// Resolves attributes for <see cref="Urn.Altinn"/> 
 /// </summary>
-public class AltinnResolver(AltinnPersonResolver person, AltinnOrganizationResolver organization, AltinnResourceResolver resource, AltinnEnterpriseUserResolver enterpriseUserResolver)
-    : AttributeResolver(Urn.Altinn.String(), person, organization, resource, enterpriseUserResolver)
+public class AltinnResolver(AltinnResourceResolver resource, PartyAttributeResolver partyAttributeResolver, UserAttributeResolver userAttributeResolver, AltinnPersonResolver personResolver, AltinnOrganizationResolver organizationResolver)
+    : AttributeResolver(Urn.Altinn.String(), resource, partyAttributeResolver, userAttributeResolver, personResolver, organizationResolver)
 {
 }

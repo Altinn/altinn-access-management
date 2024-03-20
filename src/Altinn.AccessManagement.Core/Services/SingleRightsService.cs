@@ -186,7 +186,7 @@ namespace Altinn.AccessManagement.Core.Services
                 ? new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, toAttribute.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute).Value)
                 : new AttributeMatch(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, toAttribute.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute).Value);
 
-            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights.First().Resource, fromAttribute.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), to);
+            var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights[0].Resource, fromAttribute.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), to);
 
             await _pap.TryDeleteDelegationPolicies(policiesToDelete);
             return assertion;

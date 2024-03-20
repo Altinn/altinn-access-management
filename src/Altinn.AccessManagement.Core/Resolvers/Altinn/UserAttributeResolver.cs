@@ -34,10 +34,9 @@ public class UserAttributeResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveFromUser() => async (attributes, cancellationToken) =>
     {
-        UserProfile user = await _profile.GetUser(new()
-        {
-            UserId = attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
-        });
+        UserProfile user = await _profile.GetUser(
+            new() { UserId = attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute) },
+            cancellationToken);
 
         if (user != null)
         {
@@ -52,12 +51,9 @@ public class UserAttributeResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveFromParty() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), cancellationToken) is var party && party?.Person != null)
         {
-            if (party.Person != null)
-            {
-                return await ResolveUserIdUsingIdentifierNo()([new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN)], cancellationToken);
-            }
+            return await ResolveUserIdUsingIdentifierNo()([new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN)], cancellationToken);
         }
 
         return [];
@@ -68,10 +64,9 @@ public class UserAttributeResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolveUserIdUsingIdentifierNo() => async (attributes, cancellationToken) =>
     {
-        var user = await _profile.GetUser(new()
-        {
-            Ssn = attributes.GetRequiredString(Urn.Altinn.Person.IdentifierNo)
-        });
+        var user = await _profile.GetUser(
+            new() { Ssn = attributes.GetRequiredString(Urn.Altinn.Person.IdentifierNo) },
+            cancellationToken);
 
         if (user != null)
         {

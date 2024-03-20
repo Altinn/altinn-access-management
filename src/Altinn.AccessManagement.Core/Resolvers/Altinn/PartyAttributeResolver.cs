@@ -34,10 +34,9 @@ public class PartyAttributeResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolvePartyIdFromUser() => async (attributes, cancellationToken) =>
     {
-        UserProfile user = await _profile.GetUser(new()
-        {
-            UserId = attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
-        });
+        UserProfile user = await _profile.GetUser(
+            new() { UserId = attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute) },
+            cancellationToken);
 
         if (user != null)
         {
@@ -52,7 +51,7 @@ public class PartyAttributeResolver : AttributeResolver
     /// </summary>
     public LeafResolver ResolvePartyIdFromParty() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), cancellationToken) is var party && party != null)
         {
             return [new(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, party.PartyId)];
         }

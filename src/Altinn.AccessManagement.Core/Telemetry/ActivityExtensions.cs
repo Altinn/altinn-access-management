@@ -31,12 +31,13 @@ public static class ActivityExtensions
     /// </summary>
     /// <param name="activity">Current activity</param>
     /// <param name="evnt">ActivityEvent to record</param>
-    public static void StopWithError(this Activity? activity, ActivityEvent evnt)
+    /// <param name="statusDescription">Optional status description (Default: event.Name)</param>
+    public static void StopWithError(this Activity? activity, ActivityEvent evnt, string? statusDescription = null)
     {
         if (activity?.Recorded ?? false)
         {
             activity.AddEvent(evnt);
-            activity.SetStatus(ActivityStatusCode.Error, evnt.Name);
+            activity.SetStatus(ActivityStatusCode.Error, statusDescription ?? evnt.Name);
         }
     }
 
@@ -66,7 +67,7 @@ public static class ActivityExtensions
     /// <param name="activity">Current activity</param>
     /// <param name="statusDescription">Optional description/message for error</param>
     /// <param name="resultSize">Optional metric of resultsize</param>
-    public static void StopOk(this Activity? activity, string statusDescription = null, int? resultSize = null)
+    public static void StopOk(this Activity? activity, string? statusDescription = null, int? resultSize = null)
     {
         if (activity?.Recorded ?? false)
         {

@@ -71,8 +71,8 @@ public class Altinn2RightsClient : IAltinn2RightsClient
             return delegationCheckResponse;
         }
 
-        delegationCheckResponse.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
-        activity?.StopWithError(TelemetryEvents.SBLBridge.Unreachable("Delegation check of Altinn 2 service"));        
+        delegationCheckResponse.Errors.Add("SblBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        activity?.StopWithError(TelemetryEvents.SblBridge.Unreachable("Delegation check of Altinn 2 service"));        
         return delegationCheckResponse;
     }
 
@@ -109,8 +109,8 @@ public class Altinn2RightsClient : IAltinn2RightsClient
             return delegationResult;
         }
 
-        delegationResult.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
-        activity?.StopWithError(TelemetryEvents.SBLBridge.Unreachable("Delegation of Altinn 2 service"));
+        delegationResult.Errors.Add("SblBridge", $"Unable to reach Altinn 2 for delegation of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        activity?.StopWithError(TelemetryEvents.SblBridge.Unreachable("Delegation of Altinn 2 service"));
         return delegationResult;
     }
 }

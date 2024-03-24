@@ -110,4 +110,11 @@ public class Altinn2RightsClient : IAltinn2RightsClient
         delegationResult.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
         return delegationResult;
     }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> ClearReporteeRights(int fromPartyId, int toPartyid, int toUserId = 0, CancellationToken cancellationToken = default)
+    {
+        UriBuilder endpoint = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}cache/api/clearreporteerights?reporteePartyId={fromPartyId}&coveredByPartyId={toPartyid}&coveredByUserId={toUserId}");
+        return await _client.PutAsync(endpoint.Uri.ToString(), null, cancellationToken);
+    }
 }

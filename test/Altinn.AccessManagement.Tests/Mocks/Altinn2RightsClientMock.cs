@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Enums;
@@ -46,6 +48,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
             result.Rights = GetSblRightsDelegationResult($"se_{serviceCode}_{serviceEditionCode}", reporteePartyId.ToString(), delegationRequest.To.Value, authenticatedUserId.ToString());
 
             return Task.FromResult(result);
+        }
+
+        /// <inheritdoc/>
+        public Task<HttpResponseMessage> ClearReporteeRights(int fromPartyId, int toPartyId, int toUserId = 0, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
         }
 
         private static List<RightDelegationResult> GetSblRightsDelegationResult(string resourceId, string reporteePartyId, string to, string by)

@@ -160,8 +160,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
             50005545, // From Ørsta
             new BaseAttributeExternal { Type = Urn.Altinn.EnterpriseUser.Uuid, Value = "00000000-0000-0000-0002-000000010727" }, // To OrstaECUser
             AssertStatusCode(StatusCodes.Status200OK)
-        },
-        
+        }
     };
 
     private static Action<HttpResponseMessage> Assertions(params Action<HttpResponseMessage>[] assertions) => response =>

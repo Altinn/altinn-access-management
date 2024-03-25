@@ -25,5 +25,15 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         /// <param name="delegationRequest">the delegation request model</param>
         /// <returns>Delegation Response</returns>
         Task<DelegationActionResult> PostDelegation(int authenticatedUserId, int reporteePartyId, SblRightDelegationRequest delegationRequest);
+
+        /// <summary>
+        /// Operation to clear a recipients cached rights from a given reportee/from party, and the recipients authorized parties/reportees
+        /// </summary>
+        /// <param name="fromPartyId">The party id of the from party</param>
+        /// <param name="toPartyId">The party id of the to party</param>
+        /// <param name="toUserId">The user id of the to party (if the recipient is a user)</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>HttpResponse</returns>
+        Task<HttpResponseMessage> ClearReporteeRights(int fromPartyId, int toPartyId, int toUserId = 0, CancellationToken cancellationToken = default);
     }
 }

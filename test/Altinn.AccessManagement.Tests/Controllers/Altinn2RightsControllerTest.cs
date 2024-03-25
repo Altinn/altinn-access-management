@@ -79,13 +79,13 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
             string.Empty, "50005545", response => Assertions(
                 AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
                 AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, "20000095"),
-                AssertStatusCode(StatusCodes.Status200OK))
+                AssertStatusCode(HttpStatusCode.OK))
         },
         {
             string.Empty, "50002203",  Assertions(
                 AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
                 AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertStatusCode(StatusCodes.Status200OK))
+                AssertStatusCode(HttpStatusCode.OK))
         }
     };
 
@@ -116,7 +116,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
             string.Empty, "50005545", Assertions(
                 AssertFromContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50002203"),
                 AssertToContains(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, "50005545"),
-                AssertStatusCode(StatusCodes.Status200OK))
+                AssertStatusCode(HttpStatusCode.OK))
         },
     };
 
@@ -137,9 +137,9 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
 
     /// <summary>
     /// Test case:  PUT internal/{party}/accesscache/clear
-    ///             with the authenticated user a being Administrator for the {party}
+    ///             with the authenticated user being an authorized Administrator for the {party}
     /// Expected:   - Should return 200 OK
-    /// Reason:     Authenticated users which are Administrator/Main Administrator for the {party} should be allowed to clear access cache for recipient
+    /// Reason:     Authenticated users which authorized as Administrator/Main Administrator for the {party} should be allowed to clear access cache for recipient
     /// </summary>
     public static TheoryData<string, int, BaseAttributeExternal, Action<HttpResponseMessage>> ClearAccessCache_ReturnOk_input() => new()
     {
@@ -147,19 +147,56 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper Børstad
             50002598, // From Kasper
             new BaseAttributeExternal { Type = Urn.Altinn.Person.Uuid, Value = "00000000-0000-0000-0005-000000003899" }, // To Ørjan Ravnås
-            AssertStatusCode(StatusCodes.Status200OK)
+            AssertStatusCode(HttpStatusCode.OK)
         },
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper Børstad
             50002598, // From Kasper
             new BaseAttributeExternal { Type = Urn.Altinn.Organization.Uuid, Value = "00000000-0000-0000-0005-000000004222" }, // To KARLSTAD OG ULOYBUKT
-            AssertStatusCode(StatusCodes.Status200OK)
+            AssertStatusCode(HttpStatusCode.OK)
         },
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper Børstad
             50005545, // From Ørsta
             new BaseAttributeExternal { Type = Urn.Altinn.EnterpriseUser.Uuid, Value = "00000000-0000-0000-0002-000000010727" }, // To OrstaECUser
-            AssertStatusCode(StatusCodes.Status200OK)
+            AssertStatusCode(HttpStatusCode.OK)
+        }
+    };
+
+    /// <summary>
+    /// Tests <see cref="RightsInternalController.ClearAccessCache(int, BaseAttributeExternal, System.Threading.CancellationToken)"/>
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(ClearAccessCache_ReturnBadRequest_input))]
+    public async Task ClearAccessCache_ReturnBadRequest(string authnUserToken, int party, BaseAttributeExternal toAttribute, Action<HttpResponseMessage> assert)
+    {
+        var client = NewClient(NewServiceCollection(WithServiceMoq), [WithClientRoute("accessmanagement/api/v1/")]);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authnUserToken);
+
+        HttpResponseMessage response = await client.PutAsync($"internal/{party}/accesscache/clear", new StringContent(JsonSerializer.Serialize(toAttribute), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        assert(response);
+    }
+
+    /// <summary>
+    /// Test case:  PUT internal/{party}/accesscache/clear
+    ///             with the authenticated user being an Administrator for the {party}
+    ///             where input attribute does not contain a well-formatted uuid
+    /// Expected:   - Should return 400 BadRequest
+    /// </summary>
+    public static TheoryData<string, int, BaseAttributeExternal, Action<HttpResponseMessage>> ClearAccessCache_ReturnBadRequest_input() => new()
+    {
+        {
+            PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper Børstad
+            50002598, // From Kasper
+            new BaseAttributeExternal { Type = Urn.Altinn.Person.Uuid, Value = "asdf" }, // To not a well-formated uuid
+            AssertStatusCode(HttpStatusCode.BadRequest)
+        },
+        {
+            PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper Børstad
+            50005545, // From Ørsta
+            new BaseAttributeExternal { Type = Urn.Altinn.Organization.Uuid, Value = "123" }, // To not a well-formated uuid
+            AssertStatusCode(HttpStatusCode.BadRequest)
         }
     };
 
@@ -171,9 +208,9 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
         }
     };
 
-    private static Action<HttpResponseMessage> AssertStatusCode(int statuscode) => response =>
+    private static Action<HttpResponseMessage> AssertStatusCode(HttpStatusCode expected) => response =>
     {
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(expected, response.StatusCode);
     };
 
     private static Action<HttpResponseMessage> AssertToContains(string type, string value) => response =>

@@ -127,7 +127,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     [MemberData(nameof(ClearAccessCache_ReturnOk_input))]
     public async Task ClearAccessCache_ReturnOk(string authnUserToken, int party, BaseAttributeExternal toAttribute, Action<HttpResponseMessage> assert)
     {
-        var client = NewClient(NewServiceCollection(WithServiceMoq), [WithClientRoute("accessmanagement/api/v1/")]);
+        var client = NewClient(NewServiceCollection(WithServiceMoq), WithClientRoute("accessmanagement/api/v1/"));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authnUserToken);
 
         HttpResponseMessage response = await client.PutAsync($"internal/{party}/accesscache/clear", new StringContent(JsonSerializer.Serialize(toAttribute), Encoding.UTF8, MediaTypeNames.Application.Json));
@@ -170,7 +170,7 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
     [MemberData(nameof(ClearAccessCache_ReturnBadRequest_input))]
     public async Task ClearAccessCache_ReturnBadRequest(string authnUserToken, int party, BaseAttributeExternal toAttribute, Action<HttpResponseMessage> assert)
     {
-        var client = NewClient(NewServiceCollection(WithServiceMoq), [WithClientRoute("accessmanagement/api/v1/")]);
+        var client = NewClient(NewServiceCollection(WithServiceMoq), WithClientRoute("accessmanagement/api/v1/"));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authnUserToken);
 
         HttpResponseMessage response = await client.PutAsync($"internal/{party}/accesscache/clear", new StringContent(JsonSerializer.Serialize(toAttribute), Encoding.UTF8, MediaTypeNames.Application.Json));

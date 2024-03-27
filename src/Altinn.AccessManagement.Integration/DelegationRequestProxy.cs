@@ -3,8 +3,8 @@ using System.Web;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Services
@@ -15,7 +15,6 @@ namespace Altinn.AccessManagement.Services
     public class DelegationRequestProxy : IDelegationRequestsWrapper
     {
         private readonly SblBridgeSettings _sblBridgeSettings;
-        private readonly ILogger _logger;
         private readonly HttpClient _client;
 
         /// <summary>
@@ -23,17 +22,17 @@ namespace Altinn.AccessManagement.Services
         /// </summary>
         /// <param name="httpClient">HttpClient from default httpclientfactory</param>
         /// <param name="sblBridgeSettings">the sbl bridge settings</param>
-        /// <param name="logger">the logger</param>
-        public DelegationRequestProxy(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, ILogger<DelegationRequestProxy> logger)
+        public DelegationRequestProxy(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings)
         {
             _sblBridgeSettings = sblBridgeSettings.Value;
-            _logger = logger;
             _client = httpClient;
         }
 
         /// <inheritdoc/>
         public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status, string continuation)
         {
+            using var activity = TelemetryConfig._activitySource.StartActivity();
+
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/DelegationRequests");
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["who"] = who;
@@ -72,7 +71,9 @@ namespace Altinn.AccessManagement.Services
             }
             else
             {
-                _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode);
+                activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
+                
+                // Review: Original: _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode); Fix: SBLBride.RequestFailed
             }
 
             return null;

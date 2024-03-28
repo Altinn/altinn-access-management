@@ -1,3 +1,4 @@
+using Altinn.AccessManagement;
 using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
@@ -62,6 +63,9 @@ ConfigureSetupLogging();
 await SetConfigurationProviders(builder.Configuration);
 
 ConfigureLogging(builder.Logging);
+
+builder.AddLogger(applicationInsightsConnectionString)
+    .AddOpenTelemetry(applicationInsightsConnectionString);
 
 ConfigureServices(builder.Services, builder.Configuration);
 

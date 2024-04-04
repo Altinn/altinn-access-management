@@ -1,5 +1,5 @@
 meta {
-  name: Main to Person
+  name: Kasper to Asle
   type: http
   seq: 3
 }
@@ -31,12 +31,8 @@ body:json {
           {
               "resource": [
                   {
-                      "id": "urn:altinn:org",
-                      "value": "{{org}}"
-                  },
-                  {
-                      "id": "urn:altinn:app",
-                      "value": "{{app}}"
+                      "id": "urn:altinn:resource",
+                      "value": "{{resourceId}}"
                   }
               ],
               "action": "read"
@@ -48,13 +44,12 @@ body:json {
 vars:pre-request {
   toSsn: '17105431031'
   toLastName: Natvik
-  org: ttd
-  app: am-devtest-main-to-person
+  resourceId: devtest_gar_authparties-person-to-person
   auth_tokenType: Personal
-  auth_userId: 20000542
-  auth_partyId: 50002650
-  auth_ssn: '08109412032'
-  party: 50006037
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50002598
 }
 
 script:pre-request {

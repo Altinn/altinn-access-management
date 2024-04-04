@@ -23,6 +23,8 @@ public static class ResolverExtensions
         services.AddTransient<AltinnResourceResolver>();
         services.AddTransient<AltinnOrganizationResolver>();
         services.AddTransient<AltinnPersonResolver>();
+        services.AddTransient<PartyAttributeResolver>();
+        services.AddTransient<UserAttributeResolver>();
         return services;
     }
 

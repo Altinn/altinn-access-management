@@ -1,11 +1,11 @@
 meta {
-  name: Mainunit to Person
+  name: Asle From Ørsta
   type: http
   seq: 1
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/revoke
   body: json
   auth: none
 }
@@ -17,14 +17,10 @@ headers {
 
 body:json {
   {
-      "to": [
+      "from": [
           {
-              "id": "urn:altinn:person:identifier-no",
-              "value": "{{toSsn}}"
-          },
-          {
-              "id": "urn:altinn:person:lastname",
-              "value": "{{toLastName}}"
+              "id": "urn:altinn:partyid",
+              "value": "{{fromPartyId}}"
           }
       ],
       "rights": [
@@ -42,14 +38,13 @@ body:json {
 }
 
 vars:pre-request {
-  toSsn: '17105431031'
-  toLastName: Natvik
+  fromPartyId: 50005545
   resourceId: devtest_gar_authparties-main-to-person
   auth_tokenType: Personal
-  auth_userId: 20000542
-  auth_partyId: 50002650
-  auth_ssn: '08109412032'
-  party: 50006037
+  auth_userId: 20001121
+  auth_partyId: 50003229
+  auth_ssn: '17105431031'
+  party: 50003229
 }
 
 script:pre-request {
@@ -57,7 +52,7 @@ script:pre-request {
 }
 
 tests {
-  test("Should return 201 CREATED", function() {
-    expect(res.status).to.equal(201);
+  test("Should return 204 No Content", function() {
+    expect(res.status).to.equal(204);
   });
 }

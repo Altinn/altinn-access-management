@@ -7,7 +7,6 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
@@ -300,15 +299,6 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
-                }
-
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
-                }
 
                 delegation.To = reportee.SingleToList();
 
@@ -366,15 +356,6 @@ namespace Altinn.AccessManagement.Controllers
                 int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(input.Party, HttpContext);
                 var delegation = _mapper.Map<DelegationLookup>(body);
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Organization.IdentifierNo;
-                }
-
-                if (reportee.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
-                {
-                    reportee.Id = Urn.Altinn.Person.IdentifierNo;
-                }
 
                 delegation.From = reportee.SingleToList();
                 var result = await _rights.RevokeRightsDelegation(authenticatedUserId, delegation, cancellationToken);
@@ -405,6 +386,34 @@ namespace Altinn.AccessManagement.Controllers
                 _logger.LogError(StatusCodes.Status500InternalServerError, ex, "Internal exception occurred during Rights Delegation");
                 return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
             }
+        }
+
+        /// <summary>
+        /// Clears access chaching for a given recipient having received right delegations from the reportee party, in order for the rights to take effect as imidiately as possible in the distributed authorization system between Altinn 2 and Altinn 3.
+        /// </summary>
+        /// <param name="party">Used to specify the reportee party id the authenticated user is acting on behalf of.</param>
+        /// <param name="to">Attribute specification of the uuid of the recipient to clear access caching for</param>
+        /// <param name="cancellationToken">Cancellation token used for cancelling the inbound HTTP</param>
+        [Authorize(Policy = AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE)]
+        [ActionName(nameof(ClearAccessCache))]
+        [HttpPut("internal/{party}/accesscache/clear")]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(void))]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [FeatureGate(FeatureFlags.RightsDelegationApi)]
+        public async Task<IActionResult> ClearAccessCache([FromRoute] int party, [FromBody] BaseAttributeExternal to, CancellationToken cancellationToken)
+        {
+            BaseAttribute toAttribute = _mapper.Map<BaseAttribute>(to);
+            HttpResponseMessage response = await _rightsForAltinn2.ClearReporteeRights(party, toAttribute, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, (int)response.StatusCode, detail: $"Could not complete the request. Reason: {response.ReasonPhrase}"));
+            }
+
+            return Ok();
         }
     }
 }

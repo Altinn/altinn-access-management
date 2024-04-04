@@ -1,7 +1,7 @@
 meta {
-  name: Main to Person
+  name: Asle to Hovdebygda
   type: http
-  seq: 3
+  seq: 4
 }
 
 post {
@@ -19,24 +19,16 @@ body:json {
   {
       "to": [
           {
-              "id": "urn:altinn:person:identifier-no",
-              "value": "{{toSsn}}"
-          },
-          {
-              "id": "urn:altinn:person:lastname",
-              "value": "{{toLastName}}"
+              "id": "urn:altinn:organizationnumber",
+              "value": "{{toOrg}}"
           }
       ],
       "rights": [
           {
               "resource": [
                   {
-                      "id": "urn:altinn:org",
-                      "value": "{{org}}"
-                  },
-                  {
-                      "id": "urn:altinn:app",
-                      "value": "{{app}}"
+                      "id": "urn:altinn:resource",
+                      "value": "{{resourceId}}"
                   }
               ],
               "action": "read"
@@ -46,15 +38,13 @@ body:json {
 }
 
 vars:pre-request {
-  toSsn: '17105431031'
-  toLastName: Natvik
-  org: ttd
-  app: am-devtest-main-to-person
+  toOrg: 910434217
+  resourceId: devtest_gar_authparties-person-to-org
   auth_tokenType: Personal
-  auth_userId: 20000542
-  auth_partyId: 50002650
-  auth_ssn: '08109412032'
-  party: 50006037
+  auth_userId: 20001121
+  auth_partyId: 50003229
+  auth_ssn: '17105431031'
+  party: 50003229
 }
 
 script:pre-request {

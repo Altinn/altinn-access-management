@@ -163,6 +163,20 @@ public static class AttributeMatchAsserter
             assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
 
     /// <summary>
+    /// A list of assertions for validating input is a single value of either of the internal Altinn 2 identifiers: UserId or PartyId.
+    /// </summary>
+    /// <param name="assert">list of assertions</param>
+    /// <param name="errors">dictionary for writing assertion errors</param>
+    /// <param name="values">list of attributes</param>
+    public static void Altinn2InternalIds(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
+        assert.All(
+            assert.Single(
+                assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
+                assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)),
+            assert.AllAttributesHasValues,
+            assert.AttributesAreIntegers(Urn.Altinn2InternalIds))(errors, values);
+
+    /// <summary>
     /// A default list of assertions that contains the baseline for validating input for a resource.
     /// </summary>
     /// <param name="assert">list of assertions</param>

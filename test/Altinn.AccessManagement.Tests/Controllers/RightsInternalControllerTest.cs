@@ -1278,15 +1278,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
         [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
         [MemberData(nameof(TestDataRevokeOfferedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeOfferedDelegationExternal))]
-        public async Task RevokeRightsOfferedDelegations_ReturnNoContent(RevokeOfferedDelegationExternal input, string headerKey, string headerValue)
+        public async Task RevokeRightsOfferedDelegations_ReturnNoContent(string userToken, RevokeOfferedDelegationExternal input, string partyRouteValue, string headerKey = null, string headerValue = null)
         {
-            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
-            var client = GetTestClient(token, WithPDPMock);
-            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            var client = GetTestClient(userToken, WithPDPMock);
+            if (headerKey != null && headerValue != null)
+            {
+                client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            }
 
             // Act
-            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
-            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{reporteeType}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{partyRouteValue}/rights/delegation/offered/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -1303,15 +1304,16 @@ namespace Altinn.AccessManagement.Tests.Controllers
         [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromPersonToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
         [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToOrganization), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
         [MemberData(nameof(TestDataRevokeReceivedDelegationExternal.FromOrganizationToPerson), MemberType = typeof(TestDataRevokeReceivedDelegationExternal))]
-        public async Task RevokeRightsReceivedDelegations_ReturnNoContent(RevokeReceivedDelegationExternal input, string headerKey, string headerValue)
+        public async Task RevokeRightsReceivedDelegations_ReturnNoContent(string userToken, RevokeReceivedDelegationExternal input, string partyRouteValue, string headerKey = null, string headerValue = null)
         {
-            var token = PrincipalUtil.GetToken(20001337, 50002203, 3);
-            var client = GetTestClient(token, WithPDPMock);
-            client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            var client = GetTestClient(userToken, WithPDPMock);
+            if (headerKey != null && headerValue != null)
+            {
+                client.DefaultRequestHeaders.Add(headerKey, headerValue);
+            }
 
             // Act
-            var reporteeType = headerKey == IdentifierUtil.OrganizationNumberHeader ? "organization" : "person";
-            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{reporteeType}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/internal/{partyRouteValue}/rights/delegation/received/revoke", new StringContent(JsonSerializer.Serialize(input), new MediaTypeHeaderValue(MediaTypeNames.Application.Json)));
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);

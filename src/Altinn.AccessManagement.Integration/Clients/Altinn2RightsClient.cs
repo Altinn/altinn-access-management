@@ -113,4 +113,11 @@ public class Altinn2RightsClient : IAltinn2RightsClient
         activity?.StopWithError(TelemetryEvents.SblBridge.Unreachable("Delegation of Altinn 2 service"));
         return delegationResult;
     }
+
+    /// <inheritdoc />
+    public async Task<HttpResponseMessage> ClearReporteeRights(int fromPartyId, int toPartyId, int toUserId = 0, CancellationToken cancellationToken = default)
+    {
+        UriBuilder endpoint = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}cache/api/clearreporteerights?reporteePartyId={fromPartyId}&coveredByPartyId={toPartyId}&coveredByUserId={toUserId}");
+        return await _client.PutAsync(endpoint.Uri.ToString(), null, cancellationToken);
+    }
 }

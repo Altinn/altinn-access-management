@@ -1,11 +1,11 @@
 meta {
-  name: Person to Person
+  name: Kasper to Asle
   type: http
-  seq: 5
+  seq: 3
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered/revoke
   body: json
   auth: none
 }
@@ -19,12 +19,8 @@ body:json {
   {
       "to": [
           {
-              "id": "urn:altinn:person:identifier-no",
-              "value": "{{toSsn}}"
-          },
-          {
-              "id": "urn:altinn:person:lastname",
-              "value": "{{toLastName}}"
+              "id": "urn:altinn:userid",
+              "value": "{{toUserId}}"
           }
       ],
       "rights": [
@@ -42,14 +38,13 @@ body:json {
 }
 
 vars:pre-request {
-  toSsn: '17105431031'
-  toLastName: Natvik
+  toUserId: 20001121
   resourceId: devtest_gar_authparties-person-to-person
   auth_tokenType: Personal
-  auth_userId: 20000542
-  auth_partyId: 50002650
-  auth_ssn: '08109412032'
-  party: 50002650
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50002598
 }
 
 script:pre-request {
@@ -57,7 +52,7 @@ script:pre-request {
 }
 
 tests {
-  test("Should return 201 CREATED", function() {
-    expect(res.status).to.equal(201);
+  test("Should return 204 No Content", function() {
+    expect(res.status).to.equal(204);
   });
 }

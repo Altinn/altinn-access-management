@@ -1,3 +1,4 @@
+using System.Reflection;
 using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
@@ -66,10 +67,9 @@ ConfigureLogging(builder.Logging);
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
-ConfigurePostgreSql();
 
 Configure();
-
+ConfigurePostgreSql();
 app.Run();
 
 void ConfigureSetupLogging()
@@ -179,6 +179,7 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
+    builder.Services.AddAccessManagementPersistence();
     logger.LogInformation("Startup // ConfigureServices");
     services.ConfigureAsserters();
     services.ConfigureResolvers();
@@ -392,22 +393,18 @@ void ConfigurePostgreSql()
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
 
-        string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        if (builder.Environment.IsDevelopment())
-        {
-            workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        }
-
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
             new PostgreSqlBulkImportService(traceService),
             traceService,
             new Configuration
             {
-                Workspace = workspacePath,
+                Workspace = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Migration"),
                 ConnectionString = connectionString,
                 IsAutoCreateDatabase = false,
                 IsDebug = true,
             });
     }
 }
+
+public partial class Program { }

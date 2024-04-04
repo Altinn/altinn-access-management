@@ -22,8 +22,9 @@ public static class TelemetryEvents
             { "Content", httpResponse.Content.ReadAsStringAsync() },
         }));
 
-        //CreateValidationProblemDetails
-        //ProblemDetailsFactory.CreateProblemDetails
+        // CreateValidationProblemDetails
+
+        // ProblemDetailsFactory.CreateProblemDetails
     }
 
     /// <summary>

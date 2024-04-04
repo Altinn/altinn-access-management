@@ -33,7 +33,7 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// <inheritdoc />
     public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/roles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
@@ -59,7 +59,7 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// <inheritdoc />
     public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/delegatableroles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
@@ -85,7 +85,7 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// <inheritdoc />
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userid={userId}");

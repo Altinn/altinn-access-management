@@ -57,7 +57,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<Party> GetPartyAsync(int partyId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/{partyId}";
@@ -85,7 +85,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/partylist?fetchSubUnits={includeSubunits}";
@@ -114,7 +114,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesAsync(List<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/partylistbyuuid?fetchSubUnits={includeSubunits}";
@@ -143,7 +143,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesForUserAsync(int userId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"{_platformSettings.ApiAuthorizationEndpoint}parties?userId={userId}";
@@ -171,7 +171,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<int>> GetKeyRoleParties(int userId, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/partieswithkeyroleaccess?userid={userId}");
@@ -196,7 +196,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<MainUnit>> GetMainUnits(MainUnitQuery subunitPartyIds, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/partyparents");
@@ -229,7 +229,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup, CancellationToken cancellationToken = default)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/lookup";

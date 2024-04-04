@@ -18,8 +18,12 @@ public static class TelemetryEvents
     {
         return new ActivityEvent("Unexpected HttpStatusCode", tags: new ActivityTagsCollection(new Dictionary<string, object>() 
         { 
-            { "StatusCode", httpResponse.StatusCode }
+            { "StatusCode", httpResponse.StatusCode },
+            { "Content", httpResponse.Content.ReadAsStringAsync() },
         }));
+
+        //CreateValidationProblemDetails
+        //ProblemDetailsFactory.CreateProblemDetails
     }
 
     /// <summary>

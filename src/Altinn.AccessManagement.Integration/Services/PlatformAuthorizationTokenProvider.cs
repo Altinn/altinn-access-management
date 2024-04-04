@@ -46,7 +46,7 @@ public class PlatformAuthorizationTokenProvider : IPlatformAuthorizationTokenPro
     /// <inheritdoc />
     public async Task<string> GetAccessToken()
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         await Semaphore.WaitAsync();
 
         try

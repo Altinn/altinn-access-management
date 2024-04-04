@@ -35,7 +35,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<ServiceResource> GetResource(string resourceId, CancellationToken cancellationToken = default)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 string endpointUrl = $"resource/{resourceId}";
@@ -60,7 +60,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<ServiceResource>> GetResources(CancellationToken cancellationToken = default)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 List<ServiceResource> resources = new();
@@ -86,7 +86,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc/>
         public async Task<List<ServiceResource>> GetResourceList(CancellationToken cancellationToken = default)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 List<ServiceResource> resources = new();

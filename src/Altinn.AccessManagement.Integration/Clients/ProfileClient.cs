@@ -39,7 +39,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         public async Task<UserProfile> GetUser(UserProfileLookup userProfileLookup, CancellationToken cancellationToken = default)
         {
             // Review: Added try/catch
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 UriBuilder endpoint = new UriBuilder($"{_settings.ApiProfileEndpoint}internal/user/");

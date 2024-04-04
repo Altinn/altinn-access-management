@@ -13,10 +13,10 @@ public static class TelemetryConfig
     /// <summary>
     /// Used as source for the current project
     /// </summary>
-    public static readonly ActivitySource _activitySource = new("Altinn.AccessManagement");
+    public static readonly ActivitySource ActivitySource = new("Altinn.AccessManagement");
 
     /// <summary>
     /// Used as source for the current project
     /// </summary>
-    public static readonly Meter _meter = new("Altinn.AccessManagement");
+    public static readonly Meter Meter = new("Altinn.AccessManagement");
 }

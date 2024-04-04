@@ -44,7 +44,7 @@ public class Altinn2RightsClient : IAltinn2RightsClient
     /// <inheritdoc />
     public async Task<DelegationCheckResponse> PostDelegationCheck(int authenticatedUserId, int reporteePartyId, string serviceCode, string serviceEditionCode)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
 
         UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegationcheck?userId={authenticatedUserId}&partyId={reporteePartyId}&serviceCode={serviceCode}&serviceEditionCode={serviceEditionCode}");
             
@@ -79,7 +79,7 @@ public class Altinn2RightsClient : IAltinn2RightsClient
     /// <inheritdoc />
     public async Task<DelegationActionResult> PostDelegation(int authenticatedUserId, int reporteePartyId, SblRightDelegationRequest delegationRequest)
     {
-        using var activity = TelemetryConfig._activitySource.StartActivity();
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
 
         DelegationActionResult delegationResult = new DelegationActionResult();
         UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegation?authenticatedUserId={authenticatedUserId}&partyId={reporteePartyId}");

@@ -37,7 +37,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);

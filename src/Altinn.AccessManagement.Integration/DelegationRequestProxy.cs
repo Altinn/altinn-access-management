@@ -31,7 +31,7 @@ namespace Altinn.AccessManagement.Services
         /// <inheritdoc/>
         public async Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status, string continuation)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
 
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/DelegationRequests");
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -73,7 +73,9 @@ namespace Altinn.AccessManagement.Services
             {
                 activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
                 
-                // Review: Original: _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode); Fix: SBLBride.RequestFailed
+                // Review:
+                // Original: _logger.LogError("Getting delegationg requsts from bridge failed with {StatusCode}", response.StatusCode);
+                // Fix: SBLBride.RequestFailed
             }
 
             return null;

@@ -38,7 +38,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <inheritdoc />
         public async Task<string> RefreshToken()
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 string endpointUrl = $"refresh";

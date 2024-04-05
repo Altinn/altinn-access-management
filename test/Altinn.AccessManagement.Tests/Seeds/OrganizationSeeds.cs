@@ -1,3 +1,5 @@
+#pragma warning disable SA1600
+
 using System;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -11,31 +13,115 @@ public static class OrganizationSeeds
         public Party Party => this;
     }
 
-    public class OrstadAccounting : OrganizationBase
+    public class Voss : OrganizationBase
     {
-        public new static int PartyId = 50000101;
+        public new static readonly Party Test = new Party();
 
-        public new static Guid? PartyUuid = new Guid("df274071-9baa-44c3-84ee-9b77d3e82f87");
+        public new static readonly int PartyId = 200;
 
-        public new static PartyType PartyTypeName = PartyType.Organisation;
+        public new static readonly Guid? PartyUuid = new Guid("00000000-0000-0000-0000-000000000200");
 
-        public new static string OrgNumber = "910459880";
+        public new static readonly PartyType PartyTypeName = PartyType.Organisation;
 
-        public new static string Name = "Orstad Accounting";
+        public new static readonly string OrgNumber = "910459880";
 
-        public new static string UnitType = "AS";
+        public new static readonly string Name = "Voss AS";
 
-        public new static Organization Organization = new()
+        public new static readonly string UnitType = "AS";
+
+        public new static readonly Organization Organization = new()
         {
             OrgNumber = OrgNumber,
             Name = Name,
             UnitType = UnitType,
-            EMailAddress = "orstad@accounting.no",
+            EMailAddress = "hello@voss.no",
         };
 
-        public static OrstadAccounting Defaults { get; } = new OrstadAccounting();
+        public static Voss Defaults { get; } = new Voss();
 
-        public OrstadAccounting(params Action<Party>[] modifiers)
+        public Voss(params Action<Party>[] modifiers)
+        {
+            base.PartyId = PartyId;
+            base.PartyUuid = PartyUuid;
+            base.PartyTypeName = PartyTypeName;
+            base.OrgNumber = OrgNumber;
+            base.Name = Name;
+            base.UnitType = UnitType;
+            base.Organization = Organization;
+
+            foreach (var modifer in modifiers)
+            {
+                modifer(this);
+            }
+        }
+    }
+
+    public class VossConsulting : OrganizationBase
+    {
+        public new static readonly int PartyId = 201;
+
+        public new static readonly Guid? PartyUuid = new Guid("00000000-0000-0000-0000-000000000201");
+
+        public new static readonly PartyType PartyTypeName = PartyType.Organisation;
+
+        public new static readonly string OrgNumber = "810418982";
+
+        public new static readonly string Name = "Voss Consulting";
+
+        public new static readonly string UnitType = "AS";
+
+        public new static readonly Organization Organization = new()
+        {
+            OrgNumber = OrgNumber,
+            Name = Name,
+            UnitType = UnitType,
+            EMailAddress = "hello@consulting.voss.no",
+        };
+
+        public VossConsulting(params Action<Party>[] modifiers)
+        {
+            base.PartyId = PartyId;
+            base.PartyUuid = PartyUuid;
+            base.PartyTypeName = PartyTypeName;
+            base.OrgNumber = OrgNumber;
+            base.Name = Name;
+            base.UnitType = UnitType;
+            base.Organization = Organization;
+
+            foreach (var modifer in modifiers)
+            {
+                modifer(this);
+            }
+        }
+
+        public static VossConsulting Defaults { get; } = new VossConsulting();
+    }
+
+    public class VossAccounting : OrganizationBase
+    {
+        public new static readonly int PartyId = 202;
+
+        public new static readonly Guid? PartyUuid = new Guid("00000000-0000-0000-0000-000000000202");
+
+        public new static readonly PartyType PartyTypeName = PartyType.Organisation;
+
+        public new static readonly string OrgNumber = "810419172";
+
+        public new static readonly string Name = "Voss Accounting";
+
+        public new static readonly string UnitType = "AS";
+
+        public new static readonly Organization Organization = new()
+        {
+            OrgNumber = OrgNumber,
+            Name = Name,
+            UnitType = UnitType,
+            EMailAddress = "hello@accounting.voss.no",
+        };
+
+        public static VossAccounting Defaults { get; } = new VossAccounting();
+
+        public VossAccounting(params Action<Party>[] modifiers)
         {
             base.PartyId = PartyId;
             base.PartyUuid = PartyUuid;

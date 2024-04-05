@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+#pragma warning disable SA1600
 
 namespace Altinn.AccessManagement.Tests.Seeds;
 

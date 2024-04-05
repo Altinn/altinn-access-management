@@ -1,4 +1,6 @@
-using System;
+#pragma warning disable SA1600
+
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
 
@@ -17,4 +19,9 @@ public interface IUserProfile
 public interface IToken
 {
     string Token { get; }
+}
+
+public interface IAccessManagementResource
+{
+    ServiceResource Resource { get; }
 }

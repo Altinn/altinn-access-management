@@ -27,11 +27,11 @@ public abstract class AcceptanceCriteriaTest
 
     public List<Action<HttpResponseMessage>> ResponseAssertions { get; set; } = [];
 
-    public List<Action<WebApplicationFixture>> DbAssertions { get; set; } = [];
+    public List<Func<WebApplicationFixture, Task>> ApiAssertions { get; set; } = [];
 
     public HttpRequestMessage Request { get; set; } = new();
 
-    private string AcceptanceCriteria { get; }
+    protected string AcceptanceCriteria { get; }
 
     public void AssertResponse(HttpResponseMessage message)
     {
@@ -43,10 +43,7 @@ public abstract class AcceptanceCriteriaTest
 
     public void AssertApi(WebApplicationFixture fixture)
     {
-        foreach (var assert in DbAssertions)
-        {
-            assert(fixture);
-        }
+        Task.WaitAll([.. ApiAssertions.Select(async assertion => await assertion(fixture))]);
     }
 
     public static Action<AcceptanceCriteriaTest> WithAssertResponseStatusCode(HttpStatusCode code) => test =>
@@ -87,10 +84,4 @@ public abstract class AcceptanceCriteriaTest
         AssertResponse(await fixture.UseScenarios([.. Scenarios]).SendAsync(Request));
         AssertApi(fixture);
     }
-
-    /// <summary>
-    /// Returns the Acceptance Criteria
-    /// </summary>
-    /// <returns></returns>
-    public override sealed string ToString() => AcceptanceCriteria;
 }

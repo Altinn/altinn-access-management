@@ -1,3 +1,5 @@
+#pragma warning disable SA1600
+
 using System;
 using System.Collections.Generic;
 using Altinn.AccessManagement.Core.Models;
@@ -9,15 +11,15 @@ namespace Altinn.AccessManagement.Tests.Seeds
     {
         public class MaskinPortenSchema : ServiceResource
         {
-            public new static string Identifier { get; } = "scope-access-schema";
+            public new static readonly string Identifier = "scope-access-schema";
 
-            public new static string Status = "Active";
+            public new static readonly string Status = "Active";
 
-            public new static bool Delegable = true;
+            public new static readonly bool Delegable = true;
 
-            public new static ResourceType ResourceType = ResourceType.MaskinportenSchema;
+            public new static readonly ResourceType ResourceType = ResourceType.MaskinportenSchema;
 
-            public new static List<AttributeMatch> AuthorizationReference = new List<AttributeMatch>
+            public new static readonly List<AttributeMatch> AuthorizationReference = new List<AttributeMatch>
             {
                 new()
                 {
@@ -26,7 +28,7 @@ namespace Altinn.AccessManagement.Tests.Seeds
                 }
             };
 
-            public static ServiceResource Defaults { get; } = new MaskinPortenSchema();
+            public static MaskinPortenSchema Defaults { get; } = new MaskinPortenSchema();
 
             public MaskinPortenSchema(params Action<ServiceResource>[] modifiers)
             {

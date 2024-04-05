@@ -7,9 +7,7 @@ using Altinn.Platform.Profile.Models;
 
 namespace Altinn.AccessManagement.Tests.Contexts;
 
-/// <summary>
-/// 
-/// </summary>
+/// <inheritdoc/>
 public class ProfileClientMock(MockContext context) : IProfileClient
 {
     private MockContext Context { get; } = context;

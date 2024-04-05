@@ -1,7 +1,9 @@
 using System.Linq;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Tests.Contexts;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Seeds;
+using Moq;
 
 namespace Altinn.AccessManagement.Tests.Scenarios;
 
@@ -10,6 +12,23 @@ namespace Altinn.AccessManagement.Tests.Scenarios;
 /// </summary>
 public static class DelegationScenarios
 {
+    public static void Defaults(WebApplicationFixtureContext fixture, MockContext mock)
+    {
+        mock.Resources.AddRange([
+            AltinnAppSeeds.AltinnApp.Defaults
+        ]);
+
+        mock.DbSeeds.AddRange([
+            () => fixture.PostgresFixture.SeedDatabaseTXs(
+                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(AltinnAppSeeds.AltinnApp.Defaults)),
+                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
+                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
+                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
+                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
+                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults)),
+        ]);
+    }
+
     public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, mock) =>
     {
         var partyids = organizations.Select(organization => organization.Party.PartyId);
@@ -23,81 +42,31 @@ public static class DelegationScenarios
         }
     };
 
-    public static Scenario WhereSubunitHasMainUnit(IParty subunit, IParty mainunit) => (builder, mock) =>
+    public static Scenario WhereUnitHasMainUnit(IParty unit, IParty mainunit) => (builder, mock) =>
     {
-        mock.MainUnits[subunit.Party.PartyId] = new MainUnit
+        mock.MainUnits[unit.Party.PartyId] = new MainUnit
         {
             PartyId = mainunit.Party.PartyId,
             OrganizationName = mainunit?.Party?.Organization?.Name ?? "Unknown",
             OrganizationNumber = mainunit?.Party?.Organization?.OrgNumber ?? string.Empty,
-            SubunitPartyId = subunit.Party.PartyId,
+            SubunitPartyId = unit.Party.PartyId,
         };
     };
 
-    /// <summary>
-    /// Populates mock context and postgres DB with following seeds 
-    /// 
-    /// From: <see cref="PersonSeeds.Orjan"/>
-    /// To: <see cref="PersonSeeds.Paula"/>
-    /// AltinnApp: <see cref="AltinnAppSeeds.AltinnApp"/>
-    /// </summary>
-    /// <param name="modifiers">For add or changing default setup for the scenario</param>
-    /// <returns>Scenario</returns>
-    public static Scenario FromOrjanToPaula(params Scenario[] modifiers) => (builder, mock) =>
+    public static Scenario FromOrganizationToPerson(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (builder, mock) =>
     {
-        mock.Resources.Add(AltinnAppSeeds.AltinnApp.Defaults);
-        mock.UserProfiles.AddRange([PersonSeeds.Orjan.Defaults, PersonSeeds.Paula.Defaults]);
-        mock.Parties.AddRange([PersonSeeds.Orjan.Defaults.UserProfile.Party, PersonSeeds.Paula.Defaults.UserProfile.Party]);
+        resource ??= AltinnAppSeeds.AltinnApp.Defaults;
 
-        foreach (var action in modifiers)
-        {
-            action(builder, mock);
-        }
+        mock.Resources.Add(AltinnAppSeeds.AltinnApp.Defaults);
+        mock.UserProfiles.Add(person.UserProfile);
+        mock.Parties.AddRange([organization.Party, person.UserProfile.Party]);
 
         mock.DbSeeds.AddRange([
             () => builder.PostgresFixture.SeedDatabaseTXs(
-                PostgresFixture.WithInsertResource(
-                    PostgresFixture.WithAccessManagementResource(AltinnAppSeeds.AltinnApp.Defaults))),
-
-            () => builder.PostgresFixture.SeedDatabaseTXs(
                 PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithTupleUserAndParty(PersonSeeds.Orjan.Defaults, PersonSeeds.Paula.Defaults),
-                    PostgresFixture.WithResource(AltinnAppSeeds.AltinnApp.Defaults)),
-                PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithTupleUserAndParty(PersonSeeds.Orjan.Defaults, PersonSeeds.Kasper.Defaults),
-                    PostgresFixture.WithResource(AltinnAppSeeds.AltinnApp.Defaults))),
-            ]);
-    };
-
-    /// <summary>
-    /// Populates mock context and postgres DB with following seeds 
-    /// 
-    /// From: <see cref="PersonSeeds.Orjan"/>
-    /// To: <see cref="PersonSeeds.Paula"/>
-    /// AltinnApp: <see cref="AltinnAppSeeds.AltinnApp"/>
-    /// </summary>
-    /// <param name="modifiers">For add or changing default setup for the scenario</param>
-    /// <returns>Scenario</returns>
-    public static Scenario FromOrstadAccountingToPaula(params Scenario[] modifiers) => (builder, mock) =>
-    {
-        mock.Resources.Add(AltinnAppSeeds.AltinnApp.Defaults);
-        mock.UserProfiles.Add(PersonSeeds.Paula.Defaults);
-        mock.Parties.AddRange([OrganizationSeeds.OrstadAccounting.Defaults, PersonSeeds.Paula.Defaults.UserProfile.Party]);
-
-        foreach (var action in modifiers)
-        {
-            action(builder, mock);
-        }
-
-        mock.DbSeeds.AddRange([
-            () => builder.PostgresFixture.SeedDatabaseTXs(
-                PostgresFixture.WithInsertResource(
-                    PostgresFixture.WithAccessManagementResource(AltinnAppSeeds.AltinnApp.Defaults))),
-
-            () => builder.PostgresFixture.SeedDatabaseTXs(
-                PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithTupleParties(OrganizationSeeds.OrstadAccounting.Defaults, PersonSeeds.Paula.Defaults),
-                    PostgresFixture.WithResource(AltinnAppSeeds.AltinnApp.Defaults))),
-            ]);
+                    PostgresFixture.WithFrom(organization),
+                    PostgresFixture.WithToUser(person),
+                    PostgresFixture.WithResource(resource)))
+        ]);
     };
 }

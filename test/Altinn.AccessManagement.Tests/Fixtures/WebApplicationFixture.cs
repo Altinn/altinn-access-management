@@ -44,8 +44,8 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
                    .AddJsonFile("appsettings.test.json")
                    .AddInMemoryCollection(new Dictionary<string, string>
                    {
-                       ["PostgreSQLSettings:AdminConnectionString"] = Postgres.PostgresContainer.GetConnectionString(),
-                       ["PostgreSQLSettings:ConnectionString"] = Postgres.PostgresContainer.GetConnectionString(),
+                       ["PostgreSQLSettings:AdminConnectionString"] = Postgres.TestContainer.GetConnectionString(),
+                       ["PostgreSQLSettings:ConnectionString"] = Postgres.TestContainer.GetConnectionString(),
                        ["PostgreSQLSettings:EnableDBConnection"] = "true",
                    })
                    .Build());

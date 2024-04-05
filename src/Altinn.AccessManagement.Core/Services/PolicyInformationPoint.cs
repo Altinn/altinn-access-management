@@ -124,7 +124,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             // Delegation Policy Rights
             List<DelegationChange> delegations = await FindAllDelegations(coveredByUserId, offeredByPartyId, resourceId, resourceMatchType);
-            
+
             foreach (DelegationChange delegation in delegations)
             {
                 XacmlPolicy delegationPolicy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId);
@@ -177,7 +177,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                 var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
                 var offeredBy = user.PartyId.SingleToList();
-                if (keyRoles.Count > 0)
+                if (keyRoles?.Count > 0)
                 {
                     offeredBy.AddRange(keyRoles);
                 }
@@ -219,7 +219,7 @@ namespace Altinn.AccessManagement.Core.Services
                 result.Errors.Add($"partyId: ${partyId}", "PartyId is not valid");
                 return result;
             }
-            
+
             if (!validResourceMatchType)
             {
                 result.Errors.Add($"resourceId: ${resourceId}", "ResourceId is not valid");
@@ -243,7 +243,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             // 1. Direct user delegations
             List<DelegationChange> userDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
-                ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList())
                 : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserId: subjectUserId);
             delegations.AddRange(userDelegations);
 
@@ -252,8 +252,8 @@ namespace Altinn.AccessManagement.Core.Services
             if (mainunit?.PartyId > 0)
             {
                 offeredByPartyIds.Add(mainunit.PartyId.Value);
-                List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
-                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserIds: subjectUserId.SingleToList()) 
+                List<DelegationChange> directMainUnitDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserIds: subjectUserId.SingleToList())
                     : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(mainunit.PartyId.Value.SingleToList(), resourceIds, coveredByUserId: subjectUserId);
 
                 if (directMainUnitDelegations.Any())
@@ -266,8 +266,8 @@ namespace Altinn.AccessManagement.Core.Services
             List<int> keyrolePartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId);
             if (keyrolePartyIds.Any())
             {
-                List<DelegationChange> keyRoleDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId 
-                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds) 
+                List<DelegationChange> keyRoleDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
+                    ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds)
                     : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: keyrolePartyIds);
 
                 if (keyRoleDelegations.Any())

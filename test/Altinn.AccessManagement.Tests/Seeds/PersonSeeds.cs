@@ -1,5 +1,6 @@
+#pragma warning disable SA1600
+
 using System;
-using Altinn.AccessManagement.Tests.Util;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -8,22 +9,20 @@ namespace Altinn.AccessManagement.Tests.Seeds;
 
 public static class PersonSeeds
 {
-    public abstract class PersonBase : UserProfile, IParty, IUserProfile, IToken
+    public abstract class PersonBase : UserProfile, IParty, IUserProfile
     {
         public UserProfile UserProfile => this;
-
-        public string Token => PrincipalUtil.GetToken(UserId, PartyId, 2);
     }
 
     public class Paula : PersonBase
     {
-        public new static int UserId = 20000001;
+        public new static readonly int UserId = 1000;
 
-        public new static Guid? UserUuid = new Guid("511e5189-175b-402b-adc7-1b7185e37dd2");
+        public new static readonly Guid? UserUuid = new Guid("00000000-0000-0000-0000-000000000100");
 
-        public new static int PartyId = 50000001;
+        public new static readonly int PartyId = 100;
 
-        public new static Party Party = new()
+        public new static readonly Party Party = new()
         {
             PartyTypeName = PartyType.Person,
             SSN = "02056260016",
@@ -45,7 +44,7 @@ public static class PersonSeeds
             }
         };
 
-        public new static ProfileSettingPreference ProfileSettingPreference = new()
+        public new static readonly ProfileSettingPreference ProfileSettingPreference = new()
         {
             Language = "no",
             PreSelectedPartyId = 0,
@@ -69,15 +68,15 @@ public static class PersonSeeds
         }
     }
 
-    public class Orjan : PersonBase
+    public class Olav : PersonBase
     {
-        public new static int UserId = 20000002;
+        public new static readonly int UserId = 1001;
 
-        public new static Guid? UserUuid = new Guid("375f90cf-a184-4360-81db-1b6e7f439edc");
+        public new static readonly Guid? UserUuid = new Guid("00000000-0000-0000-0000-000000000101");
 
-        public new static int PartyId = 50000002;
+        public new static readonly int PartyId = 101;
 
-        public new static Party Party = new()
+        public new static readonly Party Party = new()
         {
             PartyTypeName = PartyType.Person,
             SSN = "27099450067",
@@ -99,16 +98,16 @@ public static class PersonSeeds
             }
         };
 
-        public new static ProfileSettingPreference ProfileSettingPreference = new()
+        public new static readonly ProfileSettingPreference ProfileSettingPreference = new()
         {
             Language = "no",
             PreSelectedPartyId = 0,
             DoNotPromptForParty = false
         };
 
-        public static Orjan Defaults { get; } = new Orjan();
+        public static Olav Defaults { get; } = new Olav();
 
-        public Orjan(params Action<UserProfile>[] modifiers)
+        public Olav(params Action<UserProfile>[] modifiers)
         {
             base.UserId = UserId;
             base.UserUuid = UserUuid;
@@ -125,13 +124,13 @@ public static class PersonSeeds
 
     public class Kasper : PersonBase
     {
-        public new static int UserId = 20000003;
+        public new static readonly int UserId = 1002;
 
-        public new static Guid? UserUuid = new Guid("9144053e-3909-4c11-829d-4521eb543952");
+        public new static readonly Guid? UserUuid = new Guid("00000000-0000-0000-0000-000000000102");
 
-        public new static int PartyId = 50000003;
+        public new static readonly int PartyId = 102;
 
-        public new static Party Party = new()
+        public new static readonly Party Party = new()
         {
             PartyTypeName = PartyType.Person,
             SSN = "07124912037",
@@ -153,7 +152,7 @@ public static class PersonSeeds
             }
         };
 
-        public new static ProfileSettingPreference ProfileSettingPreference = new()
+        public new static readonly ProfileSettingPreference ProfileSettingPreference = new()
         {
             Language = "no",
             PreSelectedPartyId = 0,

@@ -1,3 +1,5 @@
+#pragma warning disable SA1600
+
 using System;
 using System.Collections.Generic;
 using Altinn.AccessManagement.Core.Models;
@@ -7,28 +9,33 @@ namespace Altinn.AccessManagement.Tests.Seeds;
 
 public static class AltinnAppSeeds
 {
-    public class AltinnApp : ServiceResource
+    public class AltinnAppBase : ServiceResource, IAccessManagementResource
     {
-        public new static string Identifier = "app_ttd_am-devtest-person-to-org";
+        public ServiceResource Resource => this;
+    }
 
-        public new static string Status = "Active";
+    public class AltinnApp : AltinnAppBase
+    {
+        public new static readonly string Identifier = "app_ttd_am-devtest-person-to-org";
 
-        public new static bool Delegable = true;
+        public new static readonly string Status = "Active";
 
-        public new static ResourceType ResourceType = ResourceType.AltinnApp;
+        public new static readonly bool Delegable = true;
 
-        public new static List<ResourceReference> ResourceReferences = new List<ResourceReference>
-        {
+        public new static readonly ResourceType ResourceType = ResourceType.AltinnApp;
+
+        public new static readonly List<ResourceReference> ResourceReferences =
+        [
             new()
             {
                 ReferenceSource = ReferenceSource.Altinn3,
                 Reference = "ttd/am-devtest-person-to-org",
                 ReferenceType = ReferenceType.ApplicationId
             }
-        };
+        ];
 
-        public new static List<AttributeMatch> AuthorizationReference = new List<AttributeMatch>
-        {
+        public new static readonly List<AttributeMatch> AuthorizationReference =
+        [
             new()
             {
                 Id = "urn:altinn:org",
@@ -39,9 +46,9 @@ public static class AltinnAppSeeds
                 Id = "urn:altinn:app",
                 Value = "am-devtest-person-to-org"
             }
-        };
+        ];
 
-        public static ServiceResource Defaults { get; } = new AltinnApp();
+        public static AltinnApp Defaults { get; } = new AltinnApp();
 
         public AltinnApp(params Action<ServiceResource>[] modifiers)
         {

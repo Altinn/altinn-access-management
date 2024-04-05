@@ -1,10 +1,17 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Threading.Tasks;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Tests.Seeds;
 using Npgsql;
+using Org.BouncyCastle.Asn1.Cms;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -19,7 +26,7 @@ public partial class PostgresFixture : IAsyncLifetime
     /// Test container instance
     /// </summary>
     /// <returns></returns>
-    internal PostgreSqlContainer PostgresContainer { get; } = new PostgreSqlBuilder()
+    internal PostgreSqlContainer TestContainer { get; } = new PostgreSqlBuilder()
         .WithDatabase(DbName)
         .WithCleanUp(true)
         .Build();
@@ -27,9 +34,9 @@ public partial class PostgresFixture : IAsyncLifetime
     private NpgsqlDataSource DataSource { get; set; }
 
     /// <summary>
-    /// 
+    /// <see cref="PersonSeeds.Paula.UserId"/>
     /// </summary>
-    public static readonly int DefaultPerformedBy = 200;
+    public static readonly int DefaultPerformedByUserId = PersonSeeds.Paula.UserId;
 
     /// <summary>
     /// table name
@@ -61,22 +68,48 @@ public partial class PostgresFixture : IAsyncLifetime
     /// </summary>
     public static readonly string DbPassword = "password";
 
+    /// <summary>
+    /// Random seed
+    /// </summary>
+    /// <returns></returns>
+    private static readonly Random Rand = new(Guid.NewGuid().GetHashCode());
+
+    private static int RandomId => Rand.Next(9000, 9999);
+
     /// <inheritdoc/>
     public async Task InitializeAsync()
     {
-        await PostgresContainer.StartAsync();
+        await TestContainer.StartAsync();
 
-        var builder = new NpgsqlDataSourceBuilder(PostgresContainer.GetConnectionString());
-        builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
-        DataSource = builder.Build();
+        DataSource = NewDataSource();
 
         await CreateSystemUsersAndAssignRoles();
+    }
+
+    private NpgsqlDataSource NewDataSource()
+    {
+        var builder = new NpgsqlDataSourceBuilder(TestContainer.GetConnectionString());
+        builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
+        return builder.Build();
+    }
+
+    /// <summary>
+    /// Deletes all tables in database
+    /// </summary>
+    public async Task DropDb()
+    {
+        await TestContainer.ExecScriptAsync(@"
+            DROP SCHEMA accessmanagement, delegation CASCADE;
+            DROP TABLE public.__yuniql_schema_version;
+        ");
+
+        DataSource = NewDataSource();
     }
 
     /// <inheritdoc/>
     public async Task DisposeAsync()
     {
-        await PostgresContainer.DisposeAsync();
+        await TestContainer.DisposeAsync();
     }
 
     /// <summary>
@@ -84,7 +117,7 @@ public partial class PostgresFixture : IAsyncLifetime
     /// </summary>
     /// <returns></returns>
     public async Task CreateSystemUsersAndAssignRoles() =>
-    await PostgresContainer.ExecScriptAsync(@"
+    await TestContainer.ExecScriptAsync(@"
             CREATE USER platform_authorization WITH PASSWORD 'Password';
             CREATE USER platform_authorization_admin WITH PASSWORD 'Password';
             ALTER ROLE platform_authorization LOGIN INHERIT;
@@ -101,26 +134,74 @@ public partial class PostgresFixture : IAsyncLifetime
     /// <param name="queries">List of queries</param>
     public async Task SeedDatabaseTXs(params Action<NpgsqlCommand>[] queries)
     {
-        var conn = await DataSource.OpenConnectionAsync();
+        using var conn = await DataSource.OpenConnectionAsync();
+        var tx = await conn.BeginTransactionAsync();
 
-        try
+        foreach (var query in queries)
         {
-            var tx = await conn.BeginTransactionAsync();
-
-            foreach (var query in queries)
-            {
-                var cmd = new NpgsqlCommand(string.Empty, conn, tx);
-                query(cmd);
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-            await tx.CommitAsync();
+            var cmd = new NpgsqlCommand(string.Empty, conn, tx);
+            query(cmd);
+            await cmd.ExecuteNonQueryAsync();
         }
-        finally
-        {
-            await conn.CloseAsync();
-        }
+
+        await tx.CommitAsync();
     }
+
+    /// <summary>
+    /// Lists all delegations
+    /// </summary>
+    public async Task<IEnumerable<DelegationChange>> ListDelegationsChanges(Func<IEnumerable<DelegationChange>, IEnumerable<DelegationChange>> filter = null)
+    {
+        using var pgcom = DataSource.CreateCommand(@"SELECT * FROM delegation.delegationchanges");
+        using var reader = await pgcom.ExecuteReaderAsync();
+        var result = new List<DelegationChange>();
+
+        while (await reader.ReadAsync())
+        {
+            result.Add(await GetAppDelegationChange(reader));
+        }
+
+        if (filter != null)
+        {
+            return filter(result).ToList();
+        }
+
+        return result;
+    }
+
+    private static async Task<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
+    {
+        return new DelegationChange
+        {
+            DelegationChangeId = await reader.GetFieldValueAsync<int>("delegationchangeid"),
+            DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+            ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
+            ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
+            OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
+            CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
+            CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
+            PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
+            BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
+            BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
+            Created = await reader.GetFieldValueAsync<DateTime>("created")
+        };
+    }
+
+    public static Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource) => cmd =>
+    {
+        WithInsertDelegationChange(
+            WithResource(resource),
+            (delegation) =>
+            {
+                delegation.PerformedByPartyId = RandomId;
+                delegation.PerformedByUserId = RandomId;
+                delegation.BlobStoragePolicyPath = "Random";
+                delegation.BlobStorageVersionId = "Random";
+                delegation.CoveredByPartyId = RandomId;
+                delegation.CoveredByUserId = RandomId;
+                delegation.OfferedByPartyId = RandomId;
+            })(cmd);
+    };
 
     /// <summary>
     /// Create a delegation change in table delegation.delegationchanges
@@ -164,7 +245,7 @@ public partial class PostgresFixture : IAsyncLifetime
         cmd.Parameters.AddWithValue("offeredbypartyid", delegation.OfferedByPartyId);
         cmd.Parameters.AddWithValue("coveredbypartyid", delegation.CoveredByPartyId == null ? DBNull.Value : delegation.CoveredByPartyId);
         cmd.Parameters.AddWithValue("coveredbyuserid", delegation.CoveredByUserId == null ? DBNull.Value : delegation.CoveredByUserId);
-        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId == null ? DefaultPerformedBy : delegation.PerformedByUserId);
+        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId == null ? DefaultPerformedByUserId : delegation.PerformedByUserId);
         cmd.Parameters.AddWithValue("blobstoragepolicypath", delegation.BlobStoragePolicyPath ?? "/");
         cmd.Parameters.AddWithValue("blobstorageversionid", delegation.BlobStorageVersionId ?? "v1");
     };
@@ -267,10 +348,10 @@ public partial class PostgresFixture : IAsyncLifetime
     /// Sets the field <see cref="DelegationChange.ResourceId"/> to given "resource"
     /// </summary>
     /// <param name="resource">resource</param>
-    public static Action<DelegationChange> WithResource(ServiceResource resource) => delegation =>
+    public static Action<DelegationChange> WithResource(IAccessManagementResource resource) => delegation =>
     {
-        delegation.ResourceId = resource.Identifier;
-        delegation.ResourceType = resource.ResourceType.ToString();
+        delegation.ResourceId = resource.Resource.Identifier;
+        delegation.ResourceType = resource.Resource.ResourceType.ToString();
     };
 
     /// <summary>
@@ -278,40 +359,16 @@ public partial class PostgresFixture : IAsyncLifetime
     /// </summary>
     /// <param name="profile">user profile</param>
     /// <returns></returns>
-    public static Action<DelegationChange> WithFromUser(IUserProfile profile) => delegation =>
+    public static Action<DelegationChange> WithToUser(IUserProfile profile) => delegation =>
     {
         delegation.CoveredByUserId = profile.UserProfile.UserId;
-    };
-
-    /// <summary>
-    /// Sets the field <see cref="DelegationChange.CoveredByUserId"/> to given "from user profile"
-    /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given "to party"
-    /// </summary>
-    /// <param name="from">from user profile</param>
-    /// <param name="to">to party</param>
-    public static Action<DelegationChange> WithTupleUserAndParty(IUserProfile from, IParty to) => delegation =>
-    {
-        WithFromUser(from)(delegation);
-        WithTo(to)(delegation);
-    };
-
-    /// <summary>
-    /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given "from party"
-    /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given "to party"
-    /// </summary>
-    /// <param name="from">from party</param>
-    /// <param name="to">to party</param>
-    public static Action<DelegationChange> WithTupleParties(IParty from, IParty to) => delegation =>
-    {
-        WithFromParty(from)(delegation);
-        WithTo(to)(delegation);
     };
 
     /// <summary>
     /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given party
     /// </summary>
     /// <param name="party">party</param>
-    public static Action<DelegationChange> WithFromParty(IParty party) => delegation =>
+    public static Action<DelegationChange> WithToParty(IParty party) => delegation =>
     {
         delegation.CoveredByPartyId = party.Party.PartyId;
     };
@@ -319,7 +376,7 @@ public partial class PostgresFixture : IAsyncLifetime
     /// <summary>
     /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given party 
     /// </summary>
-    public static Action<DelegationChange> WithTo(IParty party) => delegation =>
+    public static Action<DelegationChange> WithFrom(IParty party) => delegation =>
     {
         delegation.OfferedByPartyId = party.Party.PartyId;
     };

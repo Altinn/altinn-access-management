@@ -135,7 +135,23 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
 
                 WithAssertDbDelegationsNotEmpty,
                 WithAssertResponseStatusCodeSuccessful,
-                WithAssertEmptyDelegationList)
+                WithAssertEmptyDelegationList),
+            new(
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss Consulting has delegations to organization Voss Accounting
+                WHEN DAGL Paula for Voss Consulting requests offered delegations from Voss Consulting
+                THEN Voss Accounting should be included in the list of offered delegations",
+                OrganizationSeeds.VossConsulting.PartyId,
+
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
+                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults),
+                    TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)),
+
+                WithAssertDbDelegationsNotEmpty,
+                WithAssertResponseStatusCodeSuccessful,
+                WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults))
         };
     }
 

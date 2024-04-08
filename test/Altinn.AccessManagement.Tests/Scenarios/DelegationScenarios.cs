@@ -93,23 +93,46 @@ public static class DelegationScenarios
     /// <summary>
     /// Adds mock context and db seeds. for given organization, person and resource
     /// </summary>
-    /// <param name="organization">organization that being delegated from</param>
-    /// <param name="person">organization that being delegated to</param>
+    /// <param name="from">from organization</param>
+    /// <param name="to">to person</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario FromOrganizationToPerson(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (builder, mock) =>
+    public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => (builder, mock) =>
     {
         resource ??= AltinnAppSeeds.AltinnApp.Defaults;
 
-        mock.Resources.Add(AltinnAppSeeds.AltinnApp.Defaults);
-        mock.UserProfiles.Add(person.UserProfile);
-        mock.Parties.AddRange([organization.Party, person.UserProfile.Party]);
+        mock.Resources.Add(resource.Resource);
+        mock.UserProfiles.Add(to.UserProfile);
+        mock.Parties.AddRange([from.Party, to.UserProfile.Party]);
 
         mock.DbSeeds.AddRange([
             () => builder.PostgresFixture.SeedDatabaseTXs(
                 PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithFrom(organization),
-                    PostgresFixture.WithToUser(person),
+                    PostgresFixture.WithFrom(from),
+                    PostgresFixture.WithToUser(to),
+                    PostgresFixture.WithResource(resource)))
+        ]);
+    };
+
+    /// <summary>
+    /// Adds mock context and db seeds. for given organization, person and resource
+    /// </summary>
+    /// <param name="from">from organization</param>
+    /// <param name="to">to organization</param>
+    /// <param name="resource">resource</param>
+    /// <returns></returns>
+    public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => (builder, mock) =>
+    {
+        resource ??= AltinnAppSeeds.AltinnApp.Defaults;
+
+        mock.Resources.Add(resource.Resource);
+        mock.Parties.AddRange([from.Party, to.Party]);
+
+        mock.DbSeeds.AddRange([
+            () => builder.PostgresFixture.SeedDatabaseTXs(
+                PostgresFixture.WithInsertDelegationChange(
+                    PostgresFixture.WithFrom(from),
+                    PostgresFixture.WithToParty(to),
                     PostgresFixture.WithResource(resource)))
         ]);
     };

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Models;
@@ -39,24 +40,38 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
             });
         }
 
-        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToOrganization(IParty party) => test =>
+        private static void WithAssertEmptyDelegationList(AcceptanceCriteriaTest test)
         {
             test.ResponseAssertions.Add(async response =>
             {
                 var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-                Assert.True(
-                    delegations.Any(delegation => delegation.To.Any(to => to.Value == party.Party.PartyId.ToString())),
-                    $"Response don't contain any delegation to organization {party.Party.Organization.Name} with partyid {party.Party.PartyId}");
+                Assert.Empty(delegations);
+            });
+        }
+
+        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
+        {
+            test.ResponseAssertions.Add(async response =>
+            {
+                var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
+                var result = delegations.Any(delegation =>
+                        delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
+                        delegation.From.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()));
+
+                Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
             });
         };
 
-        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToPerson(IUserProfile profile) => test =>
+        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToParty(IParty from, IParty to) => test =>
         {
             test.ResponseAssertions.Add(async response =>
             {
                 var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-                var result = delegations.Any(delegation => delegation.To.Any(to => to.Value == profile.UserProfile.UserId.ToString()));
-                Assert.True(result, $"Response don't contain any delegation to organization {profile.UserProfile.Party.Name} with userid {profile.UserProfile.UserId}");
+                var result = delegations.Any(delegation =>
+                    delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
+                    delegation.From.Any(attribute => attribute.Value == to.Party.PartyId.ToString()));
+
+                Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to party '{to.Party.Name}' with party ID '{to.Party.PartyId}'");
             });
         };
 
@@ -66,8 +81,8 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
         public static TheoryData<SeedGetRightsDelegationsOffered> Seeds() => new()
         {
             new(
-                /* Acceptance Critieria */@"
-                GIVEN that organization Voss Accounting has active delegations to employee Paula
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss Accounting has an active delegation to employee Paula
                 WHEN DAGL Olav for Orstad Accounting requests offered delegations from Orstad Accounting
                 THEN Paula should be included in the list of offered delegations",
                 OrganizationSeeds.VossAccounting.PartyId,
@@ -80,12 +95,12 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
 
                 WithAssertDbDelegationsNotEmpty,
                 WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsDelegationToPerson(PersonSeeds.Paula.Defaults)),
+                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults)),
             new(
-                /* Acceptance Critieria */@"
-                GIVEN that organization Voss has active delegations to employee Paula
-                AND Voss Accounting has active delegations to employee Kasper
-                AND Voss accounting is a subunit of the organization Voss
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss has an active delegation to employee Paula
+                AND Voss Accounting has an active delegation to employee Kasper
+                AND Voss Accounting is a subunit of the organization Voss
                 WHEN DAGL Olav for Voss requests offered delegations from Voss
                 THEN Paula should be included in the list of offered delegations
                 AND Kasper should be included in the list of offered delegations",
@@ -101,18 +116,31 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
 
                 WithAssertDbDelegationsNotEmpty,
                 WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsDelegationToPerson(PersonSeeds.Paula.Defaults),
-                WithAssertResponseContainsDelegationToPerson(PersonSeeds.Kasper.Defaults))
-        };
+                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Kasper.Defaults),
+                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.Voss.Defaults, PersonSeeds.Paula.Defaults)),
+            new(
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss Consulting has delegations to employee Paula
+                AND that the last delegation given to Paula is revoked
+                WHEN DAGL Olav for Voss requests offered delegations from Voss
+                THEN the list of delegation should be empty",
+                OrganizationSeeds.VossConsulting.PartyId,
 
-        /// <summary>
-        /// Returns the Acceptance Criteria
-        /// </summary>
-        public override sealed string ToString() => AcceptanceCriteria;
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
+                    DelegationScenarios.WithRevokedDelegationToUser(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
+                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.Voss.Defaults),
+                    TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
+
+                WithAssertDbDelegationsNotEmpty,
+                WithAssertResponseStatusCodeSuccessful,
+                WithAssertEmptyDelegationList)
+        };
     }
 
     /// <summary>
-    /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, System.Threading.CancellationToken)"/>
+    /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, CancellationToken)"/>
     /// </summary>
     /// <param name="data">acceptance test</param>
     [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]

@@ -407,4 +407,9 @@ void ConfigurePostgreSql()
     }
 }
 
-public partial class Program { }
+/// <summary>
+/// Program
+/// </summary>
+public partial class Program
+{
+}

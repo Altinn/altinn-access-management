@@ -12,6 +12,12 @@ namespace Altinn.AccessManagement.Tests.Scenarios;
 /// </summary>
 public static class DelegationScenarios
 {
+    /// <summary>
+    /// Defaults setup
+    /// 1. Add resources to dn
+    /// 2. Add random delegation to delegationchange table.
+    ///     - Uses random ID in range [9000, 99999]
+    /// </summary>
     public static void Defaults(WebApplicationFixtureContext fixture, MockContext mock)
     {
         mock.Resources.AddRange([
@@ -29,6 +35,12 @@ public static class DelegationScenarios
         ]);
     }
 
+    /// <summary>
+    /// Ensures that given profile has a key role for given org i mock context
+    /// </summary>
+    /// <param name="profile">profile</param>
+    /// <param name="organizations">organization</param>
+    /// <returns></returns>
     public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, mock) =>
     {
         var partyids = organizations.Select(organization => organization.Party.PartyId);
@@ -42,17 +54,49 @@ public static class DelegationScenarios
         }
     };
 
-    public static Scenario WhereUnitHasMainUnit(IParty unit, IParty mainunit) => (builder, mock) =>
+    /// <summary>
+    /// Add subunit as a mainunit in mock context 
+    /// </summary>
+    /// <param name="subunit">subunit</param>
+    /// <param name="mainunit">mainunit</param>
+    /// <returns></returns>
+    public static Scenario WhereUnitHasMainUnit(IParty subunit, IParty mainunit) => (builder, mock) =>
     {
-        mock.MainUnits[unit.Party.PartyId] = new MainUnit
+        mock.MainUnits[subunit.Party.PartyId] = new MainUnit
         {
             PartyId = mainunit.Party.PartyId,
             OrganizationName = mainunit?.Party?.Organization?.Name ?? "Unknown",
             OrganizationNumber = mainunit?.Party?.Organization?.OrgNumber ?? string.Empty,
-            SubunitPartyId = unit.Party.PartyId,
+            SubunitPartyId = subunit.Party.PartyId,
         };
     };
 
+    /// <summary>
+    /// Add revoke delegation to db from given party to user
+    /// </summary>
+    /// <param name="organization">organization that revoking delegation</param>
+    /// <param name="person">person that lose the delegation to the organization</param>
+    /// <param name="resource">resource</param>
+    /// <returns></returns>
+    public static Scenario WithRevokedDelegationToUser(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (builder, mock) =>
+    {
+        mock.DbSeeds.AddRange([
+            () => builder.PostgresFixture.SeedDatabaseTXs(
+                PostgresFixture.WithInsertDelegationChange(
+                    PostgresFixture.WithFrom(organization),
+                    PostgresFixture.WithToUser(person),
+                    PostgresFixture.WithResource(resource ?? AltinnAppSeeds.AltinnApp.Defaults),
+                    PostgresFixture.WithDelegationChangeRevokeLast))
+        ]);
+    };
+
+    /// <summary>
+    /// Adds mock context and db seeds. for given organization, person and resource
+    /// </summary>
+    /// <param name="organization">organization that being delegated from</param>
+    /// <param name="person">organization that being delegated to</param>
+    /// <param name="resource">resource</param>
+    /// <returns></returns>
     public static Scenario FromOrganizationToPerson(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (builder, mock) =>
     {
         resource ??= AltinnAppSeeds.AltinnApp.Defaults;

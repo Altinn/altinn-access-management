@@ -23,10 +23,19 @@ using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Fixtures;
 
+/// <summary>
+/// Test server for Access management API
+/// </summary>
 public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    /// <summary>
+    /// Postgres test container
+    /// </summary>
     public PostgresFixture Postgres { get; }
 
+    /// <summary>
+    /// ctor
+    /// </summary>
     public WebApplicationFixture()
     {
         Postgres = new();

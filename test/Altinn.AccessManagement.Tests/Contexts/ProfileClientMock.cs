@@ -18,6 +18,5 @@ public class ProfileClientMock(MockContext context) : IProfileClient
             profile.UserId == userProfileLookup.UserId ||
             profile.UserName == userProfileLookup.Username ||
             profile.Party.SSN == userProfileLookup.Ssn ||
-            profile.UserUuid == userProfileLookup.UserUuid
-        ));
+            profile.UserUuid == userProfileLookup.UserUuid));
 }

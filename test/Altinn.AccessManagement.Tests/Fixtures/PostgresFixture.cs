@@ -187,10 +187,15 @@ public partial class PostgresFixture : IAsyncLifetime
         };
     }
 
-    public static Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource) => cmd =>
+    /// <summary>
+    /// Adds random delegations to delegationchange table.
+    /// The ID that are used are in range [9000, 9999].
+    /// </summary>
+    /// <param name="resource">resource for random entry. defaults to <see cref="AltinnAppSeeds.AltinnApp"/> if null</param>
+    public static Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource = null) => cmd =>
     {
         WithInsertDelegationChange(
-            WithResource(resource),
+            WithResource(resource ?? AltinnAppSeeds.AltinnApp.Defaults),
             (delegation) =>
             {
                 delegation.PerformedByPartyId = RandomId;
@@ -253,7 +258,7 @@ public partial class PostgresFixture : IAsyncLifetime
     /// <summary>
     /// Creates a resource in table "accessmanagement.resource"
     /// </summary>
-    /// <param name="modifiers">functions that modifies <see cref="AccessManagementResource"/>
+    /// <param name="modifiers">functions that modifies <see cref="AccessManagementResource"/></param>
     public static Action<NpgsqlCommand> WithInsertResource(params Action<AccessManagementResource>[] modifiers) => cmd =>
     {
         var resource = new AccessManagementResource();

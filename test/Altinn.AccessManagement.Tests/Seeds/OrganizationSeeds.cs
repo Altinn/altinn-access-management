@@ -15,8 +15,6 @@ public static class OrganizationSeeds
 
     public class Voss : OrganizationBase
     {
-        public new static readonly Party Test = new Party();
-
         public new static readonly int PartyId = 200;
 
         public new static readonly Guid? PartyUuid = new Guid("00000000-0000-0000-0000-000000000200");

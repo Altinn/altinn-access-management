@@ -410,6 +410,6 @@ void ConfigurePostgreSql()
 /// <summary>
 /// Program
 /// </summary>
-public partial class Program
+public static partial class Program
 {
 }

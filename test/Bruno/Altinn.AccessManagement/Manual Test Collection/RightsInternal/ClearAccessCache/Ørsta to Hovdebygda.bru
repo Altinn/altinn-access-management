@@ -1,0 +1,40 @@
+meta {
+  name: Ørsta to Hovdebygda
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/50005545/accesscache/clear
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "type": "urn:altinn:organization:uuid",
+    "value": "44d9839a-8be6-4735-ba88-186992493cfe"
+  }
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

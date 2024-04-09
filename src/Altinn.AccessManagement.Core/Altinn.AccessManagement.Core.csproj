@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Altinn.Authorization.ABAC" Version="0.0.8" />
-    <PackageReference Include="Altinn.Common.AccessTokenClient" Version="2.0.1" />
-    <PackageReference Include="Altinn.Platform.Models" Version="1.4.0" />
+    <PackageReference Include="Altinn.Common.AccessTokenClient" Version="3.0.1" />
+    <PackageReference Include="Altinn.Platform.Models" Version="1.5.0" />
     <PackageReference Include="Altinn.Platform.Storage.Interface" Version="3.24.0" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="Azure.Security.KeyVault.Certificates" Version="4.6.0" />

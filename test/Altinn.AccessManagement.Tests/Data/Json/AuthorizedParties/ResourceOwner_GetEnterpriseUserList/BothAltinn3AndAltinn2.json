@@ -41,7 +41,7 @@
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
-          "ttd/am-devtest-sub-to-org",
+          "app_ttd_am-devtest-sub-to-org",
           "devtest_gar_authparties-main-to-org",
           "devtest_gar_authparties-sub-to-org"
         ],

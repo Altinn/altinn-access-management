@@ -27,7 +27,7 @@
     "onlyHierarchyElementWithNoAccess": false,
     "authorizedResources": [
       "devtest_gar_authparties-person-to-org",
-      "ttd/am-devtest-person-to-org"
+      "app_ttd_am-devtest-person-to-org"
     ],
     "authorizedRoles": [
       "UTINN"

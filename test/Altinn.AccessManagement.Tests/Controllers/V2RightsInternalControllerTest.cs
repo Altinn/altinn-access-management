@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
@@ -19,6 +20,62 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 /// </summary>
 public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ControllerTest(fixture)
 {
+    private static Action<AcceptanceCriteriaTest> WithAssertDbLastDelegationToUserIsRevoked(IParty from, IUserProfile to) => test =>
+    {
+        test.ApiAssertions.Add(async fixture =>
+        {
+            var delegations = await fixture.Postgres.ListDelegationsChanges(filter => filter.Where(delegation => from.Party.PartyId == delegation.OfferedByPartyId && to.UserProfile.UserId == delegation.CoveredByUserId));
+
+            Assert.True(
+                delegations.OrderBy(delegation => delegation.Created).First().DelegationChangeType == DelegationChangeType.RevokeLast,
+                $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'");
+        });
+    };
+
+    private static void WithAssertDbDelegationsNotEmpty(AcceptanceCriteriaTest test)
+    {
+        test.ApiAssertions.Add(async api =>
+        {
+            var delegations = await api.Postgres.ListDelegationsChanges();
+            Assert.NotEmpty(delegations);
+        });
+    }
+
+    private static void WithAssertEmptyDelegationList(AcceptanceCriteriaTest test)
+    {
+        test.ResponseAssertions.Add(async response =>
+        {
+            var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
+            Assert.Empty(delegations);
+        });
+    }
+
+    private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
+    {
+        test.ResponseAssertions.Add(async response =>
+        {
+            var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
+            var result = delegations.Any(delegation =>
+                    delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
+                    delegation.From.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()));
+
+            Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
+        });
+    };
+
+    private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToParty(IParty from, IParty to) => test =>
+    {
+        test.ResponseAssertions.Add(async response =>
+        {
+            var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
+            var result = delegations.Any(delegation =>
+                delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
+                delegation.From.Any(attribute => attribute.Value == to.Party.PartyId.ToString()));
+
+            Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to party '{to.Party.Name}' with party ID '{to.Party.PartyId}'");
+        });
+    };
+
     /// <summary>
     /// Seeds for <see cref="GET_RightsDelegationsOffered"/>
     /// </summary>
@@ -31,50 +88,6 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
             WithRequestRoute("accessmanagement", "api", "v1", "internal", partyId, "rights", "delegation", "offered"),
             WithRequestVerb(HttpMethod.Get))
     {
-        private static void WithAssertDbDelegationsNotEmpty(AcceptanceCriteriaTest test)
-        {
-            test.ApiAssertions.Add(async api =>
-            {
-                var delegations = await api.Postgres.ListDelegationsChanges();
-                Assert.NotEmpty(delegations);
-            });
-        }
-
-        private static void WithAssertEmptyDelegationList(AcceptanceCriteriaTest test)
-        {
-            test.ResponseAssertions.Add(async response =>
-            {
-                var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-                Assert.Empty(delegations);
-            });
-        }
-
-        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
-        {
-            test.ResponseAssertions.Add(async response =>
-            {
-                var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-                var result = delegations.Any(delegation =>
-                        delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
-                        delegation.From.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()));
-
-                Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
-            });
-        };
-
-        private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToParty(IParty from, IParty to) => test =>
-        {
-            test.ResponseAssertions.Add(async response =>
-            {
-                var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-                var result = delegations.Any(delegation =>
-                    delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
-                    delegation.From.Any(attribute => attribute.Value == to.Party.PartyId.ToString()));
-
-                Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to party '{to.Party.Name}' with party ID '{to.Party.PartyId}'");
-            });
-        };
-
         /// <summary>
         /// Seeds
         /// </summary>
@@ -161,8 +174,5 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
     /// <param name="data">acceptance test</param>
     [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
-    public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered data)
-    {
-        await data.RunTests(Fixture);
-    }
+    public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered data) => await data.RunTests(Fixture);
 }

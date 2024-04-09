@@ -26,7 +26,7 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// <summary>
 /// Test server for Access management API
 /// </summary>
-public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
+public class WebApplicationFixture : WebApplicationFactory<Program>, IClassFixture<PostgresFixture>, IAsyncLifetime
 {
     /// <summary>
     /// Postgres test container
@@ -84,15 +84,9 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     {
         return WithWebHostBuilder(builder =>
         {
-            var context = new WebApplicationFixtureContext()
-            {
-                Host = builder,
-                PostgresFixture = Postgres,
-            };
-
             foreach (var scenario in scenarios)
             {
-                scenario(context, mock);
+                scenario(builder, Postgres, mock);
             }
 
             mock.Parties = mock.Parties.DistinctBy(party => party.PartyId).ToList();
@@ -133,20 +127,4 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     {
         await Postgres.DisposeAsync();
     }
-}
-
-/// <summary>
-/// Wrapper object  
-/// </summary>
-public class WebApplicationFixtureContext
-{
-    /// <summary>
-    /// Host builder 
-    /// </summary>
-    public IWebHostBuilder Host { get; set; }
-
-    /// <summary>
-    /// Postgres fixture
-    /// </summary>
-    public PostgresFixture PostgresFixture { get; set; }
 }

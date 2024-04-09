@@ -8,9 +8,10 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Tests.Fixtures;
+using Altinn.AccessManagement.Tests.Scenarios;
 using Xunit;
 
-namespace Altinn.AccessManagement.Tests.Scenarios;
+namespace Altinn.AccessManagement.Tests;
 
 /// <summary>
 /// Sets up tests and teardown tests for controller tests

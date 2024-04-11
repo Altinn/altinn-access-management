@@ -114,10 +114,10 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
                 GIVEN that organization Voss has an active delegation to employee Paula
                 AND Voss Accounting has an active delegation to employee Kasper
                 AND Voss Accounting is a subunit of the organization Voss
-                WHEN DAGL Olav for Voss requests offered delegations from Voss
+                WHEN DAGL Olav for Voss requests offered delegations from Voss Accounting
                 THEN Paula should be included in the list of offered delegations
                 AND Kasper should be included in the list of offered delegations",
-                OrganizationSeeds.Voss.PartyId,
+                OrganizationSeeds.VossAccounting.PartyId,
 
                 WithScenarios(
                     DelegationScenarios.Defaults,

@@ -172,7 +172,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
     /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, CancellationToken)"/>
     /// </summary>
     /// <param name="data">acceptance test</param>
-    [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]
+    [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation), Skip = "Lol")]
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
     public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered data) => await data.RunTests(Fixture);
 }

@@ -1,17 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Tests.Seeds;
 using Npgsql;
-using Org.BouncyCastle.Asn1.Cms;
 using Testcontainers.PostgreSql;
 using Xunit;
 

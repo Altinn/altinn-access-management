@@ -34,9 +34,9 @@ namespace Altinn.AccessManagement.Tests.Controllers
     /// Test class for <see cref="RightsInternalController"></see>
     /// </summary>
     [Collection("RightsInternalController Tests")]
-    public class RightsInternalControllerTest : IClassFixture<WebApplicationFixture>
+    public class RightsInternalControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
     {
-        private readonly WebApplicationFixture fixture;
+        private readonly CustomWebApplicationFactory<RightsInternalController> fixture;
 
         private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// Constructor setting up factory, test client and dependencies
         /// </summary>
         /// <param name="factory">CustomWebApplicationFactory</param>
-        public RightsInternalControllerTest(WebApplicationFixture factory)
+        public RightsInternalControllerTest(CustomWebApplicationFactory<RightsInternalController> factory)
         {
             fixture = factory;
         }

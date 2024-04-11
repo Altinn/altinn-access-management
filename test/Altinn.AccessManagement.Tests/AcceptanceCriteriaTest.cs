@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -144,5 +145,13 @@ public abstract class AcceptanceCriteriaTest
     {
         AssertResponse(await fixture.UseScenarios([.. Scenarios]).SendAsync(Request));
         AssertApi(fixture);
+    }
+
+    /// <summary>
+    /// Return Acceptance Criteria
+    /// </summary>
+    public new string ToString()
+    {
+        return AcceptanceCriteria;
     }
 }

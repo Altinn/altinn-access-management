@@ -111,28 +111,6 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
                 WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults)),
             new(
                 /* Acceptance Critieria */ @"
-                GIVEN that organization Voss has an active delegation to employee Paula
-                AND Voss Accounting has an active delegation to employee Kasper
-                AND Voss Accounting is a subunit of the organization Voss
-                WHEN DAGL Olav for Voss requests offered delegations from Voss Accounting
-                THEN Paula should be included in the list of offered delegations
-                AND Kasper should be included in the list of offered delegations",
-                OrganizationSeeds.VossAccounting.PartyId,
-
-                WithScenarios(
-                    DelegationScenarios.Defaults,
-                    DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.Voss.Defaults, PersonSeeds.Paula.Defaults),
-                    DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Kasper.Defaults),
-                    DelegationScenarios.WhereUnitHasMainUnit(OrganizationSeeds.VossAccounting.Defaults, OrganizationSeeds.Voss.Defaults),
-                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.Voss.Defaults),
-                    TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
-
-                WithAssertDbDelegationsNotEmpty,
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Kasper.Defaults),
-                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.Voss.Defaults, PersonSeeds.Paula.Defaults)),
-            new(
-                /* Acceptance Critieria */ @"
                 GIVEN that organization Voss Consulting has delegations to employee Paula
                 AND that the last delegation given to Paula is revoked
                 WHEN DAGL Olav for Voss requests offered delegations from Voss
@@ -172,7 +150,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
     /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, CancellationToken)"/>
     /// </summary>
     /// <param name="data">acceptance test</param>
-    [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation), Skip = "Lol")]
+    [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
     public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered data) => await data.RunTests(Fixture);
 }

@@ -135,6 +135,7 @@ public class AuthorizedParty
     /// <param name="resourceId">The list of resource IDs to add to the authorized party (and any subunits) list of authorized resources</param>
     public void EnrichWithResourceAccess(string resourceId)
     {
+        resourceId = MapAppIdToResourceId(resourceId);
         OnlyHierarchyElementWithNoAccess = false;
         AuthorizedResources.Add(resourceId);
 
@@ -145,5 +146,16 @@ public class AuthorizedParty
                 subunit.EnrichWithResourceAccess(resourceId);
             }
         }
+    }
+
+    private static string MapAppIdToResourceId(string altinnAppId)
+    {
+        string[] orgAppSplit = altinnAppId.Split('/');
+        if (orgAppSplit.Length == 2)
+        {
+            return $"app_{orgAppSplit[0]}_{orgAppSplit[1]}";
+        }
+
+        return altinnAppId;
     }
 }

@@ -66,13 +66,6 @@ script:pre-request {
   bru.setVar("toSsn", testdata.org2.dagl.pid);
   bru.setVar("toLastName", testdata.org2.dagl.lastname);
   
-  console.log("auth_userId: " + bru.getVar("auth_userId"));
-  console.log("auth_partyId: " + bru.getVar("auth_partyId"));
-  console.log("auth_ssn: " + bru.getVar("auth_ssn"));
-  console.log("party: " + bru.getVar("party"));
-  console.log("toSsn: " + bru.getVar("toSsn"));
-  console.log("toLastName: " + bru.getVar("toLastName"));
-  
   await tokenGenerator.getToken();
 }
 

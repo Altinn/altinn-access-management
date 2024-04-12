@@ -1,0 +1,71 @@
+meta {
+  name: o2p receiving person revokes delegation from org
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:partyid",
+          "value": "{{fromPartyId}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "{{org}}"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "{{app}}"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org2.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  bru.setVar("party", testdata.org2.partyid);
+  bru.setVar("fromPartyId", testdata.org1.partyid);
+  
+  console.log("auth_userId: " + bru.getVar("auth_userId"));
+  console.log("auth_partyId: " + bru.getVar("auth_partyId"));
+  console.log("auth_ssn: " + bru.getVar("auth_ssn"));
+  console.log("party: " + bru.getVar("party"));
+  console.log("toSsn: " + bru.getVar("toSsn"));
+  console.log("toLastName: " + bru.getVar("toLastName"));
+  
+  await tokenGenerator.getToken();
+}

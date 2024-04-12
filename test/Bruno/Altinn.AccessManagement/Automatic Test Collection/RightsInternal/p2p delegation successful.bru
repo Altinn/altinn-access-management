@@ -1,0 +1,49 @@
+meta {
+  name: p2p delegation successful
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org2.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  bru.setVar("party", testdata.org2.dagl.partyid);
+  
+  await tokenGenerator.getToken();
+}
+
+tests {
+    test("person successfully delegated to a person", function() {
+    const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+      const data = res.getBody();  
+      expect(res.status).to.equal(200);
+      expect(data[0].from[0]).to.have.property('id', 'urn:altinn:partyid');
+      expect(data[0].from[0]).to.have.property('value', testdata.org1.dagl.partyid.toString());
+      expect(data[0].to[0]).to.have.property('id', 'urn:altinn:userid');
+      expect(data[0].to[0]).to.have.property('value', testdata.org2.dagl.userid.toString());
+      expect(data[0].resource[0]).to.have.property('id', 'urn:altinn:org');
+      expect(data[0].resource[0]).to.have.property('value', bru.getVar('org'));
+      expect(data[0].resource[1]).to.have.property('id', 'urn:altinn:app');
+      expect(data[0].resource[1]).to.have.property('value', bru.getVar('app'));
+    });
+}

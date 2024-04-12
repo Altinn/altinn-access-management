@@ -1,0 +1,64 @@
+meta {
+  name: o2p sending org revokes delegation to person
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  
+    {
+      "to": [
+        {
+          "id": "urn:altinn:userid",
+          "value": "{{to_userid}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "{{org}}"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "{{app}}"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  toUserId: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_userid", testdata.org2.dagl.userid);
+  
+  await tokenGenerator.getToken();
+}

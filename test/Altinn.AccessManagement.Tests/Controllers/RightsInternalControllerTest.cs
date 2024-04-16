@@ -35,7 +35,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     [Collection("RightsInternalController Tests")]
     public class RightsInternalControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
     {
-        private readonly CustomWebApplicationFactory<RightsInternalController> fixture;
+        private readonly CustomWebApplicationFactory<RightsInternalController> _factory;
 
         private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
@@ -50,7 +50,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// <param name="factory">CustomWebApplicationFactory</param>
         public RightsInternalControllerTest(CustomWebApplicationFactory<RightsInternalController> factory)
         {
-            fixture = factory;
+            _factory = factory;
         }
 
         /// <summary>
@@ -1340,7 +1340,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
         private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
         {
-            HttpClient client = fixture.WithWebHostBuilder(builder =>
+            HttpClient client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
                 {

@@ -11,6 +11,7 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
 using Altinn.AccessManagement.Tests.Seeds;
+using Altinn.Platform.Register.Models;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers;
@@ -27,7 +28,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
             var delegations = await fixture.Postgres.ListDelegationsChanges(filter => filter.Where(delegation => from.Party.PartyId == delegation.OfferedByPartyId && to.UserProfile.UserId == delegation.CoveredByUserId));
 
             Assert.True(
-                delegations.OrderBy(delegation => delegation.Created).First().DelegationChangeType == DelegationChangeType.RevokeLast,
+                delegations.OrderByDescending(delegation => delegation.Created).First().DelegationChangeType == DelegationChangeType.RevokeLast,
                 $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'");
         });
     };
@@ -56,8 +57,8 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
         {
             var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
             var result = delegations.Any(delegation =>
-                    delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
-                    delegation.From.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()));
+                    delegation.To.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()) &&
+                    delegation.From.Any(attribute => attribute.Value == from.Party.ToString()));
 
             Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
         });
@@ -125,6 +126,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
                     TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
                 WithAssertDbDelegationsNotEmpty,
+                WithAssertDbLastDelegationToUserIsRevoked(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertEmptyDelegationList),
             new(

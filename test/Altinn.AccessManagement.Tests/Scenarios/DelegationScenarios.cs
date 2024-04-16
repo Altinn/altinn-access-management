@@ -43,7 +43,7 @@ public static class DelegationScenarios
     /// <returns></returns>
     public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, postgres, mock) =>
     {
-        var partyids = organizations.Select(organization => organization.Party.PartyId);
+        var partyids = organizations.Select(organization => organization?.Party?.PartyId ?? 0);
         if (mock.KeyRoles.TryGetValue(profile.UserProfile.UserId, out var value))
         {
             value.AddRange(partyids);

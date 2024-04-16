@@ -26,7 +26,7 @@
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
           "devtest_gar_authparties-main-to-person",
-          "ttd/am-devtest-sub-to-person"
+          "app_ttd_am-devtest-sub-to-person"
         ],
         "authorizedRoles": [],
         "subunits": []

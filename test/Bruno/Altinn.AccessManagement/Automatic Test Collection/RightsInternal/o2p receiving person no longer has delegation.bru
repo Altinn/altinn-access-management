@@ -1,0 +1,38 @@
+meta {
+  name: o2p receiving person no longer has delegation
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received
+  body: json
+  auth: none
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org2.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  bru.setVar("party", testdata.org2.dagl.partyid);
+  
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("the receiving person successfully revoked delegation from organization", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data).to.be.empty;
+  });
+  
+}

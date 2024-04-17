@@ -1,0 +1,74 @@
+meta {
+  name: p2o delegate person2org (again)
+  type: http
+  seq: 26
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:organizationnumber",
+              "value": "{{to_orgno}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:org",
+                      "value": "{{org}}"
+                  },
+                  {
+                      "id": "urn:altinn:app",
+                      "value": "{{app}}"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toSsn: 
+  toLastName: 
+  org: ttd
+  app: apps-test-prod
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_orgno", testdata.org2.orgno);
+  
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("person to organization delegation (again)", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');
+  });
+  
+}

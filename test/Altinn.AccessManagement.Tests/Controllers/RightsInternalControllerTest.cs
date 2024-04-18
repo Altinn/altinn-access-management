@@ -15,7 +15,6 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
-using Altinn.AccessManagement.Utilities;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -37,6 +36,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     public class RightsInternalControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
     {
         private readonly CustomWebApplicationFactory<RightsInternalController> _factory;
+
         private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
@@ -116,7 +116,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
+            var client = GetTestClient(sblInternalToken);
+
+            var response = await client.PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
+
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -141,6 +144,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
+
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 

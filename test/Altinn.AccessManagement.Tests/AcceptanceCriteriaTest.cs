@@ -148,7 +148,7 @@ public abstract class AcceptanceCriteriaTest
     /// Runs tests
     /// </summary>
     /// <param name="fixture">web application fixture</param>
-    public async Task RunTests(WebApplicationFixture fixture)
+    public async Task Test(WebApplicationFixture fixture)
     {
         AssertResponse(await fixture.UseScenarios([.. Scenarios]).SendAsync(Request));
         AssertApi(fixture);

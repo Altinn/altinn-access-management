@@ -25,10 +25,11 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
         test.ApiAssertions.Add(async fixture =>
         {
             var delegations = await fixture.Postgres.ListDelegationsChanges(filter => filter.Where(delegation => from.Party.PartyId == delegation.OfferedByPartyId && to.UserProfile.UserId == delegation.CoveredByUserId));
+            var latest = delegations.OrderByDescending(delegation => delegation.Created).First();
 
             Assert.True(
-                delegations.OrderByDescending(delegation => delegation.Created).First().DelegationChangeType == DelegationChangeType.RevokeLast,
-                $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'");
+                latest.DelegationChangeType == DelegationChangeType.RevokeLast,
+                $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'m, it's '{latest.DelegationChangeType}'");
         });
     };
 
@@ -150,8 +151,8 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
     /// <summary>
     /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, CancellationToken)"/>
     /// </summary>
-    /// <param name="data">acceptance test</param>
+    /// <param name="acceptanceCriteria">acceptance test</param>
     [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
-    public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered data) => await data.RunTests(Fixture);
+    public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered acceptanceCriteria) => await acceptanceCriteria.Test(Fixture);
 }

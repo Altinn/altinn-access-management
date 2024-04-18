@@ -11,7 +11,6 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
 using Altinn.AccessManagement.Tests.Seeds;
-using Altinn.Platform.Register.Models;
 using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Controllers;
@@ -144,7 +143,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
 
                 WithAssertDbDelegationsNotEmpty,
                 WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults))
+                WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults)),
         };
     }
 

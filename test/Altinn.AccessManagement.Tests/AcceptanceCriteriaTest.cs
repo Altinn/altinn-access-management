@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -42,7 +41,7 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// List of Assertions for HTTP assertions 
     /// </summary>
-    public List<Action<HttpResponseMessage>> ResponseAssertions { get; set; } = [];
+    public List<Func<HttpResponseMessage, Task>> ResponseAssertions { get; set; } = [];
 
     /// <summary>
     /// List of API assertions for mock context and DB
@@ -86,7 +85,11 @@ public abstract class AcceptanceCriteriaTest
     /// <returns></returns>
     public static Action<AcceptanceCriteriaTest> WithAssertResponseStatusCode(HttpStatusCode code) => test =>
     {
-        test.ResponseAssertions.Add(response => Assert.Equal(code, response.StatusCode));
+        test.ResponseAssertions.Add(response =>
+        {
+            Assert.Equal(code, response.StatusCode);
+            return Task.CompletedTask;
+        });
     };
 
     /// <summary>
@@ -94,7 +97,11 @@ public abstract class AcceptanceCriteriaTest
     /// </summary>
     public static void WithAssertResponseStatusCodeSuccessful(AcceptanceCriteriaTest acceptanceCriteria)
     {
-        acceptanceCriteria.ResponseAssertions.Add(response => Assert.True(response.IsSuccessStatusCode, $"expected successful status code, got status code {(int)response.StatusCode}: {response.StatusCode}"));
+        acceptanceCriteria.ResponseAssertions.Add(response =>
+        {
+            Assert.True(response.IsSuccessStatusCode, $"expected successful status code, got status code {(int)response.StatusCode}: {response.StatusCode}");
+            return Task.CompletedTask;
+        });
     }
 
     /// <summary>

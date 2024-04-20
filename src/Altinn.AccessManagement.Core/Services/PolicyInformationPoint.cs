@@ -211,7 +211,6 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (!validSubjectUser && !validSubjectParty)
             {
-
                 result.Errors.Add("request.Subject", $"Missing valid subject on request. Valid subject attribute types: either {AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute}");
                 return result;
             }

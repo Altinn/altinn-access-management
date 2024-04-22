@@ -2,9 +2,9 @@
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Configuration;
 using Authorization.Platform.Authorization.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Integration.Clients;
@@ -17,7 +17,6 @@ public class AltinnRolesClient : IAltinnRolesClient
 {
     private readonly SblBridgeSettings _sblBridgeSettings;
     private readonly HttpClient _client;
-    private readonly ILogger _logger;
     private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
     /// <summary>
@@ -25,17 +24,16 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// </summary>
     /// <param name="httpClient">HttpClient from default httpclientfactory</param>
     /// <param name="sblBridgeSettings">the sbl bridge settings</param>
-    /// <param name="logger">the logger</param>
-    public AltinnRolesClient(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, ILogger<AltinnRolesClient> logger)
+    public AltinnRolesClient(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings)
     {
         _sblBridgeSettings = sblBridgeSettings.Value;
-        _logger = logger;
         _client = httpClient;
     }
 
     /// <inheritdoc />
     public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/roles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
@@ -48,12 +46,12 @@ public class AltinnRolesClient : IAltinnRolesClient
                 return JsonSerializer.Deserialize<List<Role>>(roleList, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // AltinnRolesClient // GetDecisionPointRolesForUser // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetDecisionPointRolesForUser // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -61,6 +59,7 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// <inheritdoc />
     public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/delegatableroles?coveredByUserId={coveredByUserId}&offeredByPartyId={offeredByPartyId}");
@@ -73,12 +72,12 @@ public class AltinnRolesClient : IAltinnRolesClient
                 return JsonSerializer.Deserialize<List<Role>>(roleList, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // AltinnRolesClient // GetRolesForDelegation // Unexpected HttpStatusCode: {StatusCode}", response.StatusCode);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetRolesForDelegation // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -86,6 +85,7 @@ public class AltinnRolesClient : IAltinnRolesClient
     /// <inheritdoc />
     public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/parties?userid={userId}");
@@ -99,12 +99,12 @@ public class AltinnRolesClient : IAltinnRolesClient
                 return sblAuthorizedParties.Select(sblAuthorizedParty => new AuthorizedParty(sblAuthorizedParty)).ToList();
             }
 
-            _logger.LogError("AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Unexpected HttpStatusCode: {StatusCode} Response: {Content}", response.StatusCode, content);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // AltinnRolesClient // GetAuthorizedPartiesWithRoles // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }

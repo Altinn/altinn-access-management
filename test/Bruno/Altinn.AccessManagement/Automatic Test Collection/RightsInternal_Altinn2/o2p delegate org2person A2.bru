@@ -70,7 +70,7 @@ script:pre-request {
 }
 
 tests {
-  test("organization to person delegation", function() {
+  test("organization to person Altinn2 delegation", function() {
     const data = res.getBody();  
     expect(res.status).to.equal(200);
     expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');

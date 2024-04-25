@@ -1,0 +1,1989 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "All Access Management Api Endpoints (for APIM deploy)",
+    "version": "v1"
+  },
+  "paths": {
+    "/accessmanagement/api/v1/authorizedparties": {
+      "get": {
+        "tags": [
+          "AuthorizedParties"
+        ],
+        "parameters": [
+          {
+            "name": "includeAltinn2",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorizedPartyExternal"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [ ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/authorizedparty/{partyId}": {
+      "get": {
+        "tags": [
+          "AuthorizedParties"
+        ],
+        "parameters": [
+          {
+            "name": "partyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "includeAltinn2",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorizedPartyExternal"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [ ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/authorizedparties": {
+      "get": {
+        "tags": [
+          "AuthorizedParties"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "includeAltinn2",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorizedPartyExternal"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "AccessManagementRead"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/delegations/addrules": {
+      "post": {
+        "tags": [
+          "Delegations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Rule"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Rule"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Rule"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "AltinnIIAuthorizationAccess"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/delegations/getrules": {
+      "post": {
+        "tags": [
+          "Delegations"
+        ],
+        "parameters": [
+          {
+            "name": "onlyDirectDelegations",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rule"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rule"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rule"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "AltinnIIAuthorizationAccess"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/delegations/deleterules": {
+      "post": {
+        "tags": [
+          "Delegations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "AltinnIIAuthorizationAccess"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/delegations/deletepolicy": {
+      "post": {
+        "tags": [
+          "Delegations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RequestToDelete"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "AltinnIIAuthorizationAccess"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/lookup/reportee/{partyId}": {
+      "get": {
+        "tags": [
+          "Lookup"
+        ],
+        "parameters": [
+          {
+            "name": "partyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartyExternal"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartyExternal"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartyExternal"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [ ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/admin/delegations/maskinportenschema": {
+      "get": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "supplierOrg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerOrg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MPDelegationExternal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationsProxy"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/maskinporten/delegations": {
+      "get": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "supplierOrg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "consumerOrg",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MPDelegationExternal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationsProxy"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/maskinportenschema/delegationcheck": {
+      "post": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RightsDelegationCheckRequestExternal"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RightsDelegationCheckRequestExternal"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RightsDelegationCheckRequestExternal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RightDelegationCheckResultExternal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationWrite"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/maskinportenschema/offered": {
+      "post": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RightsDelegationRequestExternal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RightsDelegationResponseExternal"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationWrite"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaskinportenSchemaDelegationExternal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationRead"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/maskinportenschema/offered/revoke": {
+      "post": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeOfferedDelegationExternal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationWrite"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/maskinportenschema/received": {
+      "get": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaskinportenSchemaDelegationExternal"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationRead"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/{party}/maskinportenschema/received/revoke": {
+      "post": {
+        "tags": [
+          "MaskinportenSchema"
+        ],
+        "parameters": [
+          {
+            "name": "party",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeReceivedDelegationExternal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "MaskinportenDelegationWrite"
+            ]
+          }
+        ]
+      }
+    },
+    "/accessmanagement/api/v1/resourceowner/authorizedparties": {
+      "post": {
+        "tags": [
+          "ResourceOwnerAuthorizedParties"
+        ],
+        "parameters": [
+          {
+            "name": "includeAltinn2",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaseAttributeExternal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorizedPartyExternal"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "ResourceOwnerAuthorizedParty"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AttributeMatch": {
+        "required": [
+          "id",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "value": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AttributeMatchExternal": {
+        "required": [
+          "id",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "value": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthorizedPartyExternal": {
+        "type": "object",
+        "properties": {
+          "partyUuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizationNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "personId": {
+            "type": "string",
+            "nullable": true
+          },
+          "partyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "$ref": "#/components/schemas/AuthorizedPartyTypeExternal"
+          },
+          "unitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "onlyHierarchyElementWithNoAccess": {
+            "type": "boolean"
+          },
+          "authorizedResources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "authorizedRoles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "subunits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedPartyExternal"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthorizedPartyTypeExternal": {
+        "enum": [
+          "None",
+          "Person",
+          "Organization",
+          "SelfIdentified"
+        ],
+        "type": "string"
+      },
+      "BaseAttributeExternal": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "value": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BaseRightExternal": {
+        "required": [
+          "resource"
+        ],
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "action": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DelegableStatusExternal": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "DelegationStatusExternal": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "DetailCodeExternal": {
+        "enum": [
+          "Unknown",
+          "RoleAccess",
+          "DelegationAccess",
+          "SrrRightAccess",
+          "MissingRoleAccess",
+          "MissingDelegationAccess",
+          "MissingSrrRightAccess",
+          "InsufficientAuthenticationLevel",
+          "AlreadyDelegated"
+        ],
+        "type": "string"
+      },
+      "DetailExternal": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/DetailCodeExternal"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AttributeMatchExternal"
+              },
+              "nullable": true
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MPDelegationExternal": {
+        "type": "object",
+        "properties": {
+          "consumer_org": {
+            "type": "string",
+            "nullable": true
+          },
+          "supplier_org": {
+            "type": "string",
+            "nullable": true
+          },
+          "delegation_scheme_Id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "scopes": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "resourceid": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MaskinportenSchemaDelegationExternal": {
+        "type": "object",
+        "properties": {
+          "offeredByPartyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offeredByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "offeredByOrganizationNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "coveredByPartyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "coveredByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "coveredByOrganizationNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "performedByUserId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resourceId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "orgNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "telephoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobileNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "faxNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "eMailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "internetAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingPostalCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessPostalCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitStatus": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Party": {
+        "type": "object",
+        "properties": {
+          "partyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "partyUuid": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "partyTypeName": {
+            "$ref": "#/components/schemas/PartyType"
+          },
+          "orgNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssn": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "onlyHierarchyElementWithNoAccess": {
+            "type": "boolean"
+          },
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Organization"
+          },
+          "childParties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartyExternal": {
+        "type": "object",
+        "properties": {
+          "partyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "partyTypeName": {
+            "$ref": "#/components/schemas/PartyType"
+          },
+          "orgNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "ssn": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "onlyHierarchyElementWithNoAccess": {
+            "type": "boolean"
+          },
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Organization"
+          },
+          "childParties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PartyType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "ssn": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "middleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "telephoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "mobileNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "mailingPostalCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressMunicipalNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressMunicipalName": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressStreetName": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressHouseNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressHouseLetter": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfDeath": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PolicyMatch": {
+        "required": [
+          "coveredBy"
+        ],
+        "type": "object",
+        "properties": {
+          "offeredByPartyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatch"
+            },
+            "nullable": true
+          },
+          "coveredBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatch"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "RequestToDelete": {
+        "required": [
+          "deletedByUserId",
+          "policyMatch"
+        ],
+        "type": "object",
+        "properties": {
+          "ruleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "deletedByUserId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "policyMatch": {
+            "$ref": "#/components/schemas/PolicyMatch"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RevokeOfferedDelegationExternal": {
+        "required": [
+          "rights",
+          "to"
+        ],
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseRightExternal"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RevokeReceivedDelegationExternal": {
+        "required": [
+          "from",
+          "rights"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseRightExternal"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RightDelegationCheckResultExternal": {
+        "required": [
+          "action",
+          "resource",
+          "rightKey",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "rightKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "action": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DelegableStatusExternal"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetailExternal"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RightDelegationResultExternal": {
+        "required": [
+          "action",
+          "resource",
+          "rightKey",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "rightKey": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "action": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DelegationStatusExternal"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DetailExternal"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RightsDelegationCheckRequestExternal": {
+        "required": [
+          "resource"
+        ],
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RightsDelegationRequestExternal": {
+        "required": [
+          "rights",
+          "to"
+        ],
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseRightExternal"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RightsDelegationResponseExternal": {
+        "required": [
+          "rightDelegationResults",
+          "to"
+        ],
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatchExternal"
+            }
+          },
+          "rightDelegationResults": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RightDelegationResultExternal"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Rule": {
+        "required": [
+          "action",
+          "coveredBy",
+          "offeredByPartyId",
+          "resource"
+        ],
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/RuleType"
+          },
+          "createdSuccessfully": {
+            "type": "boolean"
+          },
+          "delegatedByUserId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "delegatedByPartyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "delegatedDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "offeredByPartyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "coveredBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatch"
+            }
+          },
+          "resource": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatch"
+            }
+          },
+          "action": {
+            "$ref": "#/components/schemas/AttributeMatch"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleQuery": {
+        "required": [
+          "coveredBy",
+          "keyRolePartyIds"
+        ],
+        "type": "object",
+        "properties": {
+          "parentPartyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "keyRolePartyIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "offeredByPartyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AttributeMatch"
+              }
+            },
+            "nullable": true
+          },
+          "coveredBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeMatch"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "RuleType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "description": "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\""
+      },
+      "oauth2": {
+        "type": "apiKey",
+        "description": "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}

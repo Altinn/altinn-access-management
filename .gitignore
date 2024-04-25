@@ -5,6 +5,10 @@ syntax: glob
 # Tool Runtime Dir
 [Tt]ools/
 
+# Terraform
+.terraform
+*.lock.hcl
+
 # User-specific files
 *.suo
 *.user

@@ -2,6 +2,8 @@
     "env": "tt02",
     "org": "ttd",
     "app": "apps-test",
+    "servicecode": "2802",
+    "serviceeditioncode": "3",
     "org1": {
         "orgno": "810414782",
         "partyid": 50189353,

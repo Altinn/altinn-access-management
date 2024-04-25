@@ -2,6 +2,8 @@
     "env": "at24",
     "org": "ttd",
     "app": "apps-test",
+    "servicecode": "2802",
+    "serviceeditioncode": "3",
     "org1": {
         "orgno": "310438707",
         "partyid": 51350052,

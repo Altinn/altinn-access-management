@@ -1,0 +1,81 @@
+meta {
+  name: p2p delegate person2person A2
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:person:identifier-no",
+              "value": "{{toSsn}}"
+          },
+          {
+              "id": "urn:altinn:person:lastname",
+              "value": "{{toLastName}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:servicecode",
+                      "value": "{{servicecode}}"
+                  },
+                  {
+                      "id": "urn:altinn:serviceeditioncode",
+                      "value": "{{serviceeditioncode}}"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toSsn: 
+  toLastName: 
+  servicecode: 
+  serviceeditioncode: 
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("toSsn", testdata.org2.dagl.pid);
+  bru.setVar("toLastName", testdata.org2.dagl.lastname);
+  bru.setVar("servicecode", testdata.servicecode);
+  bru.setVar("serviceeditioncode", testdata.serviceeditioncode);
+  
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("person to person delegation", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');
+  });
+  
+}

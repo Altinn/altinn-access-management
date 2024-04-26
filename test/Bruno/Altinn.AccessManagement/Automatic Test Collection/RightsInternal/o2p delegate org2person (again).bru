@@ -48,8 +48,8 @@ body:json {
 vars:pre-request {
   toSsn: 
   toLastName: 
-  org: ttd
-  app: apps-test-prod
+  org: 
+  app: 
   auth_tokenType: Personal
   auth_userId: 
   auth_partyId: 
@@ -65,6 +65,8 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("toSsn", testdata.org2.dagl.pid);
   bru.setVar("toLastName", testdata.org2.dagl.lastname);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
   
   await tokenGenerator.getToken();
 }

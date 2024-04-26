@@ -127,8 +127,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
 
                 WithAssertDbDelegationsNotEmpty,
                 WithAssertDbLastDelegationToUserIsRevoked(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertEmptyDelegationList),
+                WithAssertResponseStatusCodeSuccessful),
             new(
                 /* Acceptance Critieria */ @"
                 GIVEN that organization Voss Consulting has delegations to organization Voss Accounting

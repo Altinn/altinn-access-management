@@ -1,11 +1,11 @@
 meta {
-  name: p2p receiving person revokes delegation
+  name: o2o testdata cleanup
   type: http
-  seq: 7
+  seq: 3
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received/revoke
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/revoke
   body: json
   auth: none
 }
@@ -43,8 +43,8 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
-  org: 
-  app: 
+  org: ttd
+  app: apps-test-prod
   fromPartyId: 
 }
 
@@ -54,9 +54,7 @@ script:pre-request {
   bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
   bru.setVar("auth_ssn", testdata.org2.dagl.pid);
   bru.setVar("party", testdata.org2.partyid);
-  bru.setVar("fromPartyId", testdata.org1.dagl.partyid);
-  bru.setVar("org", testdata.org);
-  bru.setVar("app", testdata.app);
+  bru.setVar("fromPartyId", testdata.org1.partyid);
   
   await tokenGenerator.getToken();
 }

@@ -1,7 +1,7 @@
 meta {
-  name: o2p testdata cleanup
+  name: p2p testdata cleanup (revoke delegation)
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -54,7 +54,7 @@ script:pre-request {
   bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
   bru.setVar("auth_ssn", testdata.org2.dagl.pid);
   bru.setVar("party", testdata.org2.partyid);
-  bru.setVar("fromPartyId", testdata.org1.partyid);
+  bru.setVar("fromPartyId", testdata.org1.dagl.partyid);
   
   await tokenGenerator.getToken();
 }

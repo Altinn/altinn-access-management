@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Tests.Seeds;
+using DotNet.Testcontainers;
 using Npgsql;
 using Testcontainers.PostgreSql;
 using Xunit;
@@ -33,6 +34,12 @@ public partial class PostgresFixture : IAsyncLifetime
     /// <see cref="PersonSeeds.Paula.UserId"/>
     /// </summary>
     public static readonly int DefaultPerformedByUserId = PersonSeeds.Paula.UserId;
+
+    /// <summary>
+    /// <see cref="PersonSeeds.Paula.PartyId"/>
+    /// </summary>
+    public static readonly int DefaultPerformedByPartyId = PersonSeeds.Paula.PartyId;
+
 
     /// <summary>
     /// table name
@@ -165,6 +172,66 @@ public partial class PostgresFixture : IAsyncLifetime
         return result;
     }
 
+    /// <summary>
+    /// Lists all RR delegations 
+    /// </summary>
+    /// <param name="filter">filter</param>
+    public async Task<IEnumerable<DelegationChange>> ListDelegationsChangesRR(Func<IEnumerable<DelegationChange>, IEnumerable<DelegationChange>> filter = null)
+    {
+        using var pgcom = DataSource.CreateCommand(@"SELECT * FROM delegation.resourceregistrydelegationchanges");
+        using var reader = await pgcom.ExecuteReaderAsync();
+        var result = new List<DelegationChange>();
+
+        while (await reader.ReadAsync())
+        {
+            result.Add(await GetResourceRegistryDelegationChange(reader));
+        }
+
+        if (filter != null)
+        {
+            return filter(result).ToList();
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Lists all resources in database
+    /// </summary>
+    /// <param name="filter">filter</param>
+    /// <returns></returns>
+    public async Task<IEnumerable<AccessManagementResource>> ListResource(Func<IEnumerable<AccessManagementResource>, IEnumerable<AccessManagementResource>> filter = null)
+    {
+        using var pgcom = DataSource.CreateCommand(@"SELECT * FROM accessmanagement.resource;");
+        using var reader = await pgcom.ExecuteReaderAsync();
+        var result = new List<AccessManagementResource>();
+
+        while (await reader.ReadAsync())
+        {
+            result.Add(await GetAccessManagementResource(reader));
+        }
+
+        if (filter != null)
+        {
+            return filter(result).ToList();
+        }
+
+        return result;
+    }
+
+    private static async Task<AccessManagementResource> GetAccessManagementResource(NpgsqlDataReader reader)
+    {
+        Enum.TryParse(await reader.GetFieldValueAsync<string>("resourcetype"), true, out ResourceType resourceType);
+        return new AccessManagementResource
+        {
+            ResourceId = await reader.GetFieldValueAsync<int>("resourceid"),
+            ResourceRegistryId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
+            ResourceType = resourceType,
+            Created = await reader.GetFieldValueAsync<DateTime>("created"),
+            Modified = await reader.GetFieldValueAsync<DateTime>("modified")
+        };
+    }
+
     private static async Task<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
     {
         return new DelegationChange
@@ -183,25 +250,43 @@ public partial class PostgresFixture : IAsyncLifetime
         };
     }
 
+    private static async Task<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)
+    {
+        return new DelegationChange
+        {
+            ResourceRegistryDelegationChangeId = await reader.GetFieldValueAsync<int>("resourceregistrydelegationchangeid"),
+            DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+            OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
+            CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
+            CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
+            PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
+            PerformedByPartyId = await reader.GetFieldValueAsync<int?>("performedbypartyid"),
+            BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
+            BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
+            Created = await reader.GetFieldValueAsync<DateTime>("created")
+        };
+    }
+
     /// <summary>
     /// Adds random delegations to delegationchange table.
     /// The ID that are used are in range [9000, 9999].
     /// </summary>
-    /// <param name="resource">resource for random entry. defaults to <see cref="AltinnAppSeeds.AltinnApp"/> if null</param>
-    public static Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource = null) => cmd =>
+    /// <param name="resource">resource for random entry. defaults to <see cref="ResourceSeeds.AltinnApp"/> if null</param>
+    public Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource = null) => cmd =>
     {
+        var delegation = (DelegationChange delegation) =>
+        {
+            delegation.PerformedByPartyId = RandomId;
+            delegation.PerformedByUserId = RandomId;
+            delegation.BlobStoragePolicyPath = "Random";
+            delegation.BlobStorageVersionId = "Random";
+            delegation.CoveredByPartyId = RandomId;
+            delegation.CoveredByUserId = RandomId;
+            delegation.OfferedByPartyId = RandomId;
+        };
+
         WithInsertDelegationChange(
-            WithResource(resource ?? AltinnAppSeeds.AltinnApp.Defaults),
-            (delegation) =>
-            {
-                delegation.PerformedByPartyId = RandomId;
-                delegation.PerformedByUserId = RandomId;
-                delegation.BlobStoragePolicyPath = "Random";
-                delegation.BlobStorageVersionId = "Random";
-                delegation.CoveredByPartyId = RandomId;
-                delegation.CoveredByUserId = RandomId;
-                delegation.OfferedByPartyId = RandomId;
-            })(cmd);
+            WithResource(resource ?? ResourceSeeds.AltinnApp.Defaults), delegation)(cmd);
     };
 
     /// <summary>
@@ -282,14 +367,21 @@ public partial class PostgresFixture : IAsyncLifetime
     /// <summary>
     /// Creates a resource registry delegation change in table "delegation.resourceregistrydelegationchanges"
     /// </summary>
+    /// <param name="resourceRegistryId">resource registry ID</param>
     /// <param name="modifiers">list of actions that mutates the delegation changes</param>
-    public static Action<NpgsqlCommand> WithInsertDelegationChangeRR(params Action<DelegationChange>[] modifiers) => cmd =>
+    public Action<NpgsqlCommand> WithInsertDelegationChangeRR(string resourceRegistryId, params Action<DelegationChange>[] modifiers) => async cmd =>
     {
-        var delegation = new DelegationChange();
+        var delegation = new DelegationChange()
+        {
+            DelegationChangeType = DelegationChangeType.Grant
+        };
+
         foreach (var modifier in modifiers)
         {
             modifier(delegation);
         }
+
+        // var resource = await ListResource(delegations => delegations.Where(delegation => delegation.ResourceRegistryId == resourceRegistryId));
 
         cmd.CommandText = @"
         INSERT INTO delegation.resourceregistrydelegationchanges(
@@ -303,7 +395,7 @@ public partial class PostgresFixture : IAsyncLifetime
             blobstoragepolicypath,
             blobstorageversionid)
         VALUES (
-            @delegationchangetype
+            @delegationchangetype,
             @resourceid_fk,
             @offeredbypartyid,
             @coveredbypartyid,
@@ -315,14 +407,14 @@ public partial class PostgresFixture : IAsyncLifetime
         ";
 
         cmd.Parameters.AddWithValue("delegationchangetype", delegation.DelegationChangeType);
-        cmd.Parameters.AddWithValue("resourceid_fk", delegation.ResourceId);
+        cmd.Parameters.AddWithValue("resourceid_fk", 2);
+        cmd.Parameters.AddWithValue("coveredbypartyid", delegation.CoveredByPartyId == null ? DBNull.Value : delegation.CoveredByPartyId);
+        cmd.Parameters.AddWithValue("coveredbyuserid", delegation.CoveredByUserId == null ? DBNull.Value : delegation.CoveredByUserId);
         cmd.Parameters.AddWithValue("offeredbypartyid", delegation.OfferedByPartyId);
-        cmd.Parameters.AddWithValue("coveredbypartyid", delegation.CoveredByPartyId);
-        cmd.Parameters.AddWithValue("coveredbyuserid", delegation.CoveredByUserId);
-        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId);
-        cmd.Parameters.AddWithValue("performedbypartyid", delegation.PerformedByPartyId);
-        cmd.Parameters.AddWithValue("blobstoragepolicypath", delegation.BlobStoragePolicyPath);
-        cmd.Parameters.AddWithValue("blobstorageversionid", delegation.BlobStorageVersionId);
+        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId == null ? DefaultPerformedByUserId : delegation.PerformedByUserId);
+        cmd.Parameters.AddWithValue("performedbypartyid", delegation.PerformedByPartyId == null ? DefaultPerformedByPartyId : delegation.PerformedByPartyId);
+        cmd.Parameters.AddWithValue("blobstoragepolicypath", delegation.BlobStoragePolicyPath ?? "/");
+        cmd.Parameters.AddWithValue("blobstorageversionid", delegation.BlobStorageVersionId ?? "v1");
     };
 
     /// <summary>

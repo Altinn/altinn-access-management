@@ -95,9 +95,9 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// Asserts that response given from API is a successful status code.
     /// </summary>
-    public static void WithAssertResponseStatusCodeSuccessful(AcceptanceCriteriaTest acceptanceCriteria)
+    public static void WithAssertResponseStatusCodeSuccessful(AcceptanceCriteriaTest test)
     {
-        acceptanceCriteria.ResponseAssertions.Add(response =>
+        test.ResponseAssertions.Add(response =>
         {
             Assert.True(response.IsSuccessStatusCode, $"expected successful status code, got status code {(int)response.StatusCode}: {response.StatusCode}");
             return Task.CompletedTask;
@@ -150,7 +150,8 @@ public abstract class AcceptanceCriteriaTest
     /// <param name="fixture">web application fixture</param>
     public async Task Test(WebApplicationFixture fixture)
     {
-        AssertResponse(await fixture.UseScenarios([.. Scenarios]).SendAsync(Request));
+        var api = await fixture.UseScenarios([.. Scenarios]);
+        AssertResponse(await api.SendAsync(Request));
         AssertApi(fixture);
     }
 

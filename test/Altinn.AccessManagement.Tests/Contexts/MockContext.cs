@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -53,7 +54,7 @@ public class MockContext
     /// <summary>
     /// JWT token.
     /// </summary>
-    public string JwtToken { get; set; } = string.Empty;
+    public IDictionary<string, string> HttpHeaders { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
     /// A list of Db seed functation that are executed after database has been migrated.

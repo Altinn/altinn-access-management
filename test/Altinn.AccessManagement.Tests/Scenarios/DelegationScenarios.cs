@@ -21,17 +21,26 @@ public static class DelegationScenarios
     public static void Defaults(IWebHostBuilder host, PostgresFixture postgres, MockContext mock)
     {
         mock.Resources.AddRange([
-            AltinnAppSeeds.AltinnApp.Defaults
+            ResourceSeeds.AltinnApp.Defaults,
+            ResourceSeeds.MaskinportenSchema.Defaults,
         ]);
 
         mock.DbSeeds.AddRange([
             () => postgres.SeedDatabaseTXs(
-                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(AltinnAppSeeds.AltinnApp.Defaults)),
-                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
-                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
-                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
-                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults),
-                PostgresFixture.WithInsertDelegationChangeNoise(AltinnAppSeeds.AltinnApp.Defaults))
+                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(ResourceSeeds.AltinnApp.Defaults)),
+                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(ResourceSeeds.MaskinportenSchema.Defaults))),
+
+            () => postgres.SeedDatabaseTXs(
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
+                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults))
         ]);
     }
 
@@ -85,7 +94,7 @@ public static class DelegationScenarios
                 PostgresFixture.WithInsertDelegationChange(
                     PostgresFixture.WithFrom(organization),
                     PostgresFixture.WithToUser(person),
-                    PostgresFixture.WithResource(resource ?? AltinnAppSeeds.AltinnApp.Defaults),
+                    PostgresFixture.WithResource(resource ?? ResourceSeeds.AltinnApp.Defaults),
                     PostgresFixture.WithDelegationChangeRevokeLast))
             ]);
     };
@@ -99,7 +108,7 @@ public static class DelegationScenarios
     /// <returns></returns>
     public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => (host, postgres, mock) =>
     {
-        resource ??= AltinnAppSeeds.AltinnApp.Defaults;
+        resource ??= ResourceSeeds.AltinnApp.Defaults;
 
         mock.Resources.Add(resource.Resource);
         mock.UserProfiles.Add(to.UserProfile);
@@ -123,14 +132,15 @@ public static class DelegationScenarios
     /// <returns></returns>
     public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => (host, postgres, mock) =>
     {
-        resource ??= AltinnAppSeeds.AltinnApp.Defaults;
+        resource ??= ResourceSeeds.AltinnApp.Defaults;
 
         mock.Resources.Add(resource.Resource);
         mock.Parties.AddRange([from.Party, to.Party]);
 
         mock.DbSeeds.AddRange([
             () => postgres.SeedDatabaseTXs(
-                PostgresFixture.WithInsertDelegationChange(
+                postgres.WithInsertDelegationChangeRR(
+                    resource.Resource.Identifier,
                     PostgresFixture.WithFrom(from),
                     PostgresFixture.WithToParty(to),
                     PostgresFixture.WithResource(resource)))

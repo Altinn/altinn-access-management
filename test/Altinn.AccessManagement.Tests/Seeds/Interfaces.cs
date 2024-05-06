@@ -1,5 +1,6 @@
 #pragma warning disable SA1649
 
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;

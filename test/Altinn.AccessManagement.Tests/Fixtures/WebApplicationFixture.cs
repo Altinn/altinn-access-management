@@ -57,17 +57,20 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     /// Creates a specific mock context based on given scenarios.
     /// </summary>
     /// <param name="scenarios">list of scenarios</param>
-    public HttpClient UseScenarios(params Scenario[] scenarios)
+    public async Task<HttpClient> UseScenarios(params Scenario[] scenarios)
     {
         var mock = new MockContext();
         var client = GetClient(scenarios, mock);
 
-        if (!string.IsNullOrEmpty(mock.JwtToken))
+        foreach (var header in mock.HttpHeaders)
         {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", mock.JwtToken);
+            client.DefaultRequestHeaders.Add(header.Key, header.Value);
         }
 
-        Task.WaitAll([.. mock.DbSeeds.Select(seed => seed())]);
+        foreach (var seed in mock.DbSeeds)
+        {
+            await seed();
+        }
 
         return client;
     }

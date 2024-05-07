@@ -59,6 +59,11 @@ public abstract class AcceptanceCriteriaTest
     protected string AcceptanceCriteria { get; }
 
     /// <summary>
+    /// Sets Request URI
+    /// </summary>
+    public string RequestUri { get; set; }
+
+    /// <summary>
     /// Asserts response given from API
     /// </summary>
     public void AssertResponse(HttpResponseMessage message)
@@ -120,8 +125,7 @@ public abstract class AcceptanceCriteriaTest
     /// <param name="segments">list of URL segments</param>
     public static Action<AcceptanceCriteriaTest> WithRequestRoute(params object[] segments) => test =>
     {
-        var url = string.Join("/", segments.Select(segment => segment.ToString().Trim('/')));
-        test.Request.RequestUri = new Uri("/" + url);
+        test.RequestUri = string.Join("/", segments.Select(segment => segment.ToString().Trim('/')));
     };
 
     /// <summary>
@@ -151,6 +155,7 @@ public abstract class AcceptanceCriteriaTest
     public async Task Test(WebApplicationFixture fixture)
     {
         var api = await fixture.UseScenarios([.. Scenarios]);
+        Request.RequestUri = new Uri(api.BaseAddress, RequestUri);
         AssertResponse(await api.SendAsync(Request));
         AssertApi(fixture);
     }

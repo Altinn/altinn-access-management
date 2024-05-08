@@ -113,7 +113,7 @@ public class Altinn2RightsService : IAltinn2RightsService
             }
             else
             {
-                entry.Resource.AddRange(resources.First(r => r.Identifier == delegation.ResourceId).AuthorizationReference);
+                entry.Resource.AddRange(resources.FirstOrDefault(r => r.Identifier == delegation.ResourceId).AuthorizationReference ?? []);
             }
 
             result.Add(entry);

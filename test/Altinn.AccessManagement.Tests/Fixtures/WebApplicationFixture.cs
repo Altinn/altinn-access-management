@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -98,13 +97,16 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
 
     private static void AddMockClients(IServiceCollection services)
     {
+        services.AddSingleton<IPartiesClient, Contexts.PartiesClientMock>();
+        services.AddSingleton<IProfileClient, Contexts.ProfileClientMock>();
+        services.AddSingleton<IResourceRegistryClient, ResourceRegistryMock>();
+        // services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
+
         services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
         services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
         services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
         services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
-        services.AddSingleton<IPartiesClient, Contexts.PartiesClientMock>();
-        services.AddSingleton<IProfileClient, Contexts.ProfileClientMock>();
-        services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
+
         services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
         services.AddSingleton<IPDP, PdpPermitMock>();
         services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();

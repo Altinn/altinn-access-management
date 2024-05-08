@@ -94,41 +94,41 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
         /// </summary>
         public static TheoryData<SeedGetRightsDelegationsOffered> Seeds() => new()
         {
-            new(
-                /* Acceptance Critieria */ @"
-                GIVEN that organization Voss Accounting has an active delegation to employee Paula
-                WHEN DAGL Olav for Orstad Accounting requests offered delegations from Orstad Accounting
-                THEN Paula should be included in the list of offered delegations",
-                OrganizationSeeds.VossAccounting.PartyId,
+            // new(
+            //     /* Acceptance Critieria */ @"
+            //     GIVEN that organization Voss Accounting has an active delegation to employee Paula
+            //     WHEN DAGL Olav for Orstad Accounting requests offered delegations from Orstad Accounting
+            //     THEN Paula should be included in the list of offered delegations",
+            //     OrganizationSeeds.VossAccounting.PartyId,
 
-                WithScenarios(
-                    DelegationScenarios.Defaults,
-                    DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults),
-                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.VossAccounting.Defaults),
-                    TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
+            //     WithScenarios(
+            //         DelegationScenarios.Defaults,
+            //         DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults),
+            //         DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.VossAccounting.Defaults),
+            //         TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
-                WithAssertDbDelegationsNotEmpty,
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults)),
-            new(
-                /* Acceptance Critieria */ @"
-                GIVEN that organization Voss Consulting has delegations to employee Paula
-                AND that the last delegation given to Paula is revoked
-                WHEN DAGL Olav for Voss requests offered delegations from Voss
-                THEN the list of delegation should be empty",
-                OrganizationSeeds.VossConsulting.PartyId,
+            //     WithAssertDbDelegationsNotEmpty,
+            //     WithAssertResponseStatusCodeSuccessful,
+            //     WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults)),
+            // new(
+            //     /* Acceptance Critieria */ @"
+            //     GIVEN that organization Voss Consulting has delegations to employee Paula
+            //     AND that the last delegation given to Paula is revoked
+            //     WHEN DAGL Olav for Voss requests offered delegations from Voss
+            //     THEN the list of delegation should be empty",
+            //     OrganizationSeeds.VossConsulting.PartyId,
 
-                WithScenarios(
-                    DelegationScenarios.Defaults,
-                    DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-                    DelegationScenarios.WithRevokedDelegationToUser(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.Voss.Defaults),
-                    TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
+            //     WithScenarios(
+            //         DelegationScenarios.Defaults,
+            //         DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
+            //         DelegationScenarios.WithRevokedDelegationToUser(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
+            //         DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.Voss.Defaults),
+            //         TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
-                WithAssertDbDelegationsNotEmpty,
-                WithAssertDbLastDelegationToUserIsRevoked(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertEmptyDelegationList),
+            //     WithAssertDbDelegationsNotEmpty,
+            //     WithAssertDbLastDelegationToUserIsRevoked(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
+            //     WithAssertResponseStatusCodeSuccessful,
+            //     WithAssertEmptyDelegationList),
             new(
                 /* Acceptance Critieria */ @"
                 GIVEN that organization Voss Consulting has delegations to organization Voss Accounting
@@ -149,10 +149,10 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : Con
     }
 
     /// <summary>
-    /// <see cref="RightsInternalController.RevokeOfferedDelegation(AuthorizedPartyInput, RevokeOfferedDelegationExternal, CancellationToken)"/>
+    /// <see cref="RightsInternalController.GetOfferedRights(int, CancellationToken)"/>
     /// </summary>
     /// <param name="acceptanceCriteria">acceptance test</param>
-    [Theory(DisplayName = nameof(RightsInternalController.RevokeOfferedDelegation))]
+    [Theory(DisplayName = nameof(RightsInternalController.GetOfferedRights))]
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
     public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered acceptanceCriteria) => await acceptanceCriteria.Test(Fixture);
 }

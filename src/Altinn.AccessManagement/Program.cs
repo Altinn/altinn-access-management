@@ -80,8 +80,8 @@ void ConfigureSetupLogging()
         builder
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
-            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug)
-            .AddConsole();
+            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug);
+        // .AddConsole();
     });
 
     logger = logFactory.CreateLogger<Program>();
@@ -387,7 +387,7 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
+        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = false };
 
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),

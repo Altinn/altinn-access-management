@@ -1,7 +1,7 @@
 using System.Linq;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Contexts;
-using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Seeds;
 using Microsoft.AspNetCore.Hosting;
 
@@ -18,29 +18,17 @@ public static class DelegationScenarios
     /// 2. Add random delegation to delegationchange table.
     ///     - Uses random ID in range [9000, 99999]
     /// </summary>
-    public static void Defaults(IWebHostBuilder host, PostgresFixture postgres, MockContext mock)
+    public static void Defaults(IWebHostBuilder host, MockContext mock)
     {
         mock.Resources.AddRange([
             ResourceSeeds.AltinnApp.Defaults,
             ResourceSeeds.MaskinportenSchema.Defaults,
         ]);
 
+        // Seed databases resources
         mock.DbSeeds.AddRange([
-            () => postgres.SeedDatabaseTXs(
-                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(ResourceSeeds.AltinnApp.Defaults)),
-                PostgresFixture.WithInsertResource(PostgresFixture.WithAccessManagementResource(ResourceSeeds.MaskinportenSchema.Defaults))),
-
-            () => postgres.SeedDatabaseTXs(
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.MaskinportenSchema.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults),
-                postgres.WithInsertDelegationChangeNoise(ResourceSeeds.AltinnApp.Defaults))
+            async postgres => await postgres.ResourceMetadataRepository.InsertAccessManagementResource(ResourceSeeds.AltinnApp.Defaults.DbResource),
+            async postgres => await postgres.ResourceMetadataRepository.InsertAccessManagementResource(ResourceSeeds.MaskinportenSchema.Defaults.DbResource),
         ]);
     }
 
@@ -50,7 +38,7 @@ public static class DelegationScenarios
     /// <param name="profile">profile</param>
     /// <param name="organizations">organization</param>
     /// <returns></returns>
-    public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, postgres, mock) =>
+    public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, mock) =>
     {
         var partyids = organizations.Select(organization => organization?.Party?.PartyId ?? 0);
         if (mock.KeyRoles.TryGetValue(profile.UserProfile.UserId, out var value))
@@ -69,7 +57,7 @@ public static class DelegationScenarios
     /// <param name="subunit">subunit</param>
     /// <param name="mainunit">mainunit</param>
     /// <returns></returns>
-    public static Scenario WhereUnitHasMainUnit(IParty subunit, IParty mainunit) => (host, postgres, mock) =>
+    public static Scenario WhereUnitHasMainUnit(IParty subunit, IParty mainunit) => (host, mock) =>
     {
         mock.MainUnits[subunit.Party.PartyId] = new MainUnit
         {
@@ -87,16 +75,19 @@ public static class DelegationScenarios
     /// <param name="person">person that lose the delegation to the organization</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario WithRevokedDelegationToUser(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (host, postgres, mock) =>
+    public static Scenario WithRevokedDelegationToUser(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (host, mock) =>
     {
+        resource ??= ResourceSeeds.AltinnApp.Defaults;
+
         mock.DbSeeds.AddRange([
-            () => postgres.SeedDatabaseTXs(
-                PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithFrom(organization),
-                    PostgresFixture.WithToUser(person),
-                    PostgresFixture.WithResource(resource ?? ResourceSeeds.AltinnApp.Defaults),
-                    PostgresFixture.WithDelegationChangeRevokeLast))
-            ]);
+            async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
+                ResourceAttributeMatchType.AltinnAppId,
+                postgres.NewDelegationChange(
+                    postgres.WithFrom(organization),
+                    postgres.WithToUser(person),
+                    postgres.WithResource(resource),
+                    postgres.WithDelegationChangeRevokeLast))
+        ]);
     };
 
     /// <summary>
@@ -106,7 +97,7 @@ public static class DelegationScenarios
     /// <param name="to">to person</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => (host, postgres, mock) =>
+    public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => (host, mock) =>
     {
         resource ??= ResourceSeeds.AltinnApp.Defaults;
 
@@ -115,35 +106,12 @@ public static class DelegationScenarios
         mock.Parties.AddRange([from.Party, to.UserProfile.Party]);
 
         mock.DbSeeds.AddRange([
-            () => postgres.SeedDatabaseTXs(
-                PostgresFixture.WithInsertDelegationChange(
-                    PostgresFixture.WithFrom(from),
-                    PostgresFixture.WithToUser(to),
-                    PostgresFixture.WithResource(resource)))
-        ]);
-    };
-
-    /// <summary>
-    /// Adds mock context and db seeds. for given organization, person and resource
-    /// </summary>
-    /// <param name="from">from organization</param>
-    /// <param name="to">to organization</param>
-    /// <param name="resource">resource</param>
-    /// <returns></returns>
-    public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => (host, postgres, mock) =>
-    {
-        resource ??= ResourceSeeds.AltinnApp.Defaults;
-
-        mock.Resources.Add(resource.Resource);
-        mock.Parties.AddRange([from.Party, to.Party]);
-
-        mock.DbSeeds.AddRange([
-            () => postgres.SeedDatabaseTXs(
-                postgres.WithInsertDelegationChangeRR(
-                    resource.Resource.Identifier,
-                    PostgresFixture.WithFrom(from),
-                    PostgresFixture.WithToParty(to),
-                    PostgresFixture.WithResource(resource)))
+            async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
+                ResourceAttributeMatchType.ResourceRegistry,
+                postgres.NewDelegationChange(
+                    postgres.WithFrom(from),
+                    postgres.WithToUser(to),
+                    postgres.WithResource(resource)))
         ]);
     };
 }

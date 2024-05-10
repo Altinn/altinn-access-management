@@ -1,4 +1,3 @@
-using System.Net.Http;
 using Altinn.AccessManagement.Tests.Contexts;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Seeds;
@@ -18,7 +17,7 @@ namespace Altinn.AccessManagement.Tests.Scenarios
         /// <param name="person">The person which a token should be generated</param>
         /// <param name="authenticationLevel">level of authentication [1, 2, 3] </param>
         /// <returns></returns>
-        public static Scenario PersonToken(PersonSeeds.PersonBase person, int authenticationLevel = 2) => (host, postgres, mock) =>
+        public static Scenario PersonToken(PersonSeeds.PersonBase person, int authenticationLevel = 2) => (host, mock) =>
         {
             mock.HttpHeaders.Add("Authorization", $"Bearer {PrincipalUtil.GetToken(person.UserId, person.PartyId, authenticationLevel)}");
         };
@@ -29,7 +28,7 @@ namespace Altinn.AccessManagement.Tests.Scenarios
         /// <param name="issuer">issuer of the token</param>
         /// <param name="app">name of the app</param>
         /// <returns></returns>
-        public static Scenario PlatformToken(string issuer, string app) => (host, postgres, mock) =>
+        public static Scenario PlatformToken(string issuer, string app) => (host, mock) =>
         {
             mock.HttpHeaders.Add("PlatformAccessToken", PrincipalUtil.GetAccessToken(issuer, app));
         };

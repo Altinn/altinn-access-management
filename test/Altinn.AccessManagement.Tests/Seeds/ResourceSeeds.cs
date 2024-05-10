@@ -12,6 +12,12 @@ public static class ResourceSeeds
     public class ResourceBase : ServiceResource, IAccessManagementResource
     {
         public ServiceResource Resource => this;
+
+        public AccessManagementResource DbResource => new AccessManagementResource
+        {
+            ResourceRegistryId = Resource.Identifier,
+            ResourceType = Resource.ResourceType,
+        };
     }
 
     public class MaskinportenSchema : ResourceBase

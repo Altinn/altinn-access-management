@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
+using Altinn.AccessManagement.Tests.Fixtures;
 
 namespace Altinn.AccessManagement.Tests.Contexts;
 
@@ -59,5 +60,5 @@ public class MockContext
     /// <summary>
     /// A list of Db seed functation that are executed after database has been migrated.
     /// </summary>
-    public List<Func<Task>> DbSeeds { get; } = [];
+    public List<Func<RepositoryContainer, Task>> DbSeeds { get; } = [];
 }

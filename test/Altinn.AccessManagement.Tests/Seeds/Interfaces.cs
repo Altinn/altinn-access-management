@@ -34,6 +34,12 @@ public interface IUserProfile
 /// </summary>
 public interface IAccessManagementResource
 {
+
+    /// <summary>
+    /// Db resource
+    /// </summary>
+    AccessManagementResource DbResource { get; }
+
     /// <summary>
     /// Get resource from seed
     /// </summary>

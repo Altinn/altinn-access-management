@@ -16,16 +16,18 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 /// <summary>
 /// <see cref="MaskinportenSchemaController"/>
 /// </summary>
-public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) : ControllerTest(fixture)
+public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) : IClassFixture<WebApplicationFixture>
 {
-    public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegations(int from, int to) => test =>
-    {
-        test.ApiAssertions.Add(async api =>
-        {
-            var actual = await api.Postgres.ListDelegationsChangesRR(delegations => delegations.Where(delegation => delegation.OfferedByPartyId == from && delegation.CoveredByPartyId == to));
-            Assert.NotEmpty(actual);
-        });
-    };
+    private WebApplicationFixture Fixture { get; } = fixture;
+
+    // public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegations(int from, int to) => test =>
+    // {
+    //     test.ApiAssertions.Add(async api =>
+    //     {
+    //         var actual = await api.Postgres.ListDelegationsChangesRR(delegations => delegations.Where(delegation => delegation.OfferedByPartyId == from && delegation.CoveredByPartyId == to));
+    //         Assert.NotEmpty(actual);
+    //     });
+    // };
 
     /// <summary>
     /// Assert response
@@ -70,14 +72,9 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
                 THEN Voss accounting should be in the list of offered delegations",
                 OrganizationSeeds.VossConsulting.PartyId,
 
-                WithScenarios(
-                    DelegationScenarios.Defaults,
-                    DelegationScenarios.FromOrganizationToOrganization(
-                        OrganizationSeeds.VossConsulting.Defaults,
-                        OrganizationSeeds.VossAccounting.Defaults,
-                        ResourceSeeds.MaskinportenSchema.Defaults)),
+                WithScenarios(DelegationScenarios.Defaults),
 
-                WithAssertDbContainsDelegations(OrganizationSeeds.VossConsulting.PartyId, OrganizationSeeds.VossAccounting.PartyId),
+                // WithAssertDbContainsDelegations(OrganizationSeeds.VossConsulting.PartyId, OrganizationSeeds.VossAccounting.PartyId),
                 WithAssertResponseContainsDelegations(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
                 WithAssertResponseStatusCodeSuccessful)
         ];

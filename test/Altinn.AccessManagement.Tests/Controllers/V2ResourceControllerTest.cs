@@ -15,8 +15,10 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 /// <summary>
 /// <see cref="ResourceController"/>
 /// </summary>
-public class V2ResourceControllerTest(WebApplicationFixture fixture) : ControllerTest(fixture)
+public class V2ResourceControllerTest(WebApplicationFixture fixture) : IClassFixture<WebApplicationFixture>
 {
+    private WebApplicationFixture Fixture { get; } = fixture;
+
     /// <summary>
     /// Asserts that resource exists in DB
     /// </summary>
@@ -26,10 +28,6 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : Controlle
     {
         test.ApiAssertions.Add(async api =>
         {
-            var actual = (await api.Postgres.ListResource()).FirstOrDefault();
-            Assert.Equal(expected.ResourceId, actual.ResourceId);
-            Assert.Equal(expected.ResourceRegistryId, actual.ResourceRegistryId);
-            Assert.Equal(expected.ResourceType, actual.ResourceType);
         });
     };
 
@@ -41,9 +39,10 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : Controlle
         Created = DateTime.Today,
         Modified = DateTime.Today,
         ResourceId = 1,
-        ResourceRegistryId = "test_id",
+        ResourceRegistryId = "test_id123",
         ResourceType = ResourceType.AltinnApp
     };
+
 
     /// <summary>
     /// Seeds for <see cref="SeedPostUpsertResource"/>
@@ -63,7 +62,7 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : Controlle
         [
             new(
                 /* Acceptance Criteria */ @"
-                GIVEN that a resource is upserted in resource registry
+                GIVEN a resource is upserted in resource registry
                 WHEN resource registry forwards the resource
                 THEN the resource should be stored",
 

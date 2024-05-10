@@ -154,9 +154,10 @@ public abstract class AcceptanceCriteriaTest
     /// <param name="fixture">web application fixture</param>
     public async Task Test(WebApplicationFixture fixture)
     {
-        var api = await fixture.UseScenarios([.. Scenarios]);
-        Request.RequestUri = new Uri(api.BaseAddress, RequestUri);
-        AssertResponse(await api.SendAsync(Request));
+        var host = await fixture.UseScenarios([.. Scenarios]);
+        Request.RequestUri = new Uri(host.Client.BaseAddress, RequestUri);
+
+        AssertResponse(await host.Client.SendAsync(Request));
         AssertApi(fixture);
     }
 

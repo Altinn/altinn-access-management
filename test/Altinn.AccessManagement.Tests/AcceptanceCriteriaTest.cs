@@ -46,7 +46,7 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// List of API assertions for mock context and DB
     /// </summary>
-    public List<Func<WebApplicationFixture, Task>> ApiAssertions { get; set; } = [];
+    public List<Func<Host, Task>> ApiAssertions { get; set; } = [];
 
     /// <summary>
     /// Http request to be sent to the controller action
@@ -66,21 +66,24 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// Asserts response given from API
     /// </summary>
-    public void AssertResponse(HttpResponseMessage message)
+    public async Task AssertResponse(HttpResponseMessage message)
     {
-        foreach (var assert in ResponseAssertions)
+        foreach (var assertion in ResponseAssertions)
         {
-            assert(message);
+            await assertion(message);
         }
     }
 
     /// <summary>
     /// Asserts mock call and DB
     /// </summary>
-    /// <param name="fixture">Web application fixture</param>
-    public void AssertApi(WebApplicationFixture fixture)
+    /// <param name="host">Web application fixture</param>
+    public async Task AssertApi(Host host)
     {
-        Task.WaitAll([.. ApiAssertions.Select(async assertion => await assertion(fixture))]);
+        foreach (var assertion in ApiAssertions)
+        {
+            await assertion(host);
+        }
     }
 
     /// <summary>
@@ -157,8 +160,8 @@ public abstract class AcceptanceCriteriaTest
         var host = await fixture.UseScenarios([.. Scenarios]);
         Request.RequestUri = new Uri(host.Client.BaseAddress, RequestUri);
 
-        AssertResponse(await host.Client.SendAsync(Request));
-        AssertApi(fixture);
+        await AssertResponse(await host.Client.SendAsync(Request));
+        await AssertApi(host);
     }
 
     /// <summary>

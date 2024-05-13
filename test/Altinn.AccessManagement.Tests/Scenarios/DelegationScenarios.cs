@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.SblBridge;
@@ -12,6 +13,12 @@ namespace Altinn.AccessManagement.Tests.Scenarios;
 /// </summary>
 public static class DelegationScenarios
 {
+    private static readonly Random Random = new(DateTime.UtcNow.Nanosecond);
+
+    private static int RandPartyId => Random.Next(9000, 9999);
+
+    private static int RandUserId => Random.Next(8000, 9000);
+
     /// <summary>
     /// Defaults setup
     /// 1. Add resources to dn
@@ -30,6 +37,30 @@ public static class DelegationScenarios
             async postgres => await postgres.ResourceMetadataRepository.InsertAccessManagementResource(ResourceSeeds.AltinnApp.Defaults.DbResource),
             async postgres => await postgres.ResourceMetadataRepository.InsertAccessManagementResource(ResourceSeeds.MaskinportenSchema.Defaults.DbResource),
         ]);
+
+        foreach (var random in Enumerable.Range(0, Random.Next(20)))
+        {
+            mock.DbSeeds.AddRange([
+                async postgres =>
+                {
+                    var delegation = postgres.NewDelegationChange(
+                        postgres.WithToParty(RandPartyId),
+                        postgres.WithFrom(RandPartyId),
+                        postgres.WithResource(ResourceSeeds.AltinnApp.Defaults));
+
+                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.ResourceRegistry, delegation);
+                },
+                async postgres =>
+                {
+                    var delegation = postgres.NewDelegationChange(
+                        postgres.WithToUser(RandUserId),
+                        postgres.WithFrom(RandPartyId),
+                        postgres.WithResource(ResourceSeeds.MaskinportenSchema.Defaults));
+
+                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.AltinnAppId, delegation);
+                }
+            ]);
+        }
     }
 
     /// <summary>
@@ -111,6 +142,30 @@ public static class DelegationScenarios
                 postgres.NewDelegationChange(
                     postgres.WithFrom(from),
                     postgres.WithToUser(to),
+                    postgres.WithResource(resource)))
+        ]);
+    };
+
+    /// <summary>
+    /// Adds mock context and db seeds. for given organization, person and resource
+    /// </summary>
+    /// <param name="from">from organization</param>
+    /// <param name="to">to person</param>
+    /// <param name="resource">resource</param>
+    /// <returns></returns>
+    public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => (host, mock) =>
+    {
+        resource ??= ResourceSeeds.AltinnApp.Defaults;
+
+        mock.Resources.Add(resource.Resource);
+        mock.Parties.AddRange([from.Party, to.Party]);
+
+        mock.DbSeeds.AddRange([
+            async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
+                ResourceAttributeMatchType.ResourceRegistry,
+                postgres.NewDelegationChange(
+                    postgres.WithFrom(from),
+                    postgres.WithToParty(to),
                     postgres.WithResource(resource)))
         ]);
     };

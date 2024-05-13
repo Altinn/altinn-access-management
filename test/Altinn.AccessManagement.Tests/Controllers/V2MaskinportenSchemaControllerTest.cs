@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
@@ -20,14 +21,23 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
 {
     private WebApplicationFixture Fixture { get; } = fixture;
 
-    // public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegations(int from, int to) => test =>
-    // {
-    //     test.ApiAssertions.Add(async api =>
-    //     {
-    //         var actual = await api.Postgres.ListDelegationsChangesRR(delegations => delegations.Where(delegation => delegation.OfferedByPartyId == from && delegation.CoveredByPartyId == to));
-    //         Assert.NotEmpty(actual);
-    //     });
-    // };
+    public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToParty(int from, int to, string resource) => test =>
+    {
+        test.ApiAssertions.Add(async host =>
+        {
+            var actual = await host.Repository.DelegationMetadataRepository.GetAllCurrentResourceRegistryDelegationChanges(from.SingleToList(), resource.SingleToList(), to.SingleToList());
+            Assert.NotEmpty(actual);
+        });
+    };
+
+    public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToUser(int from, int to, string resource) => test =>
+    {
+        test.ApiAssertions.Add(async host =>
+        {
+            var actual = await host.Repository.DelegationMetadataRepository.GetAllCurrentResourceRegistryDelegationChanges(from.SingleToList(), resource.SingleToList(), coveredByUserId: to);
+            Assert.NotEmpty(actual);
+        });
+    };
 
     /// <summary>
     /// Assert response
@@ -72,9 +82,12 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
                 THEN Voss accounting should be in the list of offered delegations",
                 OrganizationSeeds.VossConsulting.PartyId,
 
-                WithScenarios(DelegationScenarios.Defaults),
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.MaskinportenSchema.Defaults)
+                ),
 
-                // WithAssertDbContainsDelegations(OrganizationSeeds.VossConsulting.PartyId, OrganizationSeeds.VossAccounting.PartyId),
+                WithAssertDbContainsDelegationsToParty(OrganizationSeeds.VossConsulting.PartyId, OrganizationSeeds.VossAccounting.PartyId, ResourceSeeds.MaskinportenSchema.Identifier),
                 WithAssertResponseContainsDelegations(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
                 WithAssertResponseStatusCodeSuccessful)
         ];
@@ -84,7 +97,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     /// <see cref="MaskinportenSchemaController.GetOfferedMaskinportenSchemaDelegations(string)"/>
     /// </summary>
     /// <param name="acceptanceCriteria">acceptance criteria</param>
-    [Theory(DisplayName = nameof(MaskinportenSchemaController.GetOfferedMaskinportenSchemaDelegations))]
+    [Theory]
     [MemberData(nameof(SeedGetOfferedMaskinportenSchemaDelegations.Seeds), MemberType = typeof(SeedGetOfferedMaskinportenSchemaDelegations))]
     public async Task GET_GetOfferedMaskinportenSchemaDelegations(SeedGetOfferedMaskinportenSchemaDelegations acceptanceCriteria) => await acceptanceCriteria.Test(Fixture);
 }

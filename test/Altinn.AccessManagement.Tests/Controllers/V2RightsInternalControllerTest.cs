@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Controllers;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
@@ -22,20 +23,19 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
 {
     private WebApplicationFixture Fixture { get; } = fixture;
 
-    // private static Action<AcceptanceCriteriaTest> WithAssertDbLastDelegationToUserIsRevoked(IParty from, IUserProfile to) => test =>
-    // {
-    //     test.ApiAssertions.Add(async fixture =>
-    //     {
-    //         var delegations = await fixture.Postgres.ListDelegationsChanges(filter => filter.Where(delegation => from.Party.PartyId == delegation.OfferedByPartyId && to.UserProfile.UserId == delegation.CoveredByUserId));
-    //         var latest = delegations.OrderByDescending(delegation => delegation.Created).First();
+    private static Action<AcceptanceCriteriaTest> WithAssertDbLastDelegationToUserIsRevoked(string appId, IParty from, IUserProfile to) => test =>
+    {
+        test.ApiAssertions.Add(async host =>
+        {
+            var delegations = await host.Repository.DelegationMetadataRepository.GetAllAppDelegationChanges(appId, from.Party.PartyId, null, to.UserProfile.UserId);
+            var latest = delegations.OrderDescending().First();
+            Assert.True(
+                latest.DelegationChangeType == DelegationChangeType.RevokeLast,
+                $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'m, it's '{latest.DelegationChangeType}'");
+        });
+    };
 
-    //         Assert.True(
-    //             latest.DelegationChangeType == DelegationChangeType.RevokeLast,
-    //             $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'m, it's '{latest.DelegationChangeType}'");
-    //     });
-    // };
-
-    private static void WithAssertEmptyDelegationList(AcceptanceCriteriaTest test)
+    private static void WithAssertResponseEmptyDelegationList(AcceptanceCriteriaTest test)
     {
         test.ResponseAssertions.Add(async response =>
         {
@@ -49,11 +49,11 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         test.ResponseAssertions.Add(async response =>
         {
             var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-            var result = delegations.Any(delegation =>
-                    delegation.To.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()) &&
-                    delegation.From.Any(attribute => attribute.Value == from.Party.ToString()));
+            var result = delegations
+                .Where(delegation => delegation.To.Any(attribute => attribute.Value == to.UserProfile.UserId.ToString()))
+                .Where(delegation => delegation.From.Any(attribute => attribute.Value == from.Party.PartyId.ToString()));
 
-            Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
+            Assert.True(result.Any(), $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user profile '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}'");
         });
     };
 
@@ -62,11 +62,11 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         test.ResponseAssertions.Add(async response =>
         {
             var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-            var result = delegations.Any(delegation =>
-                delegation.To.Any(attribute => attribute.Value == from.Party.PartyId.ToString()) &&
-                delegation.From.Any(attribute => attribute.Value == to.Party.PartyId.ToString()));
+            var result = delegations
+                .Where(delegation => delegation.To.Any(attribute => attribute.Value == to.Party.PartyId.ToString()))
+                .Where(delegation => delegation.From.Any(attribute => attribute.Value == from.Party.PartyId.ToString()));
 
-            Assert.True(result, $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to party '{to.Party.Name}' with party ID '{to.Party.PartyId}'");
+            Assert.True(result.Any(), $"Response don't contain any delegations from '{from.Party.Name}' with party ID '{from.Party.PartyId}' to party '{to.Party.Name}' with party ID '{to.Party.PartyId}'");
         });
     };
 
@@ -103,40 +103,21 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertResponseContainsDelegationToUserProfile(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults)),
 
-            // new(
-            //     /* Acceptance Critieria */ @"
-            //     GIVEN that organization Voss Consulting has delegations to employee Paula
-            //     AND that the last delegation given to Paula is revoked
-            //     WHEN DAGL Olav for Voss requests offered delegations from Voss
-            //     THEN the list of delegation should be empty",
-            //     OrganizationSeeds.VossConsulting.PartyId,
+            new(
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss Consulting has delegations to organization Voss Accounting
+                WHEN DAGL Paula for Voss Consulting requests offered delegations from Voss Consulting
+                THEN Voss Accounting should be included in the list of offered delegations",
+                OrganizationSeeds.VossConsulting.PartyId,
 
-            //     WithScenarios(
-            //         DelegationScenarios.Defaults,
-            //         DelegationScenarios.FromOrganizationToPerson(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-            //         DelegationScenarios.WithRevokedDelegationToUser(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-            //         DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.Voss.Defaults),
-            //         TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults),
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
+                    TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)),
 
-            //     WithAssertDbDelegationsNotEmpty,
-            //     WithAssertDbLastDelegationToUserIsRevoked(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults),
-            //     WithAssertResponseStatusCodeSuccessful,
-            //     WithAssertEmptyDelegationList),
-
-            // new(
-            //     /* Acceptance Critieria */ @"
-            //     GIVEN that organization Voss Consulting has delegations to organization Voss Accounting
-            //     WHEN DAGL Paula for Voss Consulting requests offered delegations from Voss Consulting
-            //     THEN Voss Accounting should be included in the list of offered delegations",
-            //     OrganizationSeeds.VossConsulting.PartyId,
-
-            //     WithScenarios(
-            //         DelegationScenarios.Defaults,
-            //         DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults),
-            //         TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)),
-
-            //     WithAssertResponseStatusCodeSuccessful,
-            //     WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults)),
+                WithAssertResponseStatusCodeSuccessful,
+                WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults)),
         };
     }
 
@@ -144,7 +125,8 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
     /// <see cref="RightsInternalController.GetOfferedRights(int, CancellationToken)"/>
     /// </summary>
     /// <param name="acceptanceCriteria">acceptance test</param>
-    [Theory(DisplayName = nameof(RightsInternalController.GetOfferedRights))]
+    [Theory]
+
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
     public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered acceptanceCriteria) => await acceptanceCriteria.Test(Fixture);
 }

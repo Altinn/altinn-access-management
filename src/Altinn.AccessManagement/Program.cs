@@ -86,7 +86,7 @@ void ConfigureSetupLogging()
 
     logger = logFactory.CreateLogger<Program>();
 
-    NpgsqlLoggingConfiguration.InitializeLogging(logFactory);
+    // NpgsqlLoggingConfiguration.InitializeLogging(logFactory);
 }
 
 void ConfigureLogging(ILoggingBuilder logging)

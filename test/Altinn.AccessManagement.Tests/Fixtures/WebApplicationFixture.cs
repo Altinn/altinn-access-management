@@ -25,28 +25,28 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// <summary>
 /// Test server for Access management API
 /// </summary>
-public class WebApplicationFixture : WebApplicationFactory<Program>
+public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
     /// <summary>
     /// Postgres test container
     /// </summary>
-    private PostgresDb Postgres { get; set; }
+    public PostgresServer PostgresServer { get; set; }
 
     /// <summary>
     /// ConfigureWebHost for setup of configuration and test services
     /// </summary>
     /// <param name="builder">IWebHostBuilder</param>
-    protected void ConfigureWebHost(IWebHostBuilder builder)
+    protected override async void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Postgres = PostgresFixture.NewDb().Result;
+        var db = await PostgresServer.CreateDb();
         builder.ConfigureAppConfiguration(config =>
            {
                config.AddConfiguration(new ConfigurationBuilder()
                    .AddJsonFile("appsettings.test.json")
                    .AddInMemoryCollection(new Dictionary<string, string>
                    {
-                       ["PostgreSQLSettings:AdminConnectionString"] = Postgres.Admin.ToString(),
-                       ["PostgreSQLSettings:ConnectionString"] = Postgres.User.ToString(),
+                       ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),
+                       ["PostgreSQLSettings:ConnectionString"] = db.User.ToString(),
                        ["PostgreSQLSettings:EnableDBConnection"] = "true",
                    })
                    .Build());
@@ -105,10 +105,10 @@ public class WebApplicationFixture : WebApplicationFactory<Program>
 
     private static void AddMockClients(IServiceCollection services)
     {
+        // services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
         services.AddSingleton<IPartiesClient, Contexts.PartiesClientMock>();
         services.AddSingleton<IProfileClient, Contexts.ProfileClientMock>();
         services.AddSingleton<IResourceRegistryClient, ResourceRegistryMock>();
-        // services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
 
         services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
         services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
@@ -120,11 +120,41 @@ public class WebApplicationFixture : WebApplicationFactory<Program>
         services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
         services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
     }
+
+    /// <summary>
+    /// Creates a new postgres server
+    /// </summary>
+    public async Task InitializeAsync()
+    {
+        PostgresServer = await PostgresFactory.NewDbServer();
+    }
+
+    /// <summary>
+    /// Destroys Postgres DB server
+    /// </summary>
+    public new Task DisposeAsync()
+    {
+        return PostgresServer.DisposeAsync().AsTask();
+    }
 }
 
+/// <summary>
+/// Container for the test server API and HTTP Client for sending requests 
+/// </summary>
 public class Host(WebApplicationFactory<Program> api, HttpClient client)
 {
+    /// <summary>
+    /// Test server
+    /// </summary>
     public WebApplicationFactory<Program> Api { get; } = api;
 
+    /// <summary>
+    /// Http Client with predefined base route to the API
+    /// </summary>
     public HttpClient Client { get; } = client;
+
+    /// <summary>
+    /// Repository Container
+    /// </summary>
+    public RepositoryContainer Repository => Api.Services.GetRequiredService<RepositoryContainer>();
 }

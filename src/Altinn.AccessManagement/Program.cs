@@ -81,7 +81,6 @@ void ConfigureSetupLogging()
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
             .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug);
-        // .AddConsole();
     });
 
     logger = logFactory.CreateLogger<Program>();

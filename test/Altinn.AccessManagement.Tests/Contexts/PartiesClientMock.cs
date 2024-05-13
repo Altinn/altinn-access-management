@@ -8,6 +8,7 @@ using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Contexts;
+
 /// <inheritdoc/>
 public class PartiesClientMock(MockContext context) : IPartiesClient
 {

@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
-using Altinn.AccessManagement.Tests.Fixtures;
 
 namespace Altinn.AccessManagement.Tests.Contexts;
 

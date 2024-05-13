@@ -26,8 +26,9 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : IClassFix
     /// <returns></returns>
     public static Action<AcceptanceCriteriaTest> WithAssertResourceExistsInDb(AccessManagementResource expected) => test =>
     {
-        test.ApiAssertions.Add(async api =>
+        test.ApiAssertions.Add(async host =>
         {
+            await Task.CompletedTask;
         });
     };
 
@@ -42,7 +43,6 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : IClassFix
         ResourceRegistryId = "test_id123",
         ResourceType = ResourceType.AltinnApp
     };
-
 
     /// <summary>
     /// Seeds for <see cref="SeedPostUpsertResource"/>

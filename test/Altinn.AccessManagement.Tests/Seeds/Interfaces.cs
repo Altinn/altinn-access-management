@@ -34,7 +34,6 @@ public interface IUserProfile
 /// </summary>
 public interface IAccessManagementResource
 {
-
     /// <summary>
     /// Db resource
     /// </summary>

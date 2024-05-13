@@ -21,6 +21,9 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
 {
     private WebApplicationFixture Fixture { get; } = fixture;
 
+    /// <summary>
+    /// Verifies that a delegation from and to party exists in database
+    /// </summary>
     public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToParty(int from, int to, string resource) => test =>
     {
         test.ApiAssertions.Add(async host =>
@@ -30,6 +33,9 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
         });
     };
 
+    /// <summary>
+    /// Verifies that a delegation from given party and to user exists 
+    /// </summary>
     public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToUser(int from, int to, string resource) => test =>
     {
         test.ApiAssertions.Add(async host =>
@@ -84,8 +90,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
 
                 WithScenarios(
                     DelegationScenarios.Defaults,
-                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.MaskinportenSchema.Defaults)
-                ),
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.MaskinportenSchema.Defaults)),
 
                 WithAssertDbContainsDelegationsToParty(OrganizationSeeds.VossConsulting.PartyId, OrganizationSeeds.VossAccounting.PartyId, ResourceSeeds.MaskinportenSchema.Identifier),
                 WithAssertResponseContainsDelegations(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),

@@ -32,10 +32,9 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     /// ConfigureWebHost for setup of configuration and test services
     /// </summary>
     /// <param name="builder">IWebHostBuilder</param>
-    protected new void ConfigureWebHost(IWebHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var db = PostgresServer.NewDatabase();
-        Console.WriteLine(db.Dbname);
         builder.ConfigureAppConfiguration(config =>
            {
                config.AddConfiguration(new ConfigurationBuilder()

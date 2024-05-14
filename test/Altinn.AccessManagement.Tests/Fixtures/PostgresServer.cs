@@ -19,7 +19,6 @@ public static class PostgresServer
 {
     private static PostgreSqlContainer Server { get; } = new PostgreSqlBuilder()
         .WithCleanUp(true)
-        .WithImage("docker.io/postgres:16.1-alpine")
         .Build();
 
     private static Mutex Mutex { get; } = new();

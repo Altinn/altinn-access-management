@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -96,7 +97,6 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
 
             builder.ConfigureTestServices(services =>
             {
-                services.AddSingleton<RepositoryContainer>();
                 services.AddSingleton(mock);
                 AddMockClients(services);
             });
@@ -132,9 +132,9 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     /// <summary>
     /// Destroys Postgres DB server
     /// </summary>
-    public new Task DisposeAsync()
+    public new async Task DisposeAsync()
     {
-        return PostgresServer.DisposeAsync().AsTask();
+        await PostgresServer.DisposeAsync();
     }
 }
 

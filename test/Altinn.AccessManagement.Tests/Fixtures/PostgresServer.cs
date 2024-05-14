@@ -25,9 +25,9 @@ public static class PostgresServer
         .WithImage("docker.io/postgres:16.1-alpine")
         .Build();
 
-    private static readonly Mutex Mutex = new();
+    private static Mutex Mutex { get; } = new();
 
-    private static ConcurrentDictionary<object, int> Consumers = new();
+    private static ConcurrentDictionary<object, int> Consumers { get; } = new();
 
     private static int DatabaseInstance { get; set; } = 0;
 
@@ -46,6 +46,10 @@ public static class PostgresServer
     /// </summary>
     public static readonly string DbAdminName = "platform_authorization_admin";
 
+    /// <summary>
+    /// Must be called before getting creating databases
+    /// </summary>
+    /// <param name="consumer">this</param>
     public static void StartUsing(object consumer)
     {
         Mutex.WaitOne();
@@ -77,6 +81,9 @@ public static class PostgresServer
         }
     }
 
+    /// <summary>
+    /// Should be called after tests are executed
+    /// </summary>
     public static void StopUsing(object consumer)
     {
         Mutex.WaitOne();
@@ -84,7 +91,12 @@ public static class PostgresServer
         {
             Consumers.AddOrUpdate(consumer, 1, (consumer, current) =>
             {
-                return --current;
+                if (current > 0)
+                {
+                    return --current;
+                }
+
+                return 0;
             });
 
             if (Consumers.Values.Sum() == 0)

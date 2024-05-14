@@ -125,7 +125,7 @@ public static class PostgresServer
                 throw new XunitException($"Failed to create database {dbname}");
             }
 
-            return new(dbname, Server.GetConnectionString());
+            return new(dbname, Server.GetConnectionString() + "; Include Error Detail=true; Pooling=false;");
         }
         finally
         {

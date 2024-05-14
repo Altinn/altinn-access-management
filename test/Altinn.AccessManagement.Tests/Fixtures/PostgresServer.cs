@@ -154,7 +154,6 @@ public class PostgresDatabase(string dbname, string connectionString)
     /// </summary>
     public NpgsqlConnectionStringBuilder User { get; } = new NpgsqlConnectionStringBuilder(connectionString)
     {
-
         Database = dbname,
         Username = PostgresServer.DbUserName,
         Password = PostgresServer.DbPassword,

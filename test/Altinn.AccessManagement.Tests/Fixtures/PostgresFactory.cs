@@ -1,4 +1,9 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Printing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
@@ -13,8 +18,19 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// <summary>
 /// Postgres singleton that creates a npg sql server and creates a new database for each test 
 /// </summary>
-public static class PostgresFactory
+public static class PostgresServer
 {
+    private static PostgreSqlContainer Server { get; } = new PostgreSqlBuilder()
+        .WithCleanUp(true)
+        .WithImage("docker.io/postgres:16.1-alpine")
+        .Build();
+
+    private static readonly Mutex Mutex = new();
+
+    private static ConcurrentDictionary<object, int> Consumers = new();
+
+    private static int DatabaseInstance { get; set; } = 0;
+
     /// <summary>
     /// Database Password
     /// </summary>
@@ -30,62 +46,79 @@ public static class PostgresFactory
     /// </summary>
     public static readonly string DbAdminName = "platform_authorization_admin";
 
+    public static void StartUsing(object consumer)
+    {
+        Mutex.WaitOne();
+        try
+        {
+            Consumers.AddOrUpdate(consumer, 1, (consumer, current) =>
+            {
+                return ++current;
+            });
+
+            if (Consumers.Values.Sum() == 1)
+            {
+                Server.StartAsync().Wait();
+                var result = Server.ExecScriptAsync($@"
+                    CREATE USER {DbUserName} WITH PASSWORD '{DbPassword}';
+                    CREATE USER {DbAdminName} WITH PASSWORD '{DbPassword}';
+                    ALTER ROLE {DbUserName} LOGIN INHERIT;
+                    ALTER ROLE {DbAdminName} LOGIN SUPERUSER INHERIT;").Result;
+
+                if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
+                {
+                    throw new XunitException($"Failed to create users");
+                }
+            }
+        }
+        finally
+        {
+            Mutex.ReleaseMutex();
+        }
+    }
+
+    public static void StopUsing(object consumer)
+    {
+        Mutex.WaitOne();
+        try
+        {
+            Consumers.AddOrUpdate(consumer, 1, (consumer, current) =>
+            {
+                return --current;
+            });
+
+            if (Consumers.Values.Sum() == 0)
+            {
+                Server.StopAsync().Wait();
+            }
+        }
+        finally
+        {
+            Mutex.ReleaseMutex();
+        }
+    }
+
     /// <summary>
     /// Creates a new database and connection string
     /// </summary>
-    public static async Task<PostgresServer> NewDbServer()
+    public static async Task<PostgresDatabase> NewDatabase()
     {
-        var database = new PostgreSqlBuilder()
-                .WithCleanUp(true)
-                .WithImage("docker.io/postgres:16.1-alpine")
-                .Build();
-
-        await database.StartAsync();
-
-        var result = await database.ExecScriptAsync($@"
-            CREATE USER {DbUserName} WITH PASSWORD '{DbPassword}';
-            CREATE USER {DbAdminName} WITH PASSWORD '{DbPassword}';
-            ALTER ROLE {DbUserName} LOGIN INHERIT;
-            ALTER ROLE {DbAdminName} LOGIN SUPERUSER INHERIT;");
-
-        if (result.ExitCode != 0)
+        Mutex.WaitOne();
+        try
         {
-            throw new ArgumentException();
+            var dbname = $"test_{DatabaseInstance++}";
+            var result = await Server.ExecScriptAsync($"CREATE DATABASE {dbname};");
+            if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
+            {
+                throw new XunitException($"Failed to create database {dbname}");
+            }
+
+            return new(dbname, Server.GetConnectionString());
         }
-
-        return new PostgresServer(database);
-    }
-}
-
-/// <summary>
-/// PostfgresServer
-/// </summary>
-public class PostgresServer(PostgreSqlContainer server) : IAsyncDisposable
-{
-    private PostgreSqlContainer Server { get; } = server;
-
-    private int DatabaseNumber { get; set; } = 0;
-
-    /// <summary>
-    /// Creates a new postgres DB
-    /// </summary>
-    /// <exception cref="ArgumentException">if database couldn't be created</exception>
-    public async Task<PostgresDatabase> CreateDb()
-    {
-        var dbname = $"test_{DatabaseNumber++}";
-        var result = await Server.ExecScriptAsync($"CREATE DATABASE {dbname};");
-        if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
+        finally
         {
-            throw new XunitException($"Failed to create database {dbname}");
+            Mutex.ReleaseMutex();
         }
-
-        return new(dbname, Server.GetConnectionString());
-    }
-
-    /// <inheritdoc/>
-    public async ValueTask DisposeAsync()
-    {
-        await Server.StopAsync();
     }
 }
 
@@ -108,8 +141,8 @@ public class PostgresDatabase(string dbname, string connectionString)
     public NpgsqlConnectionStringBuilder Admin { get; } = new NpgsqlConnectionStringBuilder(connectionString)
     {
         Database = dbname,
-        Username = PostgresFactory.DbAdminName,
-        Password = PostgresFactory.DbPassword,
+        Username = PostgresServer.DbAdminName,
+        Password = PostgresServer.DbPassword,
     };
 
     /// <summary>
@@ -118,8 +151,8 @@ public class PostgresDatabase(string dbname, string connectionString)
     public NpgsqlConnectionStringBuilder User { get; } = new NpgsqlConnectionStringBuilder(connectionString)
     {
         Database = dbname,
-        Username = PostgresFactory.DbUserName,
-        Password = PostgresFactory.DbPassword,
+        Username = PostgresServer.DbUserName,
+        Password = PostgresServer.DbPassword,
     };
 }
 

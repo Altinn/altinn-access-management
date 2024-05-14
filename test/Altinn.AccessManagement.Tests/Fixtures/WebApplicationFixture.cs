@@ -29,17 +29,13 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
     /// <summary>
-    /// Postgres test container
-    /// </summary>
-    public PostgresServer PostgresServer { get; set; }
-
-    /// <summary>
     /// ConfigureWebHost for setup of configuration and test services
     /// </summary>
     /// <param name="builder">IWebHostBuilder</param>
-    protected override async void ConfigureWebHost(IWebHostBuilder builder)
+    protected void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var db = await PostgresServer.CreateDb();
+        var db = PostgresServer.NewDatabase().Result;
+        Console.WriteLine(db.Dbname);
         builder.ConfigureAppConfiguration(config =>
            {
                config.AddConfiguration(new ConfigurationBuilder()
@@ -124,17 +120,19 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     /// <summary>
     /// Creates a new postgres server
     /// </summary>
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
-        PostgresServer = await PostgresFactory.NewDbServer();
+        PostgresServer.StartUsing(this);
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Destroys Postgres DB server
     /// </summary>
-    public new async Task DisposeAsync()
+    public new Task DisposeAsync()
     {
-        await PostgresServer.DisposeAsync();
+        PostgresServer.StopUsing(this);
+        return Task.CompletedTask;
     }
 }
 

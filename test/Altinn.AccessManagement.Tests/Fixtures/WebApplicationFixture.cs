@@ -83,7 +83,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
             }
 
             mock.Parties = mock.Parties.DistinctBy(party => party.PartyId).ToList();
-            mock.UserProfiles = mock.UserProfiles.DistinctBy(userProfile => userProfile.PartyId).ToList();
+            mock.UserProfiles = mock.UserProfiles.DistinctBy(userProfile => userProfile.UserId).ToList();
             mock.Resources = mock.Resources.DistinctBy(resource => resource.Identifier).ToList();
 
             builder.ConfigureServices(services =>

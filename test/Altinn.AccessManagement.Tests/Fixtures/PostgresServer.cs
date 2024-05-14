@@ -116,7 +116,7 @@ public static class PostgresServer
         {
             var dbname = $"test_{DatabaseInstance++}";
             Server.ExecScriptAsync($"CREATE DATABASE {dbname};").Wait();
-            return new(dbname, Server.GetConnectionString() + "; Include Error Detail=true; Pooling=false;");
+            return new(dbname, Server.GetConnectionString());
         }
         finally
         {

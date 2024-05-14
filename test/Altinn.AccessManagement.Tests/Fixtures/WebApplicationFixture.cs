@@ -34,7 +34,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     /// <param name="builder">IWebHostBuilder</param>
     protected new void ConfigureWebHost(IWebHostBuilder builder)
     {
-        var db = PostgresServer.NewDatabase().Result;
+        var db = PostgresServer.NewDatabase();
         Console.WriteLine(db.Dbname);
         builder.ConfigureAppConfiguration(config =>
            {

@@ -109,20 +109,13 @@ public static class PostgresServer
     /// <summary>
     /// Creates a new database and connection string
     /// </summary>
-    public static async Task<PostgresDatabase> NewDatabase()
+    public static PostgresDatabase NewDatabase()
     {
         Mutex.WaitOne();
         try
         {
             var dbname = $"test_{DatabaseInstance++}";
-            var result = await Server.ExecScriptAsync($"CREATE DATABASE {dbname};");
-            if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
-            {
-                throw new XunitException($"Failed to create database {dbname}");
-            }
-
-            Console.WriteLine("!!!!!-----" + Server.GetConnectionString());
-
+            Server.ExecScriptAsync($"CREATE DATABASE {dbname};").Wait();
             return new(dbname, Server.GetConnectionString() + "; Include Error Detail=true; Pooling=false;");
         }
         finally

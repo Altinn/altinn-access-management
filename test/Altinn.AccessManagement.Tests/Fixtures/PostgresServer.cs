@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Tests.Seeds;
@@ -19,6 +18,7 @@ public static class PostgresServer
 {
     private static PostgreSqlContainer Server { get; } = new PostgreSqlBuilder()
         .WithCleanUp(true)
+        .WithImage("docker.io/postgres:16.1-alpine")
         .Build();
 
     private static Mutex Mutex { get; } = new();

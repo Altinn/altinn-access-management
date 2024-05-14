@@ -143,6 +143,7 @@ public class PostgresDatabase(string dbname, string connectionString)
     /// </summary>
     public NpgsqlConnectionStringBuilder Admin { get; } = new NpgsqlConnectionStringBuilder(connectionString)
     {
+        Timeout = 3,
         Database = dbname,
         Username = PostgresServer.DbAdminName,
         Password = PostgresServer.DbPassword,
@@ -154,6 +155,7 @@ public class PostgresDatabase(string dbname, string connectionString)
     /// </summary>
     public NpgsqlConnectionStringBuilder User { get; } = new NpgsqlConnectionStringBuilder(connectionString)
     {
+        Timeout = 3,
         Database = dbname,
         Username = PostgresServer.DbUserName,
         Password = PostgresServer.DbPassword,

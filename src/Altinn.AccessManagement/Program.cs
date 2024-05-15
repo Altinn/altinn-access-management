@@ -54,6 +54,11 @@ ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string connectionString = builder.Configuration.GetConnectionString("AppConfig");
+
+// builder.Services.Configure<Settings>(builder.Configuration.GetSection("TestApp:Settings"));
+//builder.Configuration.AddAzureAppConfiguration(connectionString);
+
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
 

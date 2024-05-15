@@ -4,6 +4,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using AutoMapper;
@@ -20,7 +21,6 @@ namespace Altinn.AccessManagement.Controllers;
 [Route("accessmanagement/api/v1/")]
 public class AuthorizedPartiesController : ControllerBase
 {
-    private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly IAuthorizedPartiesService _authorizedPartiesService;
     private readonly IContextRetrievalService _contextRetrievalService;
@@ -28,17 +28,11 @@ public class AuthorizedPartiesController : ControllerBase
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthorizedPartiesController"/> class.
     /// </summary>
-    /// <param name="logger">logger service</param>
     /// <param name="mapper">mapper service</param>
     /// <param name="authorizedPartiesService">service implementation for authorized parties</param>
     /// <param name="contextRetrievalService">service implementation for getting information regaring users, party etc.</param>
-    public AuthorizedPartiesController(
-        ILogger<AuthorizedPartiesController> logger,
-        IMapper mapper,
-        IAuthorizedPartiesService authorizedPartiesService,
-        IContextRetrievalService contextRetrievalService)
+    public AuthorizedPartiesController(IMapper mapper, IAuthorizedPartiesService authorizedPartiesService, IContextRetrievalService contextRetrievalService)
     {
-        _logger = logger;
         _mapper = mapper;
         _authorizedPartiesService = authorizedPartiesService;
         _contextRetrievalService = contextRetrievalService;
@@ -64,6 +58,7 @@ public class AuthorizedPartiesController : ControllerBase
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
     public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedParties(bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             int userId = AuthenticationHelper.GetUserId(HttpContext);
@@ -78,7 +73,7 @@ public class AuthorizedPartiesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(500, ex, "Unexpected internal exception occurred during GetAuthorizedParties");
+            activity?.StopWithError(ex);
             return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
         }
     }
@@ -104,6 +99,7 @@ public class AuthorizedPartiesController : ControllerBase
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
     public async Task<ActionResult<AuthorizedPartyExternal>> GetAuthorizedParty([FromRoute] int partyId, bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             int userId = AuthenticationHelper.GetUserId(HttpContext);
@@ -117,6 +113,7 @@ public class AuthorizedPartiesController : ControllerBase
 
             if (authorizedParty == null)
             {
+                activity?.StopWithError(TelemetryEvents.Api.InvalidParty(partyId, userId), "InvalidParty");
                 ModelState.AddModelError("InvalidParty", "The party id is either invalid or is not an authorized party for the authenticated user");
                 return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
             }
@@ -125,7 +122,7 @@ public class AuthorizedPartiesController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(500, ex, "Unexpected internal exception occurred during GetAuthorizedParties");
+            activity.StopWithError(ex);
             return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
         }
     }
@@ -151,6 +148,7 @@ public class AuthorizedPartiesController : ControllerBase
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
     public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedPartiesAsAccessManager([FromRoute] int party, bool includeAltinn2 = false, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             int authenticatedUserPartyId = AuthenticationHelper.GetPartyId(HttpContext);
@@ -167,12 +165,13 @@ public class AuthorizedPartiesController : ControllerBase
         }
         catch (ArgumentException ex)
         {
+            activity.StopWithError(ex);
             ModelState.AddModelError("Argument exception", ex.Message);
             return new ObjectResult(ProblemDetailsFactory.CreateValidationProblemDetails(HttpContext, ModelState));
         }
         catch (Exception ex)
         {
-            _logger.LogError(500, ex, "Unexpected internal exception occurred during GetAuthorizedParties");
+            activity.StopWithError(ex);
             return new ObjectResult(ProblemDetailsFactory.CreateProblemDetails(HttpContext, detail: "Internal Server Error"));
         }
     }

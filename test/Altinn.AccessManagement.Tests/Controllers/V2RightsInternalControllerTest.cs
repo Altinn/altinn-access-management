@@ -23,7 +23,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
 {
     private WebApplicationFixture Fixture { get; } = fixture;
 
-    private static Action<AcceptanceCriteriaTest> WithAssertDbLastDelegationToUserIsRevoked(string appId, IParty from, IUserProfile to) => test =>
+    private static Action<AcceptanceCriteriaComposer> WithAssertDbLastDelegationToUserIsRevoked(string appId, IParty from, IUserProfile to) => test =>
     {
         test.ApiAssertions.Add(async host =>
         {
@@ -35,7 +35,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         });
     };
 
-    private static void WithAssertResponseEmptyDelegationList(AcceptanceCriteriaTest test)
+    private static void WithAssertResponseEmptyDelegationList(AcceptanceCriteriaComposer test)
     {
         test.ResponseAssertions.Add(async response =>
         {
@@ -44,7 +44,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         });
     }
 
-    private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
+    private static Action<AcceptanceCriteriaComposer> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
     {
         test.ResponseAssertions.Add(async response =>
         {
@@ -57,7 +57,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         });
     };
 
-    private static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegationToParty(IParty from, IParty to) => test =>
+    private static Action<AcceptanceCriteriaComposer> WithAssertResponseContainsDelegationToParty(IParty from, IParty to) => test =>
     {
         test.ResponseAssertions.Add(async response =>
         {
@@ -75,8 +75,8 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
     /// </summary>
     /// <param name="acceptanceCriteria">Acceptance Criteria</param>
     /// <param name="partyId">partyId in URL</param>
-    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaTest"/></param>
-    public class SeedGetRightsDelegationsOffered(string acceptanceCriteria, int partyId, params Action<AcceptanceCriteriaTest>[] actions) : AcceptanceCriteriaTest(
+    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaComposer"/></param>
+    public class SeedGetRightsDelegationsOffered(string acceptanceCriteria, int partyId, params Action<AcceptanceCriteriaComposer>[] actions) : AcceptanceCriteriaComposer(
             acceptanceCriteria,
             actions,
             WithRequestRoute("accessmanagement", "api", "v1", "internal", partyId, "rights", "delegation", "offered"),

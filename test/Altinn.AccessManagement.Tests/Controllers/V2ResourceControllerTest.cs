@@ -24,7 +24,7 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : IClassFix
     /// </summary>
     /// <param name="expected">excpected resource to exsist</param>
     /// <returns></returns>
-    public static Action<AcceptanceCriteriaTest> WithAssertResourceExistsInDb(AccessManagementResource expected) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithAssertResourceExistsInDb(AccessManagementResource expected) => test =>
     {
         test.ApiAssertions.Add(async host =>
         {
@@ -48,8 +48,8 @@ public class V2ResourceControllerTest(WebApplicationFixture fixture) : IClassFix
     /// Seeds for <see cref="SeedPostUpsertResource"/>
     /// </summary>
     /// <param name="acceptanceCriteria">Acceptance Criteria</param>
-    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaTest"/></param>
-    public class SeedPostUpsertResource(string acceptanceCriteria, params Action<AcceptanceCriteriaTest>[] actions) : AcceptanceCriteriaTest(
+    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaComposer"/></param>
+    public class SeedPostUpsertResource(string acceptanceCriteria, params Action<AcceptanceCriteriaComposer>[] actions) : AcceptanceCriteriaComposer(
             acceptanceCriteria,
             actions,
             WithRequestRoute("accessmanagement", "api", "v1", "internal", "resources"),

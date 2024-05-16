@@ -24,7 +24,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     /// <summary>
     /// Verifies that a delegation from and to party exists in database
     /// </summary>
-    public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToParty(int from, int to, string resource) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithAssertDbContainsDelegationsToParty(int from, int to, string resource) => test =>
     {
         test.ApiAssertions.Add(async host =>
         {
@@ -36,7 +36,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     /// <summary>
     /// Verifies that a delegation from given party and to user exists 
     /// </summary>
-    public static Action<AcceptanceCriteriaTest> WithAssertDbContainsDelegationsToUser(int from, int to, string resource) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithAssertDbContainsDelegationsToUser(int from, int to, string resource) => test =>
     {
         test.ApiAssertions.Add(async host =>
         {
@@ -51,7 +51,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     /// <param name="from">delegated from</param>
     /// <param name="to">delegation to</param>
     /// <returns></returns>
-    public static Action<AcceptanceCriteriaTest> WithAssertResponseContainsDelegations(IParty from, IParty to) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithAssertResponseContainsDelegations(IParty from, IParty to) => test =>
     {
         test.ResponseAssertions.Add(async response =>
         {
@@ -68,8 +68,8 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     /// </summary>
     /// <param name="acceptanceCriteria">Acceptance Criteria</param>
     /// <param name="partyId">party id</param>
-    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaTest"/></param>
-    public class SeedGetOfferedMaskinportenSchemaDelegations(string acceptanceCriteria, int partyId, params Action<AcceptanceCriteriaTest>[] actions) : AcceptanceCriteriaTest(
+    /// <param name="actions">modifiers for <see cref="AcceptanceCriteriaComposer"/></param>
+    public class SeedGetOfferedMaskinportenSchemaDelegations(string acceptanceCriteria, int partyId, params Action<AcceptanceCriteriaComposer>[] actions) : AcceptanceCriteriaComposer(
             acceptanceCriteria,
             actions,
 

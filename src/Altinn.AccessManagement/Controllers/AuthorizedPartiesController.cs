@@ -113,7 +113,8 @@ public class AuthorizedPartiesController : ControllerBase
             }
 
             List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForUser(userId, includeAltinn2, cancellationToken);
-            AuthorizedParty authorizedParty = authorizedParties.Find(p => p.PartyId == partyId);
+            AuthorizedParty authorizedParty = authorizedParties.Find(ap => ap.PartyId == partyId && !ap.OnlyHierarchyElementWithNoAccess)
+                ?? authorizedParties.SelectMany(ap => ap.Subunits).FirstOrDefault(subunit => subunit.PartyId == partyId);
 
             if (authorizedParty == null)
             {

@@ -46,14 +46,19 @@
         public const string POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES = "ResourceOwnerAuthorizedParty";
 
         /// <summary>
-        /// Scope giving access to getting authorized parties for a third party, for which the third party have access to one or more of the resource owners services, apps or resources.
+        /// Scope giving access to getting authorized parties for a given subject.
         /// </summary>
-        public const string SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES = "altinn:resourceowner/authorizedparties";
+        public const string SCOPE_AUTHORIZEDPARTIES_ENDUSERSYSTEM = "altinn:accessmanagement/authorizedparties";
 
         /// <summary>
-        /// Scope giving access to getting all authorized parties for a third party
+        /// Scope giving access to getting authorized parties for any third party, for which the third party have access to one or more of the resource owners services, apps or resources.
         /// </summary>
-        public const string SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES_ADMIN = "altinn:resourceowner/authorizedparties.admin";
+        public const string SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER = "altinn:accessmanagement/authorizedparties.resourceowner";
+
+        /// <summary>
+        /// Scope giving access to getting all authorized parties for any third party
+        /// </summary>
+        public const string SCOPE_AUTHORIZEDPARTIES_ADMIN = "altinn:accessmanagement/authorizedparties.admin";
 
         /// <summary>
         /// Scope giving access to delegations for Maskinporten schemes owned by authenticated party 

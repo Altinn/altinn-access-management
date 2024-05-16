@@ -296,7 +296,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy =>
-            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES, AuthzConstants.SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES_ADMIN })));
+            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();

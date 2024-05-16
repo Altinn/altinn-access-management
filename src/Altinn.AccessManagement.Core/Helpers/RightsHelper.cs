@@ -3,6 +3,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.Authorization.ABAC.Constants;
 using Authorization.Platform.Authorization.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -91,14 +92,9 @@ namespace Altinn.AccessManagement.Core.Helpers
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
                 if (roleAccessSources.Any())
                 {
-                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
-                    IEnumerable<List<PolicyAttributeMatch>> polMatches = roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects);
-                    List<AttributeMatch> matchList = new List<AttributeMatch>();
-                    foreach (List<PolicyAttributeMatch> polMatch in polMatches)
-                    {
-                        matchList.AddRange(polMatch);
-                    }
-
+                    List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
+                    string requiredRoles = string.Join(", ", roles);
+                    
                     reasons.Add(new Detail
                     {
                         Code = DetailCode.RoleAccess,
@@ -106,7 +102,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                         Parameters = new Dictionary<string, List<AttributeMatch>>()
                         {
                             {
-                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects))
+                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase))
                             }
                         }
                     });
@@ -134,13 +130,14 @@ namespace Altinn.AccessManagement.Core.Helpers
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
                 if (roleAccessSources.Any())
                 {
-                    string requiredRoles = string.Join(", ", roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
+                    List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
+                    string requiredRoles = string.Join(", ", roles);
 
                     reasons.Add(new Detail
                     {
                         Code = DetailCode.MissingRoleAccess,
                         Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)) } }
+                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", roles } }
                     });
                 }
 

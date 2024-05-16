@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -117,7 +116,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     }
 
     /// <summary>
-    /// Creates a new postgres server
+    /// Signalize usage of postgres server
     /// </summary>
     public Task InitializeAsync()
     {
@@ -126,7 +125,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     }
 
     /// <summary>
-    /// Destroys Postgres DB server
+    /// Removes itself as consumer of the postgres server
     /// </summary>
     public new Task DisposeAsync()
     {
@@ -151,7 +150,7 @@ public class Host(WebApplicationFactory<Program> api, HttpClient client)
     public HttpClient Client { get; } = client;
 
     /// <summary>
-    /// Repository Container
+    /// Repository Container that contains database implementation
     /// </summary>
     public RepositoryContainer Repository => Api.Services.GetRequiredService<RepositoryContainer>();
 }

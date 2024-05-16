@@ -1,15 +1,71 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
+using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Persistence;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Tests.Seeds;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using Xunit;
 using Xunit.Sdk;
+using Yuniql.Core;
 
 namespace Altinn.AccessManagement.Tests.Fixtures;
+
+/// <summary>
+/// For running exclusively database tests. Before each tests, method <see cref="New"/> must be called in order
+/// to create a new database that runs isolated for that tests. This should be used as an <see cref="IClassFixture{PostgresFixture}"/>
+/// </summary>
+public class PostgresFixture : IAsyncLifetime
+{
+    private ConsoleTraceService Tracer { get; } = new ConsoleTraceService { IsDebugEnabled = true };
+
+    /// <summary>
+    /// Creates a new database and runs the migrations
+    /// </summary>
+    /// <returns></returns>
+    public PostgresDatabase New()
+    {
+        var db = PostgresServer.NewDatabase();
+        var configuration = new Yuniql.AspNetCore.Configuration
+        {
+            Platform = SUPPORTED_DATABASES.POSTGRESQL,
+            Workspace = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Migration"),
+            ConnectionString = db.Admin.ToString(),
+            IsAutoCreateDatabase = false,
+        };
+
+        var dataService = new Yuniql.PostgreSql.PostgreSqlDataService(Tracer);
+        var bulkImportService = new Yuniql.PostgreSql.PostgreSqlBulkImportService(Tracer);
+        var migrationServiceFactory = new MigrationServiceFactory(Tracer);
+        var migrationService = migrationServiceFactory.Create(dataService, bulkImportService);
+        ConfigurationHelper.Initialize(configuration);
+        migrationService.Run();
+        return db;
+    }
+
+    /// <inheritdoc/>
+    public Task DisposeAsync()
+    {
+        PostgresServer.StopUsing(this);
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public Task InitializeAsync()
+    {
+        PostgresServer.StartUsing(this);
+        return Task.CompletedTask;
+    }
+}
 
 /// <summary>
 /// Postgres singleton that creates a npg sql server and creates a new database for each test 
@@ -128,15 +184,23 @@ public static class PostgresServer
 /// <summary>
 /// Container for persisting connections string and database name
 /// </summary>
-/// <remarks>
-/// ctor
-/// </remarks>
-public class PostgresDatabase(string dbname, string connectionString)
+public class PostgresDatabase(string dbname, string connectionString) : IOptions<PostgreSQLSettings>
 {
     /// <summary>
     /// Database name
     /// </summary>
     public string Dbname { get; } = dbname;
+
+    /// <summary>
+    /// Creates <see cref="DelegationMetadataRepository"/>
+    /// </summary>
+    public IDelegationMetadataRepository DelegationMetadata =>
+        new DelegationMetadataRepository(new NpgsqlDataSourceBuilder(User.ToString()).Build());
+
+    /// <summary>
+    /// Creates <see cref="ResourceMetadata"/>
+    /// </summary>
+    public IResourceMetadataRepository ResourceMetadata => new ResourceMetadataRepository(this);
 
     /// <summary>
     /// Admin name
@@ -160,6 +224,15 @@ public class PostgresDatabase(string dbname, string connectionString)
         Username = PostgresServer.DbUserName,
         Password = PostgresServer.DbPassword,
         IncludeErrorDetail = true,
+    };
+
+    /// <summary>
+    /// Implements <see cref="IOptions{PostgreSQLSettings}"/> 
+    /// </summary>
+    public PostgreSQLSettings Value => new()
+    {
+        ConnectionString = User.ToString(),
+        AuthorizationDbPwd = User.Password
     };
 }
 

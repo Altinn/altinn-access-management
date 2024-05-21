@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Contexts;
+using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Seeds;
 using Microsoft.AspNetCore.Hosting;
 
@@ -43,19 +45,19 @@ public static class DelegationScenarios
             mock.DbSeeds.AddRange([
                 async postgres =>
                 {
-                    var delegation = postgres.NewDelegationChange(
-                        postgres.WithToParty(RandPartyId),
-                        postgres.WithFrom(RandPartyId),
-                        postgres.WithResource(ResourceSeeds.AltinnApp.Defaults));
+                    var delegation = DelegationChangeComposer.New(
+                        DelegationChangeComposer.WithToParty(RandPartyId),
+                        DelegationChangeComposer.WithFrom(RandPartyId),
+                        DelegationChangeComposer.WithResource(ResourceSeeds.AltinnApp.Defaults));
 
                     await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.ResourceRegistry, delegation);
                 },
                 async postgres =>
                 {
-                    var delegation = postgres.NewDelegationChange(
-                        postgres.WithToUser(RandUserId),
-                        postgres.WithFrom(RandPartyId),
-                        postgres.WithResource(ResourceSeeds.MaskinportenSchema.Defaults));
+                    var delegation = DelegationChangeComposer.New(
+                        DelegationChangeComposer.WithToUser(RandUserId),
+                        DelegationChangeComposer.WithFrom(RandPartyId),
+                        DelegationChangeComposer.WithResource(ResourceSeeds.MaskinportenSchema.Defaults));
 
                     await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.AltinnAppId, delegation);
                 }
@@ -113,11 +115,11 @@ public static class DelegationScenarios
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
                 ResourceAttributeMatchType.AltinnAppId,
-                postgres.NewDelegationChange(
-                    postgres.WithFrom(organization),
-                    postgres.WithToUser(person),
-                    postgres.WithResource(resource),
-                    postgres.WithDelegationChangeRevokeLast))
+                DelegationChangeComposer.New(
+                    DelegationChangeComposer.WithFrom(organization),
+                    DelegationChangeComposer.WithToUser(person),
+                    DelegationChangeComposer.WithResource(resource),
+                    DelegationChangeComposer.WithDelegationChangeRevokeLast))
         ]);
     };
 
@@ -139,10 +141,10 @@ public static class DelegationScenarios
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
                 ResourceAttributeMatchType.ResourceRegistry,
-                postgres.NewDelegationChange(
-                    postgres.WithFrom(from),
-                    postgres.WithToUser(to),
-                    postgres.WithResource(resource)))
+                DelegationChangeComposer.New(
+                    DelegationChangeComposer.WithFrom(from),
+                    DelegationChangeComposer.WithToUser(to),
+                    DelegationChangeComposer.WithResource(resource)))
         ]);
     };
 
@@ -163,10 +165,10 @@ public static class DelegationScenarios
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
                 ResourceAttributeMatchType.ResourceRegistry,
-                postgres.NewDelegationChange(
-                    postgres.WithFrom(from),
-                    postgres.WithToParty(to),
-                    postgres.WithResource(resource)))
+                DelegationChangeComposer.New(
+                    DelegationChangeComposer.WithFrom(from),
+                    DelegationChangeComposer.WithToParty(to),
+                    DelegationChangeComposer.WithResource(resource)))
         ]);
     };
 }

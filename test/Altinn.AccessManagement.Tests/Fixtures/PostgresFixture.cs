@@ -250,11 +250,17 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// ResourceMetadataRepository
     /// </summary>
     public IResourceMetadataRepository ResourceMetadataRepository { get; } = resourceMetadataRepository;
+}
 
+/// <summary>
+/// Build a Delegation Change
+/// </summary>
+public static class DelegationChangeComposer
+{
     /// <summary>
     /// Creates a new delegation
     /// </summary>
-    public static DelegationChange NewDelegationChange(params Action<DelegationChange>[] actions)
+    public static DelegationChange New(params Action<DelegationChange>[] actions)
     {
         var delegation = new DelegationChange()
         {

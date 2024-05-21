@@ -16,10 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None
-      Include="Migration\**"
-      CopyToOutputDirectory="PreserveNewest"
-      LinkBase="Migration\" />
+    <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

@@ -387,7 +387,7 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
+        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = false };
 
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),

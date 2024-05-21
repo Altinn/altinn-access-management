@@ -1,7 +1,7 @@
 meta {
   name: p2p the offering person revokes delegation
   type: http
-  seq: 6
+  seq: 10
 }
 
 post {
@@ -43,8 +43,8 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
-  org: ttd
-  app: apps-test-prod
+  org: 
+  app: 
   toLastName: 
   toSsn: 
 }
@@ -56,6 +56,8 @@ script:pre-request {
   bru.setVar("auth_ssn", testdata.org1.dagl.pid);
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("toUserId", testdata.org2.dagl.userid);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
   
   await tokenGenerator.getToken();
 }

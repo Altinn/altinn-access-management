@@ -1,7 +1,7 @@
 meta {
-  name: o2p delegate org2person (again)
+  name: o2p delegate org2person A2
   type: http
-  seq: 16
+  seq: 8
 }
 
 post {
@@ -48,8 +48,8 @@ body:json {
 vars:pre-request {
   toSsn: 
   toLastName: 
-  org: 
-  app: 
+  org: ttd
+  app: apps-test-prod
   auth_tokenType: Personal
   auth_userId: 
   auth_partyId: 
@@ -65,14 +65,12 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("toSsn", testdata.org2.dagl.pid);
   bru.setVar("toLastName", testdata.org2.dagl.lastname);
-  bru.setVar("org", testdata.org);
-  bru.setVar("app", testdata.app);
   
   await tokenGenerator.getToken();
 }
 
 tests {
-  test("organization to person delegation (again)", function() {
+  test("organization to person Altinn2 delegation", function() {
     const data = res.getBody();  
     expect(res.status).to.equal(200);
     expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');

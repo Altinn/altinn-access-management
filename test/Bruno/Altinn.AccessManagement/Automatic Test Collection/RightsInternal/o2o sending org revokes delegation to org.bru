@@ -1,7 +1,7 @@
 meta {
   name: o2o sending org revokes delegation to org
   type: http
-  seq: 20
+  seq: 24
 }
 
 post {
@@ -43,8 +43,8 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
-  org: ttd
-  app: apps-test-prod
+  org: 
+  app: 
   toUserId: 
 }
 
@@ -55,6 +55,8 @@ script:pre-request {
   bru.setVar("auth_ssn", testdata.org1.dagl.pid);
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org2.partyid);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
   
   await tokenGenerator.getToken();
 }

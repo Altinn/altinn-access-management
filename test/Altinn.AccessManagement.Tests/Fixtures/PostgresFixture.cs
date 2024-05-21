@@ -254,7 +254,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// <summary>
     /// Creates a new delegation
     /// </summary>
-    public DelegationChange NewDelegationChange(params Action<DelegationChange>[] actions)
+    public static DelegationChange NewDelegationChange(params Action<DelegationChange>[] actions)
     {
         var delegation = new DelegationChange()
         {
@@ -293,7 +293,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// sets the field <see cref="DelegationChange.DelegationChangeType"/> to given delegation
     /// </summary>
     /// <param name="delegation">delegation</param>
-    public void WithDelegationChangeRevokeLast(DelegationChange delegation)
+    public static void WithDelegationChangeRevokeLast(DelegationChange delegation)
     {
         delegation.DelegationChangeType = DelegationChangeType.RevokeLast;
     }
@@ -302,7 +302,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// Sets the field <see cref="DelegationChange.ResourceId"/> to given "resource"
     /// </summary>
     /// <param name="resource">resource</param>
-    public Action<DelegationChange> WithResource(IAccessManagementResource resource) => delegation =>
+    public static Action<DelegationChange> WithResource(IAccessManagementResource resource) => delegation =>
     {
         delegation.ResourceId = resource.Resource.Identifier;
         delegation.ResourceType = resource.Resource.ResourceType.ToString();
@@ -313,7 +313,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// </summary>
     /// <param name="profile">user profile</param>
     /// <returns></returns>
-    public Action<DelegationChange> WithToUser(IUserProfile profile) => delegation =>
+    public static Action<DelegationChange> WithToUser(IUserProfile profile) => delegation =>
     {
         delegation.CoveredByUserId = profile.UserProfile.UserId;
     };
@@ -323,7 +323,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// </summary>
     /// <param name="userId">manual set user ID</param>
     /// <returns></returns>
-    public Action<DelegationChange> WithToUser(int userId) => delegation =>
+    public static Action<DelegationChange> WithToUser(int userId) => delegation =>
     {
         delegation.CoveredByUserId = userId;
     };
@@ -332,7 +332,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given party
     /// </summary>
     /// <param name="party">party</param>
-    public Action<DelegationChange> WithToParty(IParty party) => delegation =>
+    public static Action<DelegationChange> WithToParty(IParty party) => delegation =>
     {
         delegation.CoveredByPartyId = party.Party.PartyId;
     };
@@ -341,7 +341,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given party
     /// </summary>
     /// <param name="partyId">manually sets Party ID</param>
-    public Action<DelegationChange> WithToParty(int partyId) => delegation =>
+    public static Action<DelegationChange> WithToParty(int partyId) => delegation =>
     {
         delegation.CoveredByPartyId = partyId;
     };
@@ -349,7 +349,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// <summary>
     /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given party 
     /// </summary>
-    public Action<DelegationChange> WithFrom(IParty party) => delegation =>
+    public static Action<DelegationChange> WithFrom(IParty party) => delegation =>
     {
         delegation.OfferedByPartyId = party.Party.PartyId;
     };
@@ -357,7 +357,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// <summary>
     /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given party 
     /// </summary>
-    public Action<DelegationChange> WithFrom(int partyId) => delegation =>
+    public static Action<DelegationChange> WithFrom(int partyId) => delegation =>
     {
         delegation.OfferedByPartyId = partyId;
     };
@@ -366,7 +366,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// Sets the field <see cref="DelegationChange.PerformedByUserId"/> to given userId
     /// </summary>
     /// <param name="profile">User profile</param>
-    public Action<DelegationChange> WithPerformedByUserProfile(IUserProfile profile) => delegation =>
+    public static Action<DelegationChange> WithPerformedByUserProfile(IUserProfile profile) => delegation =>
     {
         delegation.PerformedByUserId = profile.UserProfile.UserId;
     };
@@ -375,7 +375,7 @@ public class RepositoryContainer(IDelegationMetadataRepository delegationMetadat
     /// Sets the field <see cref="DelegationChange.PerformedByPartyId"/> to given party
     /// </summary>
     /// <param name="party">party</param>
-    public Action<DelegationChange> WithPerformedByParty(IParty party) => delegation =>
+    public static Action<DelegationChange> WithPerformedByParty(IParty party) => delegation =>
     {
         delegation.PerformedByPartyId = party.Party.PartyId;
     };

@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
@@ -113,7 +114,7 @@ public class Altinn2RightsService : IAltinn2RightsService
             }
             else
             {
-                entry.Resource.AddRange(resources.FirstOrDefault(r => r.Identifier == delegation.ResourceId).AuthorizationReference ?? []);
+                entry.Resource.AddRange(resources.Find(r => r.Identifier == delegation.ResourceId).AuthorizationReference ?? []);
             }
 
             result.Add(entry);

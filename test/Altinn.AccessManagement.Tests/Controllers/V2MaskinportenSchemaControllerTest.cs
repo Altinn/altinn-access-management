@@ -34,18 +34,6 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     };
 
     /// <summary>
-    /// Verifies that a delegation from given party and to user exists 
-    /// </summary>
-    public static Action<AcceptanceCriteriaComposer> WithAssertDbContainsDelegationsToUser(int from, int to, string resource) => test =>
-    {
-        test.ApiAssertions.Add(async host =>
-        {
-            var actual = await host.Repository.DelegationMetadataRepository.GetAllCurrentResourceRegistryDelegationChanges(from.SingleToList(), resource.SingleToList(), coveredByUserId: to);
-            Assert.NotEmpty(actual);
-        });
-    };
-
-    /// <summary>
     /// Assert response
     /// </summary>
     /// <param name="from">delegated from</param>

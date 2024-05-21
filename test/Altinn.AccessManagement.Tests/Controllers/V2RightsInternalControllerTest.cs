@@ -89,7 +89,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         {
             new(
                 /* Acceptance Critieria */ @"
-                GIVEN that organization Voss Accounting has an active delegation to employee Paula
+                GIVEN that organization Voss Accounting has an active delegation to employee Paula (Scenario A)
                 WHEN DAGL Olav for Orstad Accounting requests offered delegations from Orstad Accounting
                 THEN Paula should be included in the list of offered delegations",
                 OrganizationSeeds.VossAccounting.PartyId,

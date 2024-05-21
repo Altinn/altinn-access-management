@@ -31,7 +31,6 @@ public class PostgresFixture : IAsyncLifetime
     /// <summary>
     /// Creates a new database and runs the migrations
     /// </summary>
-    /// <returns></returns>
     public PostgresDatabase New()
     {
         var db = PostgresServer.NewDatabase();
@@ -272,9 +271,9 @@ public static class DelegationChangeComposer
             action(delegation);
         }
 
-        if (delegation.PerformedByUserId == null && delegation.CoveredByUserId != null)
+        if (delegation.PerformedByUserId == null)
         {
-            delegation.PerformedByUserId = delegation.CoveredByUserId;
+            delegation.PerformedByUserId = delegation.CoveredByUserId ?? PersonSeeds.Paula.UserId;
         }
 
         if (delegation.PerformedByPartyId == null && delegation.CoveredByPartyId != null)
@@ -372,17 +371,9 @@ public static class DelegationChangeComposer
     /// Sets the field <see cref="DelegationChange.PerformedByUserId"/> to given userId
     /// </summary>
     /// <param name="profile">User profile</param>
-    public static Action<DelegationChange> WithPerformedByUserProfile(IUserProfile profile) => delegation =>
+    public static Action<DelegationChange> WithPerformedByUser(IUserProfile profile) => delegation =>
     {
         delegation.PerformedByUserId = profile.UserProfile.UserId;
-    };
-
-    /// <summary>
-    /// Sets the field <see cref="DelegationChange.PerformedByPartyId"/> to given party
-    /// </summary>
-    /// <param name="party">party</param>
-    public static Action<DelegationChange> WithPerformedByParty(IParty party) => delegation =>
-    {
-        delegation.PerformedByPartyId = party.Party.PartyId;
+        delegation.PerformedByPartyId = profile.UserProfile.PartyId;
     };
 }

@@ -40,6 +40,3 @@ password: Password
 Create schema delegations in authorizationdb
 
 Set platform_authorization_admin as owner
-
-
-

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Contexts;
 using Altinn.AccessManagement.Tests.Fixtures;
@@ -46,8 +45,8 @@ public static class DelegationScenarios
                 async postgres =>
                 {
                     var delegation = DelegationChangeComposer.New(
-                        DelegationChangeComposer.WithToParty(RandPartyId),
                         DelegationChangeComposer.WithFrom(RandPartyId),
+                        RandPartyId % 2 == 0 ? DelegationChangeComposer.WithToParty(RandPartyId) : DelegationChangeComposer.WithToUser(RandUserId),
                         DelegationChangeComposer.WithResource(ResourceSeeds.AltinnApp.Defaults));
 
                     await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.ResourceRegistry, delegation);
@@ -55,8 +54,8 @@ public static class DelegationScenarios
                 async postgres =>
                 {
                     var delegation = DelegationChangeComposer.New(
-                        DelegationChangeComposer.WithToUser(RandUserId),
                         DelegationChangeComposer.WithFrom(RandPartyId),
+                        DelegationChangeComposer.WithToParty(RandPartyId),
                         DelegationChangeComposer.WithResource(ResourceSeeds.MaskinportenSchema.Defaults));
 
                     await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.AltinnAppId, delegation);
@@ -171,4 +170,13 @@ public static class DelegationScenarios
                     DelegationChangeComposer.WithResource(resource)))
         ]);
     };
+
+    /// <summary>
+    /// * Paula is DAGL for Voss accounting
+    /// * Voss accoutning has active delegations to Voss Consulting
+    ///   
+    /// </summary>
+    public static void Scenario_(IWebHostBuilder host, MockContext mock)
+    {
+    }
 }

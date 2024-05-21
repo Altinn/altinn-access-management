@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Models;
 
@@ -53,10 +54,10 @@ public class MockContext
     /// <summary>
     /// JWT token.
     /// </summary>
-    public string JwtToken { get; set; } = string.Empty;
+    public IDictionary<string, string> HttpHeaders { get; set; } = new Dictionary<string, string>();
 
     /// <summary>
     /// A list of Db seed functation that are executed after database has been migrated.
     /// </summary>
-    public List<Func<Task>> DbSeeds { get; } = [];
+    public List<Func<RepositoryContainer, Task>> DbSeeds { get; } = [];
 }

@@ -1,0 +1,12 @@
+{
+  "resource": [
+    {
+      "id": "urn:altinn:org",
+      "value": "ttd"
+    },
+    {
+      "id": "urn:altinn:app",
+      "value": "apps-test"
+    }
+  ]
+}

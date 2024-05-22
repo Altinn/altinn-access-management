@@ -2,6 +2,8 @@
     "env": "at22",
     "org": "ttd",
     "app": "apps-test",
+    "servicecode": "2802",
+    "serviceeditioncode": "3",
     "resource": "",
     "org1": {
         "orgno": "810414782",

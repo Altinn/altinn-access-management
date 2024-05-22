@@ -1,329 +1,299 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
+using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
-using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Persistence;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Tests.Seeds;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Testcontainers.PostgreSql;
 using Xunit;
+using Xunit.Sdk;
+using Yuniql.Core;
 
 namespace Altinn.AccessManagement.Tests.Fixtures;
 
 /// <summary>
-/// Fixture for creatinmg 
+/// For running exclusively database tests. Before each tests, method <see cref="New"/> must be called in order
+/// to create a new database that runs isolated for that tests. This should be used as an <see cref="IClassFixture{PostgresFixture}"/>
 /// </summary>
-public partial class PostgresFixture : IAsyncLifetime
+public class PostgresFixture : IAsyncLifetime
 {
+    private ConsoleTraceService Tracer { get; } = new ConsoleTraceService { IsDebugEnabled = true };
+
     /// <summary>
-    /// Test container instance
+    /// Creates a new database and runs the migrations
     /// </summary>
     /// <returns></returns>
-    internal PostgreSqlContainer TestContainer { get; } = new PostgreSqlBuilder()
-        .WithDatabase(DbName)
+    public PostgresDatabase New()
+    {
+        var db = PostgresServer.NewDatabase();
+        var configuration = new Yuniql.AspNetCore.Configuration
+        {
+            Platform = SUPPORTED_DATABASES.POSTGRESQL,
+            Workspace = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Migration"),
+            ConnectionString = db.Admin.ToString(),
+            IsAutoCreateDatabase = false,
+        };
+
+        var dataService = new Yuniql.PostgreSql.PostgreSqlDataService(Tracer);
+        var bulkImportService = new Yuniql.PostgreSql.PostgreSqlBulkImportService(Tracer);
+        var migrationServiceFactory = new MigrationServiceFactory(Tracer);
+        var migrationService = migrationServiceFactory.Create(dataService, bulkImportService);
+        ConfigurationHelper.Initialize(configuration);
+        migrationService.Run();
+        return db;
+    }
+
+    /// <inheritdoc/>
+    public Task DisposeAsync()
+    {
+        PostgresServer.StopUsing(this);
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public Task InitializeAsync()
+    {
+        PostgresServer.StartUsing(this);
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// Postgres singleton that creates a npg sql server and creates a new database for each test 
+/// </summary>
+public static class PostgresServer
+{
+    private static PostgreSqlContainer Server { get; } = new PostgreSqlBuilder()
         .WithCleanUp(true)
+        .WithImage("docker.io/postgres:16.1-alpine")
         .Build();
 
-    private NpgsqlDataSource DataSource { get; set; }
+    private static Mutex Mutex { get; } = new();
+
+    private static ConcurrentDictionary<object, int> Consumers { get; } = new();
+
+    private static int DatabaseInstance { get; set; } = 0;
 
     /// <summary>
-    /// <see cref="PersonSeeds.Paula.UserId"/>
+    /// Database Password
     /// </summary>
-    public static readonly int DefaultPerformedByUserId = PersonSeeds.Paula.UserId;
+    public static readonly string DbPassword = "Password";
 
     /// <summary>
-    /// table name
-    /// </summary>
-    public static readonly string DbName = "authorizationdb";
-
-    /// <summary>
-    /// Db user name
+    /// Database Username
     /// </summary>
     public static readonly string DbUserName = "platform_authorization";
 
     /// <summary>
-    /// Db admin name
+    /// Database Admin
     /// </summary>
     public static readonly string DbAdminName = "platform_authorization_admin";
 
     /// <summary>
-    /// table name for delegation changes
+    /// Must be called before getting creating databases
     /// </summary>
-    public static readonly string DbDelegationChangeTableName = "delegation.delegationchanges";
-
-    /// <summary>
-    /// table name for resources in resource registry
-    /// </summary>
-    public static readonly string DbDelegationResourceRegistryTableName = "delegation.resourceregistrydelegationchanges";
-
-    /// <summary>
-    /// Test container Db Passord
-    /// </summary>
-    public static readonly string DbPassword = "password";
-
-    /// <summary>
-    /// Random seed
-    /// </summary>
-    /// <returns></returns>
-    private static readonly Random Rand = new(Guid.NewGuid().GetHashCode());
-
-    private static int RandomId => Rand.Next(9000, 9999);
-
-    /// <inheritdoc/>
-    public async Task InitializeAsync()
+    /// <param name="consumer">this</param>
+    public static void StartUsing(object consumer)
     {
-        await TestContainer.StartAsync();
-
-        DataSource = NewDataSource();
-
-        await CreateSystemUsersAndAssignRoles();
-    }
-
-    private NpgsqlDataSource NewDataSource()
-    {
-        var builder = new NpgsqlDataSourceBuilder(TestContainer.GetConnectionString());
-        builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
-        return builder.Build();
-    }
-
-    /// <summary>
-    /// Deletes all tables in database
-    /// </summary>
-    public async Task DropDb()
-    {
-        await TestContainer.ExecScriptAsync(@"
-            DROP SCHEMA accessmanagement, delegation CASCADE;
-            DROP TABLE public.__yuniql_schema_version;
-        ");
-
-        DataSource = NewDataSource();
-    }
-
-    /// <inheritdoc/>
-    public async Task DisposeAsync()
-    {
-        await TestContainer.DisposeAsync();
-    }
-
-    /// <summary>
-    /// Creates default DB user login settings 
-    /// </summary>
-    /// <returns></returns>
-    public async Task CreateSystemUsersAndAssignRoles() =>
-    await TestContainer.ExecScriptAsync(@"
-            CREATE USER platform_authorization WITH PASSWORD 'Password';
-            CREATE USER platform_authorization_admin WITH PASSWORD 'Password';
-            ALTER ROLE platform_authorization LOGIN INHERIT;
-            ALTER ROLE platform_authorization_admin LOGIN SUPERUSER INHERIT;
-        ");
-
-    /// <summary>
-    /// Creates a transaction that executes a set of queueres in given order.
-    /// Following queries are:
-    /// - <see cref="WithInsertDelegationChange(Action{DelegationChange}[])"/>
-    /// - <see cref="WithInsertDelegationChangeRR(Action{DelegationChange}[])"/>
-    /// - <see cref="WithInsertResource(Action{AccessManagementResource}[])"/>
-    /// </summary>
-    /// <param name="queries">List of queries</param>
-    public async Task SeedDatabaseTXs(params Action<NpgsqlCommand>[] queries)
-    {
-        using var conn = await DataSource.OpenConnectionAsync();
-        var tx = await conn.BeginTransactionAsync();
-
-        foreach (var query in queries)
+        Mutex.WaitOne();
+        try
         {
-            var cmd = new NpgsqlCommand(string.Empty, conn, tx);
-            query(cmd);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        await tx.CommitAsync();
-    }
-
-    /// <summary>
-    /// Lists all delegations
-    /// </summary>
-    public async Task<IEnumerable<DelegationChange>> ListDelegationsChanges(Func<IEnumerable<DelegationChange>, IEnumerable<DelegationChange>> filter = null)
-    {
-        using var pgcom = DataSource.CreateCommand(@"SELECT * FROM delegation.delegationchanges");
-        using var reader = await pgcom.ExecuteReaderAsync();
-        var result = new List<DelegationChange>();
-
-        while (await reader.ReadAsync())
-        {
-            result.Add(await GetAppDelegationChange(reader));
-        }
-
-        if (filter != null)
-        {
-            return filter(result).ToList();
-        }
-
-        return result;
-    }
-
-    private static async Task<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
-    {
-        return new DelegationChange
-        {
-            DelegationChangeId = await reader.GetFieldValueAsync<int>("delegationchangeid"),
-            DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
-            ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
-            ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
-            OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
-            CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
-            CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
-            PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
-            BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
-            BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
-            Created = await reader.GetFieldValueAsync<DateTime>("created")
-        };
-    }
-
-    /// <summary>
-    /// Adds random delegations to delegationchange table.
-    /// The ID that are used are in range [9000, 9999].
-    /// </summary>
-    /// <param name="resource">resource for random entry. defaults to <see cref="AltinnAppSeeds.AltinnApp"/> if null</param>
-    public static Action<NpgsqlCommand> WithInsertDelegationChangeNoise(IAccessManagementResource resource = null) => cmd =>
-    {
-        WithInsertDelegationChange(
-            WithResource(resource ?? AltinnAppSeeds.AltinnApp.Defaults),
-            (delegation) =>
+            Consumers.AddOrUpdate(consumer, 1, (consumer, current) =>
             {
-                delegation.PerformedByPartyId = RandomId;
-                delegation.PerformedByUserId = RandomId;
-                delegation.BlobStoragePolicyPath = "Random";
-                delegation.BlobStorageVersionId = "Random";
-                delegation.CoveredByPartyId = RandomId;
-                delegation.CoveredByUserId = RandomId;
-                delegation.OfferedByPartyId = RandomId;
-            })(cmd);
+                return ++current;
+            });
+
+            if (Consumers.Values.Sum() == 1)
+            {
+                Server.StartAsync().Wait();
+                var result = Server.ExecScriptAsync($@"
+                    CREATE USER {DbUserName} WITH PASSWORD '{DbPassword}';
+                    CREATE USER {DbAdminName} WITH PASSWORD '{DbPassword}';
+                    ALTER ROLE {DbUserName} LOGIN INHERIT;
+                    ALTER ROLE {DbAdminName} LOGIN SUPERUSER INHERIT;").Result;
+
+                if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
+                {
+                    throw new XunitException($"Failed to create users");
+                }
+            }
+        }
+        finally
+        {
+            Mutex.ReleaseMutex();
+        }
+    }
+
+    /// <summary>
+    /// Should be called after tests are executed
+    /// </summary>
+    public static void StopUsing(object consumer)
+    {
+        Mutex.WaitOne();
+        try
+        {
+            Consumers.AddOrUpdate(consumer, 1, (consumer, current) =>
+            {
+                if (current > 0)
+                {
+                    return --current;
+                }
+
+                return 0;
+            });
+
+            if (Consumers.Values.Sum() == 0)
+            {
+                Server.StopAsync().Wait();
+            }
+        }
+        finally
+        {
+            Mutex.ReleaseMutex();
+        }
+    }
+
+    /// <summary>
+    /// Creates a new database and connection string
+    /// </summary>
+    public static PostgresDatabase NewDatabase()
+    {
+        Mutex.WaitOne();
+        try
+        {
+            var dbname = $"test_{DatabaseInstance++}";
+            Server.ExecScriptAsync($"CREATE DATABASE {dbname};").Wait();
+            return new(dbname, Server.GetConnectionString());
+        }
+        finally
+        {
+            Mutex.ReleaseMutex();
+        }
+    }
+}
+
+/// <summary>
+/// Container for persisting connections string and database name
+/// </summary>
+public class PostgresDatabase(string dbname, string connectionString) : IOptions<PostgreSQLSettings>
+{
+    /// <summary>
+    /// Database name
+    /// </summary>
+    public string Dbname { get; } = dbname;
+
+    /// <summary>
+    /// Creates <see cref="DelegationMetadataRepository"/>
+    /// </summary>
+    public IDelegationMetadataRepository DelegationMetadata =>
+        new DelegationMetadataRepository(new NpgsqlDataSourceBuilder(User.ToString()).Build());
+
+    /// <summary>
+    /// Creates <see cref="ResourceMetadata"/>
+    /// </summary>
+    public IResourceMetadataRepository ResourceMetadata => new ResourceMetadataRepository(this);
+
+    /// <summary>
+    /// Admin name
+    /// </summary>
+    public NpgsqlConnectionStringBuilder Admin { get; } = new NpgsqlConnectionStringBuilder(connectionString)
+    {
+        Timeout = 3,
+        Database = dbname,
+        Username = PostgresServer.DbAdminName,
+        Password = PostgresServer.DbPassword,
+        IncludeErrorDetail = true,
     };
 
     /// <summary>
-    /// Create a delegation change in table delegation.delegationchanges
+    /// User name
     /// </summary>
-    /// <param name="modifiers">list of actions that mutates delegation changes</param>
-    public static Action<NpgsqlCommand> WithInsertDelegationChange(params Action<DelegationChange>[] modifiers) => cmd =>
+    public NpgsqlConnectionStringBuilder User { get; } = new NpgsqlConnectionStringBuilder(connectionString)
+    {
+        Timeout = 3,
+        Database = dbname,
+        Username = PostgresServer.DbUserName,
+        Password = PostgresServer.DbPassword,
+        IncludeErrorDetail = true,
+    };
+
+    /// <summary>
+    /// Implements <see cref="IOptions{PostgreSQLSettings}"/> 
+    /// </summary>
+    public PostgreSQLSettings Value => new()
+    {
+        ConnectionString = User.ToString(),
+        AuthorizationDbPwd = User.Password
+    };
+}
+
+/// <summary>
+/// RepositoryContainer
+/// </summary>
+public class RepositoryContainer(IDelegationMetadataRepository delegationMetadataRepository, IResourceMetadataRepository resourceMetadataRepository)
+{
+    /// <summary>
+    /// DelegationMetadataRepository
+    /// </summary>
+    public IDelegationMetadataRepository DelegationMetadataRepository { get; } = delegationMetadataRepository;
+
+    /// <summary>
+    /// ResourceMetadataRepository
+    /// </summary>
+    public IResourceMetadataRepository ResourceMetadataRepository { get; } = resourceMetadataRepository;
+}
+
+/// <summary>
+/// Build a Delegation Change
+/// </summary>
+public static class DelegationChangeComposer
+{
+    /// <summary>
+    /// Creates a new delegation
+    /// </summary>
+    public static DelegationChange New(params Action<DelegationChange>[] actions)
     {
         var delegation = new DelegationChange()
         {
-            DelegationChangeType = DelegationChangeType.Grant,
+            DelegationChangeType = DelegationChangeType.Grant
         };
 
-        foreach (var modifier in modifiers)
+        foreach (var action in actions)
         {
-            modifier(delegation);
+            action(delegation);
         }
 
-        cmd.CommandText = @"
-        INSERT INTO delegation.delegationchanges(
-            delegationchangetype,
-            altinnappid,
-            offeredbypartyid,
-            coveredbypartyid,
-            coveredbyuserid,
-            performedbyuserid,
-            blobstoragepolicypath,
-            blobstorageversionid)
-	    VALUES (
-            @delegationchangetype,
-            @altinnappid,
-            @offeredbypartyid,
-            @coveredbypartyid,
-            @coveredbyuserid,
-            @performedbyuserid,
-            @blobstoragepolicypath,
-            @blobstorageversionid);
-        ";
-
-        cmd.Parameters.AddWithValue("delegationchangetype", delegation.DelegationChangeType);
-        cmd.Parameters.AddWithValue("altinnappid", delegation.ResourceId);
-        cmd.Parameters.AddWithValue("offeredbypartyid", delegation.OfferedByPartyId);
-        cmd.Parameters.AddWithValue("coveredbypartyid", delegation.CoveredByPartyId == null ? DBNull.Value : delegation.CoveredByPartyId);
-        cmd.Parameters.AddWithValue("coveredbyuserid", delegation.CoveredByUserId == null ? DBNull.Value : delegation.CoveredByUserId);
-        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId == null ? DefaultPerformedByUserId : delegation.PerformedByUserId);
-        cmd.Parameters.AddWithValue("blobstoragepolicypath", delegation.BlobStoragePolicyPath ?? "/");
-        cmd.Parameters.AddWithValue("blobstorageversionid", delegation.BlobStorageVersionId ?? "v1");
-    };
-
-    /// <summary>
-    /// Creates a resource in table "accessmanagement.resource"
-    /// </summary>
-    /// <param name="modifiers">functions that modifies <see cref="AccessManagementResource"/></param>
-    public static Action<NpgsqlCommand> WithInsertResource(params Action<AccessManagementResource>[] modifiers) => cmd =>
-    {
-        var resource = new AccessManagementResource();
-        foreach (var modifier in modifiers)
+        if (delegation.PerformedByUserId == null && delegation.CoveredByUserId != null)
         {
-            modifier(resource);
+            delegation.PerformedByUserId = delegation.CoveredByUserId;
         }
 
-        cmd.CommandText = @"
-        INSERT INTO accessmanagement.resource(
-            resourceregistryid,
-            resourcetype,
-            created)
-	    VALUES (
-            @resourceregistryid,
-            @resourcetype,
-            @created);
-        ";
-
-        cmd.Parameters.AddWithValue("resourceregistryid", resource.ResourceRegistryId);
-        cmd.Parameters.AddWithValue("resourcetype", resource.ResourceType.ToString());
-        cmd.Parameters.AddWithValue("created", DateTime.UtcNow);
-    };
-
-    /// <summary>
-    /// Creates a resource registry delegation change in table "delegation.resourceregistrydelegationchanges"
-    /// </summary>
-    /// <param name="modifiers">list of actions that mutates the delegation changes</param>
-    public static Action<NpgsqlCommand> WithInsertDelegationChangeRR(params Action<DelegationChange>[] modifiers) => cmd =>
-    {
-        var delegation = new DelegationChange();
-        foreach (var modifier in modifiers)
+        if (delegation.PerformedByPartyId == null && delegation.CoveredByPartyId != null)
         {
-            modifier(delegation);
+            delegation.PerformedByPartyId = delegation.CoveredByPartyId;
         }
 
-        cmd.CommandText = @"
-        INSERT INTO delegation.resourceregistrydelegationchanges(
-            delegationchangetype,
-            resourceid_fk,
-            offeredbypartyid,
-            coveredbypartyid,
-            coveredbyuserid,
-            performedbyuserid,
-            performedbypartyid,
-            blobstoragepolicypath,
-            blobstorageversionid)
-        VALUES (
-            @delegationchangetype
-            @resourceid_fk,
-            @offeredbypartyid,
-            @coveredbypartyid,
-            @coveredbyuserid,
-            @performedbyuserid,
-            @performedbypartyid,
-            @blobstoragepolicypath,
-            @blobstorageversionid);
-        ";
+        if (string.IsNullOrEmpty(delegation.BlobStoragePolicyPath))
+        {
+            delegation.BlobStoragePolicyPath = $"undefined";
+        }
 
-        cmd.Parameters.AddWithValue("delegationchangetype", delegation.DelegationChangeType);
-        cmd.Parameters.AddWithValue("resourceid_fk", delegation.ResourceId);
-        cmd.Parameters.AddWithValue("offeredbypartyid", delegation.OfferedByPartyId);
-        cmd.Parameters.AddWithValue("coveredbypartyid", delegation.CoveredByPartyId);
-        cmd.Parameters.AddWithValue("coveredbyuserid", delegation.CoveredByUserId);
-        cmd.Parameters.AddWithValue("performedbyuserid", delegation.PerformedByUserId);
-        cmd.Parameters.AddWithValue("performedbypartyid", delegation.PerformedByPartyId);
-        cmd.Parameters.AddWithValue("blobstoragepolicypath", delegation.BlobStoragePolicyPath);
-        cmd.Parameters.AddWithValue("blobstorageversionid", delegation.BlobStorageVersionId);
-    };
+        if (string.IsNullOrEmpty(delegation.BlobStorageVersionId))
+        {
+            delegation.BlobStorageVersionId = "v1";
+        }
+
+        return delegation;
+    }
 
     /// <summary>
     /// sets the field <see cref="DelegationChange.DelegationChangeType"/> to given delegation
@@ -333,17 +303,6 @@ public partial class PostgresFixture : IAsyncLifetime
     {
         delegation.DelegationChangeType = DelegationChangeType.RevokeLast;
     }
-
-    /// <summary>
-    /// Sets the field <see cref="AccessManagementResource.ResourceRegistryId"/> and <see cref="AccessManagementResource.ResourceType"/> to given resource
-    /// </summary>
-    /// <param name="model">resource</param>
-    /// <returns></returns>
-    public static Action<AccessManagementResource> WithAccessManagementResource(ServiceResource model) => resource =>
-    {
-        resource.ResourceRegistryId = model.Identifier;
-        resource.ResourceType = model.ResourceType;
-    };
 
     /// <summary>
     /// Sets the field <see cref="DelegationChange.ResourceId"/> to given "resource"
@@ -366,6 +325,16 @@ public partial class PostgresFixture : IAsyncLifetime
     };
 
     /// <summary>
+    /// Sets the field <see cref="DelegationChange.CoveredByUserId"/> to given "profile"
+    /// </summary>
+    /// <param name="userId">manual set user ID</param>
+    /// <returns></returns>
+    public static Action<DelegationChange> WithToUser(int userId) => delegation =>
+    {
+        delegation.CoveredByUserId = userId;
+    };
+
+    /// <summary>
     /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given party
     /// </summary>
     /// <param name="party">party</param>
@@ -375,11 +344,28 @@ public partial class PostgresFixture : IAsyncLifetime
     };
 
     /// <summary>
+    /// Sets the field <see cref="DelegationChange.CoveredByPartyId"/> to given party
+    /// </summary>
+    /// <param name="partyId">manually sets Party ID</param>
+    public static Action<DelegationChange> WithToParty(int partyId) => delegation =>
+    {
+        delegation.CoveredByPartyId = partyId;
+    };
+
+    /// <summary>
     /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given party 
     /// </summary>
     public static Action<DelegationChange> WithFrom(IParty party) => delegation =>
     {
         delegation.OfferedByPartyId = party.Party.PartyId;
+    };
+
+    /// <summary>
+    /// Sets the field <see cref="DelegationChange.OfferedByPartyId"/> to given party 
+    /// </summary>
+    public static Action<DelegationChange> WithFrom(int partyId) => delegation =>
+    {
+        delegation.OfferedByPartyId = partyId;
     };
 
     /// <summary>

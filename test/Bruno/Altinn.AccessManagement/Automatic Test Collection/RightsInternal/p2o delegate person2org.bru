@@ -1,7 +1,7 @@
 meta {
   name: p2o delegate person2org
   type: http
-  seq: 22
+  seq: 26
 }
 
 post {
@@ -44,8 +44,8 @@ body:json {
 vars:pre-request {
   toSsn: 
   toLastName: 
-  org: ttd
-  app: apps-test-prod
+  org: 
+  app: 
   auth_tokenType: Personal
   auth_userId: 
   auth_partyId: 
@@ -60,6 +60,8 @@ script:pre-request {
   bru.setVar("auth_ssn", testdata.org1.dagl.pid);
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_orgno", testdata.org2.orgno);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
   
   await tokenGenerator.getToken();
 }

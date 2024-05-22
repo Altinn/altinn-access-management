@@ -16,7 +16,7 @@ namespace Altinn.AccessManagement.Tests;
 /// <summary>
 /// Sets up tests and teardown tests for controller tests
 /// </summary>
-public abstract class AcceptanceCriteriaTest
+public abstract class AcceptanceCriteriaComposer
 {
     /// <summary>
     /// ctor
@@ -24,7 +24,7 @@ public abstract class AcceptanceCriteriaTest
     /// <param name="acceptanceCriteria">acceptance criteria</param>
     /// <param name="parent">list of functional object mutators provided to parent class</param>
     /// <param name="actions">list of functional object mutators provided from parent class</param>
-    public AcceptanceCriteriaTest(string acceptanceCriteria, Action<AcceptanceCriteriaTest>[] parent, params Action<AcceptanceCriteriaTest>[] actions)
+    public AcceptanceCriteriaComposer(string acceptanceCriteria, Action<AcceptanceCriteriaComposer>[] parent, params Action<AcceptanceCriteriaComposer>[] actions)
     {
         AcceptanceCriteria = acceptanceCriteria;
         foreach (var action in actions.Concat(parent))
@@ -46,7 +46,7 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// List of API assertions for mock context and DB
     /// </summary>
-    public List<Func<WebApplicationFixture, Task>> ApiAssertions { get; set; } = [];
+    public List<Func<Host, Task>> ApiAssertions { get; set; } = [];
 
     /// <summary>
     /// Http request to be sent to the controller action
@@ -59,23 +59,31 @@ public abstract class AcceptanceCriteriaTest
     protected string AcceptanceCriteria { get; }
 
     /// <summary>
+    /// Sets Request URI
+    /// </summary>
+    public string RequestUri { get; set; }
+
+    /// <summary>
     /// Asserts response given from API
     /// </summary>
-    public void AssertResponse(HttpResponseMessage message)
+    public async Task AssertResponse(HttpResponseMessage message)
     {
-        foreach (var assert in ResponseAssertions)
+        foreach (var assertion in ResponseAssertions)
         {
-            assert(message);
+            await assertion(message);
         }
     }
 
     /// <summary>
     /// Asserts mock call and DB
     /// </summary>
-    /// <param name="fixture">Web application fixture</param>
-    public void AssertApi(WebApplicationFixture fixture)
+    /// <param name="host">Web application fixture</param>
+    public async Task AssertApi(Host host)
     {
-        Task.WaitAll([.. ApiAssertions.Select(async assertion => await assertion(fixture))]);
+        foreach (var assertion in ApiAssertions)
+        {
+            await assertion(host);
+        }
     }
 
     /// <summary>
@@ -83,7 +91,7 @@ public abstract class AcceptanceCriteriaTest
     /// </summary>
     /// <param name="code">HTTP status code</param>
     /// <returns></returns>
-    public static Action<AcceptanceCriteriaTest> WithAssertResponseStatusCode(HttpStatusCode code) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithAssertResponseStatusCode(HttpStatusCode code) => test =>
     {
         test.ResponseAssertions.Add(response =>
         {
@@ -95,9 +103,9 @@ public abstract class AcceptanceCriteriaTest
     /// <summary>
     /// Asserts that response given from API is a successful status code.
     /// </summary>
-    public static void WithAssertResponseStatusCodeSuccessful(AcceptanceCriteriaTest acceptanceCriteria)
+    public static void WithAssertResponseStatusCodeSuccessful(AcceptanceCriteriaComposer test)
     {
-        acceptanceCriteria.ResponseAssertions.Add(response =>
+        test.ResponseAssertions.Add(response =>
         {
             Assert.True(response.IsSuccessStatusCode, $"expected successful status code, got status code {(int)response.StatusCode}: {response.StatusCode}");
             return Task.CompletedTask;
@@ -109,7 +117,7 @@ public abstract class AcceptanceCriteriaTest
     /// </summary>
     /// <param name="scenarios">list of scenarions</param>
     /// <returns></returns>
-    public static Action<AcceptanceCriteriaTest> WithScenarios(params Scenario[] scenarios) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithScenarios(params Scenario[] scenarios) => test =>
     {
         test.Scenarios.AddRange(scenarios);
     };
@@ -118,16 +126,15 @@ public abstract class AcceptanceCriteriaTest
     /// Http request route
     /// </summary>
     /// <param name="segments">list of URL segments</param>
-    public static Action<AcceptanceCriteriaTest> WithRequestRoute(params object[] segments) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithRequestRoute(params object[] segments) => test =>
     {
-        var url = string.Join("/", segments.Select(segment => segment.ToString().Trim('/')));
-        test.Request.RequestUri = new Uri("/" + url);
+        test.RequestUri = string.Join("/", segments.Select(segment => segment.ToString().Trim('/')));
     };
 
     /// <summary>
     /// Sets the HTTP request method
     /// </summary>
-    public static Action<AcceptanceCriteriaTest> WithRequestVerb(HttpMethod method) => test =>
+    public static Action<AcceptanceCriteriaComposer> WithRequestVerb(HttpMethod method) => test =>
     {
         test.Request.Method = method;
     };
@@ -137,7 +144,7 @@ public abstract class AcceptanceCriteriaTest
     /// content type header 'application/json'
     /// </summary>
     /// <param name="body">object to deserialize</param>
-    public static Action<AcceptanceCriteriaTest> WithHttpRequestBodyJson<T>(T body)
+    public static Action<AcceptanceCriteriaComposer> WithHttpRequestBodyJson<T>(T body)
         where T : class => test =>
     {
         var content = JsonSerializer.Serialize(body);
@@ -150,8 +157,11 @@ public abstract class AcceptanceCriteriaTest
     /// <param name="fixture">web application fixture</param>
     public async Task Test(WebApplicationFixture fixture)
     {
-        AssertResponse(await fixture.UseScenarios([.. Scenarios]).SendAsync(Request));
-        AssertApi(fixture);
+        var host = await fixture.UseScenarios([.. Scenarios]);
+        Request.RequestUri = new Uri(host.Client.BaseAddress, RequestUri);
+
+        await AssertResponse(await host.Client.SendAsync(Request));
+        await AssertApi(host);
     }
 
     /// <summary>

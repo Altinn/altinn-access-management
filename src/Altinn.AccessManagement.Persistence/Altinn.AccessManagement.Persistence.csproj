@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.2" />
-    <PackageReference Include="OpenTelemetry" Version="1.8.0" />
+    <PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.3" />
+    <PackageReference Include="OpenTelemetry" Version="1.8.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
@@ -16,10 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None
-      Include="Migration\**"
-      CopyToOutputDirectory="PreserveNewest"
-      LinkBase="Migration\" />
+    <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">

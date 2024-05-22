@@ -179,7 +179,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                 // The resource attributes are complete
                 resourceAttributeComplete = true;
             }
-            
+
             if (!resourceAttributeComplete)
             {
                 Instance instanceData = GetTestInstance(resourceAttributes.InstanceValue);
@@ -209,7 +209,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
             await EnrichSubjectAttributes(request, resourceAttributes.ResourcePartyValue);
         }
-        
+
         private static XacmlAttribute GetOrgAttribute(Instance instance)
         {
             XacmlAttribute attribute = new XacmlAttribute(new Uri(OrgAttributeId), false);
@@ -372,7 +372,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         {
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
             var fullRolePath = Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Roles", "user_" + userId, "party_" + resourcePartyId, "roles.json");
-            Console.WriteLine("EKO:" + fullRolePath + " - " + File.Exists(fullRolePath));
             return fullRolePath;
         }
 
@@ -433,7 +432,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PepWithPDPAuthorizationMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Instances");
         }
-        
+
         private Instance GetTestInstance(string instanceId)
         {
             string partyPart = instanceId.Split('/')[0];
@@ -444,6 +443,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
             return instance;
         }
     }
-    
+
 #pragma warning restore SA1600 // ElementsMustBeDocumented
 }

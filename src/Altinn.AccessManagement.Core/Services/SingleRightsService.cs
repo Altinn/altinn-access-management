@@ -80,6 +80,11 @@ namespace Altinn.AccessManagement.Core.Services
             // Build result model with status
             foreach (Right right in allDelegableRights)
             {
+                if (!RightsHelper.CheckIfRuleIsAnEndUserRule(right))
+                {
+                    continue;
+                }
+
                 RightDelegationCheckResult rightDelegationStatus = new RightDelegationCheckResult
                 {
                     RightKey = right.RightKey,

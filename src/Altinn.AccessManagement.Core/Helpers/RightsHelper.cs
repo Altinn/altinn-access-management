@@ -79,7 +79,24 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Analyses a Right model for a reason for the rights delegation access status
+        /// Check if it exist any roles giving access to the resource if there is no such access rules this must be a rule defined for the service owner as there is not any way the end user could gain access
+        /// </summary>
+        /// <param name="right">the right to analyze</param>
+        /// <returns>the decision</returns>
+        public static bool CheckIfRuleIsAnEndUserRule(Right right)
+        {
+            List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
+            if (roleAccessSources.Any())
+            {
+                List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
+                return roles.Any();
+            }
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Analyzes a Right model for a reason for the rights delegation access status
         /// </summary>
         public static List<Detail> AnalyzeDelegationAccessReason(Right right)
         {
@@ -95,17 +112,20 @@ namespace Altinn.AccessManagement.Core.Helpers
                     List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
                     string requiredRoles = string.Join(", ", roles);
                     
-                    reasons.Add(new Detail
+                    if (roles.Any())
                     {
-                        Code = DetailCode.RoleAccess,
-                        Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>()
+                        reasons.Add(new Detail
                         {
+                            Code = DetailCode.RoleAccess,
+                            Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                            Parameters = new Dictionary<string, List<AttributeMatch>>()
                             {
-                                "RoleRequirementsMatches", GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    "RoleRequirementsMatches", roles
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
 
                 // Analyze for delegation policy access
@@ -133,12 +153,15 @@ namespace Altinn.AccessManagement.Core.Helpers
                     List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
                     string requiredRoles = string.Join(", ", roles);
 
-                    reasons.Add(new Detail
+                    if (roles.Any())
                     {
-                        Code = DetailCode.MissingRoleAccess,
-                        Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
-                        Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", roles } }
-                    });
+                        reasons.Add(new Detail
+                        {
+                            Code = DetailCode.MissingRoleAccess,
+                            Description = $"Delegator does not have any required role(s) for the reportee party: ({requiredRoles}), which would give access to delegate the right.",
+                            Parameters = new Dictionary<string, List<AttributeMatch>>() { { "RequiredRoles", roles } }
+                        });
+                    }
                 }
 
                 // Analyze for delegation policy failure

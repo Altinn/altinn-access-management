@@ -1,0 +1,282 @@
+[
+  {
+    "rightKey": "apps-test,ttd:instantiate",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ],
+    "action": "instantiate",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,ttd:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,ttd,Task_1:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "Task_1"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,ttd,Task_1:write",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "Task_1"
+      }
+    ],
+    "action": "write",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,EndEvent_1,ttd:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      },
+      {
+        "id": "urn:altinn:end-event",
+        "value": "EndEvent_1"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,EndEvent_1,ttd:write",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      },
+      {
+        "id": "urn:altinn:end-event",
+        "value": "EndEvent_1"
+      }
+    ],
+    "action": "write",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,ttd:delete",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ],
+    "action": "delete",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:ADMAI. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "ADMAI"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "rightKey": "apps-test,events,ttd:read",
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      },
+      {
+        "id": "urn:altinn:appresource",
+        "value": "events"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:REGNA, urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "REGNA"
+            },
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

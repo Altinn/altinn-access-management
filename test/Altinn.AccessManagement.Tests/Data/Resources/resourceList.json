@@ -1331,5 +1331,45 @@
         "value": "devtest_gar_authparties-person-to-org"
       }
     ]
+  },
+  {
+    "identifier": "app_ttd_apps-test",
+    "title": {
+      "en": "test application (simple)",
+      "nb": "test applikasjon (enkel)",
+      "nn": "test applikasjon (enkel)"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/apps-test",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ]
   }
 ]

@@ -106,12 +106,12 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 // Analyze for role access
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
-                if (roleAccessSources.Any())
+                if (roleAccessSources.Count != 0)
                 {
                     List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
                     string requiredRoles = string.Join(", ", roles);
 
-                    if (roles.Any())
+                    if (roles.Count != 0)
                     {
                         reasons.Add(new Detail
                         {
@@ -129,7 +129,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
                 // Analyze for delegation policy access
                 List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy && rs.CanDelegate.HasValue && rs.CanDelegate.Value).ToList();
-                if (delegationPolicySources.Any())
+                if (delegationPolicySources.Count != 0)
                 {
                     string delegationRecipients = string.Join(", ", delegationPolicySources.SelectMany(delegationPolicySource => delegationPolicySource.PolicySubjects.SelectMany(policySubjects => policySubjects)));
 
@@ -147,12 +147,12 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 // Analyze for role access failure
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
-                if (roleAccessSources.Any())
+                if (roleAccessSources.Count != 0)
                 {
                     List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
                     string requiredRoles = string.Join(", ", roles);
 
-                    if (roles.Any())
+                    if (roles.Count != 0)
                     {
                         reasons.Add(new Detail
                         {
@@ -165,7 +165,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
                 // Analyze for delegation policy failure
                 List<RightSource> delegationPolicySources = right.RightSources.Where(rs => rs.RightSourceType == Enums.RightSourceType.DelegationPolicy).ToList();
-                if (!delegationPolicySources.Any())
+                if (delegationPolicySources.Count == 0)
                 {
                     reasons.Add(new Detail
                     {

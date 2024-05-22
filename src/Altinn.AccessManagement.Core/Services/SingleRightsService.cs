@@ -85,15 +85,14 @@ namespace Altinn.AccessManagement.Core.Services
                     continue;
                 }
 
-                RightDelegationCheckResult rightDelegationStatus = new RightDelegationCheckResult
+                RightDelegationCheckResult rightDelegationStatus = new()
                 {
                     RightKey = right.RightKey,
                     Resource = right.Resource,
                     Action = right.Action,
-                    Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable
+                    Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable,
+                    Details = RightsHelper.AnalyzeDelegationAccessReason(right)
                 };
-
-                rightDelegationStatus.Details = RightsHelper.AnalyzeDelegationAccessReason(right);
 
                 result.RightDelegationCheckResults.Add(rightDelegationStatus);
             }

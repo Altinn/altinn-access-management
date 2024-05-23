@@ -39,11 +39,3 @@ assert {
 script:pre-request {
   await tokenGenerator.getToken();
 }
-
-tests {
-  test("getMaskinportenDelegations", function() {
-    const data = res.getBody();  
-    expect(res.status).to.equal(200);
-    expect(data[0]).to.have.property('resourceid', 'ttd-am-k6');
-  });
-}

@@ -41,9 +41,7 @@ script:pre-request {
 }
 
 tests {
-  
   test("getMaskinportenDelegations", function() {
-    const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();  
     expect(res.status).to.equal(200);
     expect(data[0]).to.have.property('resourceid', 'ttd-am-k6');

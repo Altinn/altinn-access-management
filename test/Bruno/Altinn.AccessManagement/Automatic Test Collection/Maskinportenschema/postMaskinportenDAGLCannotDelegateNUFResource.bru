@@ -7,11 +7,15 @@ meta {
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
   body: json
-  auth: none
+  auth: bearer
 }
 
 headers {
   Accept: application/json
+}
+
+auth:bearer {
+  token: {{bearerToken}}
 }
 
 body:json {
@@ -59,10 +63,6 @@ script:pre-request {
   bru.setVar("to_partyid", testdata.org2.partyid);
   
   await tokenGenerator.getToken();
-}
-
-script:post-response {
-  
 }
 
 tests {

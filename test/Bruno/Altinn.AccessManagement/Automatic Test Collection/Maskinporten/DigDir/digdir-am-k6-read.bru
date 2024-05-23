@@ -36,7 +36,7 @@ script:pre-request {
 }
 
 tests {
-  test("getMaskinPortenSchema Offered", function() {
+  test("getMaskinportenDelegations", function() {
     var body = res.getBody();  
     expect(res.status).to.equal(200);
     expect(body[0]).to.have.property('resourceid', 'ttd-am-k6');

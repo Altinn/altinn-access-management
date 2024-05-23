@@ -7,15 +7,11 @@ meta {
 get {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/received
   body: none
-  auth: bearer
+  auth: inherit
 }
 
 headers {
   Accept: application/json
-}
-
-auth:bearer {
-  token: {{bearerToken}}
 }
 
 vars:pre-request {

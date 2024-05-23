@@ -37,6 +37,9 @@ exports.getToken = async function () {
     headers: { Authorization }
   });
   console.log("tokenUrl: " + tokenUrl);
-  console.log("bearerToken abcd" + response.data + "abcd");
+  var thing = response.data;
+  console.log("bearertoken 1/2 " + thing.toString().substring(0, thing.length / 2));
+  console.log("bearertoken 2/2 " + thing.toString().substring(thing.length / 2, thing.length));
+
   bru.setVar("bearerToken", response.data);
 }

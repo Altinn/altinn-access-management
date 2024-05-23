@@ -42,7 +42,7 @@ script:pre-request {
 
 tests {
   
-  test("get Maskinporten Delegations", function() {
+  test("getMaskinportenDelegations", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();  
     expect(res.status).to.equal(200);

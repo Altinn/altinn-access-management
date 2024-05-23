@@ -36,10 +36,6 @@ exports.getToken = async function () {
   const response = await axios.get(tokenUrl, {
     headers: { Authorization }
   });
-  console.log("tokenUrl: " + tokenUrl);
-  var thing = response.data;
-  console.log("bearertoken 1/2 " + thing.toString().substring(2, thing.length / 2));
-  console.log("bearertoken 2/2 " + thing.toString().substring(thing.length / 2, thing.length));
 
   bru.setVar("bearerToken", response.data);
 }

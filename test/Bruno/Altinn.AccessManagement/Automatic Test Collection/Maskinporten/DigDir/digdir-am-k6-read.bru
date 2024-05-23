@@ -7,7 +7,7 @@ meta {
 get {
   url: {{baseUrl}}/accessmanagement/api/v1/maskinporten/delegations?supplierOrg={{supplierOrg}}&consumerOrg={{consumerOrg}}&scope={{scope}}
   body: none
-  auth: inherit
+  auth: none
 }
 
 query {
@@ -38,4 +38,14 @@ assert {
 
 script:pre-request {
   await tokenGenerator.getToken();
+}
+
+tests {
+  
+  test("get Maskinporten Delegations", function() {
+    const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data[0]).to.have.property('resourceid', 'ttd-am-k6');
+  });
 }

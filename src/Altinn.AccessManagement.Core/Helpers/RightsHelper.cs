@@ -88,7 +88,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             if (roleAccessSources.Any())
             {
                 List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));
-                return roles.Any();
+                return roles.Count != 0;
             }
 
             return false;

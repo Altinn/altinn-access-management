@@ -380,6 +380,35 @@
   {
     "PartyTypeName": 2,
     "SSN": "",
+    "OrgNumber": "810419482",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "810419482",
+      "Name": "ØRSTA OG HEGGEDAL REVISJON",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50005546,
+    "PartyUuid": "00000000-0000-0000-0005-000000005546",
+    "UnitType": "AS",
+    "Name": "ØRSTA OG HEGGEDAL REVISJON",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "",
     "OrgNumber": "910001337",
     "Person": null,
     "Organization": {

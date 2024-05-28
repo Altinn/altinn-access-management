@@ -1,0 +1,60 @@
+meta {
+  name: o2p testdata cleanup (revoke delegation)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received/revoke
+  body: json
+  auth: inherit
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:partyid",
+          "value": "{{fromPartyId}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "{{org}}"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "{{app}}"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  bru.setVar("auth_userId", testdata.org2.dagl.userid);
+  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
+  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  bru.setVar("party", testdata.org2.partyid);
+  bru.setVar("fromPartyId", testdata.org1.partyid);
+  
+  await tokenGenerator.getToken();
+}

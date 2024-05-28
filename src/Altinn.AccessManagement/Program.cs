@@ -1,3 +1,4 @@
+using System.Reflection;
 using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
@@ -71,10 +72,9 @@ ConfigureLogging(builder.Logging);
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
-ConfigurePostgreSql();
 
 Configure();
-
+ConfigurePostgreSql();
 app.Run();
 
 void ConfigureSetupLogging()
@@ -184,6 +184,7 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
+    builder.Services.AddAccessManagementPersistence();
     logger.LogInformation("Startup // ConfigureServices");
     services.ConfigureAsserters();
     services.ConfigureResolvers();
@@ -301,7 +302,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy =>
-            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES, AuthzConstants.SCOPE_RESOURCEOWNER_AUTHORIZEDPARTIES_ADMIN })));
+            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
@@ -391,17 +392,11 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
+        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = false };
 
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-
-        string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        if (builder.Environment.IsDevelopment())
-        {
-            workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        }
 
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
@@ -409,10 +404,17 @@ void ConfigurePostgreSql()
             traceService,
             new Configuration
             {
-                Workspace = workspacePath,
+                Workspace = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Migration"),
                 ConnectionString = connectionString,
                 IsAutoCreateDatabase = false,
                 IsDebug = true,
             });
     }
+}
+
+/// <summary>
+/// Program
+/// </summary>
+public partial class Program
+{
 }

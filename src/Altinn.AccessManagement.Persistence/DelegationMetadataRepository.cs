@@ -548,7 +548,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             pgcom.Parameters.AddWithValue("_resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, new List<string> { resourceType.ToString().ToLower() });
 
             List<DelegationChange> receivedDelegations = new List<DelegationChange>();
-            
+
             using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
             while (reader.Read())
             {

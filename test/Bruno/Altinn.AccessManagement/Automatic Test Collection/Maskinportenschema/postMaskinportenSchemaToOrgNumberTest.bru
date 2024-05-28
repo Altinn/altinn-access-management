@@ -7,7 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
   body: json
-  auth: none
+  auth: inherit
 }
 
 headers {
@@ -59,11 +59,6 @@ script:pre-request {
   bru.setVar("to_orgno", testdata.org2.orgno);
   
   await tokenGenerator.getToken();
-}
-
-script:post-response {
-  console.log("request url (after): " + req.getUrl());
-  console.log("response body:");
 }
 
 tests {

@@ -23,7 +23,7 @@
         "isDeleted": false,
         "onlyHierarchyElementWithNoAccess": false,
         "authorizedResources": [
-          "ttd/am-devtest-sub-to-person",
+          "app_ttd_am-devtest-sub-to-person",
           "devtest_gar_authparties-sub-to-person"
         ],
         "authorizedRoles": [],

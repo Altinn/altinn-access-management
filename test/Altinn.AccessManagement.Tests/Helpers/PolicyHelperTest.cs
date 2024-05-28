@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Tests.Mocks;
@@ -57,7 +58,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
         /// Rule is found and expected result is returned
         /// </summary>
         [Fact]
-        public async void GetRolesWithAccess()
+        public async Task GetRolesWithAccess()
         {
             // Arrange
             XacmlPolicy policy = await _policyRetrievalPointMock.GetPolicyAsync("resource1");

@@ -9,7 +9,6 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using OpenTelemetry.Trace;
 
 namespace Altinn.AccessManagement.Persistence
 {

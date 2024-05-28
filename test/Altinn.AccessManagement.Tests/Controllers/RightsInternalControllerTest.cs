@@ -15,7 +15,6 @@ using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
-using Altinn.AccessManagement.Utilities;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -37,6 +36,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
     public class RightsInternalControllerTest : IClassFixture<CustomWebApplicationFactory<RightsInternalController>>
     {
         private readonly CustomWebApplicationFactory<RightsInternalController> _factory;
+
         private readonly string sblInternalToken = PrincipalUtil.GetAccessToken("sbl.authorization");
 
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
@@ -116,7 +116,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
             StreamContent requestContent = GetRightsQueryRequestContent("jks_audi_etron_gt", "p50005545", "u20000490");
 
             // Act
-            HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
+            var client = GetTestClient(sblInternalToken);
+
+            var response = await client.PostAsync($"accessmanagement/api/v1/internal/query/rights/", requestContent);
+
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -141,6 +144,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await GetTestClient(sblInternalToken).PostAsync($"accessmanagement/api/v1/internal/query/rights/?returnAllPolicyRights=true", requestContent);
+
             string responseContent = await response.Content.ReadAsStringAsync();
             List<RightExternal> actualRights = JsonSerializer.Deserialize<List<RightExternal>>(responseContent, options);
 
@@ -565,6 +569,98 @@ namespace Altinn.AccessManagement.Tests.Controllers
             int userId = 20000490;
             int reporteePartyId = 50005545;
             string resourceId = "generic-access-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the app ttd/apps-test.
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        ///            - 8 out of 10 of the rights for the app: ttd/apps-test is delegable through having DAGL:
+        ///                 - apps-test,ttd:instantiate
+        ///                 - apps-test,ttd:read
+        ///                 - apps-test,ttd,Task_1:read
+        ///                 - apps-test,ttd,Task_1:write
+        ///                 - apps-test,EndEvent_1,ttd:read
+        ///                 - apps-test,EndEvent_1,ttd:write
+        ///                 - apps-test,ttd:delete
+        ///                 - apps-test,events,ttd:read
+        ///           - 2 out of the 10 rights is only available to the service owner and is removed entirly from the result as it is not available for any end users
+        ///                 - apps-test,EndEvent_1,ttd:complete
+        ///                 - apps-test,ttd:write
+        ///           - Also some of the rules is also available to the service owner in those cases only the detail for this access is removed from the result this is for
+        ///                 - apps-test,ttd:instantiate
+        ///                 - apps-test,ttd:read
+        /// 
+        /// Expected: DelegationCheck returns a list of RightDelegationCheckResult matching expected: 8 Delegable with roles returned Delegable as role is correct, 2 Not connected to any roles filtered away. All Rule details for Service Owner is Filtered away
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_GenericAccessResource_DAGL_HasTheDelegableRightsExistingForEndUsers()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005545;
+            string resourceId = "ttd_apps-test";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        /// <summary>
+        /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005546 for the app ttd/apps-test.
+        ///            In this case:
+        ///            - The user 20000490 has no rights for the From unit 50005546
+        ///            - 8 out of 10 of the rights for the app: ttd/apps-test is delegable through having Roles (DAGL, REGNA, ADMAI):
+        ///                 - apps-test,ttd:instantiate
+        ///                 - apps-test,ttd:read
+        ///                 - apps-test,ttd,Task_1:read
+        ///                 - apps-test,ttd,Task_1:write
+        ///                 - apps-test,EndEvent_1,ttd:read
+        ///                 - apps-test,EndEvent_1,ttd:write
+        ///                 - apps-test,ttd:delete
+        ///                 - apps-test,events,ttd:read
+        ///           - 2 out of the 10 rights is only available to the service owner and is removed entirly from the result as it is not available for any end users
+        ///                 - apps-test,EndEvent_1,ttd:complete
+        ///                 - apps-test,ttd:write
+        ///           - Also some of the rules is also available to the service owner in those cases only the detail for this access is removed from the result this is for
+        ///                 - apps-test,ttd:instantiate
+        ///                 - apps-test,ttd:read
+        /// 
+        /// Expected: DelegationCheck returns a list of RightDelegationCheckResult matching expected: 8 Delegable with roles returned but not delegable as role is missing, 2 Not connected to any roles filtered away. All Rule details for Service Owner is Filtered away
+        /// </summary>
+        [Fact]
+        public async Task DelegationCheck_GenericAccessResource_NoRoleOrRights_AllRightsNotDelegableServiceOwnerRightsFilteredAway()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005546;
+            string resourceId = "ttd_apps-test";
 
             var token = PrincipalUtil.GetToken(userId, 0, 3);
 

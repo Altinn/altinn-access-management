@@ -7,7 +7,7 @@ meta {
 get {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/received
   body: none
-  auth: none
+  auth: inherit
 }
 
 headers {
@@ -37,10 +37,6 @@ script:pre-request {
   bru.setVar("party", testdata.org2.partyid);
   
   await tokenGenerator.getToken();
-}
-
-script:post-response {
-  console.log("request url (after): " + req.getUrl());
 }
 
 tests {

@@ -1,0 +1,27 @@
+{
+    "env": "tt02",
+    "org": "ttd",
+    "app": "apps-test",
+    "servicecode": "2802",
+    "serviceeditioncode": "3",
+    "org1": {
+        "orgno": "310438707",
+        "partyid": 51563583,
+        "dagl": {
+            "pid":"22855296954",
+            "lastname": "LARM",
+            "userid": 1278314,
+            "partyid": 50783137
+        }
+    },
+    "org2": {
+        "orgno": "313818608",
+        "partyid": 51871883,
+        "dagl": {
+            "pid": "02856099884",
+            "lastname": "ALKOVE",
+            "userid": 1278315,
+            "partyid": 51386822
+        }
+    }
+}

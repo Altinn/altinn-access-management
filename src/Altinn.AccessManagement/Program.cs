@@ -205,6 +205,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     });
     services.AddMvc();
 
+    // Get from FeatureManagment
+    bool featureUseNewQueryRepo = false; 
+
     PlatformSettings platformSettings = config.GetSection("Platform").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
@@ -237,8 +240,19 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
-    services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
-    services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+
+    if (featureUseNewQueryRepo)
+    {
+        // Using new query pattern
+        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
+        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
+    }
+    else
+    {
+        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+    }
+    
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();

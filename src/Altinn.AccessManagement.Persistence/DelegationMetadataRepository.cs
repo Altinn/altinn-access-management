@@ -46,7 +46,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange)
+    public async Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange, CancellationToken cancellationToken = default)
     {
         if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
         {
@@ -57,7 +57,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+    public async Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
     {
         if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
         {
@@ -68,7 +68,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+    public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
@@ -125,7 +125,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null)
+    public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> delegationChanges = new List<DelegationChange>();
         CheckIfOfferedbyPartyIdsHasValue(offeredByPartyIds);
@@ -173,7 +173,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+    public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
@@ -203,7 +203,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+    public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try
@@ -532,7 +532,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public async Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType)
+    public async Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType, CancellationToken cancellationToken = default)
     {
         using var activity = Configuration.TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
         try

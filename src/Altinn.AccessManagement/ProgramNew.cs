@@ -59,8 +59,7 @@ public class ProgramNew
                 tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
             });
 
-        // builder.AddOpenTelemetryExporters();
-
+        //builder.AddOpenTelemetryExporters();
         builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
 
@@ -84,6 +83,7 @@ public class ProgramNew
         //-----------------
 
         //ConfigureTelemetry
+        //ConfigureServices
 
         //ConfigureAsserters => Andreas
         /*

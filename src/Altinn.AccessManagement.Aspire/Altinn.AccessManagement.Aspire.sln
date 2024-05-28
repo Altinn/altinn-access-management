@@ -1,0 +1,54 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.0.0
+MinimumVisualStudioVersion = 17.8.0.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Aspire.AppHost", "Altinn.AccessManagement.Aspire.AppHost\Altinn.AccessManagement.Aspire.AppHost.csproj", "{95F0CE5C-30CA-48E0-92C2-792492665389}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Aspire.ServiceDefaults", "Altinn.AccessManagement.Aspire.ServiceDefaults\Altinn.AccessManagement.Aspire.ServiceDefaults.csproj", "{F1E2721E-8254-4331-B166-34B90D729B23}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement", "..\Altinn.AccessManagement\Altinn.AccessManagement.csproj", "{C10B3101-B7BD-4A1E-BCAA-7B2A5EB38546}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Core", "..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj", "{9A79C9A7-811C-49B2-B907-ADC18DDA97EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Integration", "..\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj", "{2399FB06-E8CC-4DAB-BCB7-7218741C9CC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Persistence", "..\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj", "{86BDF05C-C738-4B74-B860-D5A77E960BBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95F0CE5C-30CA-48E0-92C2-792492665389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95F0CE5C-30CA-48E0-92C2-792492665389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95F0CE5C-30CA-48E0-92C2-792492665389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95F0CE5C-30CA-48E0-92C2-792492665389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1E2721E-8254-4331-B166-34B90D729B23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1E2721E-8254-4331-B166-34B90D729B23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1E2721E-8254-4331-B166-34B90D729B23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1E2721E-8254-4331-B166-34B90D729B23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C10B3101-B7BD-4A1E-BCAA-7B2A5EB38546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C10B3101-B7BD-4A1E-BCAA-7B2A5EB38546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C10B3101-B7BD-4A1E-BCAA-7B2A5EB38546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C10B3101-B7BD-4A1E-BCAA-7B2A5EB38546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A79C9A7-811C-49B2-B907-ADC18DDA97EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A79C9A7-811C-49B2-B907-ADC18DDA97EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A79C9A7-811C-49B2-B907-ADC18DDA97EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A79C9A7-811C-49B2-B907-ADC18DDA97EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2399FB06-E8CC-4DAB-BCB7-7218741C9CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2399FB06-E8CC-4DAB-BCB7-7218741C9CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2399FB06-E8CC-4DAB-BCB7-7218741C9CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2399FB06-E8CC-4DAB-BCB7-7218741C9CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86BDF05C-C738-4B74-B860-D5A77E960BBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86BDF05C-C738-4B74-B860-D5A77E960BBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86BDF05C-C738-4B74-B860-D5A77E960BBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86BDF05C-C738-4B74-B860-D5A77E960BBA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6A012E6F-AF46-4C7F-A462-D4538293DED5}
+	EndGlobalSection
+EndGlobal

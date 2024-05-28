@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="OpenTelemetry" Version="1.7.0" />
     <PackageReference Include="Microsoft.Extensions.Telemetry.Abstractions" Version="8.4.0" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
   </ItemGroup>

@@ -55,6 +55,11 @@ ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string connectionString = builder.Configuration.GetConnectionString("AppConfig");
+
+// builder.Services.Configure<Settings>(builder.Configuration.GetSection("TestApp:Settings"));
+//builder.Configuration.AddAzureAppConfiguration(connectionString);
+
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
 
@@ -341,9 +346,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
             {
                 {
                     Sdk.CreateTracerProviderBuilder()
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Core.Telemetry.TelemetryConfig.ActivitySource.Name))
                     .AddNpgsql()
-                    .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name)
+                    .AddSource(Altinn.AccessManagement.Core.Telemetry.TelemetryConfig.ActivitySource.Name)
                 }
             };
 

@@ -5,6 +5,7 @@ using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
@@ -54,7 +55,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex);
+                activity?.StopWithError(ex);
                 throw;
             }
         }

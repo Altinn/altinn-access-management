@@ -238,7 +238,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddMvc();
 
     // Get from FeatureManagment
-    var accessMgmtSettings = builder.Configuration.GetRequiredSection("AccessMgmt:General").Get<AccessMgmtSettings>();
+    var accessMgmtSettings = builder.Configuration.GetSection("AccessMgmt:General").Get<AccessMgmtSettings>();
 
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
@@ -273,7 +273,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
 
-    if (accessMgmtSettings.UseNewQueryRepo)
+    if (accessMgmtSettings != null && accessMgmtSettings.UseNewQueryRepo)
     {
         // Using new query pattern
         services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();

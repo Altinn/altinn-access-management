@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Asserters;
@@ -8,6 +9,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Extensions;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
@@ -29,7 +31,6 @@ using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Azure.Identity;
-using Azure.Monitor.OpenTelemetry.Exporter;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -43,9 +44,6 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
-using OpenTelemetry;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -54,16 +52,37 @@ using KeyVaultSettings = AltinnCore.Authentication.Constants.KeyVaultSettings;
 ILogger logger;
 
 var builder = WebApplication.CreateBuilder(args);
+ConfigureSetupLogging();
 
-string connectionString = builder.Configuration.GetConnectionString("AppConfig");
+/* New App Startup (temp) */
+try
+{
+    /*
+    # NOTES
 
-// builder.Services.Configure<Settings>(builder.Configuration.GetSection("TestApp:Settings"));
-//builder.Configuration.AddAzureAppConfiguration(connectionString);
+    ## Feature Managment
+    var featMgmt = app.Services.GetRequiredService<IFeatureManager>();
+    bool someFeature = await featMgmt.IsEnabledAsync("SomeFeature");
+    */
+
+    builder.Configuration.AddEnvironmentVariables();
+    builder.ConfigureAzureAppConfig();
+    builder.ConfigureSettings();
+    builder.ConfigureTelemetry();
+
+    builder.Services.AddFeatureManagement();
+    //builder.Services.ConfigureBaseServices();
+    //builder.Services.ConfigureServices();
+}
+catch (Exception ex)
+{
+    logger.LogWarning("Unable to use new app startup. " + ex.Message);
+}
+
+/**************************/
 
 string applicationInsightsKeySecretName = "ApplicationInsights--InstrumentationKey";
 string applicationInsightsConnectionString = string.Empty;
-
-ConfigureSetupLogging();
 
 await SetConfigurationProviders(builder.Configuration);
 
@@ -127,6 +146,9 @@ void ConfigureLogging(ILoggingBuilder logging)
 
 async Task SetConfigurationProviders(ConfigurationManager config)
 {
+    try
+    {
+
     string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
     logger.LogInformation("Program // Loading Configuration from basePath={basePath}", basePath);
@@ -139,6 +161,11 @@ async Task SetConfigurationProviders(ConfigurationManager config)
 
     config.AddEnvironmentVariables();
     config.AddCommandLine(args);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
 
     await ConnectToKeyVaultAndSetApplicationInsights(config);
 }
@@ -211,13 +238,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddMvc();
 
     // Get from FeatureManagment
-    bool featureUseNewQueryRepo = false; 
+    var accessMgmtSettings = builder.Configuration.GetRequiredSection("AccessMgmt:General").Get<AccessMgmtSettings>();
 
-    PlatformSettings platformSettings = config.GetSection("Platform").Get<PlatformSettings>();
+    PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
-    services.Configure<PlatformSettings>(config.GetSection("Platform"));
-    services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("Platform"));
+    services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
     services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
@@ -246,7 +273,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
 
-    if (featureUseNewQueryRepo)
+    if (accessMgmtSettings.UseNewQueryRepo)
     {
         // Using new query pattern
         services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
@@ -339,31 +366,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddApplicationInsightsTelemetryProcessor<HealthTelemetryFilter>();
         services.AddApplicationInsightsTelemetryProcessor<IdentityTelemetryFilter>();
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
-
-        if (config.GetSection("FeatureManagement").GetValue<bool>("OpenTelementry"))
-        {
-            var telemetry = new List<TracerProviderBuilder>()
-            {
-                {
-                    Sdk.CreateTracerProviderBuilder()
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Core.Telemetry.TelemetryConfig.ActivitySource.Name))
-                    .AddNpgsql()
-                    .AddSource(Altinn.AccessManagement.Core.Telemetry.TelemetryConfig.ActivitySource.Name)
-                }
-            };
-
-            foreach (var t in telemetry)
-            {
-                t.SetSampler(new AlwaysOnSampler());
-                if (builder.Environment.IsDevelopment())
-                {
-                    t.AddConsoleExporter();
-                }
-
-                t.AddAzureMonitorTraceExporter(opt => { opt.ConnectionString = applicationInsightsConnectionString; });
-                t.Build();
-            }
-        }
 
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
     }

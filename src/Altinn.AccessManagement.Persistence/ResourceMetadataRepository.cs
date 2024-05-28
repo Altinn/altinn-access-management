@@ -27,9 +27,9 @@ namespace Altinn.AccessManagement.Persistence
         /// Initializes a new instance of the <see cref="ResourceMetadataRepository"/> class
         /// </summary>
         /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
-        public ResourceMetadataRepository(AccessMgmtAppConfig config)
+        public ResourceMetadataRepository(IOptions<PostgreSQLSettings> config)
         {
-            _connectionString = string.Format(config.Database.ConnectionString, config.Database.AuthorizationDbPwd);
+            _connectionString = string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd);
         }
 
         /// <inheritdoc />

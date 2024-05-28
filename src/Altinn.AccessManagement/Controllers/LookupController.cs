@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Utilities;
 using Altinn.Platform.Register.Models;
@@ -35,6 +36,15 @@ namespace Altinn.AccessManagement.Controllers
             _contextRetrieval = contextRetrieval;
         }
 
+        [HttpGet]
+        [Route("accessmanagement/api/v1/lookup/testing")]
+        public async Task<ActionResult> JustTesting(int secondsToWait)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            Thread.Sleep(secondsToWait * 1000);
+            return Ok();
+        }
+
         /// <summary>
         /// Endpoint for retrieving party if party exists in the authenticated users reporteelist
         /// </summary>
@@ -44,7 +54,8 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize]
         [Route("accessmanagement/api/v1/lookup/reportee/{partyId}")]
         public async Task<ActionResult<PartyExternal>> GetPartyFromReporteeListIfExists(int partyId)
-        {           
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
             try
             {
                 int userId = AuthenticationHelper.GetUserId(HttpContext);
@@ -66,6 +77,7 @@ namespace Altinn.AccessManagement.Controllers
             }
             catch (Exception ex)
             {
+                activity?.StopWithError(ex, "GetReportee failed to fetch reportee information");
                 _logger.LogError(ex, "GetReportee failed to fetch reportee information");
                 return StatusCode(500);
             }

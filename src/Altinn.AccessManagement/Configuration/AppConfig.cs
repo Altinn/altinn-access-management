@@ -1,7 +1,7 @@
 ﻿namespace Altinn.AccessManagement.Configuration
 {
-    public class AppConfig
+    public class AccessMgmtSettings
     {
-        public bool IsDev { get; set; }
+        public bool UseNewQueryRepo { get; set; }
     }
 }

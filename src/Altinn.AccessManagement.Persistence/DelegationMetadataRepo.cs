@@ -25,14 +25,12 @@ namespace Altinn.AccessManagement.Persistence
         /// </summary>
         /// <param name="dbConnection">Database connection for AuthorizationDb</param>
         /// /// <param name="logger">Logger</param>
-        public DelegationMetadataRepo(IDbConnection dbConnection, ILogger<DelegationMetadataRepo> logger)
+        public DelegationMetadataRepo(NpgsqlDataSource dbConnection, ILogger<DelegationMetadataRepo> logger)
         {
             var bld = new NpgsqlConnectionStringBuilder(dbConnection.ConnectionString);
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
-            dbConnection.ConnectionString = bld.ConnectionString;
-
-            _connection = dbConnection;
+            _connection = new Npgsql.NpgsqlConnection(bld.ConnectionString);
             _logger = logger;
         }
 

@@ -1,9 +1,11 @@
 ﻿using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -17,25 +19,24 @@ namespace Altinn.AccessManagement.Persistence
     public class ResourceMetadataRepo : IResourceMetadataRepository
     {
         private readonly IDbConnection _connection;
-        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepo"/> class
         /// </summary>
         /// <param name="dbConnection">Database connection for AuthorizationDb</param>
-        /// <param name="logger">logger</param>
-        public ResourceMetadataRepo(NpgsqlDataSource dbConnection, ILogger<ResourceMetadataRepo> logger)
+        public ResourceMetadataRepo(NpgsqlDataSource dbConnection)
         {
             var bld = new NpgsqlConnectionStringBuilder(dbConnection.ConnectionString);
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
             _connection = new Npgsql.NpgsqlConnection(bld.ConnectionString);
-            _logger = logger;
         }
 
         /// <inheritdoc />
         public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
             param.Add("resourceregistryid", resource.ResourceRegistryId);
             param.Add("resourcetype", resource.ResourceType.ToString().ToLower());
@@ -55,7 +56,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetCurrentAppDelegation // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally

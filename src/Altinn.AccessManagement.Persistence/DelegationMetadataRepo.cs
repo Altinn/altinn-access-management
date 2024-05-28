@@ -1,12 +1,16 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Telemetry;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Persistence
 {
@@ -17,77 +21,25 @@ namespace Altinn.AccessManagement.Persistence
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
         private readonly IDbConnection _connection;
-        private readonly ILogger _logger;
         private readonly string defaultColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId, created";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>
         /// <param name="dbConnection">Database connection for AuthorizationDb</param>
-        /// /// <param name="logger">Logger</param>
-        public DelegationMetadataRepo(NpgsqlDataSource dbConnection, ILogger<DelegationMetadataRepo> logger)
+        public DelegationMetadataRepo(NpgsqlDataSource dbConnection)
         {
             var bld = new NpgsqlConnectionStringBuilder(dbConnection.ConnectionString);
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
             _connection = new Npgsql.NpgsqlConnection(bld.ConnectionString);
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Generic method to Query database
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="query">Query command</param>
-        /// <param name="param">Query parameters</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns></returns>
-        private async Task<List<T>> QueryAsync<T>(string query, Dictionary<string,object> param, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var cmd = new CommandDefinition(query, param, cancellationToken: cancellationToken);
-                _connection.Open();
-                var res = await _connection.QueryAsync<T>(cmd);
-                return res == null ? null : res.ToList();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _connection.Close();
-            }
-        }
-
-        /// <summary>
-        /// Generic method to Query database
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="command">CommandDefinition</param>
-        /// <returns></returns>
-        private async Task<List<T>> QueryAsync<T>(CommandDefinition command)
-        {
-            try
-            {
-                _connection.Open();
-                var res = await _connection.QueryAsync<T>(command);
-                return res == null ? null : res.ToList();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                _connection.Close();
-            }            
         }
 
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
             param.Add("altinnAppId", altinnAppId);
             param.Add("offeredByPartyId", offeredByPartyId);
@@ -108,14 +60,32 @@ namespace Altinn.AccessManagement.Persistence
                 param.Add("coveredByUserId", coveredByUserId);
             }
 
-            return await QueryAsync<DelegationChange>(query, param, cancellationToken: cancellationToken);
+
+            try
+            {
+                _connection.Open();
+                var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
+                return res == null ? null : res.ToList();
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+            finally
+            {
+                _connection.Close();
+            }
         }
 
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             if (offeredByPartyIds?.Any() != true)
             {
+                activity?.StopWithError(new ArgumentNullException(nameof(offeredByPartyIds)));
                 throw new ArgumentNullException(nameof(offeredByPartyIds));
             }
 
@@ -164,7 +134,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetAllCurrentAppDelegationChanges // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally 
@@ -186,6 +156,8 @@ namespace Altinn.AccessManagement.Persistence
 
         private async Task<DelegationChange> GetCurrentAppDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
             param.Add("altinnAppId", resourceId);
             param.Add("offeredByPartyId", offeredByPartyId);
@@ -216,7 +188,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetCurrentAppDelegation // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -238,6 +210,8 @@ namespace Altinn.AccessManagement.Persistence
 
         private async Task<DelegationChange> InsertAppDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>
             {
                 { "delegationChangeType", delegationChange.DelegationChangeType },
@@ -262,7 +236,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // InsertAppDelegation // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -273,6 +247,7 @@ namespace Altinn.AccessManagement.Persistence
 
         private async Task<DelegationChange> InsertResourceRegistryDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             var param = new Dictionary<string, object>
             {
                 { "delegationChangeType", delegationChange.DelegationChangeType },
@@ -307,7 +282,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // InsertResourceRegistryDelegation // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -318,6 +293,8 @@ namespace Altinn.AccessManagement.Persistence
 
         private async Task<DelegationChange> GetCurrentResourceRegistryDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
             param.Add("resourceRegistryId", resourceId);
             param.Add("offeredByPartyId", offeredByPartyId);
@@ -349,7 +326,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetCurrentResourceRegistryDelegation // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -384,6 +361,8 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetOfferedResourceRegistryDelegations(int offeredByPartyId, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
             param.Add("offeredByPartyId", offeredByPartyId);
 
@@ -421,7 +400,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetOfferedResourceRegistryDelegations // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -433,6 +412,8 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds = null, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
 
             string query = "WITH res AS (" +
@@ -486,7 +467,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetReceivedResourceRegistryDelegationsForCoveredByPartys // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -498,6 +479,8 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
 
             string query = "WITH res AS (" +
@@ -551,7 +534,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetReceivedResourceRegistryDelegationsForCoveredByPartys // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -563,6 +546,8 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyId, int coveredByPartyId, ResourceType resourceType, CancellationToken cancellationToken = default)
         {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
             var param = new Dictionary<string, object>();
 
             string query = "WITH lastChange AS (" +
@@ -617,7 +602,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Authorization // DelegationMetadataRepository // GetCurrentDelegationChange // Exception");
+                activity?.StopWithError(ex);
                 throw;
             }
             finally
@@ -626,14 +611,182 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
-        public Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
+        public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            var param = new Dictionary<string, object>();
+            param.Add("offeredByPartyIds", offeredByPartyIds);
+
+            const string query = /*strpsql*/@"
+            WITH resources AS (
+		        SELECT resourceId, resourceRegistryId, resourceType
+		        FROM accessmanagement.Resource
+		        WHERE resourceType != 'maskinportenschema'
+	        ),
+            latestResourceChanges AS (
+		        SELECT MAX(resourceRegistryDelegationChangeId) as latestId
+		        FROM delegation.ResourceRegistryDelegationChanges
+                WHERE offeredbypartyid IN (@offeredByPartyIds)
+                GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        ),
+	        latestAppChanges AS (
+		        SELECT MAX(delegationChangeId) as latestId
+		        FROM delegation.delegationchanges 
+                WHERE offeredbypartyid IN (@offeredByPartyIds)
+                GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        )
+            SELECT
+		        resourceRegistryDelegationChangeId,
+		        null AS delegationChangeId,
+		        delegationChangeType,
+		        resources.resourceRegistryId,
+		        resources.resourceType,
+		        null AS altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.ResourceRegistryDelegationChanges
+		        INNER JOIN resources ON resourceId_fk = resources.resourceid
+		        INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+
+	        UNION ALL
+
+	        SELECT
+		        null AS resourceRegistryDelegationChangeId,
+		        delegationChangeId,
+		        delegationChangeType,
+		        null AS resourceRegistryId,
+		        null AS resourceType,
+		        altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        null AS performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.delegationchanges
+		        INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'";
+
+            try
+            {
+                _connection.Open();
+                var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
+                return res == null ? null : res.ToList();
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+            finally
+            {
+                _connection.Close();
+            }
         }
 
-        public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken)
+        public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            if (coveredByUserIds == null && coveredByPartyIds == null)
+            {
+                return new List<DelegationChange>(); // await Task.FromResult(new List<DelegationChange>());
+            }
+
+            var param = new Dictionary<string, object>();
+            param.Add("coveredByUserIds", coveredByUserIds);
+            param.Add("coveredByPartyIds", coveredByPartyIds);
+
+            const string query = /*strpsql*/@"
+            WITH resources AS (
+		        SELECT resourceId, resourceRegistryId, resourceType
+		        FROM accessmanagement.Resource
+		        WHERE resourceType != 'maskinportenschema'
+	        ),
+	        latestResourceChanges AS (
+		        SELECT MAX(resourceRegistryDelegationChangeId) as latestId
+		        FROM delegation.ResourceRegistryDelegationChanges
+		        WHERE 
+			        coveredByUserId IN (@coveredbyuserids)
+			        OR coveredByPartyId IN (@coveredByPartyIds)
+		        GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        ),
+	        latestAppChanges AS (
+		        SELECT MAX(delegationChangeId) as latestId
+		        FROM delegation.delegationchanges
+		        WHERE
+			        coveredByUserId IN (@coveredByUserIds)
+			        OR coveredByPartyId IN (@coveredByPartyIds)
+		        GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
+	        )
+
+	        SELECT
+		        resourceRegistryDelegationChangeId,
+		        null AS delegationChangeId,
+		        delegationChangeType,
+		        resources.resourceRegistryId,
+		        resources.resourceType,
+		        null AS altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.ResourceRegistryDelegationChanges
+		        INNER JOIN resources ON resourceId_fk = resources.resourceid
+		        INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+
+	        UNION ALL
+
+	        SELECT
+		        null AS resourceRegistryDelegationChangeId,
+		        delegationChangeId,
+		        delegationChangeType,
+		        null AS resourceRegistryId,
+		        null AS resourceType,
+		        altinnAppId,
+		        offeredByPartyId,
+		        coveredByUserId,
+		        coveredByPartyId,
+		        performedByUserId,
+		        null AS performedByPartyId,
+		        blobStoragePolicyPath,
+		        blobStorageVersionId,
+		        created
+	        FROM delegation.delegationchanges
+		        INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+	        WHERE delegationchangetype != 'revoke_last'
+            ";
+
+            try
+            {
+                _connection.Open();
+                var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
+                return res == null ? null : res.ToList();
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+            finally
+            {
+                _connection.Close();
+            }
         }
     }
 }

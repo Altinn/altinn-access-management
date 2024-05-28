@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Configuration;
 using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -23,19 +24,19 @@ public static class AccessManagementExtensions
     /// <returns>Extended IServiceCollection</returns>
     public static IServiceCollection ConfigureHttpClients(this IServiceCollection services)
     {
-        if (!services.Any(t => t.ServiceType == typeof(AppConfig)))
+        if (!services.Any(t => t.ServiceType == typeof(AccessMgmtAppConfig)))
         {
-            throw new Exception("Missing AppConfig");
+            throw new Exception("Missing AccessMgmtAppConfig");
         }
 
         // SblBridge
         services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
         services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
-        // SblBridge, PlatformSettings
+        // SblBridge, Platform
         services.AddHttpClient<IPartiesClient, PartiesClient>();
 
-        // PlatformSettings
+        // Platform
         services.AddHttpClient<IProfileClient, ProfileClient>();
 
         // SblBridge
@@ -44,7 +45,7 @@ public static class AccessManagementExtensions
         // SblBridge
         services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
 
-        // PlatformSettings
+        // Platform
         services.AddHttpClient<AuthorizationApiClient>();
 
         services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -52,7 +53,7 @@ public static class AccessManagementExtensions
     }
 
     /// <summary>
-    /// Configure Azure AppConfig
+    /// Configure Azure AccessMgmtAppConfig
     /// </summary>
     /// <param name="builder">IHostApplicationBuilder</param>
     /// <param name="environment">ConfigEnvironment</param>
@@ -64,6 +65,8 @@ public static class AccessManagementExtensions
         // ConfigurationBuilder configurationBuilder = new ConfigurationBuilder(); //Sjekk...
         Console.WriteLine(appConfigUri);
         Console.WriteLine(keyVaultUri);
+
+        builder.Services.AddAzureAppConfiguration();
 
         var defaultCred = new DefaultAzureCredential();
         builder.Configuration.AddAzureAppConfiguration(c =>

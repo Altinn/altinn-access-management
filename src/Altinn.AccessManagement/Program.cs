@@ -205,11 +205,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     });
     services.AddMvc();
 
-    PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
+    PlatformSettings platformSettings = config.GetSection("Platform").Get<PlatformSettings>();
     OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
     services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
-    services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
-    services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
+    services.Configure<PlatformSettings>(config.GetSection("Platform"));
+    services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("Platform"));
     services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
     services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
     services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));

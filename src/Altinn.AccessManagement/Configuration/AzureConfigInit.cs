@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Asserters; // Move to Altinn.AccessManagement.Extensions
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Resolvers.Extensions; // Move to Altinn.AccessManagement.Extensions
 using Altinn.AccessManagement.Core.Services;
@@ -7,18 +8,21 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Extensions;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
-using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
+using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions; // Move to Altinn.AccessManagement.Extensions
 using Altinn.Common.AccessToken;
+using Altinn.Common.AccessToken.Configuration;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
+using Altinn.Common.Authentication.Configuration;
 using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -29,76 +33,6 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Altinn.AccessManagement.Configuration
 {
-    /// <summary>
-    /// Configuration for Access Management API
-    /// </summary>
-    public class AppConfig
-    {
-        /// <summary>
-        /// Telemetry configuration
-        /// </summary>
-        public ConfigTelemetry Telemetry { get; set; }
-
-        /// <summary>
-        /// SblBridge configuration
-        /// </summary>
-        public ConfigSblBridge SblBridge { get; set; }
-        
-        /// <summary>
-        /// Platform configuration
-        /// </summary>
-        public PlatformSettings PlatformSettings { get; set; } // Replace with new model
-    }
-
-    /// <summary>
-    /// Telemetry configuration
-    /// </summary>
-    public class ConfigTelemetry
-    {
-        /// <summary>
-        /// Instructs Telemetry to write to console
-        /// </summary>
-        public bool WriteToConsole { get; set; }
-
-        /// <summary>
-        /// Telemetry will use AlwaysOnSampler
-        /// </summary>
-        public bool UseAlwaysOnSampler { get; set; }
-        
-        /// <summary>
-        /// Connectionstring for exporting Telemetry to Azure Monitor / AppInsights
-        /// </summary>
-        public string AppInsightsConnectionString { get; set; }
-
-        /// <summary>
-        /// Endpoint to send telemetry data
-        /// </summary>
-        public string ScrapingEndpoint { get; set; }
-    }
-
-    /// <summary>
-    /// SblBridge Configuration
-    /// </summary>
-    public class ConfigSblBridge
-    {
-        /// <summary>
-        /// Base Url for SblBridge API
-        /// </summary>
-        public string BaseApiUrl { get; set; }
-    }
-
-    /// <summary>
-    /// Enum for the environments used for Azure AppConfig labels
-    /// </summary>
-    public enum ConfigEnvironment 
-    { 
-        Local, 
-        AT21, 
-        AT22, 
-        AT23, 
-        AT24 
-    }
-
     /// <summary>
     /// Temporary static class to replace Program.cs
     /// </summary>
@@ -118,13 +52,12 @@ namespace Altinn.AccessManagement.Configuration
             builder.Configuration.AddEnvironmentVariables();
 
             builder.ConfigureAzureAppConfig(environment);
-            var azureConfig = builder.Configuration.GetRequiredSection("AccessMgmt").Get<AppConfig>();
-            builder.Services.AddSingleton<AppConfig>(azureConfig);
+            ConfigureSettings(builder.Services, builder.Configuration);
 
             builder.Services.AddFeatureManagement(); // Needed?
 
-            ConfigureTelemetry(builder.Services, azureConfig);
-            ConfigureBaseServices(builder.Services, azureConfig);
+            ConfigureTelemetry(builder.Services, builder.Configuration);
+            ConfigureBaseServices(builder.Services);
 
             builder.Services.ConfigureHttpClients();
         }
@@ -133,9 +66,11 @@ namespace Altinn.AccessManagement.Configuration
         /// Configure Telemetry
         /// </summary>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="azureConfig">AppConfig</param>
-        public static void ConfigureTelemetry(IServiceCollection services, AppConfig azureConfig)
+        /// <param name="config">IConfiguration</param>
+        public static void ConfigureTelemetry(IServiceCollection services, IConfiguration config)
         {
+            var telemetryConfig = config.GetValue<ConfigTelemetry>("Telemetry");
+
             services.AddOpenTelemetry()
                .ConfigureResource(resource =>
                {
@@ -145,14 +80,14 @@ namespace Altinn.AccessManagement.Configuration
                })
                .WithTracing(tracing =>
                {
-                   if (azureConfig.Telemetry.UseAlwaysOnSampler)
+                   if (telemetryConfig.UseAlwaysOnSampler)
                    {
                        tracing.SetSampler(new AlwaysOnSampler());
                    }
                    
                    tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddNpgsql();
 
-                   if (azureConfig.Telemetry.WriteToConsole)
+                   if (telemetryConfig.WriteToConsole)
                    {
                        tracing.AddConsoleExporter();
                    }
@@ -160,15 +95,15 @@ namespace Altinn.AccessManagement.Configuration
                .WithMetrics(metrics =>
                {
                    metrics.AddAspNetCoreInstrumentation().AddRuntimeInstrumentation();
-                   if (azureConfig.Telemetry.WriteToConsole)
+                   if (telemetryConfig.WriteToConsole)
                    {
                        metrics.AddConsoleExporter();
                    }
                });
             
-            if (!string.IsNullOrEmpty(azureConfig.Telemetry.AppInsightsConnectionString))
+            if (!string.IsNullOrEmpty(telemetryConfig.AppInsightsConnectionString))
             {
-                services.AddOpenTelemetry().UseAzureMonitor(config => config.ConnectionString = azureConfig.Telemetry.AppInsightsConnectionString);
+                services.AddOpenTelemetry().UseAzureMonitor(config => config.ConnectionString = telemetryConfig.AppInsightsConnectionString);
             }
         }
 
@@ -176,8 +111,7 @@ namespace Altinn.AccessManagement.Configuration
         /// Configure BaseServices
         /// </summary>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="azureConfig">AppConfig</param>
-        public static void ConfigureBaseServices(IServiceCollection services, AppConfig azureConfig)
+        public static void ConfigureBaseServices(IServiceCollection services)
         {
             services.AddAccessManagementPersistence();
             services.ConfigureAsserters();
@@ -200,11 +134,103 @@ namespace Altinn.AccessManagement.Configuration
         }
 
         /// <summary>
+        /// Maps settings
+        /// </summary>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="configuration">IConfiguration</param>
+        public static void ConfigureSettings(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<PostgreSQLSettings>(configuration.GetRequiredSection("PostgreSQLSettings"));
+            services.Configure<PlatformSettings>(configuration.GetRequiredSection("Platform"));
+            services.Configure<CacheConfig>(configuration.GetRequiredSection("CacheConfig"));
+
+            services.Configure<AzureStorageConfiguration>(configuration.GetRequiredSection("AzureStorageConfiguration"));
+            services.Configure<AccessTokenSettings>(configuration.GetRequiredSection("AccessTokenSettings"));
+            services.Configure<UserProfileLookupSettings>(configuration.GetRequiredSection("UserProfileLookupSettings"));
+            services.Configure<OidcProviderSettings>(configuration.GetRequiredSection("OidcProviderSettings"));
+
+
+            /*
+             PostgreSQLSettings
+                _postgreSQLSettings.ConnectionString
+                _postgreSQLSettings.AuthorizationDbPwd
+             
+             */
+
+            /*
+             PlatformSettings
+                _platformSettings.JwtCookieName
+             */
+
+
+            /*
+             CacheConfig
+                _cacheConfig.AltinnRoleCacheTimeout
+                _cacheConfig.PartyCacheTimeout
+                _cacheConfig.PolicyCacheTimeout
+             
+             */
+
+            /*
+                AzureStorageConfiguration
+                    _storageConfig.DelegationEventQueueAccountName
+                    _storageConfig.DelegationEventQueueAccountKey
+                    _storageConfig.DelegationEventQueueEndpoint
+
+                    _storageConfig.MetadataAccountName
+                    _storageConfig.MetadataAccountKey
+                    _storageConfig.MetadataBlobEndpoint
+                    _storageConfig.MetadataContainer
+
+                    _storageConfig.DelegationsAccountName
+                    _storageConfig.DelegationsAccountKey
+                    _storageConfig.DelegationsBlobEndpoint
+                    _storageConfig.DelegationsContainer
+
+                    _storageConfig.ResourceRegistryAccountName
+                    _storageConfig.ResourceRegistryAccountKey
+                    _storageConfig.ResourceRegistryBlobEndpoint
+                    _storageConfig.ResourceRegistryContainer
+             */
+
+
+            /*
+                AccessTokenSettings
+                    _accessTokenSettings.CacheCertLifetimeInSeconds
+                    _accessTokenSettings.DisableAccessTokenVerification
+                    _accessTokenSettings.AccessTokenHeaderId
+                    _accessTokenSettings.AccessTokenHttpContextId
+                    _accessTokenSettings.AccessTokenSigningKeysFolder
+                    _accessTokenSettings.AccessTokenSigningCertificateFileName
+                    _accessTokenSettings.ValidFromAdjustmentSeconds
+                    _accessTokenSettings.TokenLifetimeInSeconds
+             */
+
+            /*
+                UserProfileLookupSettings
+                    _userProfileLookupSettings.MaximumFailedAttempts
+                    _userProfileLookupSettings.FailedAttemptsCacheLifetimeSeconds
+             */
+
+            /*
+                OidcProviderSettings
+                    _oidcProviderSettings["altinn"].Issuer
+             */
+
+            /*
+                KeyVaultSettings
+                    keyVaultSettings.Value.SecretUri
+             
+             */
+
+        }
+
+        /// <summary>
         /// Configures services
         /// </summary>
         /// <param name="services">IServiceCollection</param>
-        /// <param name="azureConfig">AppConfig</param>
-        public static void ConfigureServices(IServiceCollection services, AppConfig azureConfig)
+        /// <param name="azureConfig">AccessMgmtAppConfig</param>
+        public static void ConfigureServices(IServiceCollection services, AccessMgmtAppConfig azureConfig)
         {
             /*
             NOTES:
@@ -222,7 +248,7 @@ namespace Altinn.AccessManagement.Configuration
             // Requires: IOptions<PostgreSQLSettings> postgresSettings
             services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
 
-            // Requires: IOptions<PlatformSettings> settings, ILogger<IResourceRegistryClient> logger
+            // Requires: IOptions<Platform> settings
             services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
 
             // Requires: IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient
@@ -261,7 +287,7 @@ namespace Altinn.AccessManagement.Configuration
             // Requires: ILogger<AccessTokenGenerator> logger, IOptions<AccessTokenSettings> accessTokenSettings, ISigningCredentialsResolver signingKeysResolver = null
             services.AddSingleton<IAccessTokenGenerator, AccessTokenGenerator>();
 
-            // Requires: IOptions<PlatformSettings> platformSettings, ILogger<AuthenticationClient> logger, IHttpContextAccessor httpContextAccessor, HttpClient httpClient
+            // Requires: IOptions<Platform> platformSettings, ILogger<AuthenticationClient> logger, IHttpContextAccessor httpContextAccessor, HttpClient httpClient
             services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
 
             // Requires: ILogger<PDPAppSI> logger, AuthorizationApiClient authorizationApiClient

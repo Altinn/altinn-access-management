@@ -9,6 +9,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Altinn.AccessManagement.Core.Configuration;
 
 namespace Altinn.AccessManagement;
 
@@ -36,9 +37,9 @@ public class ProgramNew
             });
         });
 
-        var config = builder.Configuration.GetRequiredSection("AccessMgmt").Get<AppConfig>();
+        var config = builder.Configuration.GetRequiredSection("AccessMgmt").Get<AccessMgmtAppConfig>();
 
-        var isLocalDevelopment = builder.Environment.IsDevelopment() && config.IsDev; // builder.Configuration.GetValue<bool>("Altinn:LocalDev"); // IsDev
+        var isLocalDevelopment = builder.Environment.IsDevelopment(); //&& config.IsDev; // builder.Configuration.GetValue<bool>("Altinn:LocalDev"); // IsDev
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
@@ -116,11 +117,11 @@ public class ProgramNew
         //SETTINGS!
         /*
          
-        PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
+        Platform platformSettings = config.GetSection("Platform").Get<Platform>();
         OidcProviderSettings oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
         services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
-        services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
-        services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
+        services.Configure<Platform>(config.GetSection("Platform"));
+        services.Configure<Altinn.Common.PEP.Configuration.Platform>(config.GetSection("Platform"));
         services.Configure<CacheConfig>(config.GetSection("CacheConfig"));
         services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
         services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));

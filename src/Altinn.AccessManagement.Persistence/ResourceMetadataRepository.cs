@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -24,12 +25,10 @@ namespace Altinn.AccessManagement.Persistence
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepository"/> class
         /// </summary>
-        /// <param name="postgresSettings">The postgreSQL configurations for AuthorizationDB</param>
-        public ResourceMetadataRepository(IOptions<PostgreSQLSettings> postgresSettings)
+        /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
+        public ResourceMetadataRepository(AccessMgmtAppConfig config)
         {
-            _connectionString = string.Format(
-                postgresSettings.Value.ConnectionString,
-                postgresSettings.Value.AuthorizationDbPwd);
+            _connectionString = string.Format(config.Database.ConnectionString, config.Database.AuthorizationDbPwd);
         }
 
         /// <inheritdoc />

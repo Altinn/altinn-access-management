@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,11 +24,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
         /// </summary>
-        /// <param name="settings">The resource registry config settings</param>
+        /// <param name="config">The resource registry config settings</param>
         /// <param name="logger">Logger instance for this ResourceRegistryClient</param>
-        public ResourceRegistryClient(IOptions<PlatformSettings> settings, ILogger<IResourceRegistryClient> logger)
+        public ResourceRegistryClient(IOptionsMonitor<AccessMgmtAppConfig> config, ILogger<IResourceRegistryClient> logger)
         {
-            PlatformSettings platformSettings = settings.Value;
+            PlatformSettings platformSettings = config.CurrentValue.Platform;
             _httpClient.BaseAddress = new Uri(platformSettings.ApiResourceRegistryEndpoint);
             _httpClient.Timeout = new TimeSpan(0, 0, 30);
             _httpClient.DefaultRequestHeaders.Clear();

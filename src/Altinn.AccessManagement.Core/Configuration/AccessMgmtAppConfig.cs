@@ -21,7 +21,7 @@ public class AccessMgmtAppConfig
     /// <summary>
     /// Platform configuration
     /// </summary>
-    public PlatformSettings Platform { get; set; }
+    public PlatformSettingsNEW Platform { get; set; }
 
     public ConfigDatabase Database { get; set; }
 }
@@ -29,7 +29,7 @@ public class AccessMgmtAppConfig
 /// <summary>
 /// General configuration settings
 /// </summary>
-public class PlatformSettings
+public class PlatformSettingsNEW
 {
     /// <summary>
     /// Open Id Connect Well known endpoint

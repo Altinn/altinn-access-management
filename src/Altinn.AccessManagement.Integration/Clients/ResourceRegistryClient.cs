@@ -26,9 +26,9 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// </summary>
         /// <param name="config">The resource registry config settings</param>
         /// <param name="logger">Logger instance for this ResourceRegistryClient</param>
-        public ResourceRegistryClient(IOptionsMonitor<AccessMgmtAppConfig> config, ILogger<IResourceRegistryClient> logger)
+        public ResourceRegistryClient(IOptionsMonitor<PlatformSettings> config, ILogger<IResourceRegistryClient> logger)
         {
-            PlatformSettings platformSettings = config.CurrentValue.Platform;
+            PlatformSettings platformSettings = config.CurrentValue;
             _httpClient.BaseAddress = new Uri(platformSettings.ApiResourceRegistryEndpoint);
             _httpClient.Timeout = new TimeSpan(0, 0, 30);
             _httpClient.DefaultRequestHeaders.Clear();

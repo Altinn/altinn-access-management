@@ -4,7 +4,7 @@
     /// <summary>
     /// General configuration settings
     /// </summary>
-    public class PlatformSettingsOLD
+    public class PlatformSettings
     {
         /// <summary>
         /// Open Id Connect Well known endpoint

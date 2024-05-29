@@ -1,0 +1,48 @@
+{
+  "UserId": 20100012,
+  "UserUuid": "00000000-0000-0000-0001-000000000012",
+  "UserType": 1,
+  "UserName": "",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50100012,
+  "Party": {
+    "PartyTypeName": 1,
+    "SSN": "01018270071",
+    "OrgNumber": "",
+    "Person": {
+      "SSN": "01018270071",
+      "Name": "SUBUNIT TO PERSON RECIPIENT",
+      "FirstName": "SUBUNIT TO PERSON",
+      "MiddleName": null,
+      "LastName": "RECIPIENT",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "MailingAddress": "",
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "AddressMunicipalNumber": null,
+      "AddressMunicipalName": null,
+      "AddressStreetName": null,
+      "AddressHouseNumber": null,
+      "AddressHouseLetter": null,
+      "AddressPostalCode": null,
+      "AddressCity": null,
+      "DateOfDeath": null
+    },
+    "Organization": null,
+    "PartyId": 50100012,
+    "PartyUuid": "00000000-0000-0000-0001-000000000012",
+    "UnitType": null,
+    "Name": "SUBUNIT TO PERSON RECIPIENT",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

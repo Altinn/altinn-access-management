@@ -15,9 +15,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
     public class DelegationRequestMock : IDelegationRequestsWrapper
     {
         /// <inheritdoc/>
-        public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string? serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus>? status, string? continuation)
+        public Task<DelegationRequests> GetDelegationRequestsAsync(string who, string serviceCode, int? serviceEditionCode, RestAuthorizationRequestDirection direction, List<RestAuthorizationRequestStatus> status, string continuation)
         {
-            DelegationRequests delRequests = new DelegationRequests();
+            DelegationRequests delRequests = [];
 
             string path = GetDelegationRequestPaths();
 
@@ -32,7 +32,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
                     if (file.Contains(filterFileName))
                     {
                         string content = File.ReadAllText(Path.Combine(path, file));
-                        DelegationRequest? delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(content, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                        DelegationRequest delegationRequest = JsonSerializer.Deserialize<DelegationRequest>(content, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
                         if (delegationRequest != null)
                         {
@@ -47,7 +47,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private static string GetDelegationRequestPaths()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationRequestMock).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationRequestMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, @"..\..\..\Data\DelegationRequests\");
         }
 

@@ -557,5 +557,819 @@
         "value": "2203"
       }
     ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-person-to-person",
+    "title": {
+      "en": "AM DevTest - Person to Person delegation",
+      "nb": "AM DevTest - Person til Person delegering",
+      "nn": "AM DevTest - Person til Person delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-person-to-person",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-person-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-person-to-org",
+    "title": {
+      "en": "AM DevTest - Person to Organization delegation",
+      "nb": "AM DevTest - Person til Organization delegering",
+      "nn": "AM DevTest - Person til Organization delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-person-to-org",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-person-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-main-to-person",
+    "title": {
+      "en": "AM DevTest - Main Unit to Person delegation",
+      "nb": "AM DevTest - Hovedenhet til Person delegering",
+      "nn": "AM DevTest - Hovudeining til Person delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-main-to-person",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-main-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-sub-to-person",
+    "title": {
+      "en": "AM DevTest - Subunit to Person delegation",
+      "nb": "AM DevTest - Underenhet til Person delegering",
+      "nn": "AM DevTest - Undereining til Person delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-sub-to-person",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-sub-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-sub-to-org",
+    "title": {
+      "en": "AM DevTest - Subunit to Organization delegation",
+      "nb": "AM DevTest - Underenhet til Organisasjon delegering",
+      "nn": "AM DevTest - Undereining til Organisasjon delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-sub-to-org",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-sub-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-main-to-org",
+    "title": {
+      "en": "AM DevTest - Main Unit to Organization delegation",
+      "nb": "AM DevTest - Hovedenhet til Organisasjon delegering",
+      "nn": "AM DevTest - Hovudeining til Organisasjon delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-main-to-org",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-main-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-main-to-ecuser",
+    "title": {
+      "en": "AM DevTest - Main Unit to Enterpriseuser delegation",
+      "nb": "AM DevTest - Hovedenhet til Virksomhetsbruker delegering",
+      "nn": "AM DevTest - Hovudeining til Verksemdbrukar delegering"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-main-to-ecuser",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-main-to-ecuser"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-main-to-person",
+    "title": {
+      "en": "AuthorizedParties: Mainunit to Person Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Mainunit to Person Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Person Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Mainunit to Person is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Mainunit to Person er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Person er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Mainunit to Person, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Mainunit to Person, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Mainunit to Person, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-main-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-sub-to-person",
+    "title": {
+      "en": "AuthorizedParties: Subunit to Person Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Subunit to Person Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Person Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Subunit to Person is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Subunit to Person er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Person er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Subunit to Person, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Subunit to Person, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Subunit to Person, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-sub-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-main-to-org",
+    "title": {
+      "en": "AuthorizedParties: Mainunit to Organization Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Mainunit to Organization Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Organization Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Mainunit to Organization is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Mainunit to Organization er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Organization er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Mainunit to Organization, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Mainunit to Organization, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Mainunit to Organization, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-main-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-sub-to-org",
+    "title": {
+      "en": "AuthorizedParties: Subunit to Organization Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Subunit to Organization Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Organization Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Subunit to Organization is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Subunit to Organization er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Organization er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Subunit to Organization, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Subunit to Organization, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Subunit to Organization, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-sub-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_mps_authparties-main-to-person",
+    "title": {
+      "en": "AuthorizedParties: Mainunit to Person Maskinporten Schema for development testing",
+      "nb": "AuthorizedParties: Mainunit to Person Maskinporten Schema for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Person Maskinporten Schema for utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Mainunit to Person Maskinporten Schema test resource for development testing",
+      "nb": "AuthorizedParties: Mainunit to Person Maskinporten Schema test resource for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Person Maskinporten Schema test resource for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "Access to the referenced maskinporten scopes",
+      "nb": "Tilgang til de refererte maskinporten scopene",
+      "nn": "Tilgong til dei refererte maskinporten scopa"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-main-to-person.read",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-main-to-person.write",
+        "referenceType": "MaskinportenScope"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "MaskinportenSchema",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_mps_authparties-main-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_mps_authparties-main-to-org",
+    "title": {
+      "en": "AuthorizedParties: Mainunit to Organization Maskinporten Schema for development testing",
+      "nb": "AuthorizedParties: Mainunit to Organization Maskinporten Schema for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Organization Maskinporten Schema for utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Mainunit to Organization Maskinporten Schema test resource for development testing",
+      "nb": "AuthorizedParties: Mainunit to Organization Maskinporten Schema test resource for utviklingstester",
+      "nn": "AuthorizedParties: Mainunit to Organization Maskinporten Schema test resource for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "Access to the referenced maskinporten scopes",
+      "nb": "Tilgang til de refererte maskinporten scopene",
+      "nn": "Tilgong til dei refererte maskinporten scopa"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-main-to-org.read",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-main-to-org.write",
+        "referenceType": "MaskinportenScope"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "MaskinportenSchema",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_mps_authparties-main-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_mps_authparties-sub-to-person",
+    "title": {
+      "en": "AuthorizedParties: Subunit to Person Maskinporten Schema for development testing",
+      "nb": "AuthorizedParties: Subunit to Person Maskinporten Schema for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Person Maskinporten Schema for utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Subunit to Person Maskinporten Schema test resource for development testing",
+      "nb": "AuthorizedParties: Subunit to Person Maskinporten Schema test resource for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Person Maskinporten Schema test resource for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "Access to the referenced maskinporten scopes",
+      "nb": "Tilgang til de refererte maskinporten scopene",
+      "nn": "Tilgong til dei refererte maskinporten scopa"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-sub-to-person.read",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-sub-to-person.write",
+        "referenceType": "MaskinportenScope"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "MaskinportenSchema",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_mps_authparties-sub-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_mps_authparties-sub-to-org",
+    "title": {
+      "en": "AuthorizedParties: Subunit to Organization Maskinporten Schema for development testing",
+      "nb": "AuthorizedParties: Subunit to Organization Maskinporten Schema for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Organization Maskinporten Schema for utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Subunit to Organization Maskinporten Schema test resource for development testing",
+      "nb": "AuthorizedParties: Subunit to Organization Maskinporten Schema test resource for utviklingstester",
+      "nn": "AuthorizedParties: Subunit to Organization Maskinporten Schema test resource for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "Access to the referenced maskinporten scopes",
+      "nb": "Tilgang til de refererte maskinporten scopene",
+      "nn": "Tilgong til dei refererte maskinporten scopa"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-sub-to-org.read",
+        "referenceType": "MaskinportenScope"
+      },
+      {
+        "referenceSource": "ExternalPlatform",
+        "reference": "ttd:mps/authparties-sub-to-org.write",
+        "referenceType": "MaskinportenScope"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "MaskinportenSchema",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_mps_authparties-sub-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-person-to-person",
+    "title": {
+      "en": "AuthorizedParties: Person to Person Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Person to Person Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Person to Person Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Person to Person is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Person to Person er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Person to Person er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Person to Person, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Person to Person, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Person to Person, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-person-to-person"
+      }
+    ]
+  },
+  {
+    "identifier": "devtest_gar_authparties-person-to-org",
+    "title": {
+      "en": "AuthorizedParties: Person to Organization Generic Access Resource for Development Tests",
+      "nb": "AuthorizedParties: Person to Organization Generisk Tilgangsressurs for Utviklingstester",
+      "nn": "AuthorizedParties: Person to Organization Generisk Tilgongsressurs for Utviklingstestar"
+    },
+    "description": {
+      "en": "AuthorizedParties: Person to Organization is a very nice generic access resource for development tests",
+      "nb": "AuthorizedParties: Person to Organization er en veldig fin generisk tilgangsressurs for utviklingstester",
+      "nn": "AuthorizedParties: Person to Organization er ein steikje fine generisk tilgongsressurs for utviklingstestar"
+    },
+    "rightDescription": {
+      "en": "You'll give access to AuthorizedParties: Person to Organization, a generic access resource for development tests",
+      "nb": "Du gir tilgang til AuthorizedParties: Person to Organization, en generisk tilgangsressurs for utviklingstester",
+      "nn": "Du gir tilgong til AuthorizedParties: Person to Organization, ein generisk tilgongsressurs for utviklingstestar"
+    },
+    "homepage": "",
+    "status": "Active",
+    "contactPoints": [],
+    "isPartOf": "",
+    "resourceReferences": [],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "991825827",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test departement",
+        "nb": "Testdepartement",
+        "nn": "Testdepartement"
+      }
+    },
+    "keywords": [],
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": true,
+    "resourceType": "GenericAccessResource",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-person-to-org"
+      }
+    ]
+  },
+  {
+    "identifier": "app_ttd_apps-test",
+    "title": {
+      "en": "test application (simple)",
+      "nb": "test applikasjon (enkel)",
+      "nn": "test applikasjon (enkel)"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/apps-test",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "organization": "",
+      "orgcode": "ttd",
+      "name": {
+        "en": "Test Ministry",
+        "nb": "Testdepartementet",
+        "nn": "Testdepartementet"
+      }
+    },
+    "limitedByRRR": false,
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ]
   }
 ]

@@ -107,19 +107,44 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string ServiceEditionCodeAttribute = "urn:altinn:serviceeditioncode";
 
             /// <summary>
+            /// Person uuid
+            /// </summary>
+            public const string PersonUuid = "urn:altinn:person:uuid";
+
+            /// <summary>
+            /// National identity number for a person
+            /// </summary>
+            public const string PersonId = "urn:altinn:person:identifier-no";
+
+            /// <summary>
             /// Last name of a person 
             /// </summary>
-            public const string LastName = "urn:altinn:lastname";
+            public const string PersonLastName = "urn:altinn:person:lastname";
 
             /// <summary>
-            /// Username
+            /// Person username
             /// </summary>
-            public const string UserName = "urn:altinn:username";
+            public const string PersonUserName = "urn:altinn:person:username";
 
             /// <summary>
-            /// Enterprise username
+            /// Enterprise user uuid
             /// </summary>
-            public const string EnterpriseUserName = "urn:altinn:enterpriseusername";
+            public const string EnterpriseUserUuid = "urn:altinn:enterpriseuser:uuid";
+
+            /// <summary>
+            /// Enterprise user username
+            /// </summary>
+            public const string EnterpriseUserName = "urn:altinn:enterpriseuser:username";
+
+            /// <summary>
+            /// Organization uuid
+            /// </summary>
+            public const string OrganizationUuid = "urn:altinn:organization:uuid";
+
+            /// <summary>
+            /// Organization number
+            /// </summary>
+            public const string OrganizationId = "urn:altinn:organization:identifier-no";
         }
 
         /// <summary>

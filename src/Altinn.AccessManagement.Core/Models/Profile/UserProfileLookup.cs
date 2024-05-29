@@ -1,4 +1,6 @@
-﻿namespace Altinn.AccessManagement.Core.Models.Profile
+﻿#nullable enable
+
+namespace Altinn.AccessManagement.Core.Models.Profile
 {
     /// <summary>
     /// Input model for internal UserProfile lookup requests, where one of the lookup identifiers available must be set for performing the lookup request:
@@ -17,11 +19,16 @@
         /// <summary>
         /// Gets or sets the users Username if the lookup is to be performed based on this identifier
         /// </summary>
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         /// <summary>
         /// Gets or sets the users social security number or d-number from Folkeregisteret if the lookup is to be performed based on this identifier
         /// </summary>
-        public string Ssn { get; set; }
+        public string? Ssn { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user uuid if the lookup is to be performed based on this identifier
+        /// </summary>
+        public Guid? UserUuid { get; set; }
     }
 }

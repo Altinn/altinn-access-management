@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -22,7 +23,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<ServiceResource> GetResource(string resourceId)
+        public async Task<ServiceResource> GetResource(string resourceId, CancellationToken cancellationToken = default)
         {
             ServiceResource resource = null;
             string rolesPath = GetResourcePath(resourceId);
@@ -36,7 +37,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<ServiceResource>> GetResources()
+        public Task<List<ServiceResource>> GetResources(CancellationToken cancellationToken = default)
         {
             List<ServiceResource> resources = new List<ServiceResource>();
 
@@ -62,7 +63,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public Task<List<ServiceResource>> GetResourceList()
+        public Task<List<ServiceResource>> GetResourceList(CancellationToken cancellationToken = default)
         {
             string content = File.ReadAllText($"Data/Resources/resourceList.json");
             List<ServiceResource> resources = (List<ServiceResource>)JsonSerializer.Deserialize(content, typeof(List<ServiceResource>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -78,7 +79,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private static string GetDataPathForResources()
         {
-            string? unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
+            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ResourceRegistryClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Resources");
         }
     }

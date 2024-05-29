@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.Profile;
@@ -14,7 +15,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
     public class ProfileClientMock : IProfileClient
     {
         /// <inheritdoc/>
-        public Task<UserProfile> GetUser(UserProfileLookup userProfileLookup)
+        public Task<UserProfile> GetUser(UserProfileLookup userProfileLookup, CancellationToken cancellationToken = default)
         {
             UserProfile userProfile = null;
 
@@ -31,7 +32,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
 
         private static string GetUserProfilePath(UserProfileLookup userProfileLookup)
         {
-            string userIdentifier = userProfileLookup.UserId > 0 ? userProfileLookup.UserId.ToString() : (userProfileLookup.Ssn ?? userProfileLookup.Username);
+            string userIdentifier = userProfileLookup.UserId > 0 ? userProfileLookup.UserId.ToString() : userProfileLookup.Ssn ?? userProfileLookup.Username ?? userProfileLookup.UserUuid?.ToString();
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(ProfileClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "UserProfile", $"{userIdentifier}.json");
         }

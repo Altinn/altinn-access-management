@@ -7,7 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
   body: json
-  auth: none
+  auth: inherit
 }
 
 headers {
@@ -47,7 +47,7 @@ vars:pre-request {
 }
 
 assert {
-  res.status: eq 400
+  ~res.status: eq 400
 }
 
 script:pre-request {
@@ -58,16 +58,13 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org2.partyid);
   
-  await helpers.getToken();
-}
-
-script:post-response {
-  console.log("request url (after): " + req.getUrl());
+  await tokenGenerator.getToken();
 }
 
 tests {
-  test("Response body should contain correct values", function() {
+  test("post Maskinporten DAGL Cannot Delegate NUF Resource", function() {
     const data = res.getBody();
+    expect(res.status).to.equal(400);
     expect(data).to.have.property('title', 'One or more validation errors occurred.');
     expect(data.errors['right[0].Resource']).to.include('Authenticated user does not have any delegable rights for the resource: ttd-am-k6-nuf');
   });

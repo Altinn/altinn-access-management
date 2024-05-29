@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
@@ -37,23 +36,22 @@ namespace Altinn.AccessManagement.Integration.Clients
         }
 
         /// <inheritdoc/>
-        public async Task<ServiceResource> GetResource(string resourceId)
+        public async Task<ServiceResource> GetResource(string resourceId, CancellationToken cancellationToken = default)
         {
-            ServiceResource? result = null;
             string endpointUrl = $"resource/{resourceId}";
 
-            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl, cancellationToken);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                string content = await response.Content.ReadAsStringAsync();
-                result = JsonSerializer.Deserialize<ServiceResource>(content, options);
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return JsonSerializer.Deserialize<ServiceResource>(content, options);
             }
 
-            return await Task.FromResult(result);
+            return null;
         }
 
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResources()
+        public async Task<List<ServiceResource>> GetResources(CancellationToken cancellationToken = default)
         {
             List<ServiceResource> resources = new();
 
@@ -61,10 +59,10 @@ namespace Altinn.AccessManagement.Integration.Clients
             {
                 string endpointUrl = $"resource/search";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl, cancellationToken);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                 }
             }
@@ -77,30 +75,8 @@ namespace Altinn.AccessManagement.Integration.Clients
             return resources;
         }
 
-        /// <summary>
-        /// Get resource list
-        /// </summary>
-        /// <param name="resourceType"> the resource type</param>
-        /// <returns></returns>
-        public async Task<List<ServiceResource>> GetResources(ResourceType resourceType)
-        {
-            List<ServiceResource> resources = new List<ServiceResource>();
-            ResourceSearch resourceSearch = new ResourceSearch();
-            resourceSearch.ResourceType = resourceType;
-            string endpointUrl = $"resource/search?ResourceType={(int)resourceType}";
-
-            HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                string content = await response.Content.ReadAsStringAsync();
-                resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
-            }
-
-            return resources;
-        }
-
         /// <inheritdoc/>
-        public async Task<List<ServiceResource>> GetResourceList()
+        public async Task<List<ServiceResource>> GetResourceList(CancellationToken cancellationToken = default)
         {
             List<ServiceResource> resources = new();
 
@@ -108,10 +84,10 @@ namespace Altinn.AccessManagement.Integration.Clients
             {
                 string endpointUrl = $"resource/resourcelist";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl);
+                HttpResponseMessage response = await _httpClient.GetAsync(endpointUrl, cancellationToken);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
+                    string content = await response.Content.ReadAsStringAsync(cancellationToken);
                     resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
                 }
             }

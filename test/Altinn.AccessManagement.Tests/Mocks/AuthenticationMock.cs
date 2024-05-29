@@ -10,9 +10,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
     public class AuthenticationMock : IAuthenticationClient
     {
         /// <inheritdoc/>
-        public async Task<string> RefreshToken()
-        {
-            return PrincipalUtil.GetAccessToken("sbl-authorization");
-        }
+        public async Task<string> RefreshToken() => await Task.FromResult(PrincipalUtil.GetAccessToken("sbl-authorization"));
     }
 }

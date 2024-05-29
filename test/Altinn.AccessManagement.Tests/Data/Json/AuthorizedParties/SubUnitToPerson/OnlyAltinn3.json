@@ -1,0 +1,50 @@
+[
+  {
+    "partyUuid": "00000000-0000-0000-0001-000000000006",
+    "name": "AUTHORIZEDPARTIES MAINUNIT",
+    "organizationNumber": "901000006",
+    "personId": null,
+    "partyId": 50100006,
+    "type": "Organization",
+    "unitType": "AS",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": true,
+    "authorizedResources": [],
+    "authorizedRoles": [],
+    "subunits": [
+      {
+        "partyUuid": "00000000-0000-0000-0001-000000000007",
+        "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
+        "organizationNumber": "901000007",
+        "personId": null,
+        "partyId": 50100007,
+        "type": "Organization",
+        "unitType": "BEDR",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "app_ttd_am-devtest-sub-to-person",
+          "devtest_gar_authparties-sub-to-person"
+        ],
+        "authorizedRoles": [],
+        "subunits": []
+      },
+      {
+        "partyUuid": "00000000-0000-0000-0001-000000000008",
+        "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "organizationNumber": "901000008",
+        "personId": null,
+        "partyId": 50100008,
+        "type": "Organization",
+        "unitType": "BEDR",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "devtest_gar_authparties-sub2-to-person"
+        ],
+        "authorizedRoles": [],
+        "subunits": []
+      }
+    ]
+  }
+]

@@ -1,7 +1,10 @@
-﻿using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Constants;
+using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Mappers
@@ -37,6 +40,8 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Reference, act => act.MapFrom(src => src.Reference));
             CreateMap<AttributeMatch, AttributeMatchExternal>();
             CreateMap<AttributeMatchExternal, AttributeMatch>();
+            CreateMap<BaseAttribute, BaseAttributeExternal>();
+            CreateMap<BaseAttributeExternal, BaseAttribute>();
             CreateMap<PolicyAttributeMatch, PolicyAttributeMatchExternal>();
             CreateMap<PolicyAttributeMatchExternal, PolicyAttributeMatch>();
 
@@ -71,6 +76,9 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<DelegationChange, DelegationChangeExternal>();
             CreateMap<DelegationChangeType, DelegationChangeTypeExternal>();
+
+            CreateMap<AuthorizedParty, AuthorizedPartyExternal>();
+            CreateMap<AuthorizedPartyType, AuthorizedPartyTypeExternal>();
         }
     }
 }

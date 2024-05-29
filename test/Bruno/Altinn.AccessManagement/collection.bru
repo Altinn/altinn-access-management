@@ -7,7 +7,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  const helpers = require("./helpers.js");
+  const tokenGenerator = require("./TestToolsTokenGenerator.js");
 }
 
 script:post-response {
@@ -26,20 +26,20 @@ script:post-response {
 
 docs {
   Dokumentasjon havner i collection.bru filen i rotmappa.
-
+  
   # Støtter markdown
   Ja, det gjør det!
-
+  
   ## Undertittel
   Her er en *undertittel*.
-
+  
   ### under-undertittel
   Her er en **under-undertittel**.
-
+  
   ### Bullet points
     * bullet point 1
     * bullet point 2
     - bullet point 3
     - bullet point 4
-
+  
 }

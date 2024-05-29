@@ -1,0 +1,76 @@
+[
+  {
+    "partyUuid": "00000000-0000-0000-0001-000000000011",
+    "name": "MAINUNIT AND SUBUNIT TO ORG DAGL",
+    "organizationNumber": null,
+    "personId": "01018170071",
+    "partyId": 50100011,
+    "type": "Person",
+    "unitType": null,
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [],
+    "authorizedRoles": [
+      "PRIV"
+    ],
+    "subunits": []
+  },
+  {
+    "partyUuid": "00000000-0000-0000-0001-000000000006",
+    "name": "AUTHORIZEDPARTIES MAINUNIT",
+    "organizationNumber": "901000006",
+    "personId": null,
+    "partyId": 50100006,
+    "type": "Organization",
+    "unitType": "AS",
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [
+      "devtest_gar_authparties-main-to-org"
+    ],
+    "authorizedRoles": [
+      "UTINN"
+    ],
+    "subunits": [
+      {
+        "partyUuid": "00000000-0000-0000-0001-000000000007",
+        "name": "AUTHORIZEDPARTIES SUBUNIT ONE",
+        "organizationNumber": "901000007",
+        "personId": null,
+        "partyId": 50100007,
+        "type": "Organization",
+        "unitType": "BEDR",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "app_ttd_am-devtest-sub-to-org",
+          "devtest_gar_authparties-main-to-org",
+          "devtest_gar_authparties-sub-to-org"
+        ],
+        "authorizedRoles": [
+          "UTINN",
+          "APIADM"
+        ],
+        "subunits": []
+      },
+      {
+        "partyUuid": "00000000-0000-0000-0001-000000000008",
+        "name": "AUTHORIZEDPARTIES SUBUNIT TWO",
+        "organizationNumber": "901000008",
+        "personId": null,
+        "partyId": 50100008,
+        "type": "Organization",
+        "unitType": "BEDR",
+        "isDeleted": false,
+        "onlyHierarchyElementWithNoAccess": false,
+        "authorizedResources": [
+          "devtest_gar_authparties-main-to-org"
+        ],
+        "authorizedRoles": [
+          "UTINN"
+        ],
+        "subunits": []
+      }
+    ]
+  }
+]

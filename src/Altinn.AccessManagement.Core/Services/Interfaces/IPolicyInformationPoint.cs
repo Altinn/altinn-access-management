@@ -32,5 +32,21 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
         Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request);
+
+        /// <summary>
+        /// Finds all active received delegations (not including maskinporten schema) from db, both directly delegated to the party or through key roles if the party is a person
+        /// </summary>
+        /// <param name="partyId">Party id of a user or organization</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns></returns>
+        Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Finds all active offered delegations (not including maskinporten schema) from db, both directly delegated from the party or from it's main unit if the party is a subunit
+        /// </summary>
+        /// <param name="partyId">Party id of a user or organization</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns></returns>
+        Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken);
     }
 }

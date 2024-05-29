@@ -1,0 +1,19 @@
+[
+  {
+    "partyUuid": "00000000-0000-0000-0001-000000000003",
+    "name": "PERSON TO ORG DELEGATOR",
+    "organizationNumber": null,
+    "personId": "01017370071",
+    "partyId": 50100003,
+    "type": "Person",
+    "unitType": null,
+    "isDeleted": false,
+    "onlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [
+      "devtest_gar_authparties-person-to-org",
+      "app_ttd_am-devtest-person-to-org"
+    ],
+    "authorizedRoles": [],
+    "subunits": []
+  }
+]

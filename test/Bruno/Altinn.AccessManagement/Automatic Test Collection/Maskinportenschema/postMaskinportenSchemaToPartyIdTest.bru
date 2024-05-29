@@ -7,7 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/offered
   body: json
-  auth: none
+  auth: inherit
 }
 
 headers {
@@ -47,7 +47,7 @@ vars:pre-request {
 }
 
 assert {
-  res.status: eq 201
+  ~res.status: eq 201
 }
 
 script:pre-request {
@@ -58,17 +58,14 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org2.partyid);
   
-  await helpers.getToken();
-}
-
-script:post-response {
-  console.log("request url (after): " + req.getUrl());
+  await tokenGenerator.getToken();
 }
 
 tests {
-  test("Response body should contain correct values", function() {
+  test("post Maskinporten Schema To PartyId", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();
+    expect(res.status).to.equal(201);
     expect(data.to[0]).to.have.property('id', 'urn:altinn:partyid');
     expect(data.to[0]).to.have.property('value', testdata.org2.partyid.toString());
     expect(data.rightDelegationResults[0]).to.have.property('rightKey', 'ttd-am-k6:ScopeAccess');

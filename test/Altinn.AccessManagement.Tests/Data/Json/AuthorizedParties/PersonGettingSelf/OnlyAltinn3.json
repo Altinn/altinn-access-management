@@ -1,0 +1,11 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-28b6bcd340952ec6500b24cdc8498b6a-60b6ed58b49f5af6-00",
+  "errors": {
+    "InvalidParty": [
+      "The party id is either invalid or is not an authorized party for the authenticated user"
+    ]
+  }
+}

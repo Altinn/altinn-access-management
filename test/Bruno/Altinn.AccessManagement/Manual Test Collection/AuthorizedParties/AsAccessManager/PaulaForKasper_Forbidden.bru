@@ -1,0 +1,38 @@
+meta {
+  name: PaulaForKasper_Forbidden
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/authorizedparties?includeAltinn2=true
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: true
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000095
+  auth_partyId: 50002203
+  auth_ssn: '02056260016'
+  party: 50002598
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 403 Forbidden", function() {
+    expect(res.status).to.equal(403);
+  });
+}

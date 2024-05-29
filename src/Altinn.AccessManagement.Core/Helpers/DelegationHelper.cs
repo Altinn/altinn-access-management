@@ -3,8 +3,10 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using static Altinn.AccessManagement.Core.Resolvers.Urn.Altinn;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -98,7 +100,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetSocialSecurityNumberAttributeMatch(List<AttributeMatch> match, out string ssn)
         {
             ssn = string.Empty;
-            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)
+            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId)
             {
                 ssn = match[0].Value;
                 return true;
@@ -113,8 +115,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>The true if both social security number and last name is found as the only attributes in the collection</returns>
         public static bool TryGetSocialSecurityNumberAndLastNameAttributeMatch(List<AttributeMatch> match, out string ssn, out string lastName)
         {
-            ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SocialSecurityNumberAttribute)?.Value;
-            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+            ssn = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName)?.Value;
 
             if (match.Count == 2 && !string.IsNullOrWhiteSpace(ssn) && !string.IsNullOrWhiteSpace(lastName))
             {
@@ -130,8 +132,8 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>The true if both username and last name is found as the only attributes in the collection</returns>
         public static bool TryGetUsernameAndLastNameAttributeMatch(List<AttributeMatch> match, out string username, out string lastName)
         {
-            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserName)?.Value;
-            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.LastName)?.Value;
+            username = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName)?.Value;
+            lastName = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName)?.Value;
 
             if (match.Count == 2 && !string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(lastName))
             {
@@ -151,6 +153,22 @@ namespace Altinn.AccessManagement.Core.Helpers
             if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName)
             {
                 enterpriseUserName = match[0].Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Trys to get an single specific attribute value from a list of AttributeMatch models, if it's the only attribute in the list
+        /// </summary>
+        /// <returns>The true if person uuid is found as the only attributes in the collection</returns>
+        public static bool TryGetSingleAttributeMatchValue(List<AttributeMatch> match, string matchAttributeIdentifier, out string value)
+        {
+            value = string.Empty;
+            if (match != null && match.Count == 1 && match[0].Id == matchAttributeIdentifier)
+            {
+                value = match[0].Value;
                 return true;
             }
 
@@ -301,7 +319,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 catch (Exception)
                 {
                     return false;
-                }                
+                }
             }
 
             return false;
@@ -467,6 +485,26 @@ namespace Altinn.AccessManagement.Core.Helpers
                         OfferedByPartyId = fromPartyId,
                         CoveredBy = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toPartyId.ToString() }.SingleToList(),
                         Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
+                    }
+                }
+            };
+        }
+
+        /// <summary>
+        /// Builds a RequestToDelete request model for revoking all delegated rules for the resource if delegated between the from and to parties
+        /// </summary>
+        public static List<RequestToDelete> GetRequestToDeleteResource(int authenticatedUserId, IEnumerable<AttributeMatch> resource, int fromPartyId, AttributeMatch to)
+        {
+            return new List<RequestToDelete>
+            {
+                new RequestToDelete
+                {
+                    DeletedByUserId = authenticatedUserId,
+                    PolicyMatch = new PolicyMatch
+                    {
+                        OfferedByPartyId = fromPartyId,
+                        CoveredBy = to.SingleToList(),
+                        Resource = resource.ToList()
                     }
                 }
             };

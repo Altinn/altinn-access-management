@@ -1,0 +1,38 @@
+meta {
+  name: UnauthenticatedForWhatever
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/authorizedparties?includeAltinn2=true
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: true
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  party: 50002598
+  ~auth_tokenType: 
+  ~auth_userId: 
+  ~auth_partyId: 
+  ~auth_ssn: 
+}
+
+script:pre-request {
+  //await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 401 Anauthorized", function() {
+    expect(res.status).to.equal(401);
+  });
+}

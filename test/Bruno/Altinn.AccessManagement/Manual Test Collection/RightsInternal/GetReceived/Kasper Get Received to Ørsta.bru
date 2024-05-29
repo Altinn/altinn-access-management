@@ -1,0 +1,27 @@
+meta {
+  name: Kasper Get Received to Ørsta
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

@@ -9,5 +9,10 @@ namespace Altinn.AccessManagement.Core.Configuration
         /// Feature flag for activating the Rights Delegation API
         /// </summary>
         public const string RightsDelegationApi = "RightsDelegationApi";
+
+        /// <summary>
+        /// Feature flag for activating the Rights Delegation API External
+        /// </summary>
+        public const string RightsDelegationApiExternal = nameof(RightsDelegationApiExternal);
     }
 }

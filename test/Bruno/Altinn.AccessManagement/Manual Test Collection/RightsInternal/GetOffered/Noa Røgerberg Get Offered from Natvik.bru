@@ -1,0 +1,27 @@
+meta {
+  name: Noa Røgerberg Get Offered from Natvik
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000542
+  auth_partyId: 50002650
+  auth_ssn: '08109412032'
+  party: 50006037
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

@@ -1,0 +1,64 @@
+meta {
+  name: Kasper Revoke Offered from Ørsta
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered/revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:partyid",
+          "value": "50005545"
+        }
+      ],
+      "to": [
+        {
+          "id": "urn:altinn:ssn",
+          "value": "02056260016"
+        },
+        {
+          "id": "urn:altinn:lastname",
+          "value": "Rimstad"
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "ttd"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "apps-test"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
+  party: 50005545
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

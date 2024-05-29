@@ -1,0 +1,27 @@
+meta {
+  name: Natvik Get Received to self
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{apiKey}}
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 20001121
+  auth_partyId: 50003229
+  auth_ssn: '17105431031'
+  party: 50003229
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}

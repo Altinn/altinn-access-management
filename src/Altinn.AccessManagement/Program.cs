@@ -1,9 +1,11 @@
+using System.Reflection;
 using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
@@ -14,6 +16,7 @@ using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
 using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
@@ -26,6 +29,7 @@ using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -38,6 +42,10 @@ using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.Filters;
 using Yuniql.AspNetCore;
 using Yuniql.PostgreSql;
@@ -59,10 +67,9 @@ ConfigureLogging(builder.Logging);
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
-ConfigurePostgreSql();
 
 Configure();
-
+ConfigurePostgreSql();
 app.Run();
 
 void ConfigureSetupLogging()
@@ -78,6 +85,8 @@ void ConfigureSetupLogging()
     });
 
     logger = logFactory.CreateLogger<Program>();
+
+    NpgsqlLoggingConfiguration.InitializeLogging(logFactory);
 }
 
 void ConfigureLogging(ILoggingBuilder logging)
@@ -170,7 +179,10 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
+    builder.Services.AddAccessManagementPersistence();
     logger.LogInformation("Startup // ConfigureServices");
+    services.ConfigureAsserters();
+    services.ConfigureResolvers();
     services.AddAutoMapper(typeof(Program));
     services.AddControllersWithViews();
 
@@ -213,7 +225,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
     services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
     services.AddHttpClient<AuthorizationApiClient>();
-    
+
     services.AddTransient<IDelegationRequests, DelegationRequestService>();
 
     services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -242,6 +254,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IUserProfileLookupService, UserProfileLookupService>();
     services.AddSingleton<IKeyVaultService, KeyVaultService>();
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
+    services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
+    services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
+    services.AddAccessManagementPersistence();
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {
@@ -281,9 +296,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { "altinn:maskinporten/delegations", "altinn:maskinporten/delegations.admin" })));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
+        options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy =>
+            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
     });
-    
-    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>(); 
+
+    services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
 
@@ -304,8 +321,33 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         services.AddApplicationInsightsTelemetryProcessor<IdentityTelemetryFilter>();
         services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
+        if (config.GetSection("FeatureManagement").GetValue<bool>("OpenTelementry"))
+        {
+            var telemetry = new List<TracerProviderBuilder>()
+            {
+                {
+                    Sdk.CreateTracerProviderBuilder()
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name))
+                    .AddNpgsql()
+                    .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name)
+                }
+            };
+
+            foreach (var t in telemetry)
+            {
+                t.SetSampler(new AlwaysOnSampler());
+                if (builder.Environment.IsDevelopment())
+                {
+                    t.AddConsoleExporter();
+                }
+
+                t.AddAzureMonitorTraceExporter(opt => { opt.ConnectionString = applicationInsightsConnectionString; });
+                t.Build();
+            }
+        }
+
         logger.LogInformation("Startup // ApplicationInsightsConnectionString = {applicationInsightsConnectionString}", applicationInsightsConnectionString);
-    }    
+    }
 }
 
 void Configure()
@@ -345,17 +387,11 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = true };
+        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = false };
 
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),
             builder.Configuration.GetValue<string>("PostgreSQLSettings:authorizationDbAdminPwd"));
-        
-        string workspacePath = Path.Combine(Environment.CurrentDirectory, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        if (builder.Environment.IsDevelopment())
-        {
-            workspacePath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).FullName, builder.Configuration.GetValue<string>("PostgreSQLSettings:WorkspacePath"));
-        }
 
         app.UseYuniql(
             new PostgreSqlDataService(traceService),
@@ -363,10 +399,17 @@ void ConfigurePostgreSql()
             traceService,
             new Configuration
             {
-                Workspace = workspacePath,
+                Workspace = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Migration"),
                 ConnectionString = connectionString,
                 IsAutoCreateDatabase = false,
                 IsDebug = true,
             });
     }
+}
+
+/// <summary>
+/// Program
+/// </summary>
+public partial class Program
+{
 }

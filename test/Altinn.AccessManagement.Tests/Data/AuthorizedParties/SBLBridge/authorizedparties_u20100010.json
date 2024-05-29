@@ -1,0 +1,18 @@
+[
+  {
+    "PartyTypeName": 2,
+    "SSN": "",
+    "OrgNumber": "901000010",
+    "PartyId": 50100010,
+    "PartyUuid": "00000000-0000-0000-0001-000000000010",
+    "UnitType": "AS",
+    "Name": "MAINUNIT AND SUBUNIT TO ORG RECIPIENT",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "authorizedResources": [],
+    "authorizedRoles": [
+      "ECKEYROLE"
+    ],
+    "ChildParties": null
+  }
+]

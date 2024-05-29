@@ -1,0 +1,32 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:organization:uuid",
+      "value": "00000000-0000-0000-0001-000000000004"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "generic-access-resource:read",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "read",
+      "status": "Delegated"
+    },
+    {
+      "rightKey": "generic-access-resource:write",
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "generic-access-resource"
+        }
+      ],
+      "action": "write",
+      "status": "Delegated"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "PartyTypeName": 1,
+    "SSN": "01017570071",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100005,
+    "PartyUUID": "00000000-0000-0000-0001-000000000005",
+    "UnitType": null,
+    "Name": "PERSON TO ORG DAGL",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null,
+    "AuthorizedRoles": [ "PRIV" ]
+  },
+  {
+    "PartyTypeName": 1,
+    "SSN": "01017370071",
+    "OrgNumber": "",
+    "Person": null,
+    "Organization": null,
+    "PartyId": 50100003,
+    "PartyUUID": "00000000-0000-0000-0001-000000000003",
+    "UnitType": null,
+    "Name": "PERSON TO ORG DELEGATOR",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null,
+    "AuthorizedRoles": [ "UTINN" ]
+  }
+]

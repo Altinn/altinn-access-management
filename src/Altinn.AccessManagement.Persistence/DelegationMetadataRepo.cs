@@ -45,8 +45,8 @@ namespace Altinn.AccessManagement.Persistence
             param.Add("offeredByPartyId", offeredByPartyId);
 
             string query = $"SELECT {defaultColumns}" +
-            "FROM delegation.delegationChanges" +
-            "WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId";
+            " FROM delegation.delegationChanges" +
+            " WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId";
 
             if (coveredByPartyId != null)
             {
@@ -92,8 +92,8 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = "WITH latestChanges AS (" +
             "SELECT MAX(delegationChangeId) as latestId" +
-            "FROM delegation.delegationchanges" +
-            "WHERE 1=1";
+            " FROM delegation.delegationchanges" +
+            " WHERE 1=1";
 
             if (altinnAppIds != null && altinnAppIds.Count != 0)
             {
@@ -122,8 +122,8 @@ namespace Altinn.AccessManagement.Persistence
             query += "GROUP BY altinnAppId, offeredByPartyId, coveredByPartyId, coveredByUserId" +
             ")" + 
             $"SELECT {defaultColumns}" +
-            "FROM delegation.delegationchanges" +
-            "INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId";
+            " FROM delegation.delegationchanges" +
+            " INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId";
 
             try
             {
@@ -162,8 +162,8 @@ namespace Altinn.AccessManagement.Persistence
             param.Add("offeredByPartyId", offeredByPartyId);
 
             string query = $"SELECT {defaultColumns}" +
-                    "FROM delegation.delegationChanges" +
-                    "WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId";
+                    " FROM delegation.delegationChanges" +
+                    " WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId";
 
             if (coveredByPartyId != null)
             {
@@ -177,7 +177,7 @@ namespace Altinn.AccessManagement.Persistence
                 param.Add("coveredByUserId", coveredByUserId);
             }
 
-            query += "ORDER BY delegationChangeId DESC LIMIT 1";
+            query += " ORDER BY delegationChangeId DESC LIMIT 1";
 
             try
             {
@@ -263,13 +263,13 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = $"WITH insertRow AS (" +
                 $"SELECT @delegationChangeType, R.resourceId, @offeredByPartyId, @coveredByUserId, @coveredByPartyId, @performedByUserId, @performedByPartyId, @blobStoragePolicyPath, @blobStorageVersionId, @delegatedTime" +
-                $"FROM accessmanagement.Resource AS R" +
-                $"WHERE resourceRegistryId = @resourceregistryid" +
-                $"), insertAction AS (" +
-                $"INSERT INTO delegation.ResourceRegistryDelegationChanges" +
-                $"(delegationChangeType, resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, created)" +
-                $"SELECT delegationChangeType, resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, delegatedTime" +
-                $"FROM insertRow" +
+                $" FROM accessmanagement.Resource AS R" +
+                $" WHERE resourceRegistryId = @resourceregistryid" +
+                $" ), insertAction AS (" +
+                $" INSERT INTO delegation.ResourceRegistryDelegationChanges" +
+                $" (delegationChangeType, resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, created)" +
+                $" SELECT delegationChangeType, resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, delegatedTime" +
+                $" FROM insertRow" +
                 $")" +
                 $"SELECT * FROM insertRow";
 
@@ -299,9 +299,9 @@ namespace Altinn.AccessManagement.Persistence
             param.Add("offeredByPartyId", offeredByPartyId);
 
             string query = "SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS rr" +
-            "JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid" +
-            "WHERE res.resourceRegistryId = @resourceRegistryId AND offeredByPartyId = @offeredByPartyId";
+            " FROM delegation.ResourceRegistryDelegationChanges AS rr" +
+            " JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid" +
+            " WHERE res.resourceRegistryId = @resourceRegistryId AND offeredByPartyId = @offeredByPartyId";
 
             if (coveredByUserId.HasValue)
             {
@@ -315,7 +315,7 @@ namespace Altinn.AccessManagement.Persistence
                 param.Add("coveredByPartyId", coveredByPartyId.Value);
             }
 
-            query += "ORDER BY resourceRegistryDelegationChangeId DESC LIMIT 1";
+            query += " ORDER BY resourceRegistryDelegationChangeId DESC LIMIT 1";
 
             try
             {
@@ -367,9 +367,9 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = "WITH lastChange AS (" +
                 "SELECT MAX(DC.resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType" +
-                "FROM accessmanagement.Resource AS R" +
-                "INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON R.resourceid = DC.resourceid_fk" +
-                "WHERE DC.offeredByPartyId = @offeredByPartyId";
+                " FROM accessmanagement.Resource AS R" +
+                " INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON R.resourceid = DC.resourceid_fk" +
+                " WHERE DC.offeredByPartyId = @offeredByPartyId";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
@@ -387,9 +387,9 @@ namespace Altinn.AccessManagement.Persistence
 
             query += "SELECT" +
             "change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS change" +
-            "INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId";
-            query += "WHERE delegationchangetype != 'revoke_last'";
+            " FROM delegation.ResourceRegistryDelegationChanges AS change" +
+            " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId";
+            query += " WHERE delegationchangetype != 'revoke_last'";
 
             try
             {
@@ -417,8 +417,8 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = "WITH res AS (" +
                 "SELECT resourceId, resourceRegistryId, resourceType" +
-                "FROM accessmanagement.Resource" +
-                "WHERE 1=1";
+                " FROM accessmanagement.Resource" +
+                " WHERE 1=1";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
@@ -434,29 +434,29 @@ namespace Altinn.AccessManagement.Persistence
 
             query += "), active AS (" +
             "SELECT MAX(resourceRegistryDelegationChangeId) AS changeId" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS rrdc" +
-            "INNER JOIN res ON rrdc.resourceId_fk = res.resourceid" +
-            "WHERE 1=1";
+            " FROM delegation.ResourceRegistryDelegationChanges AS rrdc" +
+            " INNER JOIN res ON rrdc.resourceId_fk = res.resourceid" +
+            " WHERE 1=1";
             
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += "AND offeredByPartyId IN (@offeredByPartyIds)";
+                query += " AND offeredByPartyId IN (@offeredByPartyIds)";
                 param.Add("offeredByPartyIds", offeredByPartyIds);
             }
 
             if (coveredByPartyIds != null && coveredByPartyIds.Count > 0)
             {
                 // TODO: Check if not optional?
-                query += "AND coveredByPartyId IN (@coveredByPartyIds)";
+                query += " AND coveredByPartyId IN (@coveredByPartyIds)";
                 param.Add("coveredByPartyIds", coveredByPartyIds);
             }
                 
             query += "GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId )" +
             "SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS rr" +
-            "INNER JOIN res ON rr.resourceId_fk = res.resourceid" +
-            "INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId" +
-            "WHERE delegationchangetype != 'revoke_last'";
+            " FROM delegation.ResourceRegistryDelegationChanges AS rr" +
+            " INNER JOIN res ON rr.resourceId_fk = res.resourceid" +
+            " INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId" +
+            " WHERE delegationchangetype != 'revoke_last'";
 
             try
             {
@@ -484,8 +484,8 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = "WITH res AS (" +
                 "SELECT resourceId, resourceRegistryId, resourceType" +
-                "FROM accessmanagement.Resource" +
-                "WHERE 1=1";
+                " FROM accessmanagement.Resource" +
+                " WHERE 1=1";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
@@ -501,29 +501,29 @@ namespace Altinn.AccessManagement.Persistence
 
             query += "), active AS (" +
             "SELECT MAX(resourceRegistryDelegationChangeId) AS changeId" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS rrdc" +
-            "INNER JOIN res ON rrdc.resourceId_fk = res.resourceid" +
-            "WHERE 1=1";
+            " FROM delegation.ResourceRegistryDelegationChanges AS rrdc" +
+            " INNER JOIN res ON rrdc.resourceId_fk = res.resourceid" +
+            " WHERE 1=1";
 
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += "AND offeredByPartyId IN (@offeredByPartyIds)";
+                query += " AND offeredByPartyId IN (@offeredByPartyIds)";
                 param.Add("offeredByPartyIds", offeredByPartyIds);
             }
 
             if (coveredByUserId > 0)
             {
                 // TODO: Check if not optional?
-                query += "AND coveredByUserId = @coveredByUserId";
+                query += " AND coveredByUserId = @coveredByUserId";
                 param.Add("coveredByUserId", coveredByUserId);
             }
 
             query += "GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId )" +
             "SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created" +
-            "FROM delegation.ResourceRegistryDelegationChanges AS rr" +
-            "INNER JOIN res ON rr.resourceId_fk = res.resourceid" +
-            "INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId" +
-            "WHERE delegationchangetype != 'revoke_last'";
+            " FROM delegation.ResourceRegistryDelegationChanges AS rr" +
+            " INNER JOIN res ON rr.resourceId_fk = res.resourceid" +
+            " INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId" +
+            " WHERE delegationchangetype != 'revoke_last'";
 
             try
             {
@@ -551,47 +551,47 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = "WITH lastChange AS (" +
                 "SELECT MAX(resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType" +
-                "FROM accessmanagement.Resource AS R" +
-                "INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid" +
-                "WHERE 1=1";
+                " FROM accessmanagement.Resource AS R" +
+                " INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid" +
+                " WHERE 1=1";
 
             if (offeredByPartyId > 0)
             {
                 // TODO: Check if not optional?
-                query += "AND offeredByPartyId = @offeredByPartyId";
+                query += " AND offeredByPartyId = @offeredByPartyId";
                 param.Add("offeredByPartyId", offeredByPartyId);
             }
 
             if (coveredByPartyId > 0) 
             {
                 // TODO: Check if not optional?
-                query += "AND coveredByPartyId = @coveredByPartyId";
+                query += " AND coveredByPartyId = @coveredByPartyId";
                 param.Add("coveredByPartyId", coveredByPartyId);
             }
 
             if (resourceType > 0)
             {
                 // TODO: Check if not optional?
-                query += "AND R.resourceType = @resourceType";
+                query += " AND R.resourceType = @resourceType";
                 param.Add("resourceType", resourceType.ToString().ToLower());
             }
 
             if (resourceIds.Count > 0)
             {
                 // TODO: Check if not optional?
-                query += "AND R.resourceRegistryId IN (@resourceRegistryIds)";
+                query += " AND R.resourceRegistryId IN (@resourceRegistryIds)";
                 param.Add("resourceRegistryIds", resourceIds);
             }
 
-            query += "GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType )";
+            query += " GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType )";
 
             query += "SELECT" +
                 "change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, " +
                 "change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId, " +
                 "change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
-                "FROM delegation.ResourceRegistryDelegationChanges AS change" +
-                "INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid" +
-                "WHERE delegationchangetype != 'revoke_last'";
+                " FROM delegation.ResourceRegistryDelegationChanges AS change" +
+                " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid" +
+                " WHERE delegationchangetype != 'revoke_last'";
 
             try
             {

@@ -45,8 +45,8 @@ namespace Altinn.AccessManagement.Persistence
                 $"VALUES (@resourceregistryid, @resourcetype, now(), now())" +
                 $"ON CONFLICT (resourceregistryid) DO UPDATE SET resourcetype = @resourcetype, modified = now();" +
                 $"SELECT r.resourceid, r.resourceregistryid, r.resourcetype, r.created, r.modified" +
-                $"FROM accessmanagement.resource r" +
-                $"WHERE r.resourceregistryid = @resourceregistryid";
+                $" FROM accessmanagement.resource r" +
+                $" WHERE r.resourceregistryid = @resourceregistryid";
 
             try
             {

@@ -60,7 +60,6 @@ namespace Altinn.AccessManagement.Persistence
                 param.Add("coveredByUserId", coveredByUserId);
             }
 
-
             try
             {
                 _connection.Open();
@@ -251,7 +250,7 @@ namespace Altinn.AccessManagement.Persistence
             var param = new Dictionary<string, object>
             {
                 { "delegationChangeType", delegationChange.DelegationChangeType },
-                { "altinnAppId", delegationChange.ResourceId }, //resourceregistryid ?
+                { "altinnAppId", delegationChange.ResourceId }, // resourceregistryid ?
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value },
                 { "coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value },
@@ -259,7 +258,7 @@ namespace Altinn.AccessManagement.Persistence
                 { "performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value },
                 { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
                 { "blobStorageVersionId", delegationChange.BlobStorageVersionId },
-                { "delegatedTime", delegationChange.Created } //check ?
+                { "delegatedTime", delegationChange.Created } // check ?
             };
 
             string query = $"WITH insertRow AS (" +
@@ -611,6 +610,7 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
+        /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetOfferedDelegations(List<int> offeredByPartyIds, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
@@ -694,6 +694,7 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
+        /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);

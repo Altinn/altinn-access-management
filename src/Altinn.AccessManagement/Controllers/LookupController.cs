@@ -36,15 +36,6 @@ namespace Altinn.AccessManagement.Controllers
             _contextRetrieval = contextRetrieval;
         }
 
-        [HttpGet]
-        [Route("accessmanagement/api/v1/lookup/testing")]
-        public async Task<ActionResult> JustTesting(int secondsToWait)
-        {
-            using var activity = TelemetryConfig.ActivitySource.StartActivity();
-            Thread.Sleep(secondsToWait * 1000);
-            return Ok();
-        }
-
         /// <summary>
         /// Endpoint for retrieving party if party exists in the authenticated users reporteelist
         /// </summary>

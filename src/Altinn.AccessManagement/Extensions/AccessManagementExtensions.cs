@@ -8,8 +8,8 @@ using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Clients;
-using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Integration.Services;
+using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
@@ -19,7 +19,10 @@ using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.PEP.Clients;
 using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
+using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -29,12 +32,12 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.ApplicationInsights.Extensibility;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 
 namespace Altinn.AccessManagement.Extensions;
 
+/// <summary>
+/// Extensions for Access Mgmt
+/// </summary>
 public static class AccessManagementExtensions
 {
     /// <summary>
@@ -44,18 +47,16 @@ public static class AccessManagementExtensions
     /// <returns>Extended IServiceCollection</returns>
     public static IHostApplicationBuilder ConfigureSettings(this IHostApplicationBuilder builder)
     {
-
         builder.Services.Configure<AccessMgmtSettings>(builder.Configuration.GetRequiredSection("AccessMgmt:General"));
         builder.Services.Configure<ConfigTelemetry>(builder.Configuration.GetRequiredSection("AccessMgmt:Telemetry"));
 
-        //builder.Services.Configure<PostgreSQLSettings>(builder.Configuration.GetRequiredSection("PostgreSQLSettings"));
-        //builder.Services.Configure<PlatformSettings>(builder.Configuration.GetRequiredSection("Platform"));
-        //builder.Services.Configure<CacheConfig>(builder.Configuration.GetRequiredSection("CacheConfig"));
-        //builder.Services.Configure<AzureStorageConfiguration>(builder.Configuration.GetRequiredSection("AzureStorageConfiguration"));
-        //builder.Services.Configure<AccessTokenSettings>(builder.Configuration.GetRequiredSection("AccessTokenSettings"));
-        //builder.Services.Configure<UserProfileLookupSettings>(builder.Configuration.GetRequiredSection("UserProfileLookupSettings"));
-        //builder.Services.Configure<OidcProviderSettings>(builder.Configuration.GetRequiredSection("OidcProviderSettings"));
-
+        // builder.Services.Configure<PostgreSQLSettings>(builder.Configuration.GetRequiredSection("PostgreSQLSettings"));
+        // builder.Services.Configure<PlatformSettings>(builder.Configuration.GetRequiredSection("Platform"));
+        // builder.Services.Configure<CacheConfig>(builder.Configuration.GetRequiredSection("CacheConfig"));
+        // builder.Services.Configure<AzureStorageConfiguration>(builder.Configuration.GetRequiredSection("AzureStorageConfiguration"));
+        // builder.Services.Configure<AccessTokenSettings>(builder.Configuration.GetRequiredSection("AccessTokenSettings"));
+        // builder.Services.Configure<UserProfileLookupSettings>(builder.Configuration.GetRequiredSection("UserProfileLookupSettings"));
+        // builder.Services.Configure<OidcProviderSettings>(builder.Configuration.GetRequiredSection("OidcProviderSettings"));
 
         /*
          PostgreSQLSettings
@@ -68,7 +69,6 @@ public static class AccessManagementExtensions
          PlatformSettings
             _platformSettings.JwtCookieName
          */
-
 
         /*
          CacheConfig
@@ -99,7 +99,6 @@ public static class AccessManagementExtensions
                 _storageConfig.ResourceRegistryBlobEndpoint
                 _storageConfig.ResourceRegistryContainer
          */
-
 
         /*
             AccessTokenSettings
@@ -172,10 +171,12 @@ public static class AccessManagementExtensions
            .WithMetrics(metrics =>
            {
                metrics.AddAspNetCoreInstrumentation().AddRuntimeInstrumentation();
-               //if (telemetryConfig.WriteToConsole)
-               //{
-               //    metrics.AddConsoleExporter();
-               //}
+               /*
+               if (telemetryConfig.WriteToConsole)
+               {
+                   metrics.AddConsoleExporter();
+               }
+               */
            });
 
         if (!string.IsNullOrEmpty(telemetryConfig.AppInsightsConnectionString))
@@ -193,11 +194,6 @@ public static class AccessManagementExtensions
     /// <returns>Extended IServiceCollection</returns>
     public static IServiceCollection ConfigureHttpClients(this IServiceCollection services)
     {
-        //if (!services.Any(t => t.ServiceType == typeof(AccessMgmtAppConfig)))
-        //{
-        //    throw new Exception("Missing AccessMgmtAppConfig");
-        //}
-
         // SblBridge
         services.AddHttpClient<IDelegationRequestsWrapper, DelegationRequestProxy>();
         services.AddTransient<IDelegationRequests, DelegationRequestService>();
@@ -245,7 +241,7 @@ public static class AccessManagementExtensions
 
         builder.Services.AddAzureAppConfiguration();
 
-        if(appConfigConnectionString != null)
+        if (appConfigConnectionString != null)
         {
             builder.Configuration.AddAzureAppConfiguration(c =>
             {
@@ -264,6 +260,7 @@ public static class AccessManagementExtensions
             {
                 throw new Exception("Missing KeyVaultUrl");
             }
+
             var defaultCred = new EnvironmentCredential();
             builder.Configuration.AddAzureAppConfiguration(c =>
             {
@@ -283,7 +280,6 @@ public static class AccessManagementExtensions
 
         return builder;
     }
-
 
     /// <summary>
     /// Configure BaseServices

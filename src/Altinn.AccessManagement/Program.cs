@@ -71,8 +71,9 @@ try
     builder.ConfigureTelemetry();
 
     builder.Services.AddFeatureManagement();
-    //builder.Services.ConfigureBaseServices();
-    //builder.Services.ConfigureServices();
+
+    // builder.Services.ConfigureBaseServices();
+    // builder.Services.ConfigureServices();
 }
 catch (Exception ex)
 {
@@ -148,23 +149,22 @@ async Task SetConfigurationProviders(ConfigurationManager config)
 {
     try
     {
+        string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
-    string basePath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+        logger.LogInformation("Program // Loading Configuration from basePath={basePath}", basePath);
 
-    logger.LogInformation("Program // Loading Configuration from basePath={basePath}", basePath);
+        config.SetBasePath(basePath);
+        string configJsonFile1 = $"{basePath}/altinn-appsettings/altinn-dbsettings-secret.json";
 
-    config.SetBasePath(basePath);
-    string configJsonFile1 = $"{basePath}/altinn-appsettings/altinn-dbsettings-secret.json";
+        logger.LogInformation("Loading configuration file: '{configJsonFile1}'", configJsonFile1);
+        config.AddJsonFile(configJsonFile1, optional: true, reloadOnChange: true);
 
-    logger.LogInformation("Loading configuration file: '{configJsonFile1}'", configJsonFile1);
-    config.AddJsonFile(configJsonFile1, optional: true, reloadOnChange: true);
-
-    config.AddEnvironmentVariables();
-    config.AddCommandLine(args);
+        config.AddEnvironmentVariables();
+        config.AddCommandLine(args);
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.ToString());
+        logger.LogWarning(ex, "Program // SetConfigurationProviders");
     }
 
     await ConnectToKeyVaultAndSetApplicationInsights(config);

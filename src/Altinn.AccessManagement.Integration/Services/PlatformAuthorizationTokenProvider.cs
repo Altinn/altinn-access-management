@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
 using Altinn.Common.AccessTokenClient.Configuration;
 using Altinn.Common.AccessTokenClient.Services;
@@ -45,6 +46,7 @@ public class PlatformAuthorizationTokenProvider : IPlatformAuthorizationTokenPro
     /// <inheritdoc />
     public async Task<string> GetAccessToken()
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         await Semaphore.WaitAsync();
 
         try

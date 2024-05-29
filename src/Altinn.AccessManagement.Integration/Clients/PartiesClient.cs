@@ -7,11 +7,11 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Extensions;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Integration.Clients;
@@ -23,7 +23,6 @@ namespace Altinn.AccessManagement.Integration.Clients;
 public class PartiesClient : IPartiesClient
 {
     private readonly SblBridgeSettings _sblBridgeSettings;
-    private readonly ILogger _logger;
     private readonly HttpClient _client;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly PlatformSettings _platformSettings;
@@ -35,20 +34,17 @@ public class PartiesClient : IPartiesClient
     /// </summary>
     /// <param name="httpClient">HttpClient from default httpclientfactory</param>
     /// <param name="sblBridgeSettings">the sbl bridge settings</param>
-    /// <param name="logger">the logger</param>
     /// <param name="httpContextAccessor">handler for http context</param>
     /// <param name="platformSettings">the platform setttings</param>
     /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
     public PartiesClient(
         HttpClient httpClient, 
-        IOptions<SblBridgeSettings> sblBridgeSettings, 
-        ILogger<PartiesClient> logger, 
+        IOptions<SblBridgeSettings> sblBridgeSettings,
         IHttpContextAccessor httpContextAccessor, 
         IOptions<PlatformSettings> platformSettings,
         IAccessTokenGenerator accessTokenGenerator)
     {
         _sblBridgeSettings = sblBridgeSettings.Value;
-        _logger = logger;
         httpClient.BaseAddress = new Uri(platformSettings.Value.ApiRegisterEndpoint);
         httpClient.DefaultRequestHeaders.Add(platformSettings.Value.SubscriptionKeyHeaderName, platformSettings.Value.SubscriptionKey);
         _client = httpClient;
@@ -61,6 +57,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<Party> GetPartyAsync(int partyId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/{partyId}";
@@ -74,13 +71,13 @@ public class PartiesClient : IPartiesClient
             {
                 return JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
             }
-            
-            _logger.LogError("AccessManagement // PartiesClient // GetPartyAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartyAsync // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -88,6 +85,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/partylist?fetchSubUnits={includeSubunits}";
@@ -103,12 +101,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // GetPartiesAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -116,6 +114,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesAsync(List<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/partylistbyuuid?fetchSubUnits={includeSubunits}";
@@ -131,12 +130,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // GetPartiesAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesAsync // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -144,6 +143,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<Party>> GetPartiesForUserAsync(int userId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"{_platformSettings.ApiAuthorizationEndpoint}parties?userId={userId}";
@@ -158,12 +158,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<List<Party>>(responseContent, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // GetPartiesForUserAsync // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetPartiesForUserAsync // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -171,6 +171,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<int>> GetKeyRoleParties(int userId, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/partieswithkeyroleaccess?userid={userId}");
@@ -182,12 +183,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<List<int>>(responseBody, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // GetKeyRoleParties // Failed // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseBody);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetKeyRoleParties // Failed // Unexpected Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -195,6 +196,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<List<MainUnit>> GetMainUnits(MainUnitQuery subunitPartyIds, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/partyparents");
@@ -214,12 +216,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<List<MainUnit>>(responseBody, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // GetMainUnits // Failed // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseBody);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return new();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // GetMainUnits // Failed // Unexpected Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }
@@ -227,6 +229,7 @@ public class PartiesClient : IPartiesClient
     /// <inheritdoc/>
     public async Task<Party> LookupPartyBySSNOrOrgNo(PartyLookup partyLookup, CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
         try
         {
             string endpointUrl = $"parties/lookup";
@@ -242,12 +245,12 @@ public class PartiesClient : IPartiesClient
                 return JsonSerializer.Deserialize<Party>(responseContent, _serializerOptions);
             }
 
-            _logger.LogError("AccessManagement // PartiesClient // LookupPartyBySSNOrOrgNo // Unexpected HttpStatusCode: {StatusCode}\n {responseBody}", response.StatusCode, responseContent);
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response));
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AccessManagement // PartiesClient // LookupPartyBySSNOrOrgNo // Exception");
+            activity?.StopWithError(ex);
             throw;
         }
     }

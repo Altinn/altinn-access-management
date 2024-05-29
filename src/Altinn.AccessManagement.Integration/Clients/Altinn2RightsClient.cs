@@ -8,9 +8,9 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Core.Telemetry;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Integration.Clients;
@@ -23,7 +23,6 @@ public class Altinn2RightsClient : IAltinn2RightsClient
 {
     private readonly SblBridgeSettings _sblBridgeSettings;
     private readonly HttpClient _client;
-    private readonly ILogger _logger;
     private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     private readonly IPlatformAuthorizationTokenProvider _sblTokenProvider;
 
@@ -32,12 +31,10 @@ public class Altinn2RightsClient : IAltinn2RightsClient
     /// </summary>
     /// <param name="httpClient">HttpClient from default httpclientfactory</param>
     /// <param name="sblBridgeSettings">the sbl bridge settings</param>
-    /// <param name="logger">the logger</param>
     /// <param name="sblTokenProvider">instance of authorization platform token provider</param>
-    public Altinn2RightsClient(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, ILogger<AltinnRolesClient> logger, IPlatformAuthorizationTokenProvider sblTokenProvider)
+    public Altinn2RightsClient(HttpClient httpClient, IOptions<SblBridgeSettings> sblBridgeSettings, IPlatformAuthorizationTokenProvider sblTokenProvider)
     {
         _sblBridgeSettings = sblBridgeSettings.Value;
-        _logger = logger;
         _client = httpClient;
         _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         _serializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -47,6 +44,8 @@ public class Altinn2RightsClient : IAltinn2RightsClient
     /// <inheritdoc />
     public async Task<DelegationCheckResponse> PostDelegationCheck(int authenticatedUserId, int reporteePartyId, string serviceCode, string serviceEditionCode)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
+
         UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegationcheck?userId={authenticatedUserId}&partyId={reporteePartyId}&serviceCode={serviceCode}&serviceEditionCode={serviceEditionCode}");
             
         HttpResponseMessage response = await _client.GetAsync(uriBuilder.Uri);
@@ -60,7 +59,6 @@ public class Altinn2RightsClient : IAltinn2RightsClient
             return delegationCheckResponse;
         }
 
-        _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegationCheck // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             SblValidationProblemResponse validationError = JsonSerializer.Deserialize<SblValidationProblemResponse>(responseContent, _serializerOptions);
@@ -69,16 +67,20 @@ public class Altinn2RightsClient : IAltinn2RightsClient
                 delegationCheckResponse.Errors.Add(modelState.Key, string.Join(" | ", modelState.Value));
             }
 
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response), delegationCheckResponse.Errors);
             return delegationCheckResponse;
         }
 
-        delegationCheckResponse.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        delegationCheckResponse.Errors.Add("SblBridge", $"Unable to reach Altinn 2 for delegation check of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        activity?.StopWithError(TelemetryEvents.SblBridge.Unreachable("Delegation check of Altinn 2 service"));        
         return delegationCheckResponse;
     }
 
     /// <inheritdoc />
     public async Task<DelegationActionResult> PostDelegation(int authenticatedUserId, int reporteePartyId, SblRightDelegationRequest delegationRequest)
     {
+        using var activity = TelemetryConfig.ActivitySource.StartActivity();
+
         DelegationActionResult delegationResult = new DelegationActionResult();
         UriBuilder uriBuilder = new UriBuilder($"{_sblBridgeSettings.BaseApiUrl}authorization/api/rights/delegation/userdelegation?authenticatedUserId={authenticatedUserId}&partyId={reporteePartyId}");
 
@@ -95,7 +97,6 @@ public class Altinn2RightsClient : IAltinn2RightsClient
             return delegationResult;
         }
 
-        _logger.LogError("AccessManagement // Altinn2RightsClient // PostDelegation // Unexpected HttpStatusCode: {StatusCode}\n {responseContent}", response.StatusCode, responseContent);
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             SblValidationProblemResponse validationError = JsonSerializer.Deserialize<SblValidationProblemResponse>(responseContent, _serializerOptions);
@@ -104,10 +105,12 @@ public class Altinn2RightsClient : IAltinn2RightsClient
                 delegationResult.Errors.Add(modelState.Key, string.Join(" | ", modelState.Value));
             }
 
+            activity?.StopWithError(TelemetryEvents.UnexpectedHttpStatusCode(response), delegationResult.Errors);
             return delegationResult;
         }
 
-        delegationResult.Errors.Add("SBLBridge", $"Unable to reach Altinn 2 for delegation of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        delegationResult.Errors.Add("SblBridge", $"Unable to reach Altinn 2 for delegation of Altinn 2 service. HttpStatusCode: {response.StatusCode}");
+        activity?.StopWithError(TelemetryEvents.SblBridge.Unreachable("Delegation of Altinn 2 service"));
         return delegationResult;
     }
 

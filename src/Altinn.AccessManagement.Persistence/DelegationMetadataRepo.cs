@@ -386,7 +386,7 @@ namespace Altinn.AccessManagement.Persistence
             query += "GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType)";
 
             query += "SELECT" +
-            "change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
+            " change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
             " FROM delegation.ResourceRegistryDelegationChanges AS change" +
             " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId";
             query += " WHERE delegationchangetype != 'revoke_last'";
@@ -586,9 +586,9 @@ namespace Altinn.AccessManagement.Persistence
             query += " GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType )";
 
             query += "SELECT" +
-                "change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, " +
-                "change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId, " +
-                "change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
+                " change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, " +
+                " change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId, " +
+                " change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
                 " FROM delegation.ResourceRegistryDelegationChanges AS change" +
                 " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid" +
                 " WHERE delegationchangetype != 'revoke_last'";

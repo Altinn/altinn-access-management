@@ -237,8 +237,19 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
-    services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
-    services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+
+    if (config.GetValue<bool>("AccessMgmt:General:UseNewQueryRepo"))
+    {
+        // Using new query pattern
+        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
+        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
+    }
+    else
+    {
+        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+    }
+
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
@@ -327,9 +338,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
             {
                 {
                     Sdk.CreateTracerProviderBuilder()
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig.ActivitySource.Name))
                     .AddNpgsql()
-                    .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig._activitySource.Name)
+                    .AddSource(Altinn.AccessManagement.Persistence.Configuration.TelemetryConfig.ActivitySource.Name)
                 }
             };
 

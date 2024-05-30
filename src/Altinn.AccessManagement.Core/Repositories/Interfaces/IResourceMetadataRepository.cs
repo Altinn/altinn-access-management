@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Models;
 
 namespace Altinn.AccessManagement.Core.Repositories.Interfaces
 {
@@ -17,7 +11,8 @@ namespace Altinn.AccessManagement.Core.Repositories.Interfaces
         /// Inserts a placeholder for a resource in Resource Registry into Access Managment
         /// </summary>
         /// <param name="resource">Data to insert</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>The inserted data with data generated/fetched in db</returns>
-        Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource);
+        Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default);
     }
 }

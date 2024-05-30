@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -24,18 +25,16 @@ namespace Altinn.AccessManagement.Persistence
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepository"/> class
         /// </summary>
-        /// <param name="postgresSettings">The postgreSQL configurations for AuthorizationDB</param>
-        public ResourceMetadataRepository(IOptions<PostgreSQLSettings> postgresSettings)
+        /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
+        public ResourceMetadataRepository(IOptions<PostgreSQLSettings> config)
         {
-            _connectionString = string.Format(
-                postgresSettings.Value.ConnectionString,
-                postgresSettings.Value.AuthorizationDbPwd);
+            _connectionString = string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd);
         }
 
         /// <inheritdoc />
-        public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
+        public async Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 await using NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
@@ -55,7 +54,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex);
+                activity?.StopWithError(ex);
                 throw;
             }
         }

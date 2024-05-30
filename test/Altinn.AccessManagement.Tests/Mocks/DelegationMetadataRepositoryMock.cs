@@ -33,7 +33,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange)
+    public Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> current;
         string coveredBy = delegationChange.CoveredByPartyId != null ? $"p{delegationChange.CoveredByPartyId}" : $"u{delegationChange.CoveredByUserId}";
@@ -85,7 +85,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+    public Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
     {
         DelegationChange result = null;
         DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");
@@ -127,7 +127,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId)
+    public Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(new List<DelegationChange>());
     }
@@ -203,7 +203,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, int? coveredByUserId = null)
+    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
 
@@ -276,7 +276,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+    public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByPartys(List<int> coveredByPartyIds, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
         DateTime created = DateTime.Parse("2022-09-27T13:02:23.786072Z");
@@ -301,7 +301,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType)
+    public Task<List<DelegationChange>> GetResourceRegistryDelegationChanges(List<string> resourceIds, int offeredByPartyid, int coveredByPartyId, ResourceType resourceType, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> result = new List<DelegationChange>();
         if (offeredByPartyid == 50004222 && coveredByPartyId == 50004219 && (resourceIds != null && resourceIds.Count > 0))
@@ -315,7 +315,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null)
+    public Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -388,13 +388,13 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(result);
     }
 
-    private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId)
+    private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId, CancellationToken cancellationToken = default)
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"p{coveredByPartyId}", "delegationchange.json");
     }
 
-    private static string GetResourceRegistryDelegationPath_ForCoveredByUserId(string resourceRegistryId, int offeredByPartyId, int coveredByUserId)
+    private static string GetResourceRegistryDelegationPath_ForCoveredByUserId(string resourceRegistryId, int offeredByPartyId, int coveredByUserId, CancellationToken cancellationToken = default)
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");

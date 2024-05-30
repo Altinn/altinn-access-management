@@ -44,7 +44,7 @@ namespace Altinn.AccessManagement.Persistence
                 pgcom.Parameters.AddWithValue("_resourceregistryid", resource.ResourceRegistryId);
                 pgcom.Parameters.AddWithValue("_resourcetype", NpgsqlTypes.NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
 
-                using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync();
+                using NpgsqlDataReader reader = await pgcom.ExecuteReaderAsync(cancellationToken);
                 if (reader.Read())
                 {
                     return GetAccessManagementResource(reader);

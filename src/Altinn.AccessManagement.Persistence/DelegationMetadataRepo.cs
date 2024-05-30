@@ -60,7 +60,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -125,7 +124,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -179,7 +177,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res.FirstOrDefault();
             }
@@ -227,7 +224,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res.FirstOrDefault();
             }
@@ -273,7 +269,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res.FirstOrDefault();
             }
@@ -317,7 +312,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res.FirstOrDefault();
             }
@@ -391,7 +385,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -458,7 +451,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -511,7 +503,7 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByUserId > 0)
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND coveredByUserId = @coveredByUserId";
                 param.Add("coveredByUserId", coveredByUserId);
             }
@@ -525,7 +517,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -593,7 +584,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -677,7 +667,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }
@@ -773,7 +762,6 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
                 var res = await _connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res == null ? null : res.ToList();
             }

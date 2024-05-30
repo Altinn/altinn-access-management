@@ -63,7 +63,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
         {
-            return await GetCurrentAppDelegation(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+            return await GetCurrentAppDelegation(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, cancellationToken);
         }
 
         return await GetCurrentResourceRegistryDelegation(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, cancellationToken);

@@ -18,7 +18,7 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
-        private readonly IDbConnection _connection;
+        private readonly NpgsqlConnection _connection;
         private readonly string defaultColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId, created";
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            if (offeredByPartyIds?.Any() != true)
+            if (offeredByPartyIds?.Count == 0)
             {
                 activity?.StopWithError(new ArgumentNullException(nameof(offeredByPartyIds)));
                 throw new ArgumentNullException(nameof(offeredByPartyIds));
@@ -93,25 +93,25 @@ namespace Altinn.AccessManagement.Persistence
             " FROM delegation.delegationchanges" +
             " WHERE 1=1";
 
-            if (altinnAppIds != null && altinnAppIds.Count != 0)
+            if (altinnAppIds?.Count != 0)
             {
                 query += " AND (altinnAppId IN(@altinnAppIds))";
                 param.Add("altinnAppIds", altinnAppIds);
             }
 
-            if (offeredByPartyIds != null && offeredByPartyIds.Count != 0)
+            if (offeredByPartyIds?.Count != 0)
             {
                 query += " AND (offeredByPartyId IN(@offeredByPartyIds))";
                 param.Add("offeredByPartyIds", offeredByPartyIds);
             }
 
-            if (coveredByPartyIds != null && coveredByPartyIds.Count != 0)
+            if (coveredByPartyIds?.Count != 0)
             {
                 query += " AND (coveredByPartyId IN(@coveredByPartyIds))";
                 param.Add("coveredByPartyIds", coveredByPartyIds);
             }
 
-            if (coveredByUserIds != null && coveredByUserIds.Count != 0)
+            if (coveredByUserIds?.Count != 0)
             {
                 query += " AND (coveredByUserId IN(@coveredByUserIds))";
                 param.Add("coveredByUserIds", coveredByUserIds);
@@ -199,10 +199,10 @@ namespace Altinn.AccessManagement.Persistence
         {
             if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
-                return await InsertAppDelegation(delegationChange);
+                return await InsertAppDelegation(delegationChange, cancellationToken);
             }
 
-            return await InsertResourceRegistryDelegation(delegationChange);
+            return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
         }
 
         private async Task<DelegationChange> InsertAppDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
@@ -335,7 +335,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default)
         {
-            if (offeredByPartyIds?.Any() != true)
+            if (offeredByPartyIds?.Count == 0)
             {
                 throw new ArgumentNullException(nameof(offeredByPartyIds));
             }
@@ -344,12 +344,12 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyIds?.Count > 0)
             {
-                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyIds, offeredByPartyIds, resourceRegistryIds));
+                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByPartys(coveredByPartyIds, offeredByPartyIds, resourceRegistryIds, cancellationToken: cancellationToken));
             }
 
             if (coveredByUserId.HasValue)
             {
-                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByUser(coveredByUserId.Value, offeredByPartyIds, resourceRegistryIds));
+                delegationChanges.AddRange(await GetReceivedResourceRegistryDelegationsForCoveredByUser(coveredByUserId.Value, offeredByPartyIds, resourceRegistryIds, cancellationToken: cancellationToken));
             }
 
             return delegationChanges;
@@ -386,8 +386,8 @@ namespace Altinn.AccessManagement.Persistence
             query += "SELECT" +
             " change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created" +
             " FROM delegation.ResourceRegistryDelegationChanges AS change" +
-            " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId";
-            query += " WHERE delegationchangetype != 'revoke_last'";
+            " INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId" +
+            " WHERE delegationchangetype != 'revoke_last'";
 
             try
             {

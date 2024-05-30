@@ -437,7 +437,7 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyIds != null && coveredByPartyIds.Count > 0)
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND coveredByPartyId IN (@coveredByPartyIds)";
                 param.Add("coveredByPartyIds", coveredByPartyIds);
             }
@@ -546,28 +546,28 @@ namespace Altinn.AccessManagement.Persistence
 
             if (offeredByPartyId > 0)
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND offeredByPartyId = @offeredByPartyId";
                 param.Add("offeredByPartyId", offeredByPartyId);
             }
 
             if (coveredByPartyId > 0) 
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND coveredByPartyId = @coveredByPartyId";
                 param.Add("coveredByPartyId", coveredByPartyId);
             }
 
             if (resourceType > 0)
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND R.resourceType = @resourceType";
                 param.Add("resourceType", resourceType.ToString().ToLower());
             }
 
             if (resourceIds.Count > 0)
             {
-                // TODO: Check if not optional?
+                // Review: Check if not optional?
                 query += " AND R.resourceRegistryId IN (@resourceRegistryIds)";
                 param.Add("resourceRegistryIds", resourceIds);
             }

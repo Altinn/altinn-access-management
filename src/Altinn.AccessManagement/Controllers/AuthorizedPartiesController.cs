@@ -72,7 +72,7 @@ public class AuthorizedPartiesController : ControllerBase
                 return Unauthorized();
             }
 
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForUser(userId, includeAltinn2, cancellationToken);
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForUser(userId, includeAltinn2, includeAuthorizedResourcesThroughRoles: false, cancellationToken);
 
             return _mapper.Map<List<AuthorizedPartyExternal>>(authorizedParties);
         }
@@ -112,7 +112,7 @@ public class AuthorizedPartiesController : ControllerBase
                 return Unauthorized();
             }
 
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForUser(userId, includeAltinn2, cancellationToken);
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForUser(userId, includeAltinn2, includeAuthorizedResourcesThroughRoles: false, cancellationToken);
             AuthorizedParty authorizedParty = authorizedParties.Find(ap => ap.PartyId == partyId && !ap.OnlyHierarchyElementWithNoAccess)
                 ?? authorizedParties.SelectMany(ap => ap.Subunits).FirstOrDefault(subunit => subunit.PartyId == partyId);
 
@@ -162,7 +162,7 @@ public class AuthorizedPartiesController : ControllerBase
                 return Forbid();
             }
 
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForParty(subject.PartyId, includeAltinn2, cancellationToken);
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedPartiesForParty(subject.PartyId, includeAltinn2, includeAuthorizedResourcesThroughRoles: false, cancellationToken);
 
             return _mapper.Map<List<AuthorizedPartyExternal>>(authorizedParties);
         }

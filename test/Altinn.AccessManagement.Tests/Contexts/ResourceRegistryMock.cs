@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Models;
 
 namespace Altinn.AccessManagement.Tests.Contexts;
 
@@ -25,4 +26,8 @@ public class ResourceRegistryMock(MockContext context) : IResourceRegistryClient
     /// <inheritdoc/>
     public Task<List<ServiceResource>> GetResources(CancellationToken cancellationToken = default) =>
         Task.FromResult(Context.Resources);
+
+    /// <inheritdoc/>
+    public Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Context.SubjectResources);
 }

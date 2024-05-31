@@ -1,10 +1,10 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
-using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -439,6 +439,47 @@ public class ContextRetrievalService : IContextRetrievalService
         }
 
         return null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
+    {
+        IDictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
+        List<string> subjectKeysNotInCache = new List<string>();
+
+        foreach (string subjectKey in subjects.Distinct())
+        {
+            if (_memoryCache.TryGetValue(subjectKey, out IEnumerable<BaseAttribute> resources))
+            {
+                subjectResources.Add(subjectKey, resources);
+            }
+            else
+            {
+                subjectKeysNotInCache.Add(subjectKey);
+            }
+        }
+
+        if (subjectKeysNotInCache.Count == 0)
+        {
+            return subjectResources;
+        }
+
+        IDictionary<string, IEnumerable<BaseAttribute>> remainingSubjectResources = await _resourceRegistryClient.GetSubjectResources(subjectKeysNotInCache, cancellationToken);
+        foreach (string subject in subjectKeysNotInCache)
+        {
+            IEnumerable<BaseAttribute> resources;
+            if (remainingSubjectResources.TryGetValue(subject, out resources))
+            {
+                subjectResources.Add(subject, resources);
+            }
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                   .SetPriority(CacheItemPriority.High)
+                   .SetAbsoluteExpiration(new TimeSpan(0, _cacheConfig.ResourceRegistrySubjectResourcesCacheTimeout, 0));
+            _memoryCache.Set(subject, resources ?? Enumerable.Empty<BaseAttribute>(), cacheEntryOptions);
+        }
+
+        return subjectResources;
     }
 
     private async Task<List<Party>> GetPartiesForUser(int userId, CancellationToken cancellationToken = default)

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Clients;
+using Altinn.AccessManagement.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks
 {
@@ -69,6 +70,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
             List<ServiceResource> resources = (List<ServiceResource>)JsonSerializer.Deserialize(content, typeof(List<ServiceResource>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             return Task.FromResult(resources);
+        }
+
+        /// <inheritdoc/>
+        public Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         private static string GetResourcePath(string resourceRegistryId)

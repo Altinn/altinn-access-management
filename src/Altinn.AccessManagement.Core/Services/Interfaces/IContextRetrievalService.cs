@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 
@@ -155,4 +156,12 @@ public interface IContextRetrievalService
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Party that corresponds to partyId parameter if it's in the users reporteelist</returns>
     Task<Party> GetPartyForUser(int userId, int partyId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all resources having any of the request subjects in one or more resource policy rules
+    /// </summary>
+    /// <param name="subjects">Urn string representation of the subjects to lookup resources for</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>Dictionary of all resources per subject, having policy rules with the subject</returns>
+    Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default);
 }

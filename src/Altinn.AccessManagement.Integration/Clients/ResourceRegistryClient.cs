@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Integration.Configuration;
+using Altinn.AccessManagement.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -98,6 +100,31 @@ namespace Altinn.AccessManagement.Integration.Clients
             }
 
             return resources;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
+        {
+            string endpointUrl = $"resource/bysubjects";
+            IDictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
+            StringContent requestBody = new StringContent(JsonSerializer.Serialize(subjects), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PostAsync(endpointUrl, requestBody, cancellationToken);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                string content = await response.Content.ReadAsStringAsync(cancellationToken);
+                PaginatedResult<SubjectResources> result = JsonSerializer.Deserialize<PaginatedResult<SubjectResources>>(content, options);
+
+                if (result != null && result.Items != null)
+                {
+                    foreach (SubjectResources resultItem in result.Items)
+                    {
+                        subjectResources.Add(resultItem.Subject.Urn, resultItem.Resources);
+                    }
+                }
+            }
+
+            return subjectResources;
         }
     }
 }

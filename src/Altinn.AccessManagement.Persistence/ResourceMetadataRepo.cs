@@ -39,12 +39,13 @@ namespace Altinn.AccessManagement.Persistence
             param.Add("resourceregistryid", resource.ResourceRegistryId);
             param.Add("resourcetype", resource.ResourceType.ToString().ToLower());
 
-            string query = $"INSERT INTO accessmanagement.resource (resourceregistryid, resourcetype, created, modified)" +
-                $"VALUES (@resourceregistryid, @resourcetype, now(), now())" +
-                $"ON CONFLICT (resourceregistryid) DO UPDATE SET resourcetype = @resourcetype, modified = now();" +
-                $"SELECT r.resourceid, r.resourceregistryid, r.resourcetype, r.created, r.modified" +
-                $" FROM accessmanagement.resource r" +
-                $" WHERE r.resourceregistryid = @resourceregistryid";
+            string query = 
+                """
+                INSERT INTO accessmanagement.resource (resourceregistryid, resourcetype, created, modified)
+                VALUES (@resourceregistryid, @resourcetype, now(), now())
+                ON CONFLICT (resourceregistryid) DO UPDATE SET resourcetype = @resourcetype, modified = now()
+                RETURNING resourceid, resourceregistryid, resourcetype, created, modified;
+                """;
 
             try
             {

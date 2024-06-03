@@ -116,8 +116,7 @@ namespace Altinn.AccessManagement.Persistence
                 param.Add("coveredByUserIds", coveredByUserIds);
             }
 
-            query += "GROUP BY altinnAppId, offeredByPartyId, coveredByPartyId, coveredByUserId" +
-            ")" + 
+            query += "GROUP BY altinnAppId, offeredByPartyId, coveredByPartyId, coveredByUserId ) " + 
             $"SELECT {defaultColumns}" +
             " FROM delegation.delegationchanges" +
             " INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId";
@@ -244,7 +243,7 @@ namespace Altinn.AccessManagement.Persistence
             var param = new Dictionary<string, object>
             {
                 { "delegationChangeType", delegationChange.DelegationChangeType },
-                { "altinnAppId", delegationChange.ResourceId }, // resourceregistryid ?
+                { "altinnAppId", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value },
                 { "coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value },
@@ -252,7 +251,7 @@ namespace Altinn.AccessManagement.Persistence
                 { "performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value },
                 { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
                 { "blobStorageVersionId", delegationChange.BlobStorageVersionId },
-                { "delegatedTime", delegationChange.Created } // check ?
+                { "delegatedTime", delegationChange.Created.HasValue ? delegationChange.Created.Value : DateTime.UtcNow }
             };
 
             string query = $"WITH insertRow AS (" +

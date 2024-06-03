@@ -238,9 +238,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
 
-    if (config.GetValue<bool>("AccessMgmt:General:UseNewQueryRepo"))
+    if (config.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
     {
-        // Using new query pattern
         services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
         services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
     }

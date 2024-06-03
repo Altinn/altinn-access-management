@@ -9,7 +9,6 @@ namespace Altinn.AccessManagement.Persistence.Extensions;
 /// <summary>
 /// Extension for Activity used in Altinn.AccessManagement
 /// </summary>
-#nullable enable
 [ExcludeFromCodeCoverage]
 public static class ActivityExtensions
 {
@@ -33,33 +32,22 @@ public static class ActivityExtensions
     /// </summary>
     /// <param name="activity">Current activity</param>
     /// <param name="evnt">ActivityEvent to record</param>
-    /// <param name="statusDescription">Optional status description (Default: event.Name)</param>
-    public static void StopWithError(this Activity? activity, ActivityEvent evnt, string? statusDescription = null)
-    {
-        if (activity?.Recorded ?? false)
-        {
-            activity.AddEvent(evnt);
-            activity.SetStatus(ActivityStatusCode.Error, statusDescription ?? evnt.Name);
-        }
-    }
-
-    /// <summary>
-    /// Sets status and records event
-    /// </summary>
-    /// <param name="activity">Current activity</param>
-    /// <param name="evnt">ActivityEvent to record</param>
     /// <param name="tags">Information to record</param>
-    public static void StopWithError(this Activity? activity, ActivityEvent evnt, Dictionary<string, string> tags)
+    /// <param name="statusDescription">Optional status description (Default: event.Name)</param>
+    public static void StopWithError(this Activity? activity, ActivityEvent evnt, Dictionary<string, string>? tags = null, string? statusDescription = null)
     {
         if (activity?.Recorded ?? false)
         {
-            foreach (var tag in tags)
+            if (tags != null)
             {
-                activity.AddTag(tag.Key, tag.Value);
+                foreach (var tag in tags)
+                {
+                    activity.AddTag(tag.Key, tag.Value);
+                }
             }
 
             activity.AddEvent(evnt);
-            activity.SetStatus(ActivityStatusCode.Error, evnt.Name);
+            activity.SetStatus(ActivityStatusCode.Error, statusDescription ?? evnt.Name);
         }
     }
 

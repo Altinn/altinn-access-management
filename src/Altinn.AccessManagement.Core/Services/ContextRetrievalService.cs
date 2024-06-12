@@ -444,7 +444,7 @@ public class ContextRetrievalService : IContextRetrievalService
     /// <inheritdoc/>
     public async Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
     {
-        IDictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
+        Dictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
         List<string> subjectKeysNotInCache = new List<string>();
 
         foreach (string subjectKey in subjects.Distinct())

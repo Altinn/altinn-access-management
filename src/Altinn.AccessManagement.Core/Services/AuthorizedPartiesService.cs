@@ -170,7 +170,6 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         List<AuthorizedParty> result = new();
         List<AuthorizedParty> a3AuthParties = new();
         SortedDictionary<int, AuthorizedParty> authorizedPartyDict = [];
-        SortedDictionary<int, List<string>> authorizedResourcesDict = [];
 
         if ((includeAltinn2AuthorizedParties || includeResourcesThroughRoles) && subjectUserId != 0)
         {

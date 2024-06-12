@@ -106,7 +106,7 @@ namespace Altinn.AccessManagement.Integration.Clients
         public async Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
         {
             string endpointUrl = $"resource/bysubjects";
-            IDictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
+            Dictionary<string, IEnumerable<BaseAttribute>> subjectResources = new Dictionary<string, IEnumerable<BaseAttribute>>();
             StringContent requestBody = new StringContent(JsonSerializer.Serialize(subjects), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.PostAsync(endpointUrl, requestBody, cancellationToken);

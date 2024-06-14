@@ -18,6 +18,7 @@ using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
+using Altinn.Platform.Register.Models;
 using AltinnCore.Authentication.JwtCookie;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -1385,6 +1386,62 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{toParty}/maskinportenschema/received/revoke", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization with partyId 50005545 (orgNr 910459880)
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        /// Expected: MaskinportenDelegation returns 400 BadRequest with response body containing ValidationProblemDetails with error message that CoveredBy can not be the same as OfferedBy
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_FromAndToIdenticalPartyId()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50005545");
+            StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", "p50005545");
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/maskinportenschema/offered", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            ValidationProblemDetails actualResponse = JsonSerializer.Deserialize<ValidationProblemDetails>(responseContent, options);
+            AssertionUtil.AssertValidationProblemDetailsEqual(expectedResponse, actualResponse);
+        }
+
+        /// <summary>
+        /// Test case: MaskinportenDelegation performed by authenticated user 20000490 for the reportee party 50005545 of the jks_audi_etron_gt maskinporten schema resource from the resource registry, to the organization with orgNr 910459880 (partyId: 50005545)
+        ///            In this case:
+        ///            - The user 20000490 is DAGL for the From unit 50005545
+        /// Expected: MaskinportenDelegation returns 400 BadRequest with response body containing ValidationProblemDetails with error message that CoveredBy can not be the same as OfferedBy
+        /// </summary>
+        [Fact]
+        public async Task MaskinportenDelegation_DAGL_FromAndToIdenticalOrgNr()
+        {
+            // Arrange
+            string fromParty = "50005545";
+            string toOrg = "910459880";
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20000490, 50002598));
+
+            ValidationProblemDetails expectedResponse = GetExpectedValidationProblemDetails("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", toOrg);
+            StreamContent requestContent = GetRequestContent("MaskinportenScopeDelegation", "jks_audi_etron_gt", $"p{fromParty}", toOrg);
+
+            // Act
+            HttpResponseMessage response = await _client.PostAsync($"accessmanagement/api/v1/{fromParty}/maskinportenschema/offered", requestContent);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

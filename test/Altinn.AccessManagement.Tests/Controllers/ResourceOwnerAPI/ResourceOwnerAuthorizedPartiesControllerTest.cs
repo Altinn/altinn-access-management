@@ -111,7 +111,7 @@ public class ResourceOwnerAuthorizedPartiesControllerTest : IClassFixture<Custom
         // Act
         HttpResponseMessage response = await client.PostAsync(
             $"accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2={inclA2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}",
-            new StringContent(JsonSerializer.Serialize(attributeExt),Encoding.UTF8, MediaTypeNames.Application.Json));
+            new StringContent(JsonSerializer.Serialize(attributeExt), Encoding.UTF8, MediaTypeNames.Application.Json));
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -95,18 +95,23 @@ public class ResourceOwnerAuthorizedPartiesControllerTest : IClassFixture<Custom
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetPersonList_ByPersonUuid), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetPersonList_ByPartyId), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetPersonList_ByUserId), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetPersonList_ByPersonId_InclResourcesThroughRoles), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetOrgList_ByOrganizationNumber), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetOrgList_ByOrganizationUuid), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetOrgList_ByPartyId), MemberType = typeof(TestDataAuthorizedParties))]
+    [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetOrgList_ByOrganizationNumber_InclResourcesThroughRoles), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUsername), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUuid), MemberType = typeof(TestDataAuthorizedParties))]
     [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetEnterpriseUserList_ByUserId), MemberType = typeof(TestDataAuthorizedParties))]
-    public async Task PostResourceOwnerAuthorizedParties_Ok(string resourceOwnerToken, BaseAttributeExternal attributeExt, bool inclA2, List<AuthorizedPartyExternal> expected)
+    [MemberData(nameof(TestDataAuthorizedParties.ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUsername_InclResourcesThroughRoles), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task PostResourceOwnerAuthorizedParties_Ok(string resourceOwnerToken, BaseAttributeExternal attributeExt, bool inclA2, bool inclRoleResources, List<AuthorizedPartyExternal> expected)
     {
         var client = GetTestClient(resourceOwnerToken);
 
         // Act
-        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2={inclA2}", new StringContent(JsonSerializer.Serialize(attributeExt), Encoding.UTF8, MediaTypeNames.Application.Json));
+        HttpResponseMessage response = await client.PostAsync(
+            $"accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2={inclA2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}",
+            new StringContent(JsonSerializer.Serialize(attributeExt),Encoding.UTF8, MediaTypeNames.Application.Json));
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

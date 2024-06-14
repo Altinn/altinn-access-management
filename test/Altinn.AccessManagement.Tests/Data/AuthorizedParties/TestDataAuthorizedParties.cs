@@ -23,6 +23,8 @@ public static class TestDataAuthorizedParties
 
     private static string BothAltinn3AndAltinn2 => "BothAltinn3AndAltinn2";
 
+    private static string InclResourcesThroughRoles => "InclResourcesThroughRoles";
+
     public static int PersonToPerson_FromUserId => 20100001;
 
     public static int PersonToPerson_FromPartyId => 50100001;
@@ -386,13 +388,35 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPersonId() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPersonId() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId, Value = MainUnitAndSubUnitToOrg_ToOrgDaglPersonId },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetPersonList", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             getting authorized party list for a person identified by urn:altinn:person:identifier-no
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party list of the requested party
+    ///             - Should include authorized resources the user has access to through roles for each authorized party
+    /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             are authorized to get authorized party list of any person, user or organization in Altinn
+    /// </summary>
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPersonId_InclResourcesThroughRoles() => new()
+    {
+        {
+            PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
+            new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId, Value = MainUnitAndSubUnitToOrg_ToOrgDaglPersonId },
+            false,
+            true,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetPersonList", InclResourcesThroughRoles)
         }
     };
 
@@ -405,12 +429,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPersonUuid() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPersonUuid() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid, Value = MainUnitAndSubUnitToOrg_ToOrgDaglPersonUuid },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetPersonList", BothAltinn3AndAltinn2)
         }
     };
@@ -424,12 +449,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPartyId() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByPartyId() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = MainUnitAndSubUnitToOrg_ToOrgDaglPartyId.ToString() },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetPersonList", BothAltinn3AndAltinn2)
         }
     };
@@ -443,12 +469,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByUserId() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetPersonList_ByUserId() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = MainUnitAndSubUnitToOrg_ToOrgDaglUserId.ToString() },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetPersonList", BothAltinn3AndAltinn2)
         }
     };
@@ -462,13 +489,35 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByOrganizationNumber() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByOrganizationNumber() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationId, Value = MainUnitAndSubUnitToOrg_ToOrgOrganizationNumber },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetOrgList", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             getting authorized party list for an organization identified by urn:altinn:organization:identifier-no
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party list of the requested party
+    ///             - Should include authorized resources the user has access to through roles for each authorized party
+    /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             are authorized to get authorized party list of any person, user or organization in Altinn
+    /// </summary>
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByOrganizationNumber_InclResourcesThroughRoles() => new()
+    {
+        {
+            PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
+            new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationId, Value = MainUnitAndSubUnitToOrg_ToOrgOrganizationNumber },
+            false,
+            true,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetOrgList", InclResourcesThroughRoles)
         }
     };
 
@@ -481,12 +530,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByOrganizationUuid() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByOrganizationUuid() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid, Value = MainUnitAndSubUnitToOrg_ToOrgOrganizationUuid },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetOrgList", BothAltinn3AndAltinn2)
         }
     };
@@ -500,12 +550,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByPartyId() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetOrgList_ByPartyId() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = MainUnitAndSubUnitToOrg_ToOrgPartyId.ToString() },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetOrgList", BothAltinn3AndAltinn2)
         }
     };
@@ -519,13 +570,35 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUsername() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUsername() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName, Value = MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUsername },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetEnterpriseUserList", BothAltinn3AndAltinn2)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             getting authorized party list for an organization identified by urn:altinn:enterpriseuser:username
+    /// Expected:   - Should return 200 OK
+    ///             - Should include expected authorized party list of the requested party
+    ///             - Should include authorized resources the user has access to through roles for each authorized party
+    /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
+    ///             are authorized to get authorized party list of any person, user or organization in Altinn
+    /// </summary>
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUsername_InclResourcesThroughRoles() => new()
+    {
+        {
+            PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
+            new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName, Value = MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUsername },
+            false,
+            true,
+            GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetEnterpriseUserList", InclResourcesThroughRoles)
         }
     };
 
@@ -538,12 +611,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUuid() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByEnterpriseUserUuid() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid, Value = MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserUuid },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetEnterpriseUserList", BothAltinn3AndAltinn2)
         }
     };
@@ -557,12 +631,13 @@ public static class TestDataAuthorizedParties
     /// Reason:     Authenticated resource owner organizations authorized with scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             are authorized to get authorized party list of any person, user or organization in Altinn
     /// </summary>
-    public static TheoryData<string, BaseAttributeExternal, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByUserId() => new()
+    public static TheoryData<string, BaseAttributeExternal, bool, bool, List<AuthorizedPartyExternal>> ResourceOwner_GetEnterpriseUserList_ByUserId() => new()
     {
         {
             PrincipalUtil.GetOrgToken("digdir", "991825827", "altinn:accessmanagement/authorizedparties.resourceowner"),
             new BaseAttributeExternal { Type = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = MainUnitAndSubUnitToOrg_ToOrgEcKeyRoleUserId.ToString() },
             true,
+            false,
             GetExpectedResponse<List<AuthorizedPartyExternal>>("ResourceOwner_GetEnterpriseUserList", BothAltinn3AndAltinn2)
         }
     };

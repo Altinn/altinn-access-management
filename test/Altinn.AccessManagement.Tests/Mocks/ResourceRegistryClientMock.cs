@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,7 +76,19 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc/>
         public Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            string content = File.ReadAllText($"Data/Resources/subjectResources.json");
+            PaginatedResult<SubjectResources> allSubjectResources = (PaginatedResult<SubjectResources>)JsonSerializer.Deserialize(content, typeof(PaginatedResult<SubjectResources>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            IDictionary<string, IEnumerable<BaseAttribute>> result = new Dictionary<string, IEnumerable<BaseAttribute>>();
+            if (allSubjectResources != null && allSubjectResources.Items != null)
+            {
+                foreach (SubjectResources resultItem in allSubjectResources.Items.Where(sr => subjects.Contains(sr.Subject.Urn)))
+                {
+                    result.Add(resultItem.Subject.Urn, resultItem.Resources);
+                }
+            }
+
+            return Task.FromResult(result);
         }
 
         private static string GetResourcePath(string resourceRegistryId)

@@ -8,6 +8,7 @@ using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Altinn.AccessManagement.Tests.Data;
 
@@ -400,7 +401,7 @@ public static class TestDataAuthorizedParties
     };
 
     /// <summary>
-    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    /// Test case:  <![CDATA[POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}]]>
     ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             getting authorized party list for a person identified by urn:altinn:person:identifier-no
     /// Expected:   - Should return 200 OK
@@ -501,7 +502,7 @@ public static class TestDataAuthorizedParties
     };
 
     /// <summary>
-    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    /// Test case:  <![CDATA[POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}]]>
     ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             getting authorized party list for an organization identified by urn:altinn:organization:identifier-no
     /// Expected:   - Should return 200 OK
@@ -582,7 +583,7 @@ public static class TestDataAuthorizedParties
     };
 
     /// <summary>
-    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}
+    /// Test case:  <![CDATA[POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}&includeAuthorizedResourcesThroughRoles={inclRoleResources}]]>
     ///             with a valid resource owner token with the scope: altinn:accessmanagement/authorizedparties.resourceowner
     ///             getting authorized party list for an organization identified by urn:altinn:enterpriseuser:username
     /// Expected:   - Should return 200 OK

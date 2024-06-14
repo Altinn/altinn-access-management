@@ -17,6 +17,8 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// </summary>
     public class ResourceRegistryClientMock : IResourceRegistryClient
     {
+        private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceRegistryClient"/> class
         /// </summary>
@@ -32,7 +34,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             if (File.Exists(rolesPath))
             {
                 string content = File.ReadAllText(rolesPath);
-                resource = (ServiceResource)JsonSerializer.Deserialize(content, typeof(ServiceResource), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                resource = (ServiceResource)JsonSerializer.Deserialize(content, typeof(ServiceResource), _serializerOptions);
             }
 
             return await Task.FromResult(resource);
@@ -47,16 +49,12 @@ namespace Altinn.AccessManagement.Tests.Mocks
             if (Directory.Exists(path))
             {
                 string[] files = Directory.GetFiles(path);
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                };
                 foreach (string file in files)
                 {
                     if (file.Contains("resources"))
                     {
                         string content = File.ReadAllText(Path.Combine(path, file));
-                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, options);
+                        resources = JsonSerializer.Deserialize<List<ServiceResource>>(content, _serializerOptions);
                     }
                 }
             }
@@ -68,7 +66,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<List<ServiceResource>> GetResourceList(CancellationToken cancellationToken = default)
         {
             string content = File.ReadAllText($"Data/Resources/resourceList.json");
-            List<ServiceResource> resources = (List<ServiceResource>)JsonSerializer.Deserialize(content, typeof(List<ServiceResource>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            List<ServiceResource> resources = (List<ServiceResource>)JsonSerializer.Deserialize(content, typeof(List<ServiceResource>), _serializerOptions);
 
             return Task.FromResult(resources);
         }
@@ -77,7 +75,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         public Task<IDictionary<string, IEnumerable<BaseAttribute>>> GetSubjectResources(IEnumerable<string> subjects, CancellationToken cancellationToken = default)
         {
             string content = File.ReadAllText($"Data/Resources/subjectResources.json");
-            PaginatedResult<SubjectResources> allSubjectResources = (PaginatedResult<SubjectResources>)JsonSerializer.Deserialize(content, typeof(PaginatedResult<SubjectResources>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            PaginatedResult<SubjectResources> allSubjectResources = (PaginatedResult<SubjectResources>)JsonSerializer.Deserialize(content, typeof(PaginatedResult<SubjectResources>), _serializerOptions);
 
             IDictionary<string, IEnumerable<BaseAttribute>> result = new Dictionary<string, IEnumerable<BaseAttribute>>();
             if (allSubjectResources != null && allSubjectResources.Items != null)

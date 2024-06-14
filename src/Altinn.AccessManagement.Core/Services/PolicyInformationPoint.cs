@@ -173,16 +173,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (party.PartyTypeName == PartyType.Person)
             {
-                var user = await _profile.GetUser(new() { Ssn = party.SSN }, cancellationToken);
-
-                var keyRoles = await _contextRetrievalService.GetKeyRolePartyIds(user.UserId, cancellationToken);
-                var offeredBy = user.PartyId.SingleToList();
-                if (keyRoles?.Count > 0)
-                {
-                    offeredBy.AddRange(keyRoles);
-                }
-
-                return await _delegationRepository.GetOfferedDelegations(offeredBy, cancellationToken);
+                return await _delegationRepository.GetOfferedDelegations(partyId.SingleToList(), cancellationToken);
             }
 
             if (party.PartyTypeName == PartyType.Organisation)

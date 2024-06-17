@@ -16,7 +16,7 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class ResourceMetadataRepo : IResourceMetadataRepository
     {
-        private readonly IDbConnection _connection;
+        private readonly string _connectionString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepo"/> class
@@ -27,7 +27,7 @@ namespace Altinn.AccessManagement.Persistence
             var bld = new NpgsqlConnectionStringBuilder(dbConnection.ConnectionString);
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
-            _connection = new Npgsql.NpgsqlConnection(bld.ConnectionString);
+            _connectionString = bld.ConnectionString;
         }
 
         /// <inheritdoc />
@@ -49,18 +49,14 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                _connection.Open();
-                var res = await _connection.QueryAsync<AccessManagementResource>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
+                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
+                var res = await connection.QueryAsync<AccessManagementResource>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
                 return res.FirstOrDefault();
             }
             catch (Exception ex)
             {
                 activity?.StopWithError(ex);
                 throw;
-            }
-            finally
-            {
-                _connection.Close();
             }
         }
     }

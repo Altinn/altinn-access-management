@@ -116,14 +116,21 @@ public static class PostgresServer
             {
                 Server.StartAsync().Wait();
                 var result = Server.ExecScriptAsync($@"
-                    CREATE USER {DbUserName} WITH PASSWORD '{DbPassword}';
-                    CREATE USER {DbAdminName} WITH PASSWORD '{DbPassword}';
-                    ALTER ROLE {DbUserName} LOGIN INHERIT;
-                    ALTER ROLE {DbAdminName} LOGIN SUPERUSER INHERIT;").Result;
+                DO
+                $$
+                BEGIN
+                	IF NOT EXISTS (SELECT * FROM pg_user WHERE usename IN ('{DbUserName}', '{DbAdminName}')) THEN
+                		CREATE USER {DbUserName} WITH PASSWORD '{DbPassword}';
+                		CREATE USER {DbAdminName} WITH PASSWORD '{DbPassword}';
+                		ALTER ROLE {DbUserName} LOGIN INHERIT;
+                		ALTER ROLE {DbAdminName} LOGIN SUPERUSER INHERIT;
+                	END IF;
+                END
+                $$;").Result;
 
                 if (result.ExitCode != 0 || !string.IsNullOrEmpty(result.Stderr))
                 {
-                    throw new XunitException($"Failed to create users");
+                    throw new XunitException($"Failed to create users. Exitcode {result.ExitCode}, Error Message ${result.Stderr}");
                 }
             }
         }

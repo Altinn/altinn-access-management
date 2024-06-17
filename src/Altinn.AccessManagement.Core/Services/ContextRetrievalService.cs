@@ -1,10 +1,10 @@
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Caching.Memory;

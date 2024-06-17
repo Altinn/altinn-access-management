@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Altinn.AccessManagement.Models;
+namespace Altinn.AccessManagement.Core.Models;
 
 /// <summary>
 /// A list object is a wrapper around a list of items to allow for the API to be

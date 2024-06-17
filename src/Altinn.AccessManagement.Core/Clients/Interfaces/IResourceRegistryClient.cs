@@ -1,5 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Models;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Clients.Interfaces
 {

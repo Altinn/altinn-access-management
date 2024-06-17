@@ -1,9 +1,7 @@
-using System.Runtime.Versioning;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Enums;
 
 namespace Altinn.AccessManagement.Core.Services;

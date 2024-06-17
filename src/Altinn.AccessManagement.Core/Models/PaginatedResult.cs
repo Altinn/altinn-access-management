@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-namespace Altinn.AccessManagement.Models;
+namespace Altinn.AccessManagement.Core.Models;
 
 /// <summary>
 /// A paginated <see cref="ListObjectResult{T}"/>.

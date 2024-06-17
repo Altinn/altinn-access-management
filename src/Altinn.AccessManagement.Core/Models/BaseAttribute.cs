@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Altinn.AccessManagement.Models;
+namespace Altinn.AccessManagement.Core.Models;
 
 /// <summary>
 /// This model describes a an Attribute consisting of an Attribute Type and Attribute Value which can also be represented as a Urn by combining the properties as '{type}:{value}'

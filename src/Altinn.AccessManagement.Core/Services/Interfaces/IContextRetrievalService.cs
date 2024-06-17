@@ -1,6 +1,6 @@
-﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
-using Altinn.AccessManagement.Models;
 using Altinn.Platform.Register.Models;
 using Authorization.Platform.Authorization.Models;
 

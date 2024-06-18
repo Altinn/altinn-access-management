@@ -43,6 +43,7 @@ public class ResourceOwnerAuthorizedPartiesController : ControllerBase
     /// </summary>
     /// <param name="subject">Subject input model identifying the user or organization to retrieve the list of authorized parties for</param>
     /// <param name="includeAltinn2">Optional (Default: False): Whether Authorized Parties from Altinn 2 should be included in the result set, and if access to Altinn 3 resources through having Altinn 2 roles should be included.</param>
+    /// <param name="includeAuthorizedResourcesThroughRoles">Optional (Default: False): Whether Authorized Resources per party should be enriched with resources the user has access to through AuthorizedRoles</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <response code="200" cref="List{AuthorizedParty}">Ok</response>
     /// <response code="401">Unauthorized</response>
@@ -58,12 +59,12 @@ public class ResourceOwnerAuthorizedPartiesController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [FeatureGate(FeatureFlags.RightsDelegationApi)]
-    public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedPartiesAsServiceOwner(BaseAttributeExternal subject, bool includeAltinn2 = false, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<AuthorizedPartyExternal>>> GetAuthorizedPartiesAsServiceOwner(BaseAttributeExternal subject, bool includeAltinn2 = false, bool includeAuthorizedResourcesThroughRoles = false, CancellationToken cancellationToken = default)
     {
         try
         {
             BaseAttribute subjectAttribute = _mapper.Map<BaseAttribute>(subject);
-            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(subjectAttribute, includeAltinn2, cancellationToken);
+            List<AuthorizedParty> authorizedParties = await _authorizedPartiesService.GetAuthorizedParties(subjectAttribute, includeAltinn2, includeAuthorizedResourcesThroughRoles, cancellationToken);
 
             return _mapper.Map<List<AuthorizedPartyExternal>>(authorizedParties);
         }

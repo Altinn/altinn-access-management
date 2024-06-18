@@ -1,0 +1,99 @@
+{
+  "links": {},
+  "data": [
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "dagl",
+        "urn": "urn:altinn:rolecode:dagl"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "app_ttd_apps-test",
+          "urn": "urn:altinn:resource:app_ttd_apps-test"
+        },
+        {
+          "type": "urn:altinn:resource",
+          "value": "generic-access-resource",
+          "urn": "urn:altinn:resource:generic-access-resource"
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "regna",
+        "urn": "urn:altinn:rolecode:regna"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "app_ttd_apps-test",
+          "urn": "urn:altinn:resource:app_ttd_apps-test"
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "innh",
+        "urn": "urn:altinn:rolecode:innh"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt",
+          "urn": "urn:altinn:resource:jks_audi_etron_gt"
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "utinn",
+        "urn": "urn:altinn:rolecode:utinn"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt",
+          "urn": "urn:altinn:resource:jks_audi_etron_gt"
+        },
+        {
+          "type": "urn:altinn:resource",
+          "value": "generic-access-resource",
+          "urn": "urn:altinn:resource:generic-access-resource"
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "hadm",
+        "urn": "urn:altinn:rolecode:hadm"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "jks_audi_etron_gt",
+          "urn": "urn:altinn:resource:jks_audi_etron_gt"
+        }
+      ]
+    },
+    {
+      "subject": {
+        "type": "urn:altinn:rolecode",
+        "value": "priv",
+        "urn": "urn:altinn:rolecode:priv"
+      },
+      "resources": [
+        {
+          "type": "urn:altinn:resource",
+          "value": "generic-access-resource",
+          "urn": "urn:altinn:resource:generic-access-resource"
+        }
+      ]
+    }
+  ]
+}

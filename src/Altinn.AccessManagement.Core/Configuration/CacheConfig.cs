@@ -36,6 +36,11 @@ namespace Altinn.AccessManagement.Core.Configuration
         public int ResourceRegistryResourceCacheTimeout { get; set; }
 
         /// <summary>
+        /// Gets or sets the cache timeout (in minutes) for lookup of a subject resources from the resourceregistry
+        /// </summary>
+        public int ResourceRegistrySubjectResourcesCacheTimeout { get; set; }
+
+        /// <summary>
         /// Gets or sets the cache timeout (in minutes) for lookup of a rights
         /// </summary>
         public int RightsCacheTimeout { get; set; }        

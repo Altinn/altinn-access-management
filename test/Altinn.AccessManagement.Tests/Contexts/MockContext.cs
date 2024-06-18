@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Fixtures;
@@ -29,6 +30,11 @@ public class MockContext
     /// List of mock resources
     /// </summary>
     public List<ServiceResource> Resources { get; set; } = [];
+
+    /// <summary>
+    /// Dictionary of mock subject resources
+    /// </summary>
+    public IDictionary<string, IEnumerable<BaseAttribute>> SubjectResources { get; set; } = new Dictionary<string, IEnumerable<BaseAttribute>>();
 
     /// <summary>
     /// List of mock parties

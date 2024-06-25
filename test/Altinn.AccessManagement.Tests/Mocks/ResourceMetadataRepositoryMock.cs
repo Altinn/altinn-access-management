@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -15,8 +16,9 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// Mock
         /// </summary>
         /// <param name="resource">the resource to store in AccessManagment</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>the inserted/updated resource</returns>
-        public Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource)
+        public Task<AccessManagementResource> InsertAccessManagementResource(AccessManagementResource resource, CancellationToken cancellationToken = default)
         {
             AccessManagementResource result = null
                 ;

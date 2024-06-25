@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Metrics;
 
 namespace Altinn.AccessManagement.Persistence.Configuration
 {
@@ -13,11 +12,6 @@ namespace Altinn.AccessManagement.Persistence.Configuration
         /// <summary>
         /// Used as source for the current project
         /// </summary>
-        public static readonly ActivitySource _activitySource = new("Altinn.AccessManagement.Persistence");
-
-        /// <summary>
-        /// Used as source for the current project
-        /// </summary>
-        public static readonly Meter _meter = new("Altinn.AccessManagement.Persistence");
+        public static readonly ActivitySource ActivitySource = new("Altinn.AccessManagement.Persistence");
     }
 }

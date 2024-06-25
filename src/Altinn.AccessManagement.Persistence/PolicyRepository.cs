@@ -49,7 +49,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<Stream> GetPolicyAsync(string filepath)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath);
 
             return await GetBlobStreamInternal(blobClient);
@@ -58,7 +58,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<Stream> GetPolicyVersionAsync(string filepath, string version)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath).WithVersion(version);
 
             return await GetBlobStreamInternal(blobClient);
@@ -67,7 +67,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<Response<BlobContentInfo>> WritePolicyAsync(string filepath, Stream fileStream)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath);
 
             return await WriteBlobStreamInternal(blobClient, fileStream);
@@ -76,7 +76,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<Response<BlobContentInfo>> WritePolicyConditionallyAsync(string filepath, Stream fileStream, string blobLeaseId)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath);
 
             BlobUploadOptions blobUploadOptions = new BlobUploadOptions()
@@ -93,7 +93,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<string> TryAcquireBlobLease(string filepath)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath);
             BlobLeaseClient blobLeaseClient = blobClient.GetBlobLeaseClient();
 
@@ -104,11 +104,11 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
+                activity?.StopWithError(ex, $"Failed to acquire blob lease for policy file at {filepath}. RequestFailedException");
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
+                activity?.StopWithError(ex, $"Failed to acquire blob lease for policy file at {filepath}. Unexpected error");
             }
 
             return null;
@@ -117,7 +117,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async void ReleaseBlobLease(string filepath, string leaseId)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             BlobClient blobClient = CreateBlobClient(filepath);
             BlobLeaseClient blobLeaseClient = blobClient.GetBlobLeaseClient(leaseId);
             await blobLeaseClient.ReleaseAsync();
@@ -126,7 +126,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<bool> PolicyExistsAsync(string filepath)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 BlobClient blobClient = CreateBlobClient(filepath);
@@ -134,7 +134,7 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
+                activity?.StopWithError(ex, $"Failed to check if blob exists for policy file at {filepath}. RequestFailedException");
             }
 
             return false;
@@ -143,7 +143,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <inheritdoc/>
         public async Task<Response> DeletePolicyVersionAsync(string filepath, string version)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 BlobClient blockBlob = CreateBlobClient(filepath);
@@ -155,19 +155,19 @@ namespace Altinn.AccessManagement.Persistence
                 var errorMsg = ex.Status == (int)HttpStatusCode.Forbidden && ex.ErrorCode == "OperationNotAllowedOnRootBlob" ?
                 $"Failed to delete version {version} of policy file at {filepath}. Not allowed to delete current version." :
                 $"Failed to delete version {version} of policy file at {filepath}. RequestFailedException";
-                activity?.ErrorWithException(ex, errorMsg);
+                activity?.StopWithError(ex, errorMsg);
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
+                activity?.StopWithError(ex, $"Failed to delete version {version} of policy file at {filepath}. Unexpected error");
                 throw;
             }
         }
 
         private BlobClient CreateBlobClient(string blobName)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             if (blobName.Contains("delegationpolicy.xml"))
             {
                 activity?.AddEvent(new ActivityEvent("_delegationsContainerClient.GetBlobClient"));
@@ -186,7 +186,7 @@ namespace Altinn.AccessManagement.Persistence
 
         private async Task<Stream> GetBlobStreamInternal(BlobClient blobClient)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 Stream memoryStream = new MemoryStream();
@@ -203,14 +203,14 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to read policy file at {blobClient.Name}");
+                activity?.StopWithError(ex, $"Failed to read policy file at {blobClient.Name}");
                 throw;
             }
         }
 
         private async Task<Response<BlobContentInfo>> WriteBlobStreamInternal(BlobClient blobClient, Stream fileStream, BlobUploadOptions blobUploadOptions = null)
         {
-            using var activity = TelemetryConfig._activitySource.StartActivity(ActivityKind.Client);
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             try
             {
                 if (blobUploadOptions != null)
@@ -222,12 +222,12 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (RequestFailedException ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
+                activity?.StopWithError(ex, $"Failed to save policy file {blobClient.Name}. {(HttpStatusCode)ex.Status}");
                 throw;
             }
             catch (Exception ex)
             {
-                activity?.ErrorWithException(ex, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
+                activity?.StopWithError(ex, $"Failed to save policy file {blobClient.Name}. Unexpected exception");
                 throw;
             }
         }

@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Dapper;
+using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace Altinn.AccessManagement.Persistence
@@ -21,10 +22,10 @@ namespace Altinn.AccessManagement.Persistence
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepo"/> class
         /// </summary>
-        /// <param name="dbConnection">Database connection for AuthorizationDb</param>
-        public ResourceMetadataRepo(NpgsqlDataSource dbConnection)
+        /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
+        public ResourceMetadataRepo(IOptions<PostgreSQLSettings> config)
         {
-            var bld = new NpgsqlConnectionStringBuilder(dbConnection.ConnectionString);
+            var bld = new NpgsqlConnectionStringBuilder(string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd));
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
             _connectionString = bld.ConnectionString;

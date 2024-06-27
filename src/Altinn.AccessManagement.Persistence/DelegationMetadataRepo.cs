@@ -291,7 +291,7 @@ namespace Altinn.AccessManagement.Persistence
 
             string query =
             /*strpsql*/"""    
-            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
+            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
             JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid
             WHERE res.resourceRegistryId = @resourceRegistryId AND offeredByPartyId = @offeredByPartyId
@@ -381,7 +381,7 @@ namespace Altinn.AccessManagement.Persistence
             query +=
             /*strpsql*/"""
             SELECT
-            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
+            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
             INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
             WHERE delegationchangetype != 'revoke_last'
@@ -448,7 +448,7 @@ namespace Altinn.AccessManagement.Persistence
             /*strpsql*/"""
             GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId 
             )
-            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
+            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
             INNER JOIN res ON rr.resourceId_fk = res.resourceid
             INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
@@ -520,7 +520,7 @@ namespace Altinn.AccessManagement.Persistence
             query +=
             /*strpsql*/"""
             GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId )
-            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
+            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
             INNER JOIN res ON rr.resourceId_fk = res.resourceid
             INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
@@ -578,7 +578,7 @@ namespace Altinn.AccessManagement.Persistence
             /*strpsql*/"""
             GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType )
             SELECT
-            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId, lastChange.resourceType,
+            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType,
             change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId,
             change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
@@ -607,7 +607,7 @@ namespace Altinn.AccessManagement.Persistence
             var param = new Dictionary<string, object>();
             param.Add("offeredByPartyIds", offeredByPartyIds);
 
-            const string query = 
+            const string query =
             /*strpsql*/"""
             WITH resources AS (
                 SELECT resourceId, resourceRegistryId, resourceType
@@ -630,7 +630,7 @@ namespace Altinn.AccessManagement.Persistence
             resourceRegistryDelegationChangeId,
             null AS delegationChangeId,
             delegationChangeType,
-            resources.resourceRegistryId,
+            resources.resourceRegistryId as resourceid,
             resources.resourceType,
             null AS altinnAppId,
             offeredByPartyId,
@@ -693,7 +693,7 @@ namespace Altinn.AccessManagement.Persistence
             param.Add("coveredByUserIds", coveredByUserIds);
             param.Add("coveredByPartyIds", coveredByPartyIds);
 
-            const string query = 
+            const string query =
             /*strpsql*/"""
             WITH resources AS (
                 SELECT resourceId, resourceRegistryId, resourceType
@@ -716,7 +716,7 @@ namespace Altinn.AccessManagement.Persistence
             resourceRegistryDelegationChangeId,
             null AS delegationChangeId,
             delegationChangeType,
-            resources.resourceRegistryId,
+            resources.resourceRegistryId as resourceid,
             resources.resourceType,
             null AS altinnAppId,
             offeredByPartyId,
@@ -736,7 +736,7 @@ namespace Altinn.AccessManagement.Persistence
             null AS resourceRegistryDelegationChangeId,
             delegationChangeId,
             delegationChangeType,
-            null AS resourceRegistryId,
+            null AS resourceRegistryId as resourceid,
             null AS resourceType,
             altinnAppId,
             offeredByPartyId,

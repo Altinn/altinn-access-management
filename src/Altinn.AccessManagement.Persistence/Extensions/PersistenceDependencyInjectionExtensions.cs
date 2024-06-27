@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -18,27 +19,25 @@ public static class PersistenceDependencyInjectionExtensions
     /// Registers access management persistence services with the dependency injection container.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="config">The <see cref="IConfiguration"/>.</param>
     /// <returns><paramref name="services"/> for further chaining.</returns>
     public static IServiceCollection AddAccessManagementPersistence(
-        this IServiceCollection services)
-    {
-        services.AddDelegationMetadataRepository();
-        services.AdDelegationPolicyRepository();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers a <see cref="IDelegationMetadataRepository"/> with the dependency injection container.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns><paramref name="services"/> for further chaining.</returns>
-    public static IServiceCollection AddDelegationMetadataRepository(
-        this IServiceCollection services)
+        this IServiceCollection services, IConfiguration config)
     {
         services.AddDatabase();
 
-        services.TryAddTransient<IDelegationMetadataRepository, DelegationMetadataRepository>();
+        if (config.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
+        {
+            services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
+            services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
+        }
+        else
+        {
+            services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+            services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+        }
+
+        services.AdDelegationPolicyRepository();
 
         return services;
     }

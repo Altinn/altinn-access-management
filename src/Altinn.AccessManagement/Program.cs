@@ -179,7 +179,6 @@ async Task ConnectToKeyVaultAndSetApplicationInsights(ConfigurationManager confi
 
 void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
-    builder.Services.AddAccessManagementPersistence();
     logger.LogInformation("Startup // ConfigureServices");
     services.ConfigureAsserters();
     services.ConfigureResolvers();
@@ -237,18 +236,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
     services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
-
-    if (config.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
-    {
-        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
-        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
-    }
-    else
-    {
-        services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
-        services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
-    }
-
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
@@ -266,7 +253,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
     services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
     services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
-    services.AddAccessManagementPersistence();
+    services.AddAccessManagementPersistence(config);
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
     {

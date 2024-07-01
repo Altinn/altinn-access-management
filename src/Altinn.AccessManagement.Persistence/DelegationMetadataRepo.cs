@@ -93,24 +93,24 @@ namespace Altinn.AccessManagement.Persistence
             WITH latestChanges AS (
             SELECT MAX(delegationChangeId) as latestId
             FROM delegation.delegationchanges
-            WHERE (offeredByPartyId IN(@offeredByPartyIds))
+            WHERE (offeredByPartyId = ANY (@offeredByPartyIds))
             """;
 
             if (altinnAppIds?.Count != 0)
             {
-                query += " AND (altinnAppId IN(@altinnAppIds))";
+                query += " AND (altinnAppId = ANY (@altinnAppIds))";
                 param.Add("altinnAppIds", altinnAppIds);
             }
 
             if (coveredByPartyIds != null && coveredByPartyIds.Count != 0)
             {
-                query += " AND (coveredByPartyId IN(@coveredByPartyIds))";
+                query += " AND (coveredByPartyId = ANY (@coveredByPartyIds))";
                 param.Add("coveredByPartyIds", coveredByPartyIds);
             }
 
             if (coveredByUserIds?.Count != 0)
             {
-                query += " AND (coveredByUserId IN(@coveredByUserIds))";
+                query += " AND (coveredByUserId = ANY (@coveredByUserIds))";
                 param.Add("coveredByUserIds", coveredByUserIds);
             }
 
@@ -366,13 +366,13 @@ namespace Altinn.AccessManagement.Persistence
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += "AND resourceRegistryId IN (@resourceRegistryIds)";
+                query += "AND resourceRegistryId = ANY (@resourceRegistryIds)";
                 param.Add("resourceRegistryIds", resourceRegistryIds);
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += "AND resourceType IN (@resourceTypes)";
+                query += "AND resourceType = ANY (@resourceTypes)";
                 param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
             }
 
@@ -418,14 +418,14 @@ namespace Altinn.AccessManagement.Persistence
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += " AND resourceRegistryId IN (@resourceRegistryIds)";
+                query += " AND resourceRegistryId = ANY (@resourceRegistryIds)";
                 param.Add("resourceRegistryIds", resourceRegistryIds);
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += " AND resourceType IN (@resourceTypes)";
-                param.Add("resourceTypes", resourceTypes);
+                query += " AND resourceType = ANY (@resourceTypes)";
+                param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
             }
 
             query +=
@@ -435,12 +435,12 @@ namespace Altinn.AccessManagement.Persistence
             SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
             FROM delegation.ResourceRegistryDelegationChanges AS rrdc
             INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
-            WHERE coveredByPartyId IN (@coveredByPartyIds)
+            WHERE coveredByPartyId = ANY (@coveredByPartyIds)
             """;
             
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += " AND offeredByPartyId IN (@offeredByPartyIds)";
+                query += " AND offeredByPartyId = ANY (@offeredByPartyIds)";
                 param.Add("offeredByPartyIds", offeredByPartyIds);
             }
                 
@@ -491,14 +491,14 @@ namespace Altinn.AccessManagement.Persistence
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += " AND resourceRegistryId IN (@resourceRegistryIds)";
+                query += " AND resourceRegistryId = ANY (@resourceRegistryIds)";
                 param.Add("resourceRegistryIds", resourceRegistryIds);
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += " AND resourceType IN (@resourceTypes)";
-                param.Add("resourceTypes", resourceTypes);
+                query += " AND resourceType = ANY (@resourceTypes)";
+                param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
             }
 
             query +=
@@ -513,7 +513,7 @@ namespace Altinn.AccessManagement.Persistence
 
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += " AND offeredByPartyId IN (@offeredByPartyIds)";
+                query += " AND offeredByPartyId = ANY (@offeredByPartyIds)";
                 param.Add("offeredByPartyIds", offeredByPartyIds);
             }
 
@@ -559,7 +559,7 @@ namespace Altinn.AccessManagement.Persistence
             SELECT MAX(resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
             FROM accessmanagement.Resource AS R
             INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid
-            WHERE R.resourceType = @resourceType AND R.resourceRegistryId IN (@resourceRegistryIds)
+            WHERE R.resourceType = @resourceType AND R.resourceRegistryId = ANY (@resourceRegistryIds)
             """;
 
             if (offeredByPartyId > 0)
@@ -617,13 +617,13 @@ namespace Altinn.AccessManagement.Persistence
             latestResourceChanges AS (
                 SELECT MAX(resourceRegistryDelegationChangeId) as latestId
                 FROM delegation.ResourceRegistryDelegationChanges
-                WHERE offeredbypartyid IN (@offeredByPartyIds)
+                WHERE offeredbypartyid = ANY (@offeredByPartyIds)
                 GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
             ),
             latestAppChanges AS (
                 SELECT MAX(delegationChangeId) as latestId
                 FROM delegation.delegationchanges 
-                WHERE offeredbypartyid IN (@offeredByPartyIds)
+                WHERE offeredbypartyid = ANY (@offeredByPartyIds)
                 GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
             )
             SELECT
@@ -703,13 +703,13 @@ namespace Altinn.AccessManagement.Persistence
             latestResourceChanges AS (
                 SELECT MAX(resourceRegistryDelegationChangeId) as latestId
                 FROM delegation.ResourceRegistryDelegationChanges
-                WHERE coveredByUserId IN (@coveredbyuserids) OR coveredByPartyId IN (@coveredByPartyIds)
+                WHERE coveredByUserId = ANY (@coveredbyuserids) OR coveredByPartyId = ANY (@coveredByPartyIds)
                 GROUP BY resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId
             ),
             latestAppChanges AS (
                 SELECT MAX(delegationChangeId) as latestId
                 FROM delegation.delegationchanges
-                WHERE coveredByUserId IN (@coveredByUserIds) OR coveredByPartyId IN (@coveredByPartyIds)
+                WHERE coveredByUserId = ANY (@coveredByUserIds) OR coveredByPartyId = ANY (@coveredByPartyIds)
                 GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
             )
             SELECT

@@ -209,9 +209,9 @@ namespace Altinn.AccessManagement.Persistence
                 { "delegationChangeType", delegationChange.DelegationChangeType },
                 { "altinnAppId", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
-                { "coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value },
-                { "coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value },
-                { "performedByUserId", delegationChange.PerformedByUserId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value },
+                { "coveredByUserId", delegationChange.CoveredByUserId },
+                { "coveredByPartyId", delegationChange.CoveredByPartyId },
+                { "performedByUserId", delegationChange.PerformedByUserId },
                 { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
                 { "blobStorageVersionId", delegationChange.BlobStorageVersionId }
             };
@@ -244,10 +244,10 @@ namespace Altinn.AccessManagement.Persistence
                 { "delegationChangeType", delegationChange.DelegationChangeType },
                 { "altinnAppId", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
-                { "coveredByUserId", delegationChange.CoveredByUserId.HasValue ? delegationChange.CoveredByUserId.Value : DBNull.Value },
-                { "coveredByPartyId", delegationChange.CoveredByPartyId.HasValue ? delegationChange.CoveredByPartyId.Value : DBNull.Value },
-                { "performedByUserId", delegationChange.PerformedByUserId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value },
-                { "performedByPartyId", delegationChange.PerformedByPartyId.HasValue ? delegationChange.PerformedByUserId.Value : DBNull.Value },
+                { "coveredByUserId", delegationChange.CoveredByUserId },
+                { "coveredByPartyId", delegationChange.CoveredByPartyId },
+                { "performedByUserId", delegationChange.PerformedByUserId },
+                { "performedByPartyId", delegationChange.PerformedByPartyId },
                 { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
                 { "blobStorageVersionId", delegationChange.BlobStorageVersionId },
                 { "delegatedTime", delegationChange.Created.HasValue ? delegationChange.Created.Value : DateTime.UtcNow }

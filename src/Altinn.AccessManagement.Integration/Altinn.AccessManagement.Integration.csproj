@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JWTCookieAuthentication" Version="3.0.1" />
+    <PackageReference Include="JWTCookieAuthentication" Version="4.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Altinn.Platform.Models" Version="1.6.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />

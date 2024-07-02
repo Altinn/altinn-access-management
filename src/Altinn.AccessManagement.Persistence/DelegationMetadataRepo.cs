@@ -361,22 +361,22 @@ namespace Altinn.AccessManagement.Persistence
             SELECT MAX(DC.resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
             FROM accessmanagement.Resource AS R
             INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON R.resourceid = DC.resourceid_fk
-            WHERE DC.offeredByPartyId = @offeredByPartyId
+            WHERE DC.offeredByPartyId = @offeredByPartyId 
             """;
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += "AND resourceRegistryId = ANY (@resourceRegistryIds)";
+                query += " AND resourceRegistryId = ANY (@resourceRegistryIds) ";
                 param.Add("resourceRegistryIds", resourceRegistryIds);
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += "AND resourceType = ANY (@resourceTypes)";
+                query += " AND resourceType = ANY (@resourceTypes) ";
                 param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
             }
 
-            query += "GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType)";
+            query += " GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType) ";
 
             query +=
             /*strpsql*/"""

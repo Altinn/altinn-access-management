@@ -256,7 +256,17 @@ namespace Altinn.AccessManagement.Persistence
             string query =
             /*strpsql*/"""    
             WITH insertRow AS (
-            SELECT @delegationChangeType, R.resourceId, @offeredByPartyId, @coveredByUserId, @coveredByPartyId, @performedByUserId, @performedByPartyId, @blobStoragePolicyPath, @blobStorageVersionId, @delegatedTime
+                SELECT 
+                @delegationChangeType AS delegationChangeType, 
+                R.resourceId, 
+                @offeredByPartyId AS offeredByPartyId, 
+                @coveredByUserId AS coveredByUserId, 
+                @coveredByPartyId AS coveredByPartyId, 
+                @performedByUserId AS performedByUserId, 
+                @performedByPartyId AS performedByPartyId, 
+                @blobStoragePolicyPath AS blobStoragePolicyPath, 
+                @blobStorageVersionId AS blobStorageVersionId, 
+                @delegatedTime AS delegatedTime
                 FROM accessmanagement.Resource AS R 
                 WHERE resourceRegistryId = @resourceregistryid
             ), insertAction AS (

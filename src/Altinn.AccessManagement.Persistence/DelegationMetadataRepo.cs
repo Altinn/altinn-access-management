@@ -242,7 +242,7 @@ namespace Altinn.AccessManagement.Persistence
             var param = new Dictionary<string, object>
             {
                 { "delegationChangeType", delegationChange.DelegationChangeType },
-                { "altinnAppId", delegationChange.ResourceId },
+                { "resourceregistryid", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId },
                 { "coveredByPartyId", delegationChange.CoveredByPartyId },

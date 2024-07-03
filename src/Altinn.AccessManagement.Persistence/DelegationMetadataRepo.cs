@@ -206,7 +206,7 @@ namespace Altinn.AccessManagement.Persistence
 
             var param = new Dictionary<string, object>
             {
-                { "delegationChangeType", delegationChange.DelegationChangeType },
+                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
                 { "altinnAppId", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId },
@@ -241,7 +241,7 @@ namespace Altinn.AccessManagement.Persistence
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             var param = new Dictionary<string, object>
             {
-                { "delegationChangeType", delegationChange.DelegationChangeType },
+                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
                 { "resourceregistryid", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId },

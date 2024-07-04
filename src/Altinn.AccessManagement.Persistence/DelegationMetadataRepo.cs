@@ -199,14 +199,28 @@ namespace Altinn.AccessManagement.Persistence
 
             return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
         }
-
+        private string TranslateChangeType(DelegationChangeType type)
+        {
+            switch (type)
+            {
+                case DelegationChangeType.Grant:
+                    return "grant";
+                case DelegationChangeType.Revoke:
+                    return "revoke";
+                case DelegationChangeType.RevokeLast:
+                    return "revoke_last";
+                case DelegationChangeType.Undefined:
+                default:
+                    return type.ToString().ToLower();
+            }
+        }
         private async Task<DelegationChange> InsertAppDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
             var param = new Dictionary<string, object>
             {
-                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
+                { "delegationChangeType", TranslateChangeType(delegationChange.DelegationChangeType) },
                 { "altinnAppId", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId },
@@ -219,7 +233,7 @@ namespace Altinn.AccessManagement.Persistence
             string query =
             /*strpsql*/"""
             INSERT INTO delegation.delegationChanges(delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId)
-            VALUES (@delegationChangeType, @altinnAppId, @offeredByPartyId, @coveredByUserId, @coveredByPartyId, @performedByUserId, @blobStoragePolicyPath, @blobStorageVersionId)
+            VALUES (@delegationChangeType::delegation.delegationchangetype, @altinnAppId, @offeredByPartyId, @coveredByUserId, @coveredByPartyId, @performedByUserId, @blobStoragePolicyPath, @blobStorageVersionId)
             RETURNING *;
             """;
 
@@ -241,7 +255,7 @@ namespace Altinn.AccessManagement.Persistence
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
             var param = new Dictionary<string, object>
             {
-                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
+                { "delegationChangeType", TranslateChangeType(delegationChange.DelegationChangeType) },
                 { "resourceregistryid", delegationChange.ResourceId },
                 { "offeredByPartyId", delegationChange.OfferedByPartyId },
                 { "coveredByUserId", delegationChange.CoveredByUserId },
@@ -257,7 +271,7 @@ namespace Altinn.AccessManagement.Persistence
             /*strpsql*/"""    
             WITH insertRow AS (
                 SELECT 
-                @delegationChangeType AS delegationChangeType, 
+                @delegationChangeType::delegation.delegationchangetype AS delegationChangeType, 
                 R.resourceId, 
                 @offeredByPartyId AS offeredByPartyId, 
                 @coveredByUserId AS coveredByUserId, 

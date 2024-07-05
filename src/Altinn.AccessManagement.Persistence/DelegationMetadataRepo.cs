@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Persistence.Extensions;
 using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Persistence
 {
@@ -19,54 +20,70 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
+        private readonly NpgsqlDataSource _conn;
         private readonly string _connectionString;
         private readonly string defaultColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId, created";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>
+        /// <param name="conn">PostgreSQL datasource connection</param>
         /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
-        public DelegationMetadataRepo(IOptions<PostgreSQLSettings> config)
+        public DelegationMetadataRepo(NpgsqlDataSource conn, IOptions<PostgreSQLSettings> config)
         {
             var bld = new NpgsqlConnectionStringBuilder(string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd));
             bld.AutoPrepareMinUsages = 2;
             bld.MaxAutoPrepare = 50;
             _connectionString = bld.ConnectionString;
+            _conn = conn;
         }
 
         /// <inheritdoc/>
         public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+            
+            if (coveredByUserId == null && coveredByPartyId == null)
+            {
+                return await Task.FromResult(new List<DelegationChange>());
+            }
 
-            var param = new Dictionary<string, object>();
-            param.Add("altinnAppId", altinnAppId);
-            param.Add("offeredByPartyId", offeredByPartyId);
-
-            string query = 
-            /*strpsql*/$"""
-            SELECT {defaultColumns}
-            FROM delegation.delegationChanges
-            WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId
-            """;
-
+            string query = string.Empty;
             if (coveredByPartyId != null)
             {
-                query += " AND coveredByPartyId = @coveredByPartyId";
-                param.Add("coveredByPartyId", coveredByPartyId);
+                query = /*strpsql*/@"
+                    SELECT {defaultColumns}
+                    FROM delegation.delegationChanges
+                    WHERE altinnAppId = @altinnAppId
+                        AND offeredByPartyId = @offeredByPartyId
+                        AND coveredByPartyId = @coveredByPartyId
+                ";
             }
 
             if (coveredByUserId != null)
             {
-                query += " AND coveredByUserId = @coveredByUserId";
-                param.Add("coveredByUserId", coveredByUserId);
+                query = /*strpsql*/@"
+                    SELECT {defaultColumns}
+                    FROM delegation.delegationChanges
+                    WHERE altinnAppId = @altinnAppId
+                        AND offeredByPartyId = @offeredByPartyId
+                        AND coveredByUserId = @coveredByUserId
+                ";
             }
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("altinnAppId", NpgsqlDbType.Text, altinnAppId);
+                cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, offeredByPartyId);
+                cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
+                cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
+
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -204,30 +221,31 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var param = new Dictionary<string, object>
-            {
-                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
-                { "altinnAppId", delegationChange.ResourceId },
-                { "offeredByPartyId", delegationChange.OfferedByPartyId },
-                { "coveredByUserId", delegationChange.CoveredByUserId },
-                { "coveredByPartyId", delegationChange.CoveredByPartyId },
-                { "performedByUserId", delegationChange.PerformedByUserId },
-                { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
-                { "blobStorageVersionId", delegationChange.BlobStorageVersionId }
-            };
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             INSERT INTO delegation.delegationChanges(delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId)
             VALUES (@delegationChangeType, @altinnAppId, @offeredByPartyId, @coveredByUserId, @coveredByPartyId, @performedByUserId, @blobStoragePolicyPath, @blobStorageVersionId)
             RETURNING *;
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res.FirstOrDefault();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("delegationChangeType", delegationChange.DelegationChangeType);
+                cmd.Parameters.AddWithValue("altinnAppId", NpgsqlDbType.Text, delegationChange.ResourceId);
+                cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, delegationChange.OfferedByPartyId);
+                cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
+                cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
+                cmd.Parameters.AddWithValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
+                cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
+                cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
+
+                using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                if (reader.Read())
+                {
+                    return await GetAppDelegationChange(reader);
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
@@ -239,26 +257,13 @@ namespace Altinn.AccessManagement.Persistence
         private async Task<DelegationChange> InsertResourceRegistryDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
-            var param = new Dictionary<string, object>
-            {
-                { "delegationChangeType", delegationChange.DelegationChangeType.ToString().ToLower() },
-                { "resourceregistryid", delegationChange.ResourceId },
-                { "offeredByPartyId", delegationChange.OfferedByPartyId },
-                { "coveredByUserId", delegationChange.CoveredByUserId },
-                { "coveredByPartyId", delegationChange.CoveredByPartyId },
-                { "performedByUserId", delegationChange.PerformedByUserId },
-                { "performedByPartyId", delegationChange.PerformedByPartyId },
-                { "blobStoragePolicyPath", delegationChange.BlobStoragePolicyPath },
-                { "blobStorageVersionId", delegationChange.BlobStorageVersionId },
-                { "delegatedTime", delegationChange.Created.HasValue ? delegationChange.Created.Value : DateTime.UtcNow }
-            };
 
-            string query =
-            /*strpsql*/"""    
+            string query = /*strpsql*/@"
             WITH insertRow AS (
                 SELECT 
                 @delegationChangeType AS delegationChangeType, 
-                R.resourceId, 
+                R.resourceId,
+                R.resourceType,
                 @offeredByPartyId AS offeredByPartyId, 
                 @coveredByUserId AS coveredByUserId, 
                 @coveredByPartyId AS coveredByPartyId, 
@@ -270,19 +275,50 @@ namespace Altinn.AccessManagement.Persistence
                 FROM accessmanagement.Resource AS R 
                 WHERE resourceRegistryId = @resourceregistryid
             ), insertAction AS (
-            INSERT INTO delegation.ResourceRegistryDelegationChanges
-            (delegationChangeType, resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, created)
-            SELECT delegationChangeType, resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, delegatedTime
-            FROM insertRow
+                INSERT INTO delegation.ResourceRegistryDelegationChanges
+                    (delegationChangeType, resourceId_fk, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, created)
+                SELECT delegationChangeType, resourceId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, performedByPartyId, blobStoragePolicyPath, blobStorageVersionId, delegatedTime
+                FROM insertRow
+                RETURNING *
             )
-            SELECT * FROM insertRow
-            """;
+            SELECT
+                ins.resourceRegistryDelegationChangeId,
+                ins.delegationChangeType,
+                @resourceregistryid AS resourceregistryid,
+                insertRow.resourceType,
+                ins.offeredByPartyId,
+                ins.coveredByUserId,
+                ins.coveredByPartyId,
+                ins.performedByUserId,
+                ins.performedByPartyId,
+                ins.blobStoragePolicyPath,
+                ins.blobStorageVersionId,	
+                ins.created
+              FROM insertAction AS ins
+              JOIN insertRow ON ins.resourceId_fk = insertRow.resourceid;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res.FirstOrDefault();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("delegationChangeType", delegationChange.DelegationChangeType);
+                cmd.Parameters.AddWithValue("resourceregistryid", delegationChange.ResourceId);
+                cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, delegationChange.OfferedByPartyId);
+                cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
+                cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
+                cmd.Parameters.AddWithNullableValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
+                cmd.Parameters.AddWithNullableValue("performedByPartyId", NpgsqlDbType.Integer, delegationChange.PerformedByPartyId);
+                cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
+                cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
+                cmd.Parameters.AddWithValue("delegatedTime", delegationChange.Created.HasValue ? delegationChange.Created.Value : DateTime.UtcNow);
+
+                using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                if (reader.Read())
+                {
+                    return await GetResourceRegistryDelegationChange(reader);
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
@@ -772,6 +808,68 @@ namespace Altinn.AccessManagement.Persistence
             {
                 activity?.StopWithError(ex);
                 throw;
+            }
+        }
+
+        private static async ValueTask<DelegationChange> GetDelegationChange(NpgsqlDataReader reader)
+        {
+            return await reader.GetFieldValueAsync<int?>("resourceregistrydelegationchangeid") > 0
+                ? await GetResourceRegistryDelegationChange(reader)
+                : await GetAppDelegationChange(reader);
+        }
+
+        private static async ValueTask<DelegationChange> GetAppDelegationChange(NpgsqlDataReader reader)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            try
+            {
+                return new DelegationChange
+                {
+                    DelegationChangeId = await reader.GetFieldValueAsync<int>("delegationchangeid"),
+                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+                    ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
+                    ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
+                    OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
+                    CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
+                    CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
+                    PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
+                    BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
+                    BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
+                    Created = await reader.GetFieldValueAsync<DateTime>("created")
+                };
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(ex));
+            }
+        }
+
+        private static async ValueTask<DelegationChange> GetResourceRegistryDelegationChange(NpgsqlDataReader reader)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            try
+            {
+                return new DelegationChange
+                {
+                    ResourceRegistryDelegationChangeId = await reader.GetFieldValueAsync<int>("resourceregistrydelegationchangeid"),
+                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+                    ResourceId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
+                    ResourceType = await reader.GetFieldValueAsync<string>("resourcetype"),
+                    OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
+                    CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
+                    CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
+                    PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
+                    PerformedByPartyId = await reader.GetFieldValueAsync<int?>("performedbypartyid"),
+                    BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
+                    BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
+                    Created = await reader.GetFieldValueAsync<DateTime>("created")
+                };
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(ex));
             }
         }
     }

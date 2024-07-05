@@ -628,7 +628,7 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.AddWithValue("coveredByUserId",NpgsqlDbType.Integer, coveredByUserId);
+                cmd.Parameters.AddWithValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
                 cmd.Parameters.AddWithNullableValue("resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceTypes != null ? resourceTypes.Select(t => t.ToString().ToLower()).ToList() : null);
                 cmd.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);

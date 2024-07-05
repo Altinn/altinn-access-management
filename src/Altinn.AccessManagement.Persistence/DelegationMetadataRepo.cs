@@ -37,8 +37,8 @@ namespace Altinn.AccessManagement.Persistence
             
             if (coveredByUserId == null && coveredByPartyId == null)
             {
-                activity?.StopWithError(new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
-                throw new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
+                activity?.StopWithError(new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
+                throw new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
             }
 
             string query = string.Empty;
@@ -101,8 +101,8 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyIds == null && coveredByUserIds == null)
             {
-                activity?.StopWithError(new ArgumentNullException($"Both params: {nameof(coveredByUserIds)}, {nameof(coveredByPartyIds)} cannot be null."));
-                throw new ArgumentNullException($"Both params: {nameof(coveredByUserIds)}, {nameof(coveredByPartyIds)} cannot be null.");
+                activity?.StopWithError(new ArgumentException($"Both params: {nameof(coveredByUserIds)}, {nameof(coveredByPartyIds)} cannot be null."));
+                throw new ArgumentException($"Both params: {nameof(coveredByUserIds)}, {nameof(coveredByPartyIds)} cannot be null.");
             }
 
             string query = string.Empty;
@@ -187,8 +187,8 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyId == null && coveredByUserId == null)
             {
-                activity?.StopWithError(new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
-                throw new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
+                activity?.StopWithError(new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
+                throw new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
             }
 
             string query = string.Empty;
@@ -376,8 +376,8 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyId == null && coveredByUserId == null)
             {
-                activity?.StopWithError(new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
-                throw new ArgumentNullException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
+                activity?.StopWithError(new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
+                throw new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null.");
             }
 
             string query = string.Empty;

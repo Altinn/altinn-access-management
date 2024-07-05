@@ -47,7 +47,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("resourcetype", NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
 
                 using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                if (reader.Read())
+                if (await reader.ReadAsync(cancellationToken))
                 {
                     return await GetAccessManagementResource(reader);
                 }
@@ -72,7 +72,7 @@ namespace Altinn.AccessManagement.Persistence
                     ResourceRegistryId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
                     ResourceType = Enum.TryParse(await reader.GetFieldValueAsync<string>("resourcetype"), out ResourceType resourceType) ? resourceType : ResourceType.Default,
                     Created = await reader.GetFieldValueAsync<DateTime>("created"),
-                    Modified = reader.GetFieldValue<DateTime>("modified")
+                    Modified = await reader.GetFieldValueAsync<DateTime>("modified")
                 };
             }
             catch (Exception ex)

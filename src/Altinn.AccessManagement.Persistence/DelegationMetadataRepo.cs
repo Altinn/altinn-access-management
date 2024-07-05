@@ -7,8 +7,6 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
-using Dapper;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -21,20 +19,14 @@ namespace Altinn.AccessManagement.Persistence
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
         private readonly NpgsqlDataSource _conn;
-        private readonly string _connectionString;
-        private readonly string defaultColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId, created";
+        private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId, performedByUserId, blobStoragePolicyPath, blobStorageVersionId, created";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>
         /// <param name="conn">PostgreSQL datasource connection</param>
-        /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
-        public DelegationMetadataRepo(NpgsqlDataSource conn, IOptions<PostgreSQLSettings> config)
+        public DelegationMetadataRepo(NpgsqlDataSource conn)
         {
-            var bld = new NpgsqlConnectionStringBuilder(string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd));
-            bld.AutoPrepareMinUsages = 2;
-            bld.MaxAutoPrepare = 50;
-            _connectionString = bld.ConnectionString;
             _conn = conn;
         }
 
@@ -53,22 +45,22 @@ namespace Altinn.AccessManagement.Persistence
             if (coveredByPartyId != null)
             {
                 query = /*strpsql*/@$"
-                    SELECT {defaultColumns}
-                    FROM delegation.delegationChanges
-                    WHERE altinnAppId = @altinnAppId
-                        AND offeredByPartyId = @offeredByPartyId
-                        AND coveredByPartyId = @coveredByPartyId
+                SELECT {defaultAppColumns}
+                FROM delegation.delegationChanges
+                WHERE altinnAppId = @altinnAppId
+                    AND offeredByPartyId = @offeredByPartyId
+                    AND coveredByPartyId = @coveredByPartyId
                 ";
             }
             
             if (coveredByUserId != null)
             {
                 query = /*strpsql*/@$"
-                    SELECT {defaultColumns}
-                    FROM delegation.delegationChanges
-                    WHERE altinnAppId = @altinnAppId
-                        AND offeredByPartyId = @offeredByPartyId
-                        AND coveredByUserId = @coveredByUserId
+                SELECT {defaultAppColumns}
+                FROM delegation.delegationChanges
+                WHERE altinnAppId = @altinnAppId
+                    AND offeredByPartyId = @offeredByPartyId
+                    AND coveredByUserId = @coveredByUserId
                 ";
             }
 
@@ -79,8 +71,6 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, offeredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
-
-                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetAppDelegationChange)
@@ -127,9 +117,9 @@ namespace Altinn.AccessManagement.Persistence
                         AND (coveredByPartyId = ANY (@coveredByPartyIds))
                     GROUP BY altinnAppId, offeredByPartyId, coveredByPartyId, coveredByUserId
                 )
-                SELECT {defaultColumns}
+                SELECT {defaultAppColumns}
                 FROM delegation.delegationchanges
-                INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
+                    INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
                 ";
             }
             else if (coveredByUserIds?.Count != 0)
@@ -143,9 +133,9 @@ namespace Altinn.AccessManagement.Persistence
                         AND (coveredByUserId = ANY (@coveredByUserIds))
                     GROUP BY altinnAppId, offeredByPartyId, coveredByPartyId, coveredByUserId
                 )
-                SELECT {defaultColumns}
+                SELECT {defaultAppColumns}
                 FROM delegation.delegationchanges
-                INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
+                    INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
                 ";
             }
 
@@ -156,8 +146,6 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
                 cmd.Parameters.AddWithNullableValue("coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
-
-                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetAppDelegationChange)
@@ -207,7 +195,7 @@ namespace Altinn.AccessManagement.Persistence
             if (coveredByPartyId != null)
             {
                 query = /*strpsql*/@$"
-                SELECT {defaultColumns}
+                SELECT {defaultAppColumns}
                 FROM delegation.delegationChanges
                 WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId
                     AND coveredByPartyId = @coveredByPartyId
@@ -218,7 +206,7 @@ namespace Altinn.AccessManagement.Persistence
             if (coveredByUserId != null)
             {
                 query = /*strpsql*/@$"
-                SELECT {defaultColumns}
+                SELECT {defaultAppColumns}
                 FROM delegation.delegationChanges
                 WHERE altinnAppId = @altinnAppId AND offeredByPartyId = @offeredByPartyId
                     AND coveredByUserId = @coveredByUserId
@@ -304,17 +292,17 @@ namespace Altinn.AccessManagement.Persistence
             string query = /*strpsql*/@"
             WITH insertRow AS (
                 SELECT 
-                @delegationChangeType AS delegationChangeType, 
-                R.resourceId,
-                R.resourceType,
-                @offeredByPartyId AS offeredByPartyId, 
-                @coveredByUserId AS coveredByUserId, 
-                @coveredByPartyId AS coveredByPartyId, 
-                @performedByUserId AS performedByUserId, 
-                @performedByPartyId AS performedByPartyId, 
-                @blobStoragePolicyPath AS blobStoragePolicyPath, 
-                @blobStorageVersionId AS blobStorageVersionId, 
-                @delegatedTime AS delegatedTime
+                    @delegationChangeType AS delegationChangeType, 
+                    R.resourceId,
+                    R.resourceType,
+                    @offeredByPartyId AS offeredByPartyId, 
+                    @coveredByUserId AS coveredByUserId, 
+                    @coveredByPartyId AS coveredByPartyId, 
+                    @performedByUserId AS performedByUserId, 
+                    @performedByPartyId AS performedByPartyId, 
+                    @blobStoragePolicyPath AS blobStoragePolicyPath, 
+                    @blobStorageVersionId AS blobStorageVersionId, 
+                    @delegatedTime AS delegatedTime
                 FROM accessmanagement.Resource AS R 
                 WHERE resourceRegistryId = @resourceregistryid
             ), insertAction AS (
@@ -398,7 +386,7 @@ namespace Altinn.AccessManagement.Persistence
                 query = /*strpsql*/@"    
                 SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
                 FROM delegation.ResourceRegistryDelegationChanges AS rr
-                JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid
+                    JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid
                 WHERE res.resourceRegistryId = @resourceRegistryId AND offeredByPartyId = @offeredByPartyId
                     AND coveredByUserId = @coveredByUserId
                 ORDER BY resourceRegistryDelegationChangeId DESC LIMIT 1
@@ -410,7 +398,7 @@ namespace Altinn.AccessManagement.Persistence
                 query = /*strpsql*/@"    
                 SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
                 FROM delegation.ResourceRegistryDelegationChanges AS rr
-                JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid
+                    JOIN accessmanagement.Resource AS res ON rr.resourceId_fk = res.resourceid
                 WHERE res.resourceRegistryId = @resourceRegistryId AND offeredByPartyId = @offeredByPartyId
                     AND coveredByPartyId = @coveredByPartyId
                 ORDER BY resourceRegistryDelegationChangeId DESC LIMIT 1
@@ -468,46 +456,46 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var param = new Dictionary<string, object>();
-            param.Add("offeredByPartyId", offeredByPartyId);
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             WITH lastChange AS (
-            SELECT MAX(DC.resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
-            FROM accessmanagement.Resource AS R
-            INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON R.resourceid = DC.resourceid_fk
-            WHERE DC.offeredByPartyId = @offeredByPartyId 
-            """;
+                SELECT MAX(DC.resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
+                FROM accessmanagement.Resource AS R
+                INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON R.resourceid = DC.resourceid_fk
+                WHERE DC.offeredByPartyId = @offeredByPartyId 
+            ";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += " AND resourceRegistryId = ANY (@resourceRegistryIds) ";
-                param.Add("resourceRegistryIds", resourceRegistryIds);
+                query += /*strpsql*/@"
+                AND resourceRegistryId = ANY (@resourceRegistryIds)";
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += " AND resourceType = ANY (@resourceTypes) ";
-                param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
+                query += /*strpsql*/@"
+                AND resourceType = ANY (@resourceTypes)";
             }
 
-            query += " GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType) ";
-
-            query +=
-            /*strpsql*/"""
+            query += /*strpsql*/@"
+                GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType
+            )
             SELECT
-            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
+                change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
-            INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
+                INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, offeredByPartyId);
+                cmd.Parameters.AddWithNullableValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
+                cmd.Parameters.AddWithNullableValue("resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceTypes != null ? resourceTypes.Select(t => t.ToString().ToLower()).ToList() : null);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetResourceRegistryDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -521,61 +509,61 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var param = new Dictionary<string, object>();
-            param.Add("coveredByPartyIds", coveredByPartyIds);
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             WITH res AS (
-            SELECT resourceId, resourceRegistryId, resourceType
-            FROM accessmanagement.Resource
-            WHERE 1=1
-            """;
+                SELECT resourceId, resourceRegistryId, resourceType
+                FROM accessmanagement.Resource
+                WHERE 1=1
+            ";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += " AND resourceRegistryId = ANY (@resourceRegistryIds)";
-                param.Add("resourceRegistryIds", resourceRegistryIds);
+                query += /*strpsql*/@"
+                AND resourceRegistryId = ANY (@resourceRegistryIds)";
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += " AND resourceType = ANY (@resourceTypes)";
-                param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
+                query += /*strpsql*/@"
+                AND resourceType = ANY (@resourceTypes)";
             }
 
-            query +=
-            /*strpsql*/"""
+            query += /*strpsql*/@"
             ), 
             active AS (
-            SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
-            FROM delegation.ResourceRegistryDelegationChanges AS rrdc
-            INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
-            WHERE coveredByPartyId = ANY (@coveredByPartyIds)
-            """;
+                SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
+                FROM delegation.ResourceRegistryDelegationChanges AS rrdc
+                    INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
+                WHERE coveredByPartyId = ANY (@coveredByPartyIds)
+            ";
             
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += " AND offeredByPartyId = ANY (@offeredByPartyIds)";
-                param.Add("offeredByPartyIds", offeredByPartyIds);
+                query += /*strpsql*/@"
+                AND offeredByPartyId = ANY (@offeredByPartyIds)";
             }
-                
-            query +=
-            /*strpsql*/"""
-            GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId 
+
+            query += /*strpsql*/@"
+                GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId 
             )
             SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
-            INNER JOIN res ON rr.resourceId_fk = res.resourceid
-            INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
+                INNER JOIN res ON rr.resourceId_fk = res.resourceid
+                INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
+                cmd.Parameters.AddWithNullableValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
+                cmd.Parameters.AddWithNullableValue("resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceTypes != null ? resourceTypes.Select(t => t.ToString().ToLower()).ToList() : null);
+                cmd.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetResourceRegistryDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -594,60 +582,60 @@ namespace Altinn.AccessManagement.Persistence
                 throw new ArgumentException("CoveredByUserId is required");
             }
 
-            var param = new Dictionary<string, object>();
-            param.Add("coveredByUserId", coveredByUserId);
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             WITH res AS (
-            SELECT resourceId, resourceRegistryId, resourceType
-            FROM accessmanagement.Resource
-            WHERE 1=1
-            """;
+                SELECT resourceId, resourceRegistryId, resourceType
+                FROM accessmanagement.Resource
+                WHERE 1=1
+            ";
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += " AND resourceRegistryId = ANY (@resourceRegistryIds)";
-                param.Add("resourceRegistryIds", resourceRegistryIds);
+                query += /*strpsql*/@"
+                AND resourceRegistryId = ANY (@resourceRegistryIds)";
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += " AND resourceType = ANY (@resourceTypes)";
-                param.Add("resourceTypes", resourceTypes.Select(t => t.ToString().ToLower()).ToList());
+                query += /*strpsql*/@"
+                AND resourceType = ANY (@resourceTypes)";
             }
 
-            query +=
-            /*strpsql*/"""
+            query += /*strpsql*/@"
             ), 
             active AS (
-            SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
-            FROM delegation.ResourceRegistryDelegationChanges AS rrdc
-            INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
-            WHERE coveredByUserId = @coveredByUserId
-            """;
+                SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
+                FROM delegation.ResourceRegistryDelegationChanges AS rrdc
+                    INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
+                WHERE coveredByUserId = @coveredByUserId
+            ";
 
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += " AND offeredByPartyId = ANY (@offeredByPartyIds)";
-                param.Add("offeredByPartyIds", offeredByPartyIds);
+                query += /*strpsql*/" AND offeredByPartyId = ANY (@offeredByPartyIds)";
             }
 
-            query +=
-            /*strpsql*/"""
-            GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId )
+            query += /*strpsql*/@"
+                GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId
+            )
             SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceid, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
-            INNER JOIN res ON rr.resourceId_fk = res.resourceid
-            INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
+                INNER JOIN res ON rr.resourceId_fk = res.resourceid
+                INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("coveredByUserId",NpgsqlDbType.Integer, coveredByUserId);
+                cmd.Parameters.AddWithNullableValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
+                cmd.Parameters.AddWithNullableValue("resourceTypes", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceTypes != null ? resourceTypes.Select(t => t.ToString().ToLower()).ToList() : null);
+                cmd.Parameters.AddWithNullableValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetResourceRegistryDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -665,48 +653,49 @@ namespace Altinn.AccessManagement.Persistence
                 throw new ArgumentException("ResourceIds is required");
             }
 
-            var param = new Dictionary<string, object>();
-            param.Add("resourceRegistryIds", resourceIds);
-            param.Add("resourceType", resourceType.ToString().ToLower());
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             WITH lastChange AS (
-            SELECT MAX(resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
-            FROM accessmanagement.Resource AS R
-            INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid
-            WHERE R.resourceType = @resourceType AND R.resourceRegistryId = ANY (@resourceRegistryIds)
-            """;
+                SELECT MAX(resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
+                FROM accessmanagement.Resource AS R
+                    INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid
+                WHERE R.resourceType = @resourceType AND R.resourceRegistryId = ANY (@resourceRegistryIds)
+            ";
 
             if (offeredByPartyId > 0)
             {
-                query += " AND offeredByPartyId = @offeredByPartyId";
-                param.Add("offeredByPartyId", offeredByPartyId);
+                query += /*strpsql*/@"
+                AND offeredByPartyId = @offeredByPartyId";
             }
 
             if (coveredByPartyId > 0) 
             {
-                query += " AND coveredByPartyId = @coveredByPartyId";
-                param.Add("coveredByPartyId", coveredByPartyId);
+                query += /*strpsql*/@"
+                AND coveredByPartyId = @coveredByPartyId";
             }
 
-            query +=
-            /*strpsql*/"""
-            GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType )
+            query += /*strpsql*/@"
+                GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType
+            )
             SELECT
-            change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType,
-            change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId,
-            change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
+                change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceid, lastChange.resourceType,
+                change.offeredByPartyId, change.coveredByUserId change.coveredByPartyId, change.performedByUserId change.performedByPartyId,
+                change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
-            INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid
+                INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
+                cmd.Parameters.AddWithValue("resourceType", NpgsqlDbType.Text, resourceType.ToString().ToLower());
+                cmd.Parameters.AddWithNullableValue("offeredByPartyId", NpgsqlDbType.Integer, offeredByPartyId);
+                cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetResourceRegistryDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -720,11 +709,7 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var param = new Dictionary<string, object>();
-            param.Add("offeredByPartyIds", offeredByPartyIds);
-
-            const string query =
-            /*strpsql*/"""
+            const string query = /*strpsql*/@"
             WITH resources AS (
                 SELECT resourceId, resourceRegistryId, resourceType
                 FROM accessmanagement.Resource
@@ -743,50 +728,53 @@ namespace Altinn.AccessManagement.Persistence
                 GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
             )
             SELECT
-            resourceRegistryDelegationChangeId,
-            null AS delegationChangeId,
-            delegationChangeType,
-            resources.resourceRegistryId as resourceid,
-            resources.resourceType,
-            null AS altinnAppId,
-            offeredByPartyId,
-            coveredByUserId,
-            coveredByPartyId,
-            performedByUserId,
-            performedByPartyId,
-            blobStoragePolicyPath,
-            blobStorageVersionId,
-            created
+                resourceRegistryDelegationChangeId,
+                null AS delegationChangeId,
+                delegationChangeType,
+                resources.resourceRegistryId as resourceid,
+                resources.resourceType,
+                null AS altinnAppId,
+                offeredByPartyId,
+                coveredByUserId,
+                coveredByPartyId,
+                performedByUserId,
+                performedByPartyId,
+                blobStoragePolicyPath,
+                blobStorageVersionId,
+                created
             FROM delegation.ResourceRegistryDelegationChanges
-            INNER JOIN resources ON resourceId_fk = resources.resourceid
-            INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+                INNER JOIN resources ON resourceId_fk = resources.resourceid
+                INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
             WHERE delegationchangetype != 'revoke_last'
             UNION ALL
             SELECT
-            null AS resourceRegistryDelegationChangeId,
-            delegationChangeId,
-            delegationChangeType,
-            null AS resourceRegistryId,
-            null AS resourceType,
-            altinnAppId,
-            offeredByPartyId,
-            coveredByUserId,
-            coveredByPartyId,
-            performedByUserId,
-            null AS performedByPartyId,
-            blobStoragePolicyPath,
-            blobStorageVersionId,
-            created
+                null AS resourceRegistryDelegationChangeId,
+                delegationChangeId,
+                delegationChangeType,
+                null AS resourceRegistryId,
+                null AS resourceType,
+                altinnAppId,
+                offeredByPartyId,
+                coveredByUserId,
+                coveredByPartyId,
+                performedByUserId,
+                null AS performedByPartyId,
+                blobStoragePolicyPath,
+                blobStorageVersionId,
+                created
             FROM delegation.delegationchanges
-            INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+                INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, offeredByPartyIds);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -805,12 +793,7 @@ namespace Altinn.AccessManagement.Persistence
                 return new List<DelegationChange>();
             }
 
-            var param = new Dictionary<string, object>();
-            param.Add("coveredByUserIds", coveredByUserIds);
-            param.Add("coveredByPartyIds", coveredByPartyIds);
-
-            const string query =
-            /*strpsql*/"""
+            const string query = /*strpsql*/@"
             WITH resources AS (
                 SELECT resourceId, resourceRegistryId, resourceType
                 FROM accessmanagement.Resource
@@ -829,50 +812,54 @@ namespace Altinn.AccessManagement.Persistence
                 GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
             )
             SELECT
-            resourceRegistryDelegationChangeId,
-            null AS delegationChangeId,
-            delegationChangeType,
-            resources.resourceRegistryId as resourceid,
-            resources.resourceType,
-            null AS altinnAppId,
-            offeredByPartyId,
-            coveredByUserId,
-            coveredByPartyId,
-            performedByUserId,
-            performedByPartyId,
-            blobStoragePolicyPath,
-            blobStorageVersionId,
-            created
+                resourceRegistryDelegationChangeId,
+                null AS delegationChangeId,
+                delegationChangeType,
+                resources.resourceRegistryId as resourceid,
+                resources.resourceType,
+                null AS altinnAppId,
+                offeredByPartyId,
+                coveredByUserId,
+                coveredByPartyId,
+                performedByUserId,
+                performedByPartyId,
+                blobStoragePolicyPath,
+                blobStorageVersionId,
+                created
             FROM delegation.ResourceRegistryDelegationChanges
-            INNER JOIN resources ON resourceId_fk = resources.resourceid
-            INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+                INNER JOIN resources ON resourceId_fk = resources.resourceid
+                INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
             WHERE delegationchangetype != 'revoke_last'
             UNION ALL
             SELECT
-            null AS resourceRegistryDelegationChangeId,
-            delegationChangeId,
-            delegationChangeType,
-            null AS resourceRegistryId as resourceid,
-            null AS resourceType,
-            altinnAppId,
-            offeredByPartyId,
-            coveredByUserId,
-            coveredByPartyId,
-            performedByUserId,
-            null AS performedByPartyId,
-            blobStoragePolicyPath,
-            blobStorageVersionId,
-            created
+                null AS resourceRegistryDelegationChangeId,
+                delegationChangeId,
+                delegationChangeType,
+                null AS resourceRegistryId as resourceid,
+                null AS resourceType,
+                altinnAppId,
+                offeredByPartyId,
+                coveredByUserId,
+                coveredByPartyId,
+                performedByUserId,
+                null AS performedByPartyId,
+                blobStoragePolicyPath,
+                blobStorageVersionId,
+                created
             FROM delegation.delegationchanges
-            INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
+                INNER JOIN latestAppChanges ON delegationchangeid = latestAppChanges.latestId
             WHERE delegationchangetype != 'revoke_last'
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<DelegationChange>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res == null ? null : res.ToList();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithNullableValue("coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
+                cmd.Parameters.AddWithNullableValue("coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetDelegationChange)
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ABAC.Xacml;
@@ -92,7 +93,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, null, "app", "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, null, "app", "50001337", 20001337, null, null, UuidType.NotSpecified);
             }
             catch (System.ArgumentException argEx)
             {
@@ -123,7 +124,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, "org", string.Empty, "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.AltinnAppId, null, "org", string.Empty, "50001337", 20001337, null, null, UuidType.NotSpecified);
             }
             catch (System.ArgumentException argEx)
             {
@@ -154,7 +155,7 @@ namespace Altinn.AccessManagement.Tests.Helpers
             string actual = string.Empty;
             try
             {
-                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.ResourceRegistry, string.Empty, null, null, "50001337", 20001337, null);
+                PolicyHelper.GetDelegationPolicyPath(ResourceAttributeMatchType.ResourceRegistry, string.Empty, null, null, "50001337", 20001337, null, null, UuidType.NotSpecified);
             }
             catch (System.ArgumentException argEx)
             {

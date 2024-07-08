@@ -5,7 +5,7 @@
   "traceId": "00-28b6bcd340952ec6500b24cdc8498b6a-60b6ed58b49f5af6-00",
   "errors": {
     "To": [
-      "A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single urn:altinn:organizationnumber or urn:altinn:enterpriseuser:username attribute, or a combination of urn:altinn:person:identifier-no and urn:altinn:person:lastname attributes, or urn:altinn:person:username and urn:altinn:person:lastname attributes."
+      "A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single urn:altinn:organizationnumber or urn:altinn:enterpriseuser:username attribute, or a combination of urn:altinn:person:identifier-no and urn:altinn:person:lastname attributes, urn:altinn:person:username and urn:altinn:person:lastname attributes or urn:altinn:systemuser:uuid attribute."
     ]
   }
 }

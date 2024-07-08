@@ -1,10 +1,12 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Xacml;
 using Azure;
 using Azure.Storage.Blobs.Models;
@@ -136,7 +138,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
@@ -192,7 +194,7 @@ namespace Altinn.AccessManagement.Core.Services
                 try
                 {
                     // Check for a current delegation change from postgresql
-                    DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId);
+                    DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, toUuid, toUuidType);
 
                     XacmlPolicy existingDelegationPolicy = null;
                     if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
@@ -209,13 +211,14 @@ namespace Altinn.AccessManagement.Core.Services
                         {
                             if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                             {
-                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationRule(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
+                                (string coveredBy, string coveredByType) = PolicyHelper.GetCoveredByAndType(coveredByPartyId, coveredByUserId, toUuid, toUuidType);
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationRule(resourceId, offeredByPartyId, coveredBy, coveredByType, rule));
                             }
                         }
                     }
                     else
                     {
-                        delegationPolicy = PolicyHelper.BuildDelegationPolicy(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rules);
+                        delegationPolicy = PolicyHelper.BuildDelegationPolicy(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, toUuid, toUuidType, rules);
                     }
 
                     // Write delegation policy to blob storage
@@ -228,16 +231,25 @@ namespace Altinn.AccessManagement.Core.Services
                         return false;
                     }
 
+                    Guid? performedUuid = null;
+                    UuidType performedUuidType = UuidType.NotSpecified;
+
                     // Write delegation change to postgresql
                     DelegationChange change = new DelegationChange
                     {
                         DelegationChangeType = DelegationChangeType.Grant,
                         ResourceId = resourceId,
                         OfferedByPartyId = offeredByPartyId,
+                        FromUuid = fromUuid,
+                        FromUuidType = fromUuidType,
                         CoveredByPartyId = coveredByPartyId,
                         CoveredByUserId = coveredByUserId,
+                        ToUuid = toUuid,
+                        ToUuidType = toUuidType,
                         PerformedByUserId = delegatedByUserId,
                         PerformedByPartyId = delegatedByPartyId,
+                        PerformedByUuid = performedUuid,
+                        PerformedByUuidType = performedUuidType,
                         Created = delegatedDateTime,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId                        
@@ -291,9 +303,11 @@ namespace Altinn.AccessManagement.Core.Services
             try
             {
                 bool isAllRulesDeleted = false;
-                string coveredBy = DelegationHelper.GetCoveredByFromMatch(deleteRequest.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+                string coveredBy = DelegationHelper.GetCoveredByFromMatch(deleteRequest.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
                 string offeredBy = deleteRequest.PolicyMatch.OfferedByPartyId.ToString();
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
+
+                //TODO: Add logic to get current delegationChange from uuid if this is a sytemuser not having userid or partyid
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
 
                 XacmlPolicy existingDelegationPolicy = null;
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
@@ -387,7 +401,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
         {
-            string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+            string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
 
             if (!DelegationHelper.TryGetResourceFromAttributeMatch(policyToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string _, out string _))
             {
@@ -398,7 +412,7 @@ namespace Altinn.AccessManagement.Core.Services
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, coveredByUuid, coveredByUuidType);
             }
             catch (Exception ex)
             {
@@ -421,7 +435,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             try
             {
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
 
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
@@ -499,7 +513,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<List<Rule>> DeleteRulesInPolicy(RequestToDelete rulesToDelete)
         {
-            string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+            string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
 
             if (!DelegationHelper.TryGetResourceFromAttributeMatch(rulesToDelete.PolicyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string _, out string _))
             {
@@ -510,7 +524,7 @@ namespace Altinn.AccessManagement.Core.Services
             string policyPath;
             try
             {
-                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+                policyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, rulesToDelete.PolicyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, coveredByUuid, coveredByUuidType);
             }
             catch (Exception ex)
             {

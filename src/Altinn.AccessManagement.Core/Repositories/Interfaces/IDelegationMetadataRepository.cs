@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Repositories.Interfaces;
 
@@ -26,8 +27,10 @@ public interface IDelegationMetadataRepository
     /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
     /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy, if the entity is an organization</param>
     /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the entity is a user</param>
+    /// <param name="toUuid">The receiver uuid</param>
+    /// <param name="toUuidType">The type of uuid the reciver is</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default);
+    Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toUuidType, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all the delegation change records matching the filter values for a complete changelog

@@ -145,6 +145,11 @@ namespace Altinn.AccessManagement.Core.Constants
             /// Organization number
             /// </summary>
             public const string OrganizationId = "urn:altinn:organization:identifier-no";
+
+            /// <summary>
+            /// SystemUser uuid
+            /// </summary>
+            public const string SystemUserUuid = "urn:altinn:systemuser:uuid";
         }
 
         /// <summary>

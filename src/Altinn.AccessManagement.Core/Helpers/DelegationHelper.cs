@@ -2,8 +2,10 @@
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Resolvers;
+using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using static Altinn.AccessManagement.Core.Resolvers.Urn.Altinn;
@@ -54,9 +56,55 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetPartyIdFromAttributeMatch(List<AttributeMatch> match, out int partyid)
         {
             partyid = 0;
-            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)
+            AttributeMatch userIdAttribute = match?.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute);
+            if (userIdAttribute != null)
             {
-                return int.TryParse(match[0].Value, out partyid) && partyid != 0;
+                return int.TryParse(userIdAttribute.Value, out partyid) && partyid != 0;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the Uuid attribute value from a list of AttributeMatch models and specifies which type it finds by setting based on the id in the attribute match
+        /// </summary>
+        /// <returns>The true if party id is found as the single attribute in the collection</returns>
+        public static bool TryGetUuidFromAttributeMatch(List<AttributeMatch> match, out Guid uuid, out UuidType type)
+        {
+            uuid = Guid.Empty;
+            type = UuidType.NotSpecified;
+
+            if (match == null)
+            {
+                return false;
+            }
+
+            AttributeMatch currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid);
+            if (currentAttributeMatch != null)
+            {
+                type = UuidType.Person;
+                return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
+            }
+
+            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid);
+            if (currentAttributeMatch != null)
+            {
+                type = UuidType.Organization;
+                return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
+            }
+
+            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid);
+            if (currentAttributeMatch != null)
+            {
+                type = UuidType.SystemUser;
+                return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
+            }
+
+            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid);
+            if (currentAttributeMatch != null)
+            {
+                type = UuidType.EnterpriseUser;
+                return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
             }
 
             return false;
@@ -69,9 +117,10 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetUserIdFromAttributeMatch(List<AttributeMatch> match, out int userid)
         {
             userid = 0;
-            if (match != null && match.Count == 1 && match[0].Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)
+            AttributeMatch userIdAttribute = match?.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute);
+            if (userIdAttribute != null)
             {
-                return int.TryParse(match[0].Value, out userid) && userid != 0;
+                return int.TryParse(userIdAttribute.Value, out userid) && userid != 0;
             }
 
             return false;
@@ -176,6 +225,65 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Check if i given AttributeMatch list is in a list of defaultRights so it is valid for delegation to SystemUsers
+        /// </summary>
+        /// <param name="defaultRights">List of default rights to check if resource is included</param>
+        /// <param name="resource">The rights to delegate to check for existence in list of defaultRights</param>
+        /// <returns>true if all the rights is valid for in the given defaultRights list</returns>
+        public static bool CheckResourceIsInListOfDefaultRights(List<DefaultRight> defaultRights, List<AttributeMatch> resource)
+        {
+            bool valid = false;
+
+            foreach (DefaultRight defaultRight in defaultRights)
+            {
+                if (AttributeMatchListAreEqual(defaultRight.Resources, resource))
+                {
+                    valid = true;
+                    break;
+                }
+            }
+
+            return valid;
+        }
+
+        /// <summary>
+        /// Given two List&gt;AttributeMatch&lt; checks if the content is the same in any order
+        /// </summary>
+        /// <param name="a">The first list</param>
+        /// <param name="b">The second list</param>
+        /// <returns>result if the content is the same or not</returns>
+        public static bool AttributeMatchListAreEqual(List<AttributeMatch> a, List<AttributeMatch> b)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+
+            bool valid = true;
+
+            foreach (AttributeMatch current in a)
+            {
+                if (!b.Any(match => match.Id == current.Id && match.Value == current.Value))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            return valid;
+        }
+        
+        /// <summary>
         /// Gets a int representation of the CoveredByUserId and CoverdByPartyId from an AttributeMatch list.
         /// This works under the asumptions that any valid search for å valid policy contains a CoveredBy and this must be in the form
         /// of a PartyId or a UserId. So any valid search containing a PartyId should not contain a USerId and vice versa.
@@ -185,12 +293,15 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="coveredByUserId">The value for coveredByUserId or null if not present</param>
         /// <param name="coveredByPartyId">The value for coveredByPartyId or null if not present</param>
         /// <returns>The CoveredByUserId or CoveredByPartyId in the input AttributeMatch list as a string primarly used to create a policypath for fetching a delegated policy file.</returns>
-        public static string GetCoveredByFromMatch(List<AttributeMatch> match, out int? coveredByUserId, out int? coveredByPartyId)
+        public static string GetCoveredByFromMatch(List<AttributeMatch> match, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType)
         {
             bool validUser = TryGetUserIdFromAttributeMatch(match, out int coveredByUserIdTemp);
             bool validParty = TryGetPartyIdFromAttributeMatch(match, out int coveredByPartyIdTemp);
+            bool validUuid = TryGetUuidFromAttributeMatch(match, out Guid coveredByUuidIdTemp, out coveredByUuidType);
+
             coveredByPartyId = validParty ? coveredByPartyIdTemp : null;
             coveredByUserId = validUser ? coveredByUserIdTemp : null;
+            coveredByUuid = validUuid ? coveredByUuidIdTemp : null;
 
             if (validUser)
             {
@@ -199,6 +310,10 @@ namespace Altinn.AccessManagement.Core.Helpers
             else if (validParty)
             {
                 return coveredByPartyIdTemp.ToString();
+            }
+            else if (validUuid)
+            {
+                return coveredByUuidIdTemp.ToString();
             }
             else
             {
@@ -263,15 +378,20 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// Gets ResourceType, ResourceRegistryId, Org, App, OfferedBy and CoveredBy as out params from a single Rule
         /// </summary>
         /// <returns>A bool indicating whether sufficent params where found</returns>
-        public static bool TryGetDelegationParamsFromRule(Rule rule, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
+        public static bool TryGetDelegationParamsFromRule(Rule rule, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
         {
             resourceMatchType = ResourceAttributeMatchType.None;
             resourceId = null;
             org = null;
             app = null;
             offeredByPartyId = 0;
+            fromUuid = null;
+            fromUuidType = UuidType.NotSpecified;
             coveredByPartyId = null;
             coveredByUserId = null;
+            toUuid = null;
+            toUuidType = UuidType.NotSpecified;
+
             delegatedByUserId = null;
             delegatedByPartyId = null;
             delegatedDateTime = DateTime.UtcNow;
@@ -280,15 +400,23 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 TryGetResourceFromAttributeMatch(rule.Resource, out resourceMatchType, out resourceId, out org, out app, out string _, out string _);
                 offeredByPartyId = rule.OfferedByPartyId;
+                fromUuid = rule.OfferedByPartyUuid;
+                fromUuidType = rule.OfferedByPartyType;
                 coveredByPartyId = TryGetPartyIdFromAttributeMatch(rule.CoveredBy, out int coveredByParty) ? coveredByParty : null;
                 coveredByUserId = TryGetUserIdFromAttributeMatch(rule.CoveredBy, out int coveredByUser) ? coveredByUser : null;
+                bool validUuid = TryGetUuidFromAttributeMatch(rule.CoveredBy, out Guid toUuidTemp, out toUuidType);
+                if (validUuid)
+                {
+                    toUuid = toUuidTemp;
+                }
+
                 delegatedByUserId = rule.DelegatedByUserId;
                 delegatedByPartyId = rule.DelegatedByPartyId;
                 delegatedDateTime = rule.DelegatedDateTime ?? DateTime.UtcNow;
 
                 if (resourceMatchType != ResourceAttributeMatchType.None
                     && offeredByPartyId != 0
-                    && (coveredByPartyId.HasValue || coveredByUserId.HasValue)
+                    && (coveredByPartyId.HasValue || coveredByUserId.HasValue || toUuid.HasValue)
                     && (delegatedByUserId.HasValue || delegatedByPartyId.HasValue))
                 {
                     return true;
@@ -309,11 +437,11 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetDelegationPolicyPathFromRule(Rule rule, out string delegationPolicyPath)
         {
             delegationPolicyPath = null;
-            if (TryGetDelegationParamsFromRule(rule, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredBy, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _))
+            if (TryGetDelegationParamsFromRule(rule, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredBy, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _))
             {
                 try
                 {
-                    delegationPolicyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId);
+                    delegationPolicyPath = PolicyHelper.GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, offeredBy.ToString(), coveredByUserId, coveredByPartyId, toUuid, toUuidType);
                     return true;
                 }
                 catch (Exception)
@@ -431,7 +559,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         {
             foreach (Rule rule in rulesList)
             {
-                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out _, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _)
+                if (TryGetDelegationParamsFromRule(rule, out _, out _, out _, out _, out _, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out _, out _, out _)
                     && rule.Type == RuleType.None)
                 {
                     SetTypeForSingleRule(keyRolePartyIds, offeredByPartyId, coveredBy, parentPartyId, rule, coveredByPartyId, coveredByUserId);

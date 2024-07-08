@@ -5,11 +5,14 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Enums;
+using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
@@ -140,6 +143,8 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         DelegatedByUserId = authenticatedUserId,
                         OfferedByPartyId = fromParty.PartyId,
+                        OfferedByPartyUuid = fromParty.PartyUuid,
+                        OfferedByPartyType = fromParty.Person != null ? UuidType.Person : UuidType.Organization,
                         CoveredBy = to,
                         Resource = rightToDelegate.Resource,
                         Action = rightToDelegate.Action
@@ -324,6 +329,8 @@ namespace Altinn.AccessManagement.Core.Services
             // Verify and get To recipient party of the delegation
             Party toParty = null;
             UserProfile toUser = null;
+            SystemUser toSystemUser = null;
+
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.To, out string toOrgNo))
             {
                 toParty = await _contextRetrievalService.GetPartyForOrganization(toOrgNo);
@@ -385,30 +392,71 @@ namespace Altinn.AccessManagement.Core.Services
                     return (result, resource, null, null);
                 }
             }
-
-            if (toParty == null && toUser == null)
+            else if (DelegationHelper.TryGetSingleAttributeMatchValue(delegation.To, AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid, out string toSystemUserUuidAttrValue))
             {
-                result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes, or {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes.");
-                return (result, resource, null, null);
+                toSystemUser = await _contextRetrievalService.GetSystemUserById(fromParty.PartyId, toSystemUserUuidAttrValue);
+                
+                if (toSystemUser == null)
+                {
+                    result.Errors.Add("To", $"The provided To attribute value could not be found as a valid systemuser.");
+                    return (result, resource, null, null);
+                }
+
+                // Verify the resource is on the list of resources for system if this is a delegation
+                if (delegationAction == DelegationActionType.Delegation)
+                {
+                    List<DefaultRight> defaultRights = await _contextRetrievalService.GetDefaultRightsForRegisteredSystem(toSystemUser.SystemId);
+                    bool resourceValid = DelegationHelper.CheckResourceIsInListOfDefaultRights(defaultRights, delegation.Rights[0].Resource);
+
+                    if (!resourceValid)
+                    {
+                        result.Errors.Add("right[0].Resource", $"The resource does not exist or is not available for delegation to this systemuser");
+                        return (result, resource, null, null);
+                    }
+                }
             }
 
+            if (toParty == null && toUser == null && toSystemUser == null)
+            {
+                result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes, {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes or {AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid} attribute.");
+                return (result, resource, null, null);
+            }
+            
             // Verify delegation From and To is not the same party (with exception for Altinn 2 Enterprise users)
             if (fromParty.PartyId == toParty?.PartyId || (toUser != null && fromParty.PartyId == toUser.PartyId && toUser.Party.PartyTypeName != PartyType.Organisation))
             {
                 result.Errors.Add("To", $"The From party and the To recipient are the same. Self-delegation is not supported as it serves no purpose.");
                 return (result, resource, null, null);
             }
-
+            
             // Build To AttributeMatch to be used for the delegation rules
             List<AttributeMatch> to = new List<AttributeMatch>();
             if (toParty != null)
             {
                 to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = toParty.PartyId.ToString() });
+                if (toParty.PartyTypeName == PartyType.Organisation && toParty.PartyUuid != null)
+                {
+                    to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid, Value = toParty.PartyUuid.ToString() });
+                }
             }
 
             if (toUser != null)
             {
                 to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = toUser.UserId.ToString() });
+                if (toUser.UserType == UserType.EnterpriseIdentified && toUser.UserUuid != null)
+                {
+                    to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid, Value = toUser.UserUuid.ToString() });
+                }
+
+                if (toUser.UserType == UserType.SSNIdentified && toUser.UserUuid != null)
+                {
+                    to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid, Value = toUser.UserUuid.ToString() });
+                }
+            }
+
+            if (toSystemUser != null)
+            {
+                to.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid, Value = toSystemUser.Id });
             }
 
             return (result, resource, fromParty, to);

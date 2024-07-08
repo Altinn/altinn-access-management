@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Xml;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
@@ -147,15 +149,17 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="offeredBy">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy or null if party id</param>
         /// <param name="coveredByPartyId">The party id of the entity having received the delegated policy or null if user id</param>
+        /// <param name="coveredByUuid">the uuid of the coveredBy only valid value when the receiver is a system user</param>
+        /// <param name="uuidType">the type of uuid to set as prefix for the coveredBy</param> 
         /// <returns>policypath matching input data</returns>
-        public static string GetDelegationPolicyPath(ResourceAttributeMatchType resourceMatchType, string resourceId, string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId)
+        public static string GetDelegationPolicyPath(ResourceAttributeMatchType resourceMatchType, string resourceId, string org, string app, string offeredBy, int? coveredByUserId, int? coveredByPartyId, Guid? coveredByUuid, UuidType uuidType)
         {
             if (string.IsNullOrWhiteSpace(offeredBy))
             {
                 throw new ArgumentException("OfferedBy was not defined");
             }
 
-            if (coveredByPartyId == null && coveredByUserId == null)
+            if (coveredByPartyId == null && coveredByUserId == null && coveredByUuid == null)
             {
                 throw new ArgumentException("CoveredBy was not defined");
             }
@@ -170,17 +174,27 @@ namespace Altinn.AccessManagement.Core.Helpers
                 throw new ArgumentException("CoveredBy was not defined");
             }
 
-            string coveredByPrefix;
+            if (coveredByUuid == Guid.Empty)
+            {
+                throw new ArgumentException("CoveredBy was not defined");
+            }
+
+            string coveredByPrefix ;
             string coveredBy;
             if (coveredByPartyId != null)
             {
                 coveredByPrefix = "p";
                 coveredBy = coveredByPartyId.ToString();
             }
-            else
+            else if (coveredByUserId != null)
             {
                 coveredByPrefix = "u";
                 coveredBy = coveredByUserId.ToString();
+            }
+            else
+            {
+                coveredByPrefix = uuidType.ToString();
+                coveredBy = coveredByUuid.ToString();
             }
 
             if (resourceMatchType == ResourceAttributeMatchType.None)
@@ -224,9 +238,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static string GetAltinnAppDelegationPolicyPath(PolicyMatch policyMatch)
         {
             DelegationHelper.TryGetResourceFromAttributeMatch(policyMatch.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string _, out string _);
-            DelegationHelper.GetCoveredByFromMatch(policyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId);
+            DelegationHelper.GetCoveredByFromMatch(policyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
 
-            return GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId);
+            return GetDelegationPolicyPath(resourceMatchType, resourceId, org, app, policyMatch.OfferedByPartyId.ToString(), coveredByUserId, coveredByPartyId, coveredByUuid, coveredByUuidType);
         }
 
         /// <summary>
@@ -264,19 +278,59 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="coveredByPartyId">PartyId to evaluate for coveredBy</param>
+        /// <param name="coveredByUserId">UserId to evaluate for coveredBy</param>
+        /// <param name="toUuid">Uuid to evaluate for coveredBy</param>
+        /// <param name="toType">The type of covered by to evaluate for type and chose what input to use for covered by value</param>
+        /// <returns>coveredBy value and type of value</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static (string coveredBy, string coveredByType) GetCoveredByAndType(int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toType)
+        {
+            string coveredBy = null;
+            string coveredByType = null;
+
+            if (coveredByPartyId.HasValue)
+            {
+                coveredBy = coveredByPartyId.Value.ToString();
+                coveredByType = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute;
+            }
+            else if (coveredByUserId.HasValue)
+            {
+                coveredBy = coveredByUserId.Value.ToString();
+                coveredByType = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute;
+            }
+            else if (toType.Equals(UuidType.SystemUser))
+            {
+                coveredBy = toUuid.ToString();
+                coveredByType = toType.ToString();
+            }
+
+            if(coveredBy == null)
+            {
+                throw new ArgumentException($"Type was set to {toType} this is not a valid receiver of rights");
+            }
+
+            return (coveredBy, coveredByType);
+        }
+        
+        /// <summary>
         /// Builds a XacmlPolicy <see cref="XacmlPolicy"/> representation based on the DelegationPolicy input
         /// </summary>
         /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
         /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
         /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
+        /// <param name="toUuid">The uuid id of the entity having received the delegated policy</param>
+        /// <param name="toType">The uuid type id of the entity having received the delegated policy</param>
         /// <param name="rules">The set of rules to be delegated</param>
-        public static XacmlPolicy BuildDelegationPolicy(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, IList<Rule> rules)
+        public static XacmlPolicy BuildDelegationPolicy(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toType, IList<Rule> rules)
         {
             XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
             delegationPolicy.Version = "1.0";
 
-            string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
+            (string coveredBy, string coveredByType) = GetCoveredByAndType(coveredByPartyId, coveredByUserId, toUuid, toType);
 
             delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {offeredByPartyId} to {coveredBy}, for the resource; {resourceId}";
 
@@ -284,7 +338,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 if (!DelegationHelper.PolicyContainsMatchingRule(delegationPolicy, rule))
                 {
-                    delegationPolicy.Rules.Add(BuildDelegationRule(resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, rule));
+                    delegationPolicy.Rules.Add(BuildDelegationRule(resourceId, offeredByPartyId, coveredBy, coveredByType, rule));
                 }
             }
 
@@ -296,18 +350,17 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
         /// <param name="offeredByPartyId">The party id of the entity offering the delegated the policy</param>
-        /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
-        /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
+        /// <param name="coveredBy">The id of the entity having received the delegated policy</param>
+        /// <param name="toType">The type of the entity having received the delegated policy</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlRule BuildDelegationRule(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Rule rule)
+        public static XacmlRule BuildDelegationRule(string resourceId, int offeredByPartyId, string coveredBy, string toType, Rule rule)
         {
             rule.RuleId = Guid.NewGuid().ToString();
             
-            string coveredBy = coveredByPartyId.HasValue ? coveredByPartyId.Value.ToString() : coveredByUserId.Value.ToString();
             XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
             {
                 Description = $"Delegation of a right/action from {offeredByPartyId} to {coveredBy}, for the resource: {resourceId}, by user; {rule.DelegatedByUserId}",
-                Target = BuildDelegationRuleTarget(coveredByPartyId, coveredByUserId, rule)
+                Target = BuildDelegationRuleTarget(coveredBy, toType, rule)
             };
             return delegationRule;
         }
@@ -315,36 +368,24 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a XacmlTarget <see cref="XacmlTarget"/> representation based on the Rule input
         /// </summary>
-        /// <param name="coveredByPartyId">The party of the entity having received the delegated policy, if the receiving entity is an organization</param>
-        /// <param name="coveredByUserId">The user id of the entity having received the delegated policy, if the receiving entity is a user</param>
+        /// <param name="coveredBy">The the entity having received the delegated policy</param>
+        /// <param name="toType">The type of identifier received the delegated policy user, party or system user</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlTarget BuildDelegationRuleTarget(int? coveredByPartyId, int? coveredByUserId, Rule rule)
+        public static XacmlTarget BuildDelegationRuleTarget(string coveredBy, string toType, Rule rule)
         {
             List<XacmlAnyOf> targetList = new List<XacmlAnyOf>();
 
             // Build Subject
             List<XacmlAllOf> subjectAllOfs = new List<XacmlAllOf>();
-            if (coveredByUserId.HasValue)
+            
+            subjectAllOfs.Add(new XacmlAllOf(new List<XacmlMatch>
             {
-                subjectAllOfs.Add(new XacmlAllOf(new List<XacmlMatch>
-                {
-                    new XacmlMatch(
-                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqual),
-                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), coveredByUserId.Value.ToString()),
-                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Subject), new Uri(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute), new Uri(XacmlConstants.DataTypes.XMLString), false))
-                }));
-            }
-            else
-            {
-                subjectAllOfs.Add(new XacmlAllOf(new List<XacmlMatch>
-                {
-                    new XacmlMatch(
-                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqual),
-                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), coveredByPartyId.Value.ToString()),
-                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Subject), new Uri(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), new Uri(XacmlConstants.DataTypes.XMLString), false))
-                }));
-            }
-
+                new XacmlMatch(
+                    new Uri(XacmlConstants.AttributeMatchFunction.StringEqual),
+                    new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), coveredBy),
+                    new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Subject), new Uri(toType), new Uri(XacmlConstants.DataTypes.XMLString), false))
+            }));
+            
             // Build Resource
             List<XacmlMatch> resourceMatches = new List<XacmlMatch>();
             foreach (AttributeMatch resourceMatch in rule.Resource)

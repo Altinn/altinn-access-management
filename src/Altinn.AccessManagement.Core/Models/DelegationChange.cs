@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -45,6 +46,16 @@ namespace Altinn.AccessManagement.Core.Models
         public int OfferedByPartyId { get; set; }
 
         /// <summary>
+        /// The uuid of the party the right is on behalf of
+        /// </summary>
+        public Guid? FromUuid { get; set; }
+
+        /// <summary>
+        /// The type of party the right is on behalf of (Person, Organization, SystemUser)
+        /// </summary>
+        public UuidType FromUuidType { get; set; }
+
+        /// <summary>
         /// Gets or sets the coveredbypartyid, refering to the party id of the organization having received the delegation. Otherwise Null if the recipient is a user.
         /// </summary>
         [JsonPropertyName("coveredbypartyid")]
@@ -57,6 +68,16 @@ namespace Altinn.AccessManagement.Core.Models
         public int? CoveredByUserId { get; set; }
 
         /// <summary>
+        /// The uuid of the party holding the right
+        /// </summary>
+        public Guid? ToUuid { get; set; }
+
+        /// <summary>
+        /// The type of party holding the right
+        /// </summary>
+        public UuidType ToUuidType { get; set; }
+
+        /// <summary>
         /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
         /// </summary>
         [JsonPropertyName("performedbyuserid")]
@@ -67,6 +88,16 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [JsonPropertyName("performedbypartyid")]
         public int? PerformedByPartyId { get; set; }
+
+        /// <summary>
+        /// The uuid of the party that performed the delegation
+        /// </summary>
+        public Guid? PerformedByUuid { get; set; }
+
+        /// <summary>
+        /// The type of the party that performed the delegation
+        /// </summary>
+        public UuidType PerformedByUuidType { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.

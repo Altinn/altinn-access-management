@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
-using Dapper;
-using Microsoft.Extensions.Options;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Persistence
 {
@@ -17,18 +17,15 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class ResourceMetadataRepo : IResourceMetadataRepository
     {
-        private readonly string _connectionString;
+        private readonly NpgsqlDataSource _conn;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMetadataRepo"/> class
         /// </summary>
-        /// <param name="config">The postgreSQL configurations for AuthorizationDB</param>
-        public ResourceMetadataRepo(IOptions<PostgreSQLSettings> config)
+        /// <param name="conn">PostgreSQL datasource connection</param>
+        public ResourceMetadataRepo(NpgsqlDataSource conn)
         {
-            var bld = new NpgsqlConnectionStringBuilder(string.Format(config.Value.ConnectionString, config.Value.AuthorizationDbPwd));
-            bld.AutoPrepareMinUsages = 2;
-            bld.MaxAutoPrepare = 50;
-            _connectionString = bld.ConnectionString;
+            _conn = conn;
         }
 
         /// <inheritdoc />
@@ -36,28 +33,52 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var param = new Dictionary<string, object>();
-            param.Add("resourceregistryid", resource.ResourceRegistryId);
-            param.Add("resourcetype", resource.ResourceType.ToString().ToLower());
-
-            string query =
-            /*strpsql*/"""
+            string query = /*strpsql*/@"
             INSERT INTO accessmanagement.resource (resourceregistryid, resourcetype, created, modified)
             VALUES (@resourceregistryid, @resourcetype, now(), now())
             ON CONFLICT (resourceregistryid) DO UPDATE SET resourcetype = @resourcetype, modified = now()
             RETURNING resourceid, resourceregistryid, resourcetype, created, modified;
-            """;
+            ";
 
             try
             {
-                await using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
-                var res = await connection.QueryAsync<AccessManagementResource>(new CommandDefinition(query, param, cancellationToken: cancellationToken));
-                return res.FirstOrDefault();
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceregistryid", NpgsqlDbType.Text, resource.ResourceRegistryId);
+                cmd.Parameters.AddWithValue("resourcetype", NpgsqlDbType.Text, resource.ResourceType.ToString().ToLower());
+
+                using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                if (await reader.ReadAsync(cancellationToken))
+                {
+                    return await GetAccessManagementResource(reader);
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
                 activity?.StopWithError(ex);
                 throw;
+            }
+        }
+
+        private static async ValueTask<AccessManagementResource> GetAccessManagementResource(NpgsqlDataReader reader)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            try
+            {
+                return new AccessManagementResource
+                {
+                    ResourceId = await reader.GetFieldValueAsync<int>("resourceid"),
+                    ResourceRegistryId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
+                    ResourceType = Enum.TryParse(await reader.GetFieldValueAsync<string>("resourcetype"), out ResourceType resourceType) ? resourceType : ResourceType.Default,
+                    Created = await reader.GetFieldValueAsync<DateTime>("created"),
+                    Modified = await reader.GetFieldValueAsync<DateTime>("modified")
+                };
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return await new ValueTask<AccessManagementResource>(Task.FromException<AccessManagementResource>(ex));
             }
         }
     }

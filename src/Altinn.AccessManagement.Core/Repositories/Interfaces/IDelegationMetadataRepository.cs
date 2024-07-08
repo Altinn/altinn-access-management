@@ -47,7 +47,7 @@ public interface IDelegationMetadataRepository
     /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
     /// <param name="coveredByUserIds">The list of user id of the entity having received the delegated policy, if the entity is a user</param>
     /// <param name="cancellationToken">Cancellation token for cancelling the request</param>
-    Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds = null, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default);
+    Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all the current resource registry delegation change records matching the filter values

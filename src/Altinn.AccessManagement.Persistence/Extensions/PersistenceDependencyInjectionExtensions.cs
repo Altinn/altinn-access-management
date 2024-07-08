@@ -70,11 +70,12 @@ public static class PersistenceDependencyInjectionExtensions
         services.TryAddSingleton((IServiceProvider sp) =>
         {
             var settings = sp.GetRequiredService<IOptions<PostgreSQLSettings>>().Value;
-            var connectionString = string.Format(
-                settings.ConnectionString,
-                settings.AuthorizationDbPwd);
 
-            var builder = new NpgsqlDataSourceBuilder(connectionString);
+            var bld = new NpgsqlConnectionStringBuilder(string.Format(settings.ConnectionString, settings.AuthorizationDbPwd));
+            bld.AutoPrepareMinUsages = 2;
+            bld.MaxAutoPrepare = 50;
+
+            var builder = new NpgsqlDataSourceBuilder(bld.ConnectionString);
             builder.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
             builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
 

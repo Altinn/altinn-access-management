@@ -8,6 +8,6 @@
         /// <summary>
         /// The list of resources at the Service Provider which the Right is for.
         /// </summary>
-        public List<AttributeMatch> Resources { get; set; } = [];
+        public List<AttributeMatch> Resource { get; set; } = [];
     }
 }

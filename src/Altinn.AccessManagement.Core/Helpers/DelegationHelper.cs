@@ -236,7 +236,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             foreach (DefaultRight defaultRight in defaultRights)
             {
-                if (AttributeMatchListAreEqual(defaultRight.Resources, resource))
+                if (AttributeMatchListAreEqual(defaultRight.Resource, resource))
                 {
                     valid = true;
                     break;

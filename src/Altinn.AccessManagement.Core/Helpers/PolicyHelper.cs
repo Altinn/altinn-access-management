@@ -304,7 +304,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             else if (toType.Equals(UuidType.SystemUser))
             {
                 coveredBy = toUuid.ToString();
-                coveredByType = toType.ToString();
+                coveredByType = toType.EnumMemberAttributeValueOrName();
             }
 
             if(coveredBy == null)

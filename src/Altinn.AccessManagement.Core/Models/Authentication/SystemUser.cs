@@ -23,7 +23,7 @@ namespace Altinn.AccessManagement.Core.Models.Authentication
         /// The Title is by default the same as the System's Display Name
         /// </summary>
         [JsonPropertyName("integrationTitle")]
-        public string IntegrationTitle { get; set; }
+        public string IntegrationTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// Identifier for off the shelf systems, registered in the SystemRegister db.
@@ -54,7 +54,7 @@ namespace Altinn.AccessManagement.Core.Models.Authentication
         public string PartyId { get; set; } = string.Empty;
 
         /// <summary>
-        /// The Organisation Number for the end-user as it is stored in ER Registry        
+        /// The Organization Number for the end-user as it is stored in ER Registry        
         /// </summary>
         [JsonPropertyName("reporteeOrgNo")]
         public string ReporteeOrgNo { get; set; } = string.Empty;

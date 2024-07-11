@@ -33,6 +33,7 @@ public class ContextRetrievalService : IContextRetrievalService
     /// <param name="resourceRegistryClient">The client for integration with the ResourceRegistry</param>
     /// <param name="altinnRolesClient">The client for integration with the SBL Bridge for role information</param>
     /// <param name="partiesClient">The client for integration </param>
+    /// <param name="authenticationClient">The client for integration with authentication</param>
     public ContextRetrievalService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient, IAuthenticationClient authenticationClient)
     {
         _cacheConfig = cacheConfig.Value;

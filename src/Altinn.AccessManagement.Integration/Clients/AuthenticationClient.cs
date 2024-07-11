@@ -30,7 +30,6 @@ namespace Altinn.AccessManagement.Integration.Clients
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HttpClient _client;
         private readonly PlatformSettings _platformSettings;
-        private readonly IAccessTokenGenerator _accessTokenGenerator;
         private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, Converters = { new JsonStringEnumConverter() } };
 
         /// <summary>
@@ -40,13 +39,11 @@ namespace Altinn.AccessManagement.Integration.Clients
         /// <param name="logger">the logger</param>
         /// <param name="httpContextAccessor">The http context accessor </param>
         /// <param name="httpClient">A HttpClient provided by the HttpClientFactory.</param>
-        /// <param name="accessTokenGenerator">An instance of the AccessTokenGenerator service.</param>
         public AuthenticationClient(
             IOptions<PlatformSettings> platformSettings,
             ILogger<AuthenticationClient> logger,
             IHttpContextAccessor httpContextAccessor,
-            HttpClient httpClient,
-            IAccessTokenGenerator accessTokenGenerator)
+            HttpClient httpClient)
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
@@ -54,7 +51,6 @@ namespace Altinn.AccessManagement.Integration.Clients
             httpClient.BaseAddress = new Uri(platformSettings.Value.ApiAuthenticationEndpoint);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;
-            _accessTokenGenerator = accessTokenGenerator;
         }
 
         /// <inheritdoc />
@@ -69,7 +65,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    string refreshedToken = await response.Content.ReadAsStringAsync();
+                    string refreshedToken = await response.Content.ReadAsStringAsync(cancellationToken);
                     refreshedToken = refreshedToken.Replace('"', ' ').Trim();
                     return refreshedToken;
                 }
@@ -95,9 +91,6 @@ namespace Altinn.AccessManagement.Integration.Clients
                 string endpointUrl = $"systemuser/{partyId}/{systemUserId}";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                /*var accessToken = _accessTokenGenerator.GenerateAccessToken("platform", "access-management");
-                _client.DefaultRequestHeaders.Add("PlatformAccessToken", accessToken.SingleToList());*/
 
                 HttpResponseMessage response = await _client.GetAsync(endpointUrl, cancellationToken);
 

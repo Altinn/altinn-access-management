@@ -138,7 +138,7 @@ namespace Altinn.AccessManagement.Core.Services
 
         private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
         {
-            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules.First(), out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
+            if (!DelegationHelper.TryGetDelegationParamsFromRule(rules[0], out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 _logger.LogWarning("This should not happen. Incomplete rule model received for delegation to delegation policy at: {policyPath}. Incomplete model should have been returned in unsortable rule set by TryWriteDelegationPolicyRules. DelegationHelper.SortRulesByDelegationPolicyPath might be broken.", policyPath);
@@ -306,7 +306,6 @@ namespace Altinn.AccessManagement.Core.Services
                 string coveredBy = DelegationHelper.GetCoveredByFromMatch(deleteRequest.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
                 string offeredBy = deleteRequest.PolicyMatch.OfferedByPartyId.ToString();
 
-                //TODO: Add logic to get current delegationChange from uuid if this is a sytemuser not having userid or partyid
                 DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
 
                 XacmlPolicy existingDelegationPolicy = null;

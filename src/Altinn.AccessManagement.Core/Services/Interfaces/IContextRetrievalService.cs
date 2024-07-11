@@ -1,5 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Models.Authentication;
-using Altinn.AccessManagement.Core.Models;
+﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.Platform.Register.Models;
@@ -79,10 +79,10 @@ public interface IContextRetrievalService
     /// Gets a system user by the uuid and owning party
     /// </summary>
     /// <param name="partyId">partyId for the system user owning party</param>
-    /// <param name="systemUserId">the identifier og the system user</param>
+    /// <param name="systemUserUuid">the identifier og the system user</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns></returns>
-    Task<SystemUser> GetSystemUserById(int partyId, string systemUserId, CancellationToken cancellationToken = default);
+    Task<SystemUser> GetSystemUserById(int partyId, string systemUserUuid, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the registered default rights for a given system type

@@ -93,7 +93,7 @@ public class Altinn2RightsService : IAltinn2RightsService
 
             if (delegation.CoveredByUserId == null && delegation.CoveredByPartyId == null)
             {
-                // TODO: This is a temporary fix just to remove delegations given to system users so they do not give problems for the use from Altinn II to be changed later
+                // This is a temporary fix just to remove delegations given to system users so they do not give problems for the use from Altinn II to be changed later
                 continue;
             }
 

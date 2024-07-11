@@ -50,16 +50,16 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Trys to get the PartyId attribute value from a list of AttributeMatch models
+        /// Tries to get the PartyId attribute value from a list of AttributeMatch models
         /// </summary>
         /// <returns>The true if party id is found as the single attribute in the collection</returns>
         public static bool TryGetPartyIdFromAttributeMatch(List<AttributeMatch> match, out int partyid)
         {
             partyid = 0;
-            AttributeMatch userIdAttribute = match?.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute);
-            if (userIdAttribute != null)
+            AttributeMatch partyIdAttribute = match?.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute);
+            if (partyIdAttribute != null)
             {
-                return int.TryParse(userIdAttribute.Value, out partyid) && partyid != 0;
+                return int.TryParse(partyIdAttribute.Value, out partyid) && partyid != 0;
             }
 
             return false;
@@ -79,21 +79,21 @@ namespace Altinn.AccessManagement.Core.Helpers
                 return false;
             }
 
-            AttributeMatch currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid);
+            AttributeMatch currentAttributeMatch = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid);
             if (currentAttributeMatch != null)
             {
                 type = UuidType.Person;
                 return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
             }
 
-            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid);
+            currentAttributeMatch = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid);
             if (currentAttributeMatch != null)
             {
                 type = UuidType.Organization;
                 return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
             }
 
-            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid);
+            currentAttributeMatch = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid);
             if (currentAttributeMatch != null)
             {
                 type = UuidType.SystemUser;
@@ -117,7 +117,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static bool TryGetUserIdFromAttributeMatch(List<AttributeMatch> match, out int userid)
         {
             userid = 0;
-            AttributeMatch userIdAttribute = match?.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute);
+            AttributeMatch userIdAttribute = match?.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute);
             if (userIdAttribute != null)
             {
                 return int.TryParse(userIdAttribute.Value, out userid) && userid != 0;
@@ -232,18 +232,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>true if all the rights is valid for in the given defaultRights list</returns>
         public static bool CheckResourceIsInListOfDefaultRights(List<DefaultRight> defaultRights, List<AttributeMatch> resource)
         {
-            bool valid = false;
-
-            foreach (DefaultRight defaultRight in defaultRights)
-            {
-                if (CheckAllPartsInDefaultRightsIsInActualDelegatedResource(defaultRight.Resource, resource))
-                {
-                    valid = true;
-                    break;
-                }
-            }
-
-            return valid;
+            return defaultRights.Exists(defaultRight => CheckAllPartsInDefaultRightsIsInActualDelegatedResource(defaultRight.Resource, resource));
         }
 
         /// <summary>
@@ -256,9 +245,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>True if the delegation is allowed false if not.</returns>
         public static bool CheckAllPartsInDefaultRightsIsInActualDelegatedResource(List<AttributeMatch> allowedResource, List<AttributeMatch> actualResource)
         {
-            return allowedResource.All(attributeMatch => actualResource.Any(r => r.Id == attributeMatch.Id && r.Value == attributeMatch.Value));
+            return allowedResource.TrueForAll(attributeMatch => actualResource.Exists(r => r.Id == attributeMatch.Id && r.Value == attributeMatch.Value));
         }
-        
+
         /// <summary>
         /// Gets a int representation of the CoveredByUserId and CoverdByPartyId from an AttributeMatch list.
         /// This works under the asumptions that any valid search for å valid policy contains a CoveredBy and this must be in the form
@@ -268,7 +257,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="match">the list to fetch coveredBy from</param>
         /// <param name="coveredByUserId">The value for coveredByUserId or null if not present</param>
         /// <param name="coveredByPartyId">The value for coveredByPartyId or null if not present</param>
-        /// <returns>The CoveredByUserId or CoveredByPartyId in the input AttributeMatch list as a string primarly used to create a policypath for fetching a delegated policy file.</returns>
+        /// <param name="coveredByUuid">The uuid of the covered by found in the AttributeMatch list</param>
+        /// <param name="coveredByUuidType">The uuid type of the covered by found in the AttributeMatch list</param>
+        /// <returns>The CoveredByUserId or CoveredByPartyId in the input AttributeMatch list as a string primarily used to create a policy path for fetching a delegated policy file.</returns>
         public static string GetCoveredByFromMatch(List<AttributeMatch> match, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType)
         {
             bool validUser = TryGetUserIdFromAttributeMatch(match, out int coveredByUserIdTemp);

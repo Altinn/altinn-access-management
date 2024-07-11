@@ -18,6 +18,8 @@ namespace Altinn.AccessManagement.Core.Helpers
     /// </summary>
     public static class PolicyHelper
     {
+        private const string CoveredByNotDefined = "CoveredBy was not defined";
+        
         /// <summary>
         /// Extracts a list of all roles codes mentioned in a permit rule in a policy. 
         /// </summary>
@@ -161,25 +163,25 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             if (coveredByPartyId == null && coveredByUserId == null && coveredByUuid == null)
             {
-                throw new ArgumentException("CoveredBy was not defined");
+                throw new ArgumentException(CoveredByNotDefined);
             }
 
             if (coveredByPartyId <= 0)
             {
-                throw new ArgumentException("CoveredBy was not defined");
+                throw new ArgumentException(CoveredByNotDefined);
             }
 
             if (coveredByUserId <= 0)
             {
-                throw new ArgumentException("CoveredBy was not defined");
+                throw new ArgumentException(CoveredByNotDefined);
             }
 
             if (coveredByUuid == Guid.Empty)
             {
-                throw new ArgumentException("CoveredBy was not defined");
+                throw new ArgumentException(CoveredByNotDefined);
             }
 
-            string coveredByPrefix ;
+            string coveredByPrefix;
             string coveredBy;
             if (coveredByPartyId != null)
             {
@@ -278,15 +280,15 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// 
+        /// Check the input and returns a vale for CoveredBy and a urn to be used when creating a Attribute match given taht the covered by could be a user, party or SystemUser.
         /// </summary>
         /// <param name="coveredByPartyId">PartyId to evaluate for coveredBy</param>
         /// <param name="coveredByUserId">UserId to evaluate for coveredBy</param>
         /// <param name="toUuid">Uuid to evaluate for coveredBy</param>
         /// <param name="toType">The type of covered by to evaluate for type and chose what input to use for covered by value</param>
         /// <returns>coveredBy value and type of value</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static (string coveredBy, string coveredByType) GetCoveredByAndType(int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toType)
+        /// <exception cref="ArgumentException">When no valid coveredBy is defined</exception>
+        public static (string CoveredBy, string CoveredByType) GetCoveredByAndType(int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toType)
         {
             string coveredBy = null;
             string coveredByType = null;
@@ -307,9 +309,9 @@ namespace Altinn.AccessManagement.Core.Helpers
                 coveredByType = toType.EnumMemberAttributeValueOrName();
             }
 
-            if(coveredBy == null)
+            if (coveredBy == null)
             {
-                throw new ArgumentException($"Type was set to {toType} this is not a valid receiver of rights");
+                throw new ArgumentException($"No valid coveredBy was provided");
             }
 
             return (coveredBy, coveredByType);

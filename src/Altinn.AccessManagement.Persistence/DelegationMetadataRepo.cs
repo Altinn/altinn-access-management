@@ -466,7 +466,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("toType", toUuidType);
                 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-                if (reader.Read())
+                if (await reader.ReadAsync(cancellationToken))
                 {
                     return await GetResourceRegistryDelegationChange(reader);
                 }

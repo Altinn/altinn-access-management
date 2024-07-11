@@ -17,6 +17,8 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// </summary>
     public class AuthenticationMock : IAuthenticationClient
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+
         /// <inheritdoc/>
         public async Task<string> RefreshToken(CancellationToken cancellationToken = default) => await Task.FromResult(PrincipalUtil.GetAccessToken("sbl-authorization"));
 
@@ -29,7 +31,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             if (File.Exists(systemUserPath))
             {
                 string content = File.ReadAllText(systemUserPath);
-                systemUser = (SystemUser)JsonSerializer.Deserialize(content, typeof(SystemUser), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                systemUser = (SystemUser)JsonSerializer.Deserialize(content, typeof(SystemUser), _jsonSerializerOptions);
             }
 
             return await Task.FromResult(systemUser);
@@ -44,7 +46,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
             if (File.Exists(systemUserPath))
             {
                 string content = File.ReadAllText(systemUserPath);
-                defaultRights = (List<DefaultRight>)JsonSerializer.Deserialize(content, typeof(List<DefaultRight>), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                defaultRights = (List<DefaultRight>)JsonSerializer.Deserialize(content, typeof(List<DefaultRight>), _jsonSerializerOptions);
             }
 
             return await Task.FromResult(defaultRights);

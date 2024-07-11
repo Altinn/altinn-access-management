@@ -25,11 +25,11 @@ namespace Altinn.AccessManagement.Core.Clients.Interfaces
         Task<SystemUser> GetSystemUser(int partyId, string systemUserId, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get defined rights for a given SystemUser
+        /// Get defined rights for a given System
         /// </summary>
-        /// <param name="systemUserId">The uuid identifying the systemUser</param>
+        /// <param name="systemId">The uuid identifier of the system</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
-        Task<List<DefaultRight>> GetDefaultRightsForRegisteredSystem(string systemUserId, CancellationToken cancellationToken = default);
+        Task<List<DefaultRight>> GetDefaultRightsForRegisteredSystem(string systemId, CancellationToken cancellationToken = default);
     }
 }

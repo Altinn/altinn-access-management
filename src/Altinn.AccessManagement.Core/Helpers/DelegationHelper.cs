@@ -236,7 +236,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             foreach (DefaultRight defaultRight in defaultRights)
             {
-                if (AttributeMatchListAreEqual(defaultRight.Resource, resource))
+                if (CheckAllPartsInDefaultRightsIsInActualDelegatedResource(defaultRight.Resource, resource))
                 {
                     valid = true;
                     break;
@@ -247,40 +247,16 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Given two List&gt;AttributeMatch&lt; checks if the content is the same in any order
+        /// Compares a list of Resource details from allowed default rights with the list of Resource details in the actual delegation so all of the defined resource details
+        /// in the allowed resource must be present in the actual delegation but the actual delegation can have more details narrowing the actual delegation more granulated than
+        /// the allowed resource but not the other way round
         /// </summary>
-        /// <param name="a">The first list</param>
-        /// <param name="b">The second list</param>
-        /// <returns>result if the content is the same or not</returns>
-        public static bool AttributeMatchListAreEqual(List<AttributeMatch> a, List<AttributeMatch> b)
+        /// <param name="allowedResource">List describing the allowed resource</param>
+        /// <param name="actualResource">List describing the actual delegation</param>
+        /// <returns>True if the delegation is allowed false if not.</returns>
+        public static bool CheckAllPartsInDefaultRightsIsInActualDelegatedResource(List<AttributeMatch> allowedResource, List<AttributeMatch> actualResource)
         {
-            if (a == null && b == null)
-            {
-                return true;
-            }
-
-            if (a == null || b == null)
-            {
-                return false;
-            }
-
-            if (a.Count != b.Count)
-            {
-                return false;
-            }
-
-            bool valid = true;
-
-            foreach (AttributeMatch current in a)
-            {
-                if (!b.Any(match => match.Id == current.Id && match.Value == current.Value))
-                {
-                    valid = false;
-                    break;
-                }
-            }
-
-            return valid;
+            return allowedResource.All(attributeMatch => actualResource.Any(r => r.Id == attributeMatch.Id && r.Value == attributeMatch.Value));
         }
         
         /// <summary>

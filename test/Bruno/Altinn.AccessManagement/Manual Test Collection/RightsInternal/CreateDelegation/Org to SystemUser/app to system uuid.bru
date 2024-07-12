@@ -1,5 +1,5 @@
 meta {
-  name: to system uuid
+  name: app to system uuid
   type: http
   seq: 1
 }
@@ -27,8 +27,12 @@ body:json {
           {
               "resource": [
                   {
-                      "id": "urn:altinn:resource",
-                      "value": "{{resourceId}}"
+                      "id": "urn:altinn:org",
+                      "value": "{{org}}"
+                  },
+                {
+                      "id": "urn:altinn:app",
+                      "value": "{{app}}"
                   }
               ],
               "action": "read"
@@ -46,6 +50,8 @@ vars:pre-request {
   auth_ssn: '07124912037'
   party: 50005545
   toSystemUserUuid: a6355a68-86b8-4344-8a81-0248cb461468
+  org: ttd
+  app: apps-test
 }
 
 script:pre-request {

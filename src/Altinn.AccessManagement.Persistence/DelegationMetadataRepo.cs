@@ -20,6 +20,7 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
+        private const string ToType = "toType";
         private readonly NpgsqlDataSource _conn;
         private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
 
@@ -238,7 +239,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -287,7 +288,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
                 cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
-                cmd.Parameters.AddWithValue("toType", delegationChange.ToUuidType);
+                cmd.Parameters.AddWithValue(ToType, delegationChange.ToUuidType);
                 cmd.Parameters.AddWithValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
                 cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
                 cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
@@ -370,7 +371,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
-                cmd.Parameters.AddWithValue("toType", delegationChange.ToUuidType);
+                cmd.Parameters.AddWithValue(ToType, delegationChange.ToUuidType);
                 cmd.Parameters.AddWithNullableValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
                 cmd.Parameters.AddWithNullableValue("performedByPartyId", NpgsqlDbType.Integer, delegationChange.PerformedByPartyId);
                 cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
@@ -463,7 +464,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
                 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -960,7 +961,7 @@ namespace Altinn.AccessManagement.Persistence
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
                     ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType>("totype"),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType>(ToType),
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
                     BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
@@ -991,7 +992,7 @@ namespace Altinn.AccessManagement.Persistence
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
                     ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType>("totype"),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType>(ToType),
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     PerformedByPartyId = await reader.GetFieldValueAsync<int?>("performedbypartyid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),

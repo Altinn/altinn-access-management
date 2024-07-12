@@ -100,7 +100,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 return Guid.TryParse(currentAttributeMatch.Value, out uuid) && uuid != Guid.Empty;
             }
 
-            currentAttributeMatch = match.FirstOrDefault(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid);
+            currentAttributeMatch = match.Find(m => m.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid);
             if (currentAttributeMatch != null)
             {
                 type = UuidType.EnterpriseUser;

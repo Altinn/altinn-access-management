@@ -411,8 +411,8 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByPartyId == null && coveredByUserId == null && toUuidType != UuidType.SystemUser)
             {
-                activity?.StopWithError(new ArgumentNullException($"All params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)}, {nameof(toUuid)} cannot be null."));
-                throw new ArgumentNullException($"All params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)}, {nameof(toUuid)} cannot be null.");
+                activity?.StopWithError(new ArgumentException($"All params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)}, {nameof(toUuid)} cannot be null."));
+                throw new ArgumentException($"All params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)}, {nameof(toUuid)} cannot be null.");
             }
 
             string query = string.Empty;

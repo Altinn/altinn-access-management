@@ -389,6 +389,18 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(result);
     }
 
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId, CancellationToken cancellationToken = default)
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models;
 
@@ -23,6 +24,13 @@ public class BaseAttribute
         Type = type;
         Value = value;
         Urn = $"{type}:{value}";
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
+    /// </summary>
+    public BaseAttribute(UuidType type, Guid value) : this(type.ToString(), value.ToString())
+    {
     }
 
     /// <summary>

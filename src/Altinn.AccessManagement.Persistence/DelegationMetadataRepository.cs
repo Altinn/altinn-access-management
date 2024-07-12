@@ -566,6 +566,18 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
     }
 
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     private static void CheckIfOfferedbyPartyIdsHasValue(List<int> offeredByPartyIds)
     {
         if (offeredByPartyIds == null)

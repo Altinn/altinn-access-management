@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
@@ -23,8 +22,7 @@ namespace Altinn.AccessManagement.Persistence
         private const string ToType = "toType";
         private readonly NpgsqlDataSource _conn;
         private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
-        private readonly string defaultResourceColumns = "resourceRegistryDelegationChangeId, delegationChangeType, resourceregistryid, resourceType, offeredByPartyId, fromPartyUuid, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByPartyId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>

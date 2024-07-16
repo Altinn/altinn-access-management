@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -466,23 +467,32 @@ namespace Altinn.AccessManagement.Persistence
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += /*strpsql*/@"
-                AND resourceRegistryId = ANY (@resourceRegistryIds)";
+                query += /*strpsql*/@" AND resourceRegistryId = ANY (@resourceRegistryIds) ";
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += /*strpsql*/@"
-                AND resourceType = ANY (@resourceTypes)";
+                query += /*strpsql*/@" AND resourceType = ANY (@resourceTypes) ";
             }
 
             query += /*strpsql*/@"
                 GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType
             )
             SELECT
-                change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.coveredByUserId, change.coveredByPartyId, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
+                change.resourceRegistryDelegationChangeId, 
+                change.delegationChangeType, 
+                lastChange.resourceRegistryId as resourceRegistryId, 
+                lastChange.resourceType, 
+                change.offeredByPartyId, 
+                change.coveredByUserId, 
+                change.coveredByPartyId, 
+                change.performedByUserId, 
+                change.performedByPartyId, 
+                change.blobStoragePolicyPath, 
+                change.blobStorageVersionId, 
+                change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
-                INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
+            INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
             WHERE delegationchangetype != 'revoke_last'
             ";
 
@@ -499,6 +509,10 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
+                ex.Data.Add("query", query);
+                ex.Data.Add("offeredByPartyId", JsonSerializer.Serialize(offeredByPartyId));
+                ex.Data.Add("resourceRegistryIds", JsonSerializer.Serialize(resourceRegistryIds));
+                ex.Data.Add("resourceTypes", JsonSerializer.Serialize(resourceTypes));
                 activity?.StopWithError(ex);
                 throw;
             }
@@ -518,14 +532,12 @@ namespace Altinn.AccessManagement.Persistence
 
             if (resourceRegistryIds != null && resourceRegistryIds.Count > 0)
             {
-                query += /*strpsql*/@"
-                AND resourceRegistryId = ANY (@resourceRegistryIds)";
+                query += /*strpsql*/@" AND resourceRegistryId = ANY (@resourceRegistryIds) ";
             }
 
             if (resourceTypes != null && resourceTypes.Count > 0)
             {
-                query += /*strpsql*/@"
-                AND resourceType = ANY (@resourceTypes)";
+                query += /*strpsql*/@" AND resourceType = ANY (@resourceTypes) ";
             }
 
             query += /*strpsql*/@"
@@ -533,23 +545,34 @@ namespace Altinn.AccessManagement.Persistence
             active AS (
                 SELECT MAX(resourceRegistryDelegationChangeId) AS changeId
                 FROM delegation.ResourceRegistryDelegationChanges AS rrdc
-                    INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
+                INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
                 WHERE coveredByPartyId = ANY (@coveredByPartyIds)
             ";
             
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
-                query += /*strpsql*/@"
-                AND offeredByPartyId = ANY (@offeredByPartyIds)";
+                query += /*strpsql*/@" AND offeredByPartyId = ANY (@offeredByPartyIds) ";
             }
 
             query += /*strpsql*/@"
                 GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId 
             )
-            SELECT rr.resourceRegistryDelegationChangeId, rr.delegationChangeType, res.resourceRegistryId as resourceRegistryId, res.resourceType, rr.offeredByPartyId, rr.coveredByUserId, rr.coveredByPartyId, rr.performedByUserId, rr.performedByPartyId, rr.blobStoragePolicyPath, rr.blobStorageVersionId, rr.created
+            SELECT 
+            rr.resourceRegistryDelegationChangeId, 
+            rr.delegationChangeType, 
+            res.resourceRegistryId as resourceRegistryId, 
+            res.resourceType, 
+            rr.offeredByPartyId, 
+            rr.coveredByUserId, 
+            rr.coveredByPartyId, 
+            rr.performedByUserId, 
+            rr.performedByPartyId,
+            rr.blobStoragePolicyPath, 
+            rr.blobStorageVersionId, 
+            rr.created
             FROM delegation.ResourceRegistryDelegationChanges AS rr
-                INNER JOIN res ON rr.resourceId_fk = res.resourceid
-                INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
+            INNER JOIN res ON rr.resourceId_fk = res.resourceid
+            INNER JOIN active ON rr.resourceRegistryDelegationChangeId = active.changeId
             WHERE delegationchangetype != 'revoke_last'
             ";
 
@@ -567,6 +590,11 @@ namespace Altinn.AccessManagement.Persistence
             }
             catch (Exception ex)
             {
+                ex.Data.Add("query", query);
+                ex.Data.Add("coveredByPartyIds", JsonSerializer.Serialize(coveredByPartyIds));
+                ex.Data.Add("resourceRegistryIds", JsonSerializer.Serialize(resourceRegistryIds));
+                ex.Data.Add("resourceTypes", JsonSerializer.Serialize(resourceTypes));
+                ex.Data.Add("offeredByPartyIds", JsonSerializer.Serialize(offeredByPartyIds));
                 activity?.StopWithError(ex);
                 throw;
             }

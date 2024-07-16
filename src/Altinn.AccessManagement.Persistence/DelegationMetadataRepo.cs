@@ -533,7 +533,22 @@ namespace Altinn.AccessManagement.Persistence
                 GROUP BY resourceId_fk, offeredByPartyId, coveredByPartyId, coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType
             )
             SELECT
-                change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceRegistryId, lastChange.resourceType, change.offeredByPartyId, change.fromUuid, change.fromType change.coveredByUserId, change.coveredByPartyId, change.toUuid, change.toType, change.performedByUserId, change.performedByPartyId, change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
+                change.resourceRegistryDelegationChangeId,
+                change.delegationChangeType,
+                lastChange.resourceRegistryId AS resourceRegistryId,
+                lastChange.resourceType,
+                change.offeredByPartyId,
+                change.fromUuid,
+                change.fromType,
+                change.coveredByUserId,
+                change.coveredByPartyId,
+                change.toUuid,
+                change.toType,
+                change.performedByUserId,
+                change.performedByPartyId,
+                change.blobStoragePolicyPath,
+                change.blobStorageVersionId,
+                change.created
             FROM delegation.ResourceRegistryDelegationChanges AS change
                 INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid AND change.resourceRegistryDelegationChangeId = lastChange.changeId
             WHERE delegationchangetype != 'revoke_last'
@@ -956,12 +971,12 @@ namespace Altinn.AccessManagement.Persistence
                     ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
                     ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
                     OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
-                    FromUuid = await reader.GetFieldValueAsync<Guid>("fromUuid"),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType>("fromtype"),
+                    FromUuid = await reader.GetFieldValueAsync<Guid?>("fromuuid"),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
-                    ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType>(ToType),
+                    ToUuid = await reader.GetFieldValueAsync<Guid?>("touuid"),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
                     BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
@@ -987,12 +1002,12 @@ namespace Altinn.AccessManagement.Persistence
                     ResourceId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
                     ResourceType = await reader.GetFieldValueAsync<string>("resourcetype"),
                     OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
-                    FromUuid = await reader.GetFieldValueAsync<Guid>("fromuuid"),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType>("fromtype"),
+                    FromUuid = await reader.GetFieldValueAsync<Guid?>("fromuuid"),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
-                    ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType>(ToType),
+                    ToUuid = await reader.GetFieldValueAsync<Guid?>("touuid"),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     PerformedByPartyId = await reader.GetFieldValueAsync<int?>("performedbypartyid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),

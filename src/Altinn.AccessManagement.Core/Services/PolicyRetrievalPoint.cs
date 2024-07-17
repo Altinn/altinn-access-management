@@ -32,7 +32,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request, CancellationToken cancellationToken)
+        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request, CancellationToken cancellationToken = default)
         {
             string policyPath = PolicyHelper.GetPolicyPath(request);
             return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);

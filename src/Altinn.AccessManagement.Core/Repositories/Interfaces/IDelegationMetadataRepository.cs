@@ -53,16 +53,6 @@ public interface IDelegationMetadataRepository
     Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets all the current resource registry delegation change records matching the filter values
-    /// </summary>
-    /// <param name="offeredByPartyIds">The list of party id of the entity offering the delegated the policy</param>
-    /// <param name="resourceRegistryIds">The list of resource registry ids to look up</param>
-    /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
-    /// <param name="coveredByUserId">The user id of the user having received the delegated policy</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Gets all the current altinn app delegation change records matching the filter values
     /// </summary>
     /// <param name="altinnAppIds">The list of altinn app IDs to look up delegations of</param>
@@ -71,6 +61,16 @@ public interface IDelegationMetadataRepository
     /// <param name="toUuid">The uuid of the recipient of delegated resources</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all the current resource registry delegation change records matching the filter values
+    /// </summary>
+    /// <param name="offeredByPartyIds">The list of party id of the entity offering the delegated the policy</param>
+    /// <param name="resourceRegistryIds">The list of resource registry ids to look up</param>
+    /// <param name="coveredByPartyIds">The list of party id of the entity having received the delegated policy, if the entity is an organization</param>
+    /// <param name="coveredByUserId">The user id of the user having received the delegated policy</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all the current resource registry delegation change records matching the filter values

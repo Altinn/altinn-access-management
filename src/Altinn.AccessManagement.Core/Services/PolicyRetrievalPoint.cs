@@ -32,33 +32,33 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request)
+        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request, CancellationToken cancellationToken)
         {
             string policyPath = PolicyHelper.GetPolicyPath(request);
-            return await GetPolicyInternalAsync(policyPath);
+            return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app)
+        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app, CancellationToken cancellationToken)
         {
             string policyPath = PolicyHelper.GetAltinnAppsPolicyPath(org, app);
-            return await GetPolicyInternalAsync(policyPath);
+            return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistryId)
+        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistryId, CancellationToken cancellationToken)
         {
             string policyPath = PolicyHelper.GetResourceRegistryPolicyPath(resourceRegistryId);
-            return await GetPolicyInternalAsync(policyPath);
+            return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version)
+        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version, CancellationToken cancellationToken)
         {
-            return await GetPolicyInternalAsync(policyPath, version);
+            return await GetPolicyInternalAsync(policyPath, version, cancellationToken);
         }
 
-        private async Task<XacmlPolicy> GetPolicyInternalAsync(string policyPath, string version = "")
+        private async Task<XacmlPolicy> GetPolicyInternalAsync(string policyPath, string version = "", CancellationToken cancellationToken = default)
         {
             if (!_memoryCache.TryGetValue(policyPath + version, out XacmlPolicy policy))
             {

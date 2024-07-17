@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -44,7 +45,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request)
+        public async Task<XacmlPolicy> GetPolicyAsync(XacmlContextRequest request, CancellationToken cancellationToken = default)
         {
             string testID = GetTestId(_httpContextAccessor.HttpContext);
             if (!string.IsNullOrEmpty(testID) && testID.ToLower().Contains("altinnapps"))
@@ -63,7 +64,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app)
+        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app, CancellationToken cancellationToken = default)
         {
             if (File.Exists(Path.Combine(GetAltinnAppsPolicyPath(org, app), "policy.xml")))
             {
@@ -74,7 +75,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry)
+        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistry, CancellationToken cancellationToken = default)
         {
             if (File.Exists(Path.Combine(GetAltinnResourcePolicyPath(resourceRegistry), "resourcepolicy.xml")))
             {
@@ -85,7 +86,7 @@ namespace Altinn.AccessManagement.Tests.Mocks
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version)
+        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version, CancellationToken cancellationToken = default)
         {
             string path = GetAltinnAppsDelegationPolicyPath(policyPath);
             if (File.Exists(path))

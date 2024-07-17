@@ -80,11 +80,11 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                policy = await _prp.GetPolicyAsync(resourceId);
+                policy = await _prp.GetPolicyAsync(resourceId, cancellationToken);
             }
             else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
-                policy = await _prp.GetPolicyAsync(org, app);
+                policy = await _prp.GetPolicyAsync(org, app, cancellationToken);
             }
 
             if (policy == null)
@@ -108,11 +108,11 @@ namespace Altinn.AccessManagement.Core.Services
             List<Role> userRoles;
             if (getDelegableRights)
             {
-                userRoles = await _contextRetrievalService.GetRolesForDelegation(coveredByUserId, offeredByPartyId);
+                userRoles = await _contextRetrievalService.GetRolesForDelegation(coveredByUserId, offeredByPartyId, cancellationToken);
             }
             else
             {
-                userRoles = await _contextRetrievalService.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId);
+                userRoles = await _contextRetrievalService.GetDecisionPointRolesForUser(coveredByUserId, offeredByPartyId, cancellationToken);
             }
 
             int minimumAuthenticationLevel = PolicyHelper.GetMinimumAuthenticationLevelFromXacmlPolicy(policy);
@@ -266,7 +266,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (subjectUserId > 0)
             {
-                coveredByPartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId);
+                coveredByPartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId, cancellationToken);
             }
 
             if (coveredByPartyIds.Any())

@@ -129,6 +129,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        // Only implemented as query the new DelegationMetadataRepo 
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default)
     {
         List<DelegationChange> delegationChanges = new List<DelegationChange>();
@@ -145,6 +152,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
 
         return delegationChanges;
+    }
+
+    /// <inheritdoc/>
+    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+    {
+        // Only implemented as query the new DelegationMetadataRepo 
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
@@ -564,18 +578,6 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             activity?.StopWithError(ex);
             throw;
         }
-    }
-
-    /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 
     private static void CheckIfOfferedbyPartyIdsHasValue(List<int> offeredByPartyIds)

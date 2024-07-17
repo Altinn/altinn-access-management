@@ -39,21 +39,21 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app, CancellationToken cancellationToken)
+        public async Task<XacmlPolicy> GetPolicyAsync(string org, string app, CancellationToken cancellationToken = default)
         {
             string policyPath = PolicyHelper.GetAltinnAppsPolicyPath(org, app);
             return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistryId, CancellationToken cancellationToken)
+        public async Task<XacmlPolicy> GetPolicyAsync(string resourceRegistryId, CancellationToken cancellationToken = default)
         {
             string policyPath = PolicyHelper.GetResourceRegistryPolicyPath(resourceRegistryId);
             return await GetPolicyInternalAsync(policyPath, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version, CancellationToken cancellationToken)
+        public async Task<XacmlPolicy> GetPolicyVersionAsync(string policyPath, string version, CancellationToken cancellationToken = default)
         {
             return await GetPolicyInternalAsync(policyPath, version, cancellationToken);
         }

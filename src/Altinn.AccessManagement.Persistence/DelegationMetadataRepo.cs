@@ -19,7 +19,6 @@ namespace Altinn.AccessManagement.Persistence
     [ExcludeFromCodeCoverage]
     public class DelegationMetadataRepo : IDelegationMetadataRepository
     {
-        private const string ToType = "toType";
         private readonly NpgsqlDataSource _conn;
         private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
         
@@ -238,7 +237,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue(ToType, toUuidType);
+                cmd.Parameters.AddWithValue("toType", toUuidType);
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -463,7 +462,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue(ToType, toUuidType);
+                cmd.Parameters.AddWithValue("toType", toUuidType);
                 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))

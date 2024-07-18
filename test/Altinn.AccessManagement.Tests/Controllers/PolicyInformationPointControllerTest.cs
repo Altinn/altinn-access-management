@@ -85,7 +85,7 @@ public class PolicyInformationPointControllerTest: IClassFixture<CustomWebApplic
         AssertionUtil.AssertEqual(GetExpected(scenario), actualDelegationChanges);
     }
 
-    private StreamContent GetRequest(string scenario)
+    private static StreamContent GetRequest(string scenario)
     {
         Stream dataStream = File.OpenRead($"Data/PolicyInformationPoint/Requests/{scenario}.json");
         StreamContent content = new StreamContent(dataStream);

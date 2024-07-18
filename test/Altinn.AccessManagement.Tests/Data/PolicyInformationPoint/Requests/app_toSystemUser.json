@@ -1,0 +1,20 @@
+{
+  "subject": {
+    "id": "urn:altinn:systemuser:uuid",
+    "value": "a6355a68-86b8-4344-8a81-0248cb461468"
+  },
+  "party": {
+    "id": "urn:altinn:partyid",
+    "value": "50005545"
+  },
+  "resource": [
+    {
+      "id": "urn:altinn:org",
+      "value": "ttd"
+    },
+    {
+      "id": "urn:altinn:app",
+      "value": "apps-test"
+    }
+  ]
+}

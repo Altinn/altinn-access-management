@@ -12,6 +12,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Utils;
+using static Altinn.AccessManagement.Tests.Seeds.ResourceSeeds;
 
 namespace Altinn.AccessManagement.Tests.Mocks;
 
@@ -206,7 +207,32 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     /// <inheritdoc/>
     public Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        List<DelegationChange> result = new List<DelegationChange>();
+        if (altinnAppIds.Contains("ttd/apps-test") && fromPartyIds.Contains(50005545) && toUuid == new Guid("a6355a68-86b8-4344-8a81-0248cb461468"))
+        {
+            result.Add(new DelegationChange
+            {
+                DelegationChangeId = 1337,
+                DelegationChangeType = DelegationChangeType.Grant,
+                ResourceId = "ttd/apps-test",
+                ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
+                OfferedByPartyId = 50005545,
+                FromUuid = new Guid("00000000-0000-0000-0005-000000005545"),
+                FromUuidType = UuidType.Organization,
+                CoveredByPartyId = null,
+                CoveredByUserId = null,
+                ToUuid = new Guid("a6355a68-86b8-4344-8a81-0248cb461468"),
+                ToUuidType = UuidType.SystemUser,
+                PerformedByUserId = 20000490,
+                PerformedByUuid = null,
+                PerformedByUuidType = UuidType.NotSpecified,
+                BlobStoragePolicyPath = $"ttd/apps-test/50005545/SystemUsera6355a68-86b8-4344-8a81-0248cb461468/delegationpolicy.xml",
+                BlobStorageVersionId = "2024-07-18T13:37:00.1337Z",
+                Created = Convert.ToDateTime("2024-07-18T13:37:00.1337Z")
+            });
+        }
+
+        return Task.FromResult(result);
     }
 
     /// <inheritdoc/>
@@ -251,7 +277,32 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     /// <inheritdoc/>
     public Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        List<DelegationChange> result = new List<DelegationChange>();
+        if (resourceRegistryIds.Contains("generic-access-resource") && fromPartyIds.Contains(50005545) && toUuid == new Guid("a6355a68-86b8-4344-8a81-0248cb461468"))
+        {
+            result.Add(new DelegationChange
+            {
+                ResourceRegistryDelegationChangeId = 1337,
+                DelegationChangeType = DelegationChangeType.Grant,
+                ResourceId = "generic-access-resource",
+                ResourceType = ResourceType.GenericAccessResource.ToString().ToLower(),
+                OfferedByPartyId = 50005545,
+                FromUuid = new Guid("00000000-0000-0000-0005-000000005545"),
+                FromUuidType = UuidType.Organization,
+                CoveredByPartyId = null,
+                CoveredByUserId = null,
+                ToUuid = new Guid("a6355a68-86b8-4344-8a81-0248cb461468"),
+                ToUuidType = UuidType.SystemUser,
+                PerformedByUserId = 20000490,
+                PerformedByUuid = null,
+                PerformedByUuidType = UuidType.NotSpecified,
+                BlobStoragePolicyPath = $"resourceregistry/generic-access-resource/50005545/SystemUsera6355a68-86b8-4344-8a81-0248cb461468/delegationpolicy.xml",
+                BlobStorageVersionId = "2024-07-18T13:37:00.1337Z",
+                Created = Convert.ToDateTime("2024-07-18T13:37:00.1337Z")
+            });
+        }
+
+        return Task.FromResult(result);
     }
 
     /// <inheritdoc/>

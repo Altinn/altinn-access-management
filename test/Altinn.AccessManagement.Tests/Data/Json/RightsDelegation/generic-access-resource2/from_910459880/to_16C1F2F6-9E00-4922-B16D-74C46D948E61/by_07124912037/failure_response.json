@@ -1,0 +1,11 @@
+{
+	"type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+	"title": "One or more validation errors occurred.",
+	"status": 400,
+	"errors": {
+		"right[0].Resource": [
+			"The resource does not exist or is not available for delegation"
+		]
+	},
+	"traceId": "0HN529OQ63R5R"
+}

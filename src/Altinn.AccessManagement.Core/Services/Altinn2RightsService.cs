@@ -90,6 +90,13 @@ public class Altinn2RightsService : IAltinn2RightsService
         foreach (var delegation in delegations)
         {
             var entry = new RightDelegation();
+
+            if (delegation.CoveredByUserId == null && delegation.CoveredByPartyId == null)
+            {
+                // This is a temporary fix just to remove delegations given to system users so they do not give problems for the use from Altinn II to be changed later
+                continue;
+            }
+
             if (delegation.CoveredByUserId != null)
             {
                 entry.To.Add(new(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, delegation.CoveredByUserId.ToString()));

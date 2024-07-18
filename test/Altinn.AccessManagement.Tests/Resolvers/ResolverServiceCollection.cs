@@ -54,5 +54,6 @@ public static class ResolverServiceCollection
         services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();
         services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
         services.AddSingleton<IProfileClient, ProfileClientMock>();
+        services.AddSingleton<IAuthenticationClient, AuthenticationMock>();
     }
 }

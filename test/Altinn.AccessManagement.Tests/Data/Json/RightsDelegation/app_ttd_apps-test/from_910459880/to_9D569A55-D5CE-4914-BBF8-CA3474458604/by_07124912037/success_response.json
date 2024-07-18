@@ -1,0 +1,25 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:systemuser:uuid",
+      "value": "9D569A55-D5CE-4914-BBF8-CA3474458604"
+    }
+  ],
+  "RightDelegationResults": [
+    {
+      "rightKey": "apps-test,ttd:read",
+      "resource": [
+        {
+          "id": "urn:altinn:org",
+          "value": "ttd"
+        },
+        {
+          "id": "urn:altinn:app",
+          "value": "apps-test"
+        }
+      ],
+      "action": "read",
+      "status": "Delegated"
+    }
+  ]
+}

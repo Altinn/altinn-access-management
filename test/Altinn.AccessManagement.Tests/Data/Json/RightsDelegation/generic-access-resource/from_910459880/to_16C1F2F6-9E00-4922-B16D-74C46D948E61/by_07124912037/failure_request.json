@@ -1,0 +1,23 @@
+{
+  "to": [
+    {
+      "id": "urn:altinn:systemuser:uuid",
+      "value": "16C1F2F6-9E00-4922-B16D-74C46D948E61"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      },
+      {
+        "id": "urn:altinn:task",
+        "value": "org-delegation-subtask"
+      }
+      ],
+      "action": "mainunit-delegated-action"
+    }
+  ]
+}

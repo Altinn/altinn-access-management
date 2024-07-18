@@ -2,6 +2,7 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -22,6 +23,7 @@ public class ContextRetrievalService : IContextRetrievalService
     private readonly IResourceRegistryClient _resourceRegistryClient;
     private readonly IAltinnRolesClient _altinnRolesClient;
     private readonly IPartiesClient _partiesClient;
+    private readonly IAuthenticationClient _authenticationClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContextRetrievalService"/> class
@@ -31,13 +33,15 @@ public class ContextRetrievalService : IContextRetrievalService
     /// <param name="resourceRegistryClient">The client for integration with the ResourceRegistry</param>
     /// <param name="altinnRolesClient">The client for integration with the SBL Bridge for role information</param>
     /// <param name="partiesClient">The client for integration </param>
-    public ContextRetrievalService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient)
+    /// <param name="authenticationClient">The client for integration with authentication</param>
+    public ContextRetrievalService(IOptions<CacheConfig> cacheConfig, IMemoryCache memoryCache, IResourceRegistryClient resourceRegistryClient, IAltinnRolesClient altinnRolesClient, IPartiesClient partiesClient, IAuthenticationClient authenticationClient)
     {
         _cacheConfig = cacheConfig.Value;
         _memoryCache = memoryCache;
         _resourceRegistryClient = resourceRegistryClient;
         _altinnRolesClient = altinnRolesClient;
         _partiesClient = partiesClient;
+        _authenticationClient = authenticationClient;
     }
 
     /// <inheritdoc/>
@@ -150,6 +154,20 @@ public class ContextRetrievalService : IContextRetrievalService
         return result;
     }
 
+    /// <inheritdoc /> 
+    public async Task<SystemUser> GetSystemUserById(int partyId, string systemUserUuid, CancellationToken cancellationToken = default)
+    {
+        SystemUser systemUser = await _authenticationClient.GetSystemUser(partyId, systemUserUuid, cancellationToken);
+        return systemUser;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<DefaultRight>> GetDefaultRightsForRegisteredSystem(string productId, CancellationToken cancellationToken = default)
+    {
+        List<DefaultRight> defaultRight = await _authenticationClient.GetDefaultRightsForRegisteredSystem(productId, cancellationToken);
+        return defaultRight;
+    }
+
     /// <inheritdoc/>
     public async Task<Dictionary<string, Party>> GetPartiesByUuids(IEnumerable<Guid> partyUuids, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
@@ -193,7 +211,7 @@ public class ContextRetrievalService : IContextRetrievalService
         return parties;
     }
 
-    /// <inheritdoc/>
+ /// <inheritdoc/>
     public async Task<Party> GetPartyForOrganization(string organizationNumber, CancellationToken cancellationToken = default)
     {
         string cacheKey = $"orgNo:{organizationNumber}";

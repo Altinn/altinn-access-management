@@ -9,6 +9,7 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Utils;
 
@@ -85,7 +86,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc/>
-    public Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
+    public Task<DelegationChange> GetCurrentDelegationChange(ResourceAttributeMatchType resourceMatchType, string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toUuidType, CancellationToken cancellationToken = default)
     {
         DelegationChange result = null;
         DateTime created = Convert.ToDateTime("2022-09-27T13:02:23.786072Z");

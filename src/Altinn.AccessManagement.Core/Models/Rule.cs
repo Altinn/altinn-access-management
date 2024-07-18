@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -47,6 +48,16 @@ namespace Altinn.AccessManagement.Core.Models
         /// </summary>
         [Required]
         public int OfferedByPartyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the uuid of the party offering the rights to the receiving (CoveredBy) entity.
+        /// </summary>
+        public Guid? OfferedByPartyUuid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the party offering the rights to the receiving (CoveredBy) entity.
+        /// </summary>
+        public UuidType OfferedByPartyType { get; set; }
 
         /// <summary>
         /// Gets or sets the party receiving (covered by) the rights from the delegating (OfferedByPartyId) entity

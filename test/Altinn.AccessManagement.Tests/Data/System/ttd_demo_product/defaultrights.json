@@ -1,0 +1,22 @@
+[
+  {
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ]
+  },
+  {
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ]
+  }
+]

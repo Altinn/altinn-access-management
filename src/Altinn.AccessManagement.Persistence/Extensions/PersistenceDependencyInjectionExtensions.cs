@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,6 +79,7 @@ public static class PersistenceDependencyInjectionExtensions
             var builder = new NpgsqlDataSourceBuilder(bld.ConnectionString);
             builder.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
             builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
+            builder.MapEnum<UuidType>("delegation.uuidtype");
 
             return builder.Build();
         });

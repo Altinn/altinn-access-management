@@ -1,0 +1,11 @@
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-89a2524fd6cda819ee788e5ac4e24d4c-03bf71781cd3ed0c-00",
+  "errors": {
+    "To": [
+      "Maskinporten schema delegation can not have the same party in the From and To Attributes: 910459880"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0.100-1-alpine3.18 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /app
 
 COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/
@@ -13,7 +13,7 @@ COPY src ./src
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.3-alpine3.18 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .

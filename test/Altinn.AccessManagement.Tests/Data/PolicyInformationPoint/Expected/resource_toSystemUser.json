@@ -1,0 +1,23 @@
+[
+  {
+    "delegationchangeid": 0,
+    "resourceregistrydelegationchangeid": 1337,
+    "delegationchangetype": 1,
+    "resourceid": "generic-access-resource",
+    "resourcetype": "genericaccessresource",
+    "offeredbypartyid": 50005545,
+    "fromuuid": "00000000-0000-0000-0005-000000005545",
+    "fromuuidtype": 2,
+    "coveredbypartyid": null,
+    "coveredbyuserid": null,
+    "touuid": "a6355a68-86b8-4344-8a81-0248cb461468",
+    "touuidtype": 3,
+    "performedbyuserid": 20000490,
+    "performedbypartyid": null,
+    "performedbyuuid": null,
+    "performedbyuuidtype": 0,
+    "blobstoragepolicypath": "resourceregistry/generic-access-resource/50005545/SystemUsera6355a68-86b8-4344-8a81-0248cb461468/delegationpolicy.xml",
+    "blobstorageversionid": "2024-07-18T13:37:00.1337Z",
+    "created": "2024-07-18T13:37:00.1337Z"
+  }
+]

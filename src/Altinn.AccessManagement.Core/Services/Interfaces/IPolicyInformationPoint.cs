@@ -23,15 +23,17 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="rightsQuery">The query model</param>
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user have access to</param>
         /// <param name="getDelegableRights">Whether the query is only rights the user is allowed to delegate to others</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of rights</returns>
-        Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false, bool getDelegableRights = false);
+        Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false, bool getDelegableRights = false, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context
         /// </summary>
         /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
-        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request);
+        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all active received delegations (not including maskinporten schema) from db, both directly delegated to the party or through key roles if the party is a person

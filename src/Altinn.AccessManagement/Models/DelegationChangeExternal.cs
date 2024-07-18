@@ -1,75 +1,124 @@
-using Altinn.AccessManagement.Core.Models;
+using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Enums;
 
-namespace Altinn.AccessManagement.Models
+namespace Altinn.AccessManagement.Models;
+
+/// <summary>
+/// This is an external model that describes a delegation change as stored in the Authorization postgre DelegationChanges table.
+/// </summary>
+public class DelegationChangeExternal
 {
     /// <summary>
-    /// This is an external model that describes a delegation change as stored in the Authorization postgre DelegationChanges table.
+    /// Gets or sets the delegation change id
     /// </summary>
-    public class DelegationChangeExternal
-    {
-        /// <summary>
-        /// Gets or sets the delegation change id
-        /// </summary>
-        public int DelegationChangeId { get; set; }
+    [JsonPropertyName("delegationchangeid")]
+    public int DelegationChangeId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the resource registry delegation change id
-        /// </summary>
-        public int ResourceRegistryDelegationChangeId { get; set; }
+    /// <summary>
+    /// Gets or sets the resource registry delegation change id
+    /// </summary>
+    [JsonPropertyName("resourceregistrydelegationchangeid")]
+    public int ResourceRegistryDelegationChangeId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the delegation change type
-        /// </summary>
-        public DelegationChangeTypeExternal DelegationChangeType { get; set; }
+    /// <summary>
+    /// Gets or sets the delegation change type
+    /// </summary>
+    [JsonPropertyName("delegationchangetype")]
+    public DelegationChangeTypeExternal DelegationChangeType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the resource id.
-        /// </summary>
-        public string ResourceId { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the resource id.
+    /// </summary>
+    [JsonPropertyName("resourceid")]
+    public string ResourceId { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the resourcetype.
-        /// </summary>
-        public string ResourceType { get; set; } = string.Empty;
+    /// <summary>
+    /// Gets or sets the resourcetype.
+    /// </summary>
+    [JsonPropertyName("resourcetype")]
+    public string ResourceType { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the offeredbypartyid, refering to the party id of the user or organization offering the delegation.
-        /// </summary>
-        public int OfferedByPartyId { get; set; }
+    /// <summary>
+    /// Gets or sets the offeredbypartyid, refering to the party id of the user or organization offering the delegation.
+    /// </summary>
+    [JsonPropertyName("offeredbypartyid")]
+    public int OfferedByPartyId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the coveredbypartyid, refering to the party id of the organization having received the delegation. Otherwise Null if the recipient is a user.
-        /// </summary>
-        public int? CoveredByPartyId { get; set; }
+    /// <summary>
+    /// The uuid of the party the right is on behalf of
+    /// </summary>
+    [JsonPropertyName("fromuuid")]
+    public Guid? FromUuid { get; set; }
 
-        /// <summary>
-        /// Gets or sets the coveredbyuserid, refering to the user id of the user having received the delegation. Otherwise Null if the recipient is an organization.
-        /// </summary>
-        public int? CoveredByUserId { get; set; }
+    /// <summary>
+    /// The type of party the right is on behalf of (Person, Organization, SystemUser)
+    /// </summary>
+    [JsonPropertyName("fromuuidtype")]
+    public UuidTypeExternal FromUuidType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
-        /// </summary>
-        public int? PerformedByUserId { get; set; }
+    /// <summary>
+    /// Gets or sets the coveredbypartyid, refering to the party id of the organization having received the delegation. Otherwise Null if the recipient is a user.
+    /// </summary>
+    [JsonPropertyName("coveredbypartyid")]
+    public int? CoveredByPartyId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
-        /// </summary>
-        public int? PerformedByPartyId { get; set; }
+    /// <summary>
+    /// Gets or sets the coveredbyuserid, refering to the user id of the user having received the delegation. Otherwise Null if the recipient is an organization.
+    /// </summary>
+    [JsonPropertyName("coveredbyuserid")]
+    public int? CoveredByUserId { get; set; }
 
-        /// <summary>
-        /// Gets or sets blobstoragepolicypath.
-        /// </summary>
-        public string BlobStoragePolicyPath { get; set; } = string.Empty;
+    /// <summary>
+    /// The uuid of the party holding the right
+    /// </summary>
+    [JsonPropertyName("touuid")]
+    public Guid? ToUuid { get; set; }
 
-        /// <summary>
-        /// Gets or sets the blobstorage versionid
-        /// </summary>
-        public string BlobStorageVersionId { get; set; } = string.Empty;
+    /// <summary>
+    /// The type of party holding the right
+    /// </summary>
+    [JsonPropertyName("touuidtype")]
+    public UuidTypeExternal ToUuidType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the created date and timestamp for the delegation change
-        /// </summary>
-        public DateTime? Created { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the user id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+    /// </summary>
+    [JsonPropertyName("performedbyuserid")]
+    public int? PerformedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the party id of the user that performed the delegation change (either added or removed rules to the policy, or deleted it entirely).
+    /// </summary>
+    [JsonPropertyName("performedbypartyid")]
+    public int? PerformedByPartyId { get; set; }
+
+    /// <summary>
+    /// The uuid of the party that performed the delegation
+    /// </summary>
+    [JsonPropertyName("performedbyuuid")]
+    public Guid? PerformedByUuid { get; set; }
+
+    /// <summary>
+    /// The type of the party that performed the delegation
+    /// </summary>
+    [JsonPropertyName("performedbyuuidtype")]
+    public UuidTypeExternal PerformedByUuidType { get; set; }
+
+    /// <summary>
+    /// Gets or sets blobstoragepolicypath.
+    /// </summary>
+    [JsonPropertyName("blobstoragepolicypath")]
+    public string BlobStoragePolicyPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the blobstorage versionid
+    /// </summary>
+    [JsonPropertyName("blobstorageversionid")]
+    public string BlobStorageVersionId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the created date and timestamp for the delegation change
+    /// </summary>
+    [JsonPropertyName("created")]
+    public DateTime? Created { get; set; }
 }

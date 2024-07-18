@@ -21,7 +21,7 @@ namespace Altinn.AccessManagement.Persistence
     {
         private readonly NpgsqlDataSource _conn;
         private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>
@@ -147,6 +147,69 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByPartyIds);
                 cmd.Parameters.AddWithNullableValue("coveredByUserIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, coveredByUserIds);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetAppDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+            if (altinnAppIds?.Count < 1)
+            {
+                activity?.StopWithError(new ArgumentNullException(nameof(altinnAppIds)));
+                throw new ArgumentNullException(nameof(altinnAppIds));
+            }
+
+            if (fromPartyIds?.Count < 1)
+            {
+                activity?.StopWithError(new ArgumentNullException(nameof(fromPartyIds)));
+                throw new ArgumentNullException(nameof(fromPartyIds));
+            }
+
+            if (toUuidType == UuidType.NotSpecified)
+            {
+                activity?.StopWithError(new ArgumentException($"Param: {nameof(toUuidType)} must be specified."));
+                throw new ArgumentException($"Param: {nameof(toUuidType)} must be specified.");
+            }
+
+            if (toUuid == Guid.Empty)
+            {
+                activity?.StopWithError(new ArgumentException($"Param: {nameof(toUuid)} must be specified."));
+                throw new ArgumentException($"Param: {nameof(toUuid)} must be specified.");
+            }
+
+            string query = /*strpsql*/@$"
+            WITH latestChanges AS (
+                SELECT MAX(delegationChangeId) as latestId
+                FROM delegation.delegationchanges
+                WHERE offeredByPartyId = ANY (@offeredByPartyIds)
+                    AND altinnAppId = ANY (@altinnAppIds)
+                    AND toType = @toType
+                    AND toUuid = @toUuid
+                GROUP BY altinnAppId, offeredByPartyId, offeredByPartyId, toType, toUuid
+            )
+            SELECT {defaultAppColumns}
+            FROM delegation.delegationchanges
+                INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
+            WHERE delegationchangetype != 'revoke_last'
+            ";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds);
+                cmd.Parameters.AddWithValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, fromPartyIds);
+                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, toUuid);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetAppDelegationChange)
@@ -500,6 +563,93 @@ namespace Altinn.AccessManagement.Persistence
             }
 
             return delegationChanges;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+            if (resourceRegistryIds?.Count < 1)
+            {
+                activity?.StopWithError(new ArgumentNullException(nameof(resourceRegistryIds)));
+                throw new ArgumentNullException(nameof(resourceRegistryIds));
+            }
+
+            if (fromPartyIds?.Count < 1)
+            {
+                activity?.StopWithError(new ArgumentNullException(nameof(fromPartyIds)));
+                throw new ArgumentNullException(nameof(fromPartyIds));
+            }
+
+            if (toUuidType == UuidType.NotSpecified)
+            {
+                activity?.StopWithError(new ArgumentException($"Param: {nameof(toUuidType)} must be specified."));
+                throw new ArgumentException($"Param: {nameof(toUuidType)} must be specified.");
+            }
+
+            if (toUuid == Guid.Empty)
+            {
+                activity?.StopWithError(new ArgumentException($"Param: {nameof(toUuid)} must be specified."));
+                throw new ArgumentException($"Param: {nameof(toUuid)} must be specified.");
+            }
+
+            string query = /*strpsql*/@"    
+            WITH resources AS (
+                SELECT resourceId, resourceRegistryId, resourceType
+                FROM accessmanagement.Resource
+                WHERE resourceType != 'maskinportenschema'
+                    AND resourceRegistryId = ANY (@resourceRegistryIds)
+            ),
+            latestResourceChanges AS (
+                SELECT MAX(resourceRegistryDelegationChangeId) AS latestId
+                FROM delegation.ResourceRegistryDelegationChanges
+                WHERE offeredbypartyid = ANY (@offeredByPartyIds)
+                    AND toType = @toType
+                    AND toUuid = @toUuid
+                GROUP BY resourceId_fk, offeredByPartyId, toType, toUuid
+            )
+            SELECT
+                resourceRegistryDelegationChangeId,
+                null AS delegationChangeId,
+                delegationChangeType,
+                resources.resourceRegistryId,
+                resources.resourceType,
+                null AS altinnAppId,
+                offeredByPartyId,
+                fromuuid,
+                fromtype,
+                coveredByUserId,
+                coveredByPartyId,
+                touuid,
+                totype,
+                performedByUserId,
+                performedByPartyId,
+                blobStoragePolicyPath,
+                blobStorageVersionId,
+                created
+            FROM delegation.ResourceRegistryDelegationChanges
+                INNER JOIN resources ON resourceId_fk = resources.resourceid
+                INNER JOIN latestResourceChanges ON resourceRegistryDelegationChangeId = latestResourceChanges.latestId
+            WHERE delegationchangetype != 'revoke_last'
+            ";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
+                cmd.Parameters.AddWithValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, fromPartyIds);
+                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, toUuid);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetResourceRegistryDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
         }
 
         /// <inheritdoc/>

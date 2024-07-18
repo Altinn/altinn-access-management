@@ -1,0 +1,33 @@
+meta {
+  name: SystemUser on Resource for Orsta
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "subject":
+    {
+      "id": "urn:altinn:systemuser:uuid",
+      "value": "a6355a68-86b8-4344-8a81-0248cb461468"
+    },
+    "party":
+    {
+      "id": "urn:altinn:partyid",
+      "value": "50005545"
+    },
+    "resource": 
+    [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-access-resource"
+      }
+    ]
+  }
+}

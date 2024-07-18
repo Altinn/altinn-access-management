@@ -1,0 +1,37 @@
+meta {
+  name: SystemUser on App for Orsta
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "subject":
+    {
+      "id": "urn:altinn:systemuser:uuid",
+      "value": "fc59de4f-9715-4fe5-b317-ed4b12d57126"
+    },
+    "party":
+    {
+      "id": "urn:altinn:partyid",
+      "value": "50005545"
+    },
+    "resource": 
+    [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "apps-test"
+      }
+    ]
+  }
+}

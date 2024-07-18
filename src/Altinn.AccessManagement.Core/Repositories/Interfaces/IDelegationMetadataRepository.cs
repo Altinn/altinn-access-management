@@ -53,6 +53,16 @@ public interface IDelegationMetadataRepository
     Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<int> offeredByPartyIds, List<string> altinnAppIds, List<int> coveredByPartyIds = null, List<int> coveredByUserIds = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets all the current altinn app delegation change records matching the filter values
+    /// </summary>
+    /// <param name="altinnAppIds">The list of altinn app IDs to look up delegations of</param>
+    /// <param name="fromPartyIds">The list of from parties having delegated resources</param>
+    /// <param name="toUuidType">The type of the to uuid recipient of delegated resources</param>
+    /// <param name="toUuid">The uuid of the recipient of delegated resources</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    Task<List<DelegationChange>> GetAllCurrentAppDelegationChanges(List<string> altinnAppIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets all the current resource registry delegation change records matching the filter values
     /// </summary>
     /// <param name="offeredByPartyIds">The list of party id of the entity offering the delegated the policy</param>
@@ -61,6 +71,16 @@ public interface IDelegationMetadataRepository
     /// <param name="coveredByUserId">The user id of the user having received the delegated policy</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<int> offeredByPartyIds, List<string> resourceRegistryIds, List<int> coveredByPartyIds = null, int? coveredByUserId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all the current resource registry delegation change records matching the filter values
+    /// </summary>
+    /// <param name="resourceRegistryIds">The list of resource registry IDs to look up delegations of</param>
+    /// <param name="fromPartyIds">The list of from parties having delegated resources</param>
+    /// <param name="toUuidType">The type of the to uuid recipient of delegated resources</param>
+    /// <param name="toUuid">The uuid of the recipient of delegated resources</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    Task<List<DelegationChange>> GetAllCurrentResourceRegistryDelegationChanges(List<string> resourceRegistryIds, List<int> fromPartyIds, UuidType toUuidType, Guid toUuid, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all the active resource registry delegations a given party have delegated to others

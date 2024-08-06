@@ -6,7 +6,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Configuration;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
@@ -279,9 +281,9 @@ public static class DelegationChangeComposer
             action(delegation);
         }
 
-        if (delegation.PerformedByUserId == null && delegation.CoveredByUserId != null)
+        if (delegation.PerformedByUserId == null)
         {
-            delegation.PerformedByUserId = delegation.CoveredByUserId;
+            delegation.PerformedByUserId = delegation.CoveredByUserId == null ? 1 : PersonSeeds.Paula.PartyId;
         }
 
         if (delegation.PerformedByPartyId == null && delegation.CoveredByPartyId != null)
@@ -317,7 +319,17 @@ public static class DelegationChangeComposer
     /// <param name="resource">resource</param>
     public static Action<DelegationChange> WithResource(IAccessManagementResource resource) => delegation =>
     {
-        delegation.ResourceId = resource.Resource.Identifier;
+        if (resource.Resource.ResourceType == ResourceType.AltinnApp)
+        {
+            var org = resource.Resource.AuthorizationReference.FirstOrDefault(attr => attr.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute);
+            var app = resource.Resource.AuthorizationReference.FirstOrDefault(attr => attr.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            delegation.ResourceId = $"{org.Value}/{app.Value}";
+        }
+        else
+        {
+            delegation.ResourceId = resource.Resource.Identifier;
+        }
+
         delegation.ResourceType = resource.Resource.ResourceType.ToString();
     };
 

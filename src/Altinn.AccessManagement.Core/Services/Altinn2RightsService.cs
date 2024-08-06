@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
@@ -112,10 +113,23 @@ public class Altinn2RightsService : IAltinn2RightsService
             var resourcePath = delegation.ResourceId.Split("/");
             if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
             {
-                entry.Resource.AddRange(resources
+                var delegatedResource = resources
                     .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
-                    .First(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
-                    .AuthorizationReference);
+                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]));
+
+                if (delegatedResource.FirstOrDefault() is var resource && resource != null)
+                {
+                    // resource exists
+                    entry.Resource.AddRange(resource.AuthorizationReference);
+                }
+                else
+                {
+                    // resource deleted
+                    entry.Resource.AddRange([
+                        new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, resourcePath[0]),
+                        new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, resourcePath[1]),
+                    ]);
+                }
             }
             else
             {

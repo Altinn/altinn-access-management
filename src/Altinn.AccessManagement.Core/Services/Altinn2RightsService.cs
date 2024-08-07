@@ -113,23 +113,11 @@ public class Altinn2RightsService : IAltinn2RightsService
             var resourcePath = delegation.ResourceId.Split("/");
             if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
             {
-                var delegatedResource = resources
-                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
-                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]));
-
-                if (delegatedResource.FirstOrDefault() is var resource && resource != null)
-                {
-                    // resource exists
-                    entry.Resource.AddRange(resource.AuthorizationReference);
-                }
-                else
-                {
-                    // resource deleted
-                    entry.Resource.AddRange([
-                        new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, resourcePath[0]),
-                        new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, resourcePath[1]),
-                    ]);
-                }
+                // resource deleted
+                entry.Resource.AddRange([
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, resourcePath[0]),
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, resourcePath[1])
+                ]);
             }
             else
             {

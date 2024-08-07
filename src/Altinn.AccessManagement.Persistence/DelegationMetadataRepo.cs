@@ -925,7 +925,7 @@ namespace Altinn.AccessManagement.Persistence
                 ,change.created
             FROM
                 delegation.ResourceRegistryDelegationChanges AS change
-                INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid
+                INNER JOIN lastChange ON change.resourceRegistryDelegationChangeId = lastChange.changeid
             WHERE
                 delegationchangetype != 'revoke_last'
             ";

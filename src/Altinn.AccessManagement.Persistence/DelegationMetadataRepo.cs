@@ -871,34 +871,63 @@ namespace Altinn.AccessManagement.Persistence
 
             string query = /*strpsql*/@"
             WITH lastChange AS (
-                SELECT MAX(resourceRegistryDelegationChangeId) AS changeId, R.resourceId, R.resourceRegistryId, R.resourceType
-                FROM accessmanagement.Resource AS R
+                SELECT
+                    MAX(resourceRegistryDelegationChangeId) AS changeId
+                    ,R.resourceId
+                    ,R.resourceRegistryId
+                    ,R.resourceType
+                FROM
+                    accessmanagement.Resource AS R
                     INNER JOIN delegation.ResourceRegistryDelegationChanges AS DC ON DC.resourceId_fk = R.resourceid
-                WHERE R.resourceType = @resourceType AND R.resourceRegistryId = ANY (@resourceRegistryIds)
+                WHERE
+                    R.resourceType = @resourceType
+                    AND R.resourceRegistryId = ANY (@resourceRegistryIds)
             ";
 
             if (offeredByPartyId > 0)
             {
                 query += /*strpsql*/@"
-                AND offeredByPartyId = @offeredByPartyId";
+                    AND offeredByPartyId = @offeredByPartyId";
             }
 
             if (coveredByPartyId > 0) 
             {
                 query += /*strpsql*/@"
-                AND coveredByPartyId = @coveredByPartyId";
+                    AND coveredByPartyId = @coveredByPartyId";
             }
 
             query += /*strpsql*/@"
-                GROUP BY DC.resourceId_fk, DC.offeredByPartyId, DC.coveredByPartyId, DC.coveredByUserId, R.resourceId, R.resourceRegistryId, R.resourceType
+                GROUP BY
+                    DC.resourceId_fk
+                    ,DC.offeredByPartyId
+                    ,DC.coveredByPartyId
+                    ,DC.coveredByUserId
+                    ,R.resourceId
+                    ,R.resourceRegistryId
+                    ,R.resourceType
             )
             SELECT
-                change.resourceRegistryDelegationChangeId, change.delegationChangeType, lastChange.resourceRegistryId as resourceRegistryId, lastChange.resourceType,
-                change.offeredByPartyId, change.fromUuid, change.fromType, change.coveredByUserId change.coveredByPartyId, change.toUuid, change.toType, change.performedByUserId change.performedByPartyId,
-                change.blobStoragePolicyPath, change.blobStorageVersionId, change.created
-            FROM delegation.ResourceRegistryDelegationChanges AS change
+                change.resourceRegistryDelegationChangeId
+                ,change.delegationChangeType
+                ,lastChange.resourceRegistryId
+                ,lastChange.resourceType
+                ,change.offeredByPartyId
+                ,change.fromUuid
+                ,change.fromType
+                ,change.coveredByUserId
+                ,change.coveredByPartyId
+                ,change.toUuid
+                ,change.toType
+                ,change.performedByUserId
+                ,change.performedByPartyId
+                ,change.blobStoragePolicyPath
+                ,change.blobStorageVersionId
+                ,change.created
+            FROM
+                delegation.ResourceRegistryDelegationChanges AS change
                 INNER JOIN lastChange ON change.resourceId_fk = lastChange.resourceid
-            WHERE delegationchangetype != 'revoke_last'
+            WHERE
+                delegationchangetype != 'revoke_last'
             ";
 
             try

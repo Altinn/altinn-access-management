@@ -113,10 +113,9 @@ public class Altinn2RightsService : IAltinn2RightsService
             var resourcePath = delegation.ResourceId.Split("/");
             if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
             {
-                // resource deleted
                 entry.Resource.AddRange([
-                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, resourcePath[0]),
-                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, resourcePath[1])
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, resourcePath.First()),
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, string.Join(string.Empty, resourcePath.Skip(1)))
                 ]);
             }
             else

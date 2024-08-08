@@ -9,12 +9,17 @@ using Azure.Storage.Blobs.Specialized;
 namespace Altinn.AccessManagement.Persistence.Policy;
 
 /// <inheritdoc/>
-public class PolicyRepositoryV2(BlobClient client) : IPolicyRepositoryV2
+public class PolicyRepositoryV2(BlobClient client, PolicyOptions options) : IPolicyRepositoryV2
 {
     /// <summary>
     /// Azure Blob Storage client
     /// </summary>
     public BlobClient Client { get; } = client;
+
+    /// <summary>
+    /// Policy Options
+    /// </summary>
+    public PolicyOptions Options { get; } = options;
 
     private static async Task<T> RoundTripper<T>(Func<Task<T>> func)
     {
@@ -71,7 +76,7 @@ public class PolicyRepositoryV2(BlobClient client) : IPolicyRepositoryV2
     /// <inheritdoc/>
     public async Task<string> TryAcquireBlobLease(CancellationToken cancellationToken = default)
     {
-        var result = await RoundTripper(async () => await Client.GetBlobLeaseClient().AcquireAsync(TimeSpan.FromSeconds(3)));
+        var result = await RoundTripper(async () => await Client.GetBlobLeaseClient().AcquireAsync(Options.LeaseAcquireTimeout, cancellationToken: cancellationToken));
         return result.Value.LeaseId;
     }
 

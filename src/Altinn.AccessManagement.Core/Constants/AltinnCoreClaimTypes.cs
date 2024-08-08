@@ -59,5 +59,10 @@
         /// Organization number.
         /// </summary>
         public const string OrgNumber = "urn:altinn:orgNumber";
+
+        /// <summary>
+        /// Authorization details.
+        /// </summary>
+        public const string AuthorizationDetails = "authorization_details";
     }
 }

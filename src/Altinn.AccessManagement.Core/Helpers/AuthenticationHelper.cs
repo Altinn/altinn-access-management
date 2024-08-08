@@ -1,4 +1,6 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using System.Text.Json;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -54,6 +56,46 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Gets the users id
+        /// </summary>
+        /// <param name="context">the http context</param>
+        /// <returns>the logged in system users id</returns>
+        public static string GetSystemUserId(HttpContext context)
+        {
+            var claim = context.User?.Claims.FirstOrDefault(c => c.Type.Equals(AltinnCoreClaimTypes.AuthorizationDetails));
+            if (claim != null)
+            {
+                string jwtSystemUSerClaim = claim.Value;
+
+                SystemUserClaim jwtSystemUserClaims = JsonSerializer.Deserialize<SystemUserClaim>(jwtSystemUSerClaim);
+
+                return jwtSystemUserClaims.Systemuser_id[0];
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the system user from the context
+        /// </summary>
+        /// <param name="context">the http context</param>
+        /// <returns>System user object from token</returns>
+        public static SystemUserClaim GetSystemUser(HttpContext context)
+        {
+            var claim = context.User?.Claims.FirstOrDefault(c => c.Type.Equals(AltinnCoreClaimTypes.AuthorizationDetails));
+            if (claim != null)
+            {
+                string jwtSystemUSerClaim = claim.Value;
+
+                SystemUserClaim jwtSystemUserClaims = JsonSerializer.Deserialize<SystemUserClaim>(jwtSystemUSerClaim);
+
+                return jwtSystemUserClaims;
+            }
+
+            return string.Empty;
         }
     }
 }

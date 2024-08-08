@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Text;
+using System.Text.Json;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Tests.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Altinn.AccessManagement.Tests.Utils
@@ -22,13 +26,62 @@ namespace Altinn.AccessManagement.Tests.Utils
         public static string GenerateToken(ClaimsPrincipal principal, TimeSpan tokenExpiry, string issuer = "UnitTest")
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(principal.Identity),
                 Expires = DateTime.UtcNow.AddSeconds(tokenExpiry.TotalSeconds),
                 SigningCredentials = GetSigningCredentials(issuer),
                 Audience = "altinn.no",
-                Issuer = issuer
+                Issuer = issuer,
+            };
+
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            string serializedToken = tokenHandler.WriteToken(token);
+
+            return serializedToken;
+        }
+
+        /// <summary>
+        /// Generates a system user test token for unit tests. In production Maskinporten will be the entity that creates these tokens.
+        /// </summary>
+        /// <returns></returns>
+        public static string GenerateSystemUserToken(string systemUserId, string systemUserOrg, string systemId, string consumer,  TimeSpan tokenExpiry, string issuer = "UnitTest")
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+
+            SystemUserClaim systemUserClaims = new SystemUserClaim
+            {
+                Systemuser_id = [systemUserId],
+                Systemuser_org = new OrgClaim()
+                {
+                    ID = systemUserOrg
+                },
+                System_id = systemId
+            };
+            List<SystemUserClaim> systemUserList = [systemUserClaims];
+
+            OrgClaim consumerOrg = new OrgClaim()
+            {
+                ID = consumer
+            };
+
+            JsonElement systemUserClaimsJson = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(systemUserList));
+            JsonElement consumerOrgJson = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(consumerOrg));
+
+            Dictionary<string, object> claims = new Dictionary<string, object>()
+            {
+                { "authorization_details", systemUserClaimsJson },
+                { "consumer", consumerOrgJson }
+            };
+
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Expires = DateTime.UtcNow.AddSeconds(tokenExpiry.TotalSeconds),
+                SigningCredentials = GetSigningCredentials(issuer),
+                Audience = "altinn.no",
+                Issuer = issuer,
+                Claims = claims
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);

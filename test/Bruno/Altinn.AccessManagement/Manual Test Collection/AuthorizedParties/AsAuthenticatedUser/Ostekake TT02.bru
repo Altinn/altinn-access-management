@@ -1,0 +1,37 @@
+meta {
+  name: Ostekake TT02
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: false
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 341548
+  auth_partyId: 52127981
+  auth_ssn: '15923648388'
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

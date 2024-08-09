@@ -1,17 +1,13 @@
 meta {
-  name: KasperByUuid
+  name: Ørsta to Ostekake
   type: http
-  seq: 5
+  seq: 4
 }
 
-post {
-  url: {{baseUrl}}/accessmanagement/api/v1/resourceowner/authorizedparties?includeAltinn2=true
+put {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/50005545/accesscache/clear
   body: json
   auth: none
-}
-
-query {
-  includeAltinn2: true
 }
 
 headers {
@@ -22,15 +18,15 @@ headers {
 body:json {
   {
     "type": "urn:altinn:person:uuid",
-    "value": "ee007db6-0db4-4e55-ac21-2a888f04d846"
+    "value": "88bc3eff-bed2-46fe-8dd8-64dce1f94691"
   }
 }
 
 vars:pre-request {
-  auth_tokenType: Enterprise
-  auth_org: digdir
-  auth_orgNo: 991825827
-  auth_scopes: altinn:accessmanagement/authorizedparties.resourceowner
+  auth_tokenType: Personal
+  auth_userId: 20000490
+  auth_partyId: 50002598
+  auth_ssn: '07124912037'
 }
 
 script:pre-request {

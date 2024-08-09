@@ -1,0 +1,30 @@
+meta {
+  name: Karlstad for MainUnit
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subject": {
+      "id": "urn:altinn:partyid",
+      "value": "50004222"
+    },
+    "party": {
+      "id": "urn:altinn:partyid",
+      "value": "50006037"
+    },
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-main-to-org"
+      }
+    ]
+  }
+}

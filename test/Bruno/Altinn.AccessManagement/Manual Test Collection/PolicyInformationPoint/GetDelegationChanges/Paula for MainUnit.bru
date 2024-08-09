@@ -1,0 +1,30 @@
+meta {
+  name: Paula for MainUnit
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subject": {
+      "id": "urn:altinn:userid",
+      "value": "20000095"
+    },
+    "party": {
+      "id": "urn:altinn:partyid",
+      "value": "50006037"
+    },
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "devtest_gar_authparties-main-to-org"
+      }
+    ]
+  }
+}

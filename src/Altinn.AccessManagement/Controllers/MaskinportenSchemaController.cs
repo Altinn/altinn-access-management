@@ -56,7 +56,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope)
+        public async Task<ActionResult<List<MPDelegationExternal>>> GetMaskinportenDelegations([FromQuery] string? supplierOrg, [FromQuery] string? consumerOrg, [FromQuery] string scope, CancellationToken cancellationToken)
         {
             if (!MaskinportenSchemaAuthorizer.IsAuthorizedDelegationLookupAccess(scope, HttpContext.User))
             {
@@ -78,7 +78,7 @@ namespace Altinn.AccessManagement.Controllers
 
             try
             {
-                List<Delegation> delegations = await _delegation.GetMaskinportenDelegations(supplierOrg, consumerOrg, scope);
+                List<Delegation> delegations = await _delegation.GetMaskinportenDelegations(supplierOrg, consumerOrg, scope, cancellationToken);
                 List<MPDelegationExternal> delegationsExternal = _mapper.Map<List<MPDelegationExternal>>(delegations);
 
                 return delegationsExternal;
@@ -100,6 +100,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="party">The reportee party</param>
         /// <param name="rightsDelegationCheckRequest">Request model for user rights delegation check</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized</response>
@@ -114,7 +115,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest)
+        public async Task<ActionResult<List<RightDelegationCheckResultExternal>>> DelegationCheck([FromRoute] string party, [FromBody] RightsDelegationCheckRequestExternal rightsDelegationCheckRequest, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
@@ -126,7 +127,7 @@ namespace Altinn.AccessManagement.Controllers
                 RightsDelegationCheckRequest rightDelegationStatusRequestInternal = _mapper.Map<RightsDelegationCheckRequest>(rightsDelegationCheckRequest);
                 rightDelegationStatusRequestInternal.From = reportee.SingleToList();
 
-                DelegationCheckResponse delegationCheckResultInternal = await _delegation.DelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal);
+                DelegationCheckResponse delegationCheckResultInternal = await _delegation.DelegationCheck(authenticatedUserId, authenticationLevel, rightDelegationStatusRequestInternal, cancellationToken);
                 if (!delegationCheckResultInternal.IsValid)
                 {
                     foreach (var error in delegationCheckResultInternal.Errors)
@@ -165,17 +166,17 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<RightsDelegationResponseExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal delegation)
+        public async Task<ActionResult<RightsDelegationResponseExternal>> MaskinportenScopeDelegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal delegation, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
-            
+
             try
             {
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation);
+                DelegationActionResult response = await _delegation.DelegateMaskinportenSchema(authenticatedUserId, authenticationLevel, internalDelegation, cancellationToken);
 
                 if (!response.IsValid)
                 {
@@ -188,7 +189,7 @@ namespace Altinn.AccessManagement.Controllers
                 }
 
                 RightsDelegationResponseExternal delegationResponse = _mapper.Map<RightsDelegationResponseExternal>(response);
-                
+
                 return StatusCode(201, delegationResponse);
             }
             catch (Exception ex)
@@ -217,12 +218,12 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MaskinportenSchemaDelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party)
+        public async Task<ActionResult<List<MaskinportenSchemaDelegationExternal>>> GetOfferedMaskinportenSchemaDelegations([FromRoute] string party, CancellationToken cancellationToken)
         {
             try
             {
                 AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _delegation.GetOfferedMaskinportenSchemaDelegations(partyMatch);
+                List<Delegation> delegations = await _delegation.GetOfferedMaskinportenSchemaDelegations(partyMatch, cancellationToken);
                 return _mapper.Map<List<MaskinportenSchemaDelegationExternal>>(delegations);
             }
             catch (ArgumentException argEx)
@@ -252,7 +253,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult> RevokeOfferedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeOfferedDelegationExternal delegation)
+        public async Task<ActionResult> RevokeOfferedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeOfferedDelegationExternal delegation, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
 
@@ -261,7 +262,7 @@ namespace Altinn.AccessManagement.Controllers
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.From = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation, cancellationToken);
 
                 if (!response.IsValid)
                 {
@@ -301,12 +302,12 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult<List<MaskinportenSchemaDelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party)
+        public async Task<ActionResult<List<MaskinportenSchemaDelegationExternal>>> GetReceivedMaskinportenSchemaDelegations([FromRoute] string party, CancellationToken cancellationToken)
         {
             try
             {
                 AttributeMatch partyMatch = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
-                List<Delegation> delegations = await _delegation.GetReceivedMaskinportenSchemaDelegations(partyMatch);
+                List<Delegation> delegations = await _delegation.GetReceivedMaskinportenSchemaDelegations(partyMatch, cancellationToken);
                 return _mapper.Map<List<MaskinportenSchemaDelegationExternal>>(delegations);
             }
             catch (ArgumentException argEx)
@@ -336,7 +337,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<ActionResult> RevokeReceivedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeReceivedDelegationExternal delegation)
+        public async Task<ActionResult> RevokeReceivedMaskinportenScopeDelegation([FromRoute] string party, [FromBody] RevokeReceivedDelegationExternal delegation, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
 
@@ -345,7 +346,7 @@ namespace Altinn.AccessManagement.Controllers
                 AttributeMatch reportee = IdentifierUtil.GetIdentifierAsAttributeMatch(party, HttpContext);
                 DelegationLookup internalDelegation = _mapper.Map<DelegationLookup>(delegation);
                 internalDelegation.To = reportee.SingleToList();
-                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation);
+                DelegationActionResult response = await _delegation.RevokeMaskinportenSchemaDelegation(authenticatedUserId, internalDelegation, cancellationToken);
 
                 if (!response.IsValid)
                 {

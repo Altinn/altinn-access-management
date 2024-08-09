@@ -13,6 +13,7 @@ using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Tests.Seeds;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Testcontainers.PostgreSql;
@@ -28,7 +29,10 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// </summary>
 public class PostgresFixture : IAsyncLifetime
 {
-    private ConsoleTraceService Tracer { get; } = new ConsoleTraceService { IsDebugEnabled = true };
+    private ConsoleTraceService Tracer { get; } = new ConsoleTraceService(LoggerFactory.Create(options =>
+    {
+        options.AddDebug();
+    }).CreateLogger<PostgresFixture>());
 
     /// <summary>
     /// Creates a new database and runs the migrations

@@ -14,8 +14,9 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="offeredByPartyIds">the list of offeredby party ids</param>
         /// <param name="coveredByPartyIds">the list of coveredby party ids</param>
         /// <param name="coveredByUserIds">the list of coveredby user ids</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>a list of rules that match the lists of org/apps, offeredby ids, and coveredby ids</returns>
-        Task<List<Rule>> GetRulesAsync(List<string> resourceIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds);
+        Task<List<Rule>> GetRulesAsync(List<string> resourceIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the all rights a user have for a given reportee and resource
@@ -41,7 +42,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="partyId">Party id of a user or organization</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns></returns>
-        Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken);
+        Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all active offered delegations (not including maskinporten schema) from db, both directly delegated from the party or from it's main unit if the party is a subunit
@@ -49,6 +50,6 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="partyId">Party id of a user or organization</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns></returns>
-        Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken);
+        Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken = default);
     }
 }

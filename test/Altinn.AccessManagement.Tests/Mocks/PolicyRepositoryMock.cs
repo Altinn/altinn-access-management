@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Azure;
@@ -13,95 +15,87 @@ namespace Altinn.AccessManagement.Tests.Mocks
     /// <summary>
     /// Mock class for <see cref="IPolicyRepository"></see> interface
     /// </summary>
-    public class PolicyRepositoryMock : IPolicyRepository
+    public class PolicyRepositoryMock(string filepath, ILogger<PolicyRepositoryMock> logger) : IPolicyRepository
     {
-        private readonly ILogger<PolicyRepositoryMock> _logger;
+        private string Filepath { get; } = filepath;
 
-        /// <summary>
-        /// Constructor 
-        /// </summary>
-        /// <param name="logger">logger</param>
-        public PolicyRepositoryMock(ILogger<PolicyRepositoryMock> logger)
+        private ILogger<PolicyRepositoryMock> Logger { get; } = logger;
+
+        /// <inheritdoc/>
+        public Task<Stream> GetPolicyAsync(CancellationToken cancellationToken = default)
         {
-            _logger = logger;
+            return Task.FromResult(GetTestDataStream(Filepath));
         }
 
         /// <inheritdoc/>
-        public Task<Stream> GetPolicyAsync(string filepath)
+        public Task<Stream> GetPolicyVersionAsync(string version, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(GetTestDataStream(filepath));
+            return Task.FromResult(GetTestDataStream(Filepath));
         }
 
         /// <inheritdoc/>
-        public Task<Stream> GetPolicyVersionAsync(string filepath, string version)
+        public Task<Response<BlobContentInfo>> WritePolicyAsync(Stream fileStream, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(GetTestDataStream(filepath));
+            return WriteStreamToTestDataFolder(Filepath, fileStream);
         }
 
         /// <inheritdoc/>
-        public Task<Response<BlobContentInfo>> WritePolicyAsync(string filepath, Stream fileStream)
-        {
-            return WriteStreamToTestDataFolder(filepath, fileStream);            
-        }
-
-        /// <inheritdoc/>
-        public Task<Response> DeletePolicyVersionAsync(string filepath, string version)
+        public Task<Response> DeletePolicyVersionAsync(string version, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public async Task<Response<BlobContentInfo>> WritePolicyConditionallyAsync(string filepath, Stream fileStream, string blobLeaseId)
+        public async Task<Response<BlobContentInfo>> WritePolicyConditionallyAsync(Stream fileStream, string blobLeaseId, CancellationToken cancellationToken = default)
         {
-            if (blobLeaseId == "CorrectLeaseId" && !filepath.Contains("error/blobstorageleaselockwritefail"))
+            if (blobLeaseId == "CorrectLeaseId" && !Filepath.Contains("error/blobstorageleaselockwritefail"))
             {
-                return await WriteStreamToTestDataFolder(filepath, fileStream);
+                return await WriteStreamToTestDataFolder(Filepath, fileStream);
             }
 
             throw new RequestFailedException((int)HttpStatusCode.PreconditionFailed, "The condition specified using HTTP conditional header(s) is not met.");
         }
 
         /// <inheritdoc/>
-        public Task<string> TryAcquireBlobLease(string filepath)
+        public Task<string> TryAcquireBlobLease(CancellationToken cancellationToken = default)
         {
-            if (filepath.Contains("error/blobstoragegetleaselockfail"))
+            if (Filepath.Contains("error/blobstoragegetleaselockfail"))
             {
                 return Task.FromResult((string)null);
-            }   
+            }
 
             return Task.FromResult("CorrectLeaseId");
         }
 
         /// <inheritdoc/>
-        public void ReleaseBlobLease(string filepath, string leaseId)
+        public void ReleaseBlobLease(string leaseId, CancellationToken cancellationToken = default)
         {
         }
 
         /// <inheritdoc/>
-        public Task<bool> PolicyExistsAsync(string filepath)
+        public Task<bool> PolicyExistsAsync(CancellationToken cancellationToken = default)
         {
-            string fullpath = Path.Combine(GetDataInputBlobPath(), filepath);
+            string fullpath = Path.Combine(GetDataInputBlobPath(), Filepath);
 
             if (File.Exists(fullpath))
             {
                 return Task.FromResult(true);
             }
 
-            _logger.LogWarning("Policy not found for full path" + fullpath);
+            Logger.LogWarning("Policy not found for full path" + fullpath);
 
             return Task.FromResult(false);
         }
 
         private static string GetDataOutputBlobPath()
         {
-            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PolicyRepositoryMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "blobs", "output");
+            return Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Data", "blobs", "output");
+
         }
 
         private static string GetDataInputBlobPath()
         {
-            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PolicyRepositoryMock).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "blobs", "input");
+            return Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Data", "blobs", "input");
         }
 
         private static Stream GetTestDataStream(string filepath)

@@ -111,10 +111,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         /// </summary>
         [Fact]
         public async Task GetOfferedMaskinportenSchemaDelegations_Notfound_MissingOfferedBy()
-        {            
+        {
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1//maskinportenschema/offered");
-            
+
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -130,7 +130,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock());
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
+
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/123/maskinportenschema/offered");
 
@@ -225,10 +225,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<MaskinportenSchemaDelegationExternal> expectedDelegations = TestDataUtil.GetReceivedMaskinportenSchemaDelegations(50004219);
-            
+
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
+
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004219/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -249,7 +249,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<MaskinportenSchemaDelegationExternal> expectedDelegations = TestDataUtil.GetReceivedMaskinportenSchemaDelegations(50004219);
-            
+
             var httpContextAccessorMock = GetHttpContextAccessorMock("party", "50004219");
             _client = GetTestClient(new PepWithPDPAuthorizationMock(), httpContextAccessorMock);
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
@@ -292,7 +292,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
             _client = GetTestClient(new PepWithPDPAuthorizationMock());
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
+
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/1234/maskinportenschema/received");
 
@@ -330,10 +330,10 @@ namespace Altinn.AccessManagement.Tests.Controllers
         {
             // Arrange
             List<MaskinportenSchemaDelegationExternal> expectedDelegations = TestDataUtil.GetReceivedMaskinportenSchemaDelegations(50004216);
-            
+
             var token = PrincipalUtil.GetToken(1234, 12345678, 2);
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
+
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/50004216/maskinportenschema/received");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -668,7 +668,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/maskinportenschema/offered");
-            
+
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
@@ -691,7 +691,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/maskinportenschema/offered");
-            
+
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
@@ -713,7 +713,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/maskinportenschema/received");
-            
+
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
@@ -736,7 +736,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
 
             // Act
             HttpResponseMessage response = await _client.GetAsync($"accessmanagement/api/v1/organization/maskinportenschema/received");
-            
+
             // Assert
             Assert.Equal(expectedStatusCode, response.StatusCode);
         }
@@ -1766,11 +1766,11 @@ namespace Altinn.AccessManagement.Tests.Controllers
                 {
                     services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
                     services.AddSingleton(delegationMetadataRepositoryMock);
-                    services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
+                    services.AddSingleton<IPolicyFactory, PolicyFactoryMock>();
                     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueueMock>();
                     services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                     services.AddSingleton<IPartiesClient, PartiesClientMock>();
-                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>(); 
+                    services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
                     services.AddSingleton(pdpMock);
                     services.AddSingleton(httpContextAccessor);
                     services.AddSingleton<IAltinnRolesClient, AltinnRolesClientMock>();

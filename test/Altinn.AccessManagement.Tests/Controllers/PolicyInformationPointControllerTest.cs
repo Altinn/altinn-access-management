@@ -21,7 +21,7 @@ namespace Altinn.AccessManagement.Tests.Controllers;
 /// <summary>
 /// Test class for <see cref="PolicyInformationPointController"></see>
 /// </summary>
-public class PolicyInformationPointControllerTest: IClassFixture<CustomWebApplicationFactory<PolicyInformationPointController>> 
+public class PolicyInformationPointControllerTest : IClassFixture<CustomWebApplicationFactory<PolicyInformationPointController>>
 {
     private HttpClient _client;
     private readonly CustomWebApplicationFactory<PolicyInformationPointController> _factory;
@@ -29,7 +29,7 @@ public class PolicyInformationPointControllerTest: IClassFixture<CustomWebApplic
     {
         PropertyNameCaseInsensitive = true,
     };
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="PolicyInformationPointControllerTest"/> class.
     /// </summary>
@@ -39,7 +39,7 @@ public class PolicyInformationPointControllerTest: IClassFixture<CustomWebApplic
         _factory = factory;
         _client = GetTestClient();
     }
-    
+
     private HttpClient GetTestClient(IDelegationMetadataRepository delegationMetadataRepositoryMock = null)
     {
         delegationMetadataRepositoryMock ??= new DelegationMetadataRepositoryMock();
@@ -57,7 +57,7 @@ public class PolicyInformationPointControllerTest: IClassFixture<CustomWebApplic
     }
 
     /// <summary>
-    /// Sets up test scenarios for <see cref="PolicyInformationPointController.GetAllDelegationChanges(Core.Models.DelegationChangeInput)"></see>
+    /// Sets up test scenarios for <see cref="PolicyInformationPointController.GetAllDelegationChanges(Core.Models.DelegationChangeInput, System.Threading.CancellationToken)"></see>
     /// </summary>
     public static TheoryData<string> Scenarios() => new()
     {

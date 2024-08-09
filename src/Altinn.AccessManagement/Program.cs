@@ -80,8 +80,8 @@ void ConfigureSetupLogging()
         builder
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
-            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug)
-            .AddConsole();
+            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug);
+        // .AddConsole();
     });
 
     logger = logFactory.CreateLogger<Program>();
@@ -234,7 +234,6 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPolicyInformationPoint, PolicyInformationPoint>();
     services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
     services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
-    services.AddSingleton<IPolicyRepository, PolicyRepository>();
     services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
     services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
     services.AddSingleton<IEventMapperService, EventMapperService>();
@@ -384,7 +383,7 @@ void ConfigurePostgreSql()
 {
     if (builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection"))
     {
-        ConsoleTraceService traceService = new ConsoleTraceService { IsDebugEnabled = false };
+        ConsoleTraceService traceService = new ConsoleTraceService(logger);
 
         string connectionString = string.Format(
             builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString"),

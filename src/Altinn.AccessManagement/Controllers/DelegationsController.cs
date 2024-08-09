@@ -39,6 +39,7 @@ namespace Altinn.AccessManagement.Controllers
         /// Endpoint for adding one or more rules for the given app/offeredby/coveredby. This updates or creates a new delegated policy of type "DirectlyDelegated". DelegatedByUserId is included to store history information in 3.0.
         /// </summary>
         /// <param name="rules">All rules to be delegated</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <response code="201" cref="List{PolicyRule}">Created</response>
         /// <response code="206" cref="List{PolicyRule}">Partial Content</response>
         /// <response code="400">Bad Request</response>
@@ -46,7 +47,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/delegations/addrules")]
-        public async Task<ActionResult> Post([FromBody] List<Rule> rules)
+        public async Task<ActionResult> Post([FromBody] List<Rule> rules, CancellationToken cancellationToken)
         {
             if (rules == null || rules.Count < 1)
             {
@@ -58,7 +59,7 @@ namespace Altinn.AccessManagement.Controllers
                 return BadRequest("Invalid model");
             }
 
-            List<Rule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules);
+            List<Rule> delegationResults = await _pap.TryWriteDelegationPolicyRules(rules, cancellationToken);
 
             if (delegationResults.All(r => r.CreatedSuccessfully))
             {
@@ -83,7 +84,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/delegations/getrules")]
-        public async Task<ActionResult<List<Rule>>> GetRules([FromBody] RuleQuery ruleQuery, [FromQuery] bool onlyDirectDelegations = false)
+        public async Task<ActionResult<List<Rule>>> GetRules([FromBody] RuleQuery ruleQuery, CancellationToken cancellationToken, [FromQuery] bool onlyDirectDelegations = false)
         {
             List<int> coveredByPartyIds = new List<int>();
             List<int> coveredByUserIds = new List<int>();
@@ -132,7 +133,7 @@ namespace Altinn.AccessManagement.Controllers
                 return StatusCode(400, $"Unable to get the rules: Missing offeredby and coveredby values.");
             }
 
-            List<Rule> rulesList = await _pip.GetRulesAsync(resourceIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds);
+            List<Rule> rulesList = await _pip.GetRulesAsync(resourceIds, offeredByPartyIds, coveredByPartyIds, coveredByUserIds, cancellationToken);
             DelegationHelper.SetRuleType(rulesList, ruleQuery.OfferedByPartyId, ruleQuery.KeyRolePartyIds, ruleQuery.CoveredBy, ruleQuery.ParentPartyId);
             return Ok(rulesList);
         }
@@ -147,14 +148,14 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/delegations/deleterules")]
-        public async Task<ActionResult> DeleteRule([FromBody] RequestToDeleteRuleList rulesToDelete)
+        public async Task<ActionResult> DeleteRule([FromBody] RequestToDeleteRuleList rulesToDelete, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete);
+            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicyRules(rulesToDelete, cancellationToken);
             int ruleCountToDelete = DelegationHelper.GetRulesCountToDeleteFromRequestToDelete(rulesToDelete);
             int deletionResultsCount = deletionResults.Count;
 
@@ -185,14 +186,14 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("accessmanagement/api/v1/delegations/deletepolicy")]
-        public async Task<ActionResult> DeletePolicy([FromBody] RequestToDeletePolicyList policiesToDelete)
+        public async Task<ActionResult> DeletePolicy([FromBody] RequestToDeletePolicyList policiesToDelete, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            List<Rule> deletionResults = await _pap.TryDeleteDelegationPolicies(policiesToDelete, cancellationToken);
             int countPolicies = DelegationHelper.GetPolicyCount(deletionResults);
             int policiesToDeleteCount = policiesToDelete.Count;
 

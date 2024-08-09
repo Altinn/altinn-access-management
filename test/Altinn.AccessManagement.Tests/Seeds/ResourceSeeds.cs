@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
@@ -15,7 +17,7 @@ public static class ResourceSeeds
 
         public AccessManagementResource DbResource => new AccessManagementResource
         {
-            ResourceRegistryId = Resource.Identifier,
+            ResourceRegistryId = Resource.ResourceType == ResourceType.AltinnApp ? $"{Resource.AuthorizationReference.First(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)}/{Resource.Identifier}" : Resource.Identifier,
             ResourceType = Resource.ResourceType,
         };
     }
@@ -32,26 +34,10 @@ public static class ResourceSeeds
 
         public new static readonly List<ResourceReference> ResourceReferences =
         [
-            new()
-            {
-                ReferenceSource = ReferenceSource.Altinn3,
-                Reference = "ttd/am-devtest-person-to-org",
-                ReferenceType = ReferenceType.ApplicationId
-            }
         ];
 
         public new static readonly List<AttributeMatch> AuthorizationReference =
         [
-            new()
-            {
-                Id = "urn:altinn:org",
-                Value = "ttd"
-            },
-            new()
-            {
-                Id = "urn:altinn:app",
-                Value = "am-devtest-person-to-org"
-            }
         ];
 
         public static MaskinportenSchema Defaults { get; } = new MaskinportenSchema();
@@ -96,14 +82,14 @@ public static class ResourceSeeds
         [
             new()
             {
-                Id = "urn:altinn:org",
+                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute,
                 Value = "ttd"
             },
             new()
             {
-                Id = "urn:altinn:app",
+                Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute,
                 Value = "am-devtest-person-to-org"
-            }
+            },
         ];
 
         public static AltinnApp Defaults { get; } = new AltinnApp();

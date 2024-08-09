@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
@@ -85,7 +86,6 @@ public class Altinn2RightsService : IAltinn2RightsService
     private async Task<List<RightDelegation>> MapDelegationResponse(IEnumerable<DelegationChange> delegations)
     {
         var result = new List<RightDelegation>();
-        var resources = await _contextRetrievalService.GetResourceList();
 
         foreach (var delegation in delegations)
         {
@@ -109,16 +109,17 @@ public class Altinn2RightsService : IAltinn2RightsService
 
             entry.From.Add(new(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, delegation.OfferedByPartyId.ToString()));
 
-            var resourcePath = delegation.ResourceId.Split("/");
-            if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase) && resourcePath.Length > 1)
+            if (delegation.ResourceType.Contains("AltinnApp", StringComparison.InvariantCultureIgnoreCase))
             {
-                entry.Resource.AddRange(resources
-                    .Where(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute && p.Value == resourcePath[0]))
-                    .First(a => a.AuthorizationReference.Exists(p => p.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute && p.Value == resourcePath[1]))
-                    .AuthorizationReference);
+                var app = delegation.ResourceId.Split("/");
+                entry.Resource.AddRange([
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, app[0]),
+                    new(AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, app[1])
+                ]);
             }
             else
             {
+                var resources = await _contextRetrievalService.GetResourceList();
                 entry.Resource.AddRange(resources.Find(r => r.Identifier == delegation.ResourceId).AuthorizationReference ?? []);
             }
 

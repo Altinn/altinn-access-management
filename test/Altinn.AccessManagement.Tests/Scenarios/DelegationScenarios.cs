@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Contexts;
 using Altinn.AccessManagement.Tests.Fixtures;
@@ -50,7 +51,7 @@ public static class DelegationScenarios
                         DelegationChangeComposer.WithFrom(RandPartyId),
                         DelegationChangeComposer.WithResource(ResourceSeeds.AltinnApp.Defaults));
 
-                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.ResourceRegistry, delegation);
+                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.AltinnAppId, delegation);
                 },
                 async postgres =>
                 {
@@ -59,7 +60,7 @@ public static class DelegationScenarios
                         DelegationChangeComposer.WithFrom(RandPartyId),
                         DelegationChangeComposer.WithResource(ResourceSeeds.MaskinportenSchema.Defaults));
 
-                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.AltinnAppId, delegation);
+                    await postgres.DelegationMetadataRepository.InsertDelegation(ResourceAttributeMatchType.ResourceRegistry, delegation);
                 }
             ]);
         }
@@ -102,6 +103,14 @@ public static class DelegationScenarios
     };
 
     /// <summary>
+    /// Removes a resource from mock context
+    /// </summary>
+    public static Scenario WithoutResource(IAccessManagementResource resource) => (host, mock) =>
+    {
+        mock.Resources.RemoveAt(mock.Resources.FindIndex(r => r.Identifier == resource.Resource.Identifier));
+    };
+
+    /// <summary>
     /// Add revoke delegation to db from given party to user
     /// </summary>
     /// <param name="organization">organization that revoking delegation</param>
@@ -140,7 +149,7 @@ public static class DelegationScenarios
 
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
-                ResourceAttributeMatchType.ResourceRegistry,
+                resource.Resource.ResourceType == ResourceType.AltinnApp ? ResourceAttributeMatchType.AltinnAppId : ResourceAttributeMatchType.ResourceRegistry,
                 DelegationChangeComposer.New(
                     DelegationChangeComposer.WithFrom(from),
                     DelegationChangeComposer.WithToUser(to),
@@ -164,7 +173,7 @@ public static class DelegationScenarios
 
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertDelegation(
-                ResourceAttributeMatchType.ResourceRegistry,
+                resource.Resource.ResourceType == ResourceType.AltinnApp ? ResourceAttributeMatchType.AltinnAppId : ResourceAttributeMatchType.ResourceRegistry,
                 DelegationChangeComposer.New(
                     DelegationChangeComposer.WithFrom(from),
                     DelegationChangeComposer.WithToParty(to),

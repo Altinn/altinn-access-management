@@ -23,26 +23,16 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
 {
     private WebApplicationFixture Fixture { get; } = fixture;
 
-    private static Action<AcceptanceCriteriaComposer> WithAssertDbLastDelegationToUserIsRevoked(string appId, IParty from, IUserProfile to) => test =>
+    private static Action<AcceptanceCriteriaComposer> WithAssertDbContainsDelegations(IParty from, IAccessManagementResource resource) => test =>
     {
         test.ApiAssertions.Add(async host =>
         {
-            var delegations = await host.Repository.DelegationMetadataRepository.GetAllAppDelegationChanges(appId, from.Party.PartyId, null, to.UserProfile.UserId);
-            var latest = delegations.OrderDescending().First();
+            var delegations = await host.Repository.DelegationMetadataRepository.GetAllCurrentAppDelegationChanges(from.Party.PartyId.SingleToList(), resource.DbResource.ResourceRegistryId.SingleToList());
             Assert.True(
-                latest.DelegationChangeType == DelegationChangeType.RevokeLast,
-                $"Last delegation from party '{from.Party.Name}' with party ID '{from.Party.PartyId}' to user '{to.UserProfile.Party.Name}' with user ID '{to.UserProfile.UserId}' is not of type '{DelegationChangeType.RevokeLast}'m, it's '{latest.DelegationChangeType}'");
+                delegations.Count > 0,
+                $"Couldn't find any delegations from {from.Party.PartyId} to app {resource.DbResource.ResourceRegistryId}");
         });
     };
-
-    private static void WithAssertResponseEmptyDelegationList(AcceptanceCriteriaComposer test)
-    {
-        test.ResponseAssertions.Add(async response =>
-        {
-            var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<RightDelegationExternal>>();
-            Assert.Empty(delegations);
-        });
-    }
 
     private static Action<AcceptanceCriteriaComposer> WithAssertResponseContainsDelegationToUserProfile(IParty from, IUserProfile to) => test =>
     {
@@ -85,8 +75,7 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
         /// <summary>
         /// Seeds
         /// </summary>
-        public static TheoryData<SeedGetRightsDelegationsOffered> Seeds() => new()
-        {
+        public static TheoryData<SeedGetRightsDelegationsOffered> Seeds() => [
             new(
                 /* Acceptance Critieria */ @"
                 GIVEN that organization Voss Accounting has an active delegation to employee Paula
@@ -113,12 +102,28 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
                 WithScenarios(
                     DelegationScenarios.Defaults,
                     DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults),
-                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.AltinnApp.Defaults),
                     TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)),
 
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults)),
-        };
+            new(
+                /* Acceptance Critieria */ @"
+                GIVEN that organization Voss Consulting has active app delegations to organization Voss Accounting
+                AND app is deleted 
+                WHEN DAGL Paula for Voss Consulting requests offered delegations from Voss Consulting
+                THEN Voss Accounting should be included in the list of offered delegations
+                AND organization name and partyid of deleted app should be included in the list of offered delegations",
+                OrganizationSeeds.VossConsulting.PartyId,
+
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.FromOrganizationToOrganization(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.AltinnApp.Defaults),
+                    DelegationScenarios.WithoutResource(ResourceSeeds.AltinnApp.Defaults)),
+
+                WithAssertResponseStatusCodeSuccessful,
+                WithAssertResponseContainsDelegationToParty(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults)),
+        ];
     }
 
     /// <summary>
@@ -126,7 +131,6 @@ public class V2RightsInternalControllerTest(WebApplicationFixture fixture) : ICl
     /// </summary>
     /// <param name="acceptanceCriteria">acceptance test</param>
     [Theory]
-
     [MemberData(nameof(SeedGetRightsDelegationsOffered.Seeds), MemberType = typeof(SeedGetRightsDelegationsOffered))]
     public async Task GET_RightsDelegationsOffered(SeedGetRightsDelegationsOffered acceptanceCriteria) => await acceptanceCriteria.Test(Fixture);
 }

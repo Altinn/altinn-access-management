@@ -1,17 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Enums;
 
 namespace Altinn.AccessManagement.Persistence.Policy;
 
 /// <summary>
 /// Options for configuring storage account
 /// </summary>
-public class PolicyOptions(AccountType account, string accountName, string container, string uri, string key, int leaseAcquireTimeoutInSec = 3)
+public class PolicyOptions(PolicyAccountType account, string accountName, string container, string uri, string key, int leaseAcquireTimeoutInSec = 3)
 {
     /// <summary>
     /// Specifies Storage Account. Mostly used as a symbol for consumer for making it simpler to targeting storage account
     /// </summary>
     [Required]
-    public AccountType Account { get; set; } = account;
+    public PolicyAccountType Account { get; set; } = account;
 
     /// <summary>
     /// AzureRM account name
@@ -41,16 +42,4 @@ public class PolicyOptions(AccountType account, string accountName, string conta
     /// Timeout for some specific operations. Defaults to 3 seconds
     /// </summary>
     public TimeSpan LeaseAcquireTimeout { get; set; } = TimeSpan.FromSeconds(leaseAcquireTimeoutInSec);
-}
-
-/// <summary>
-/// Storage Account
-/// </summary>
-public enum AccountType
-{
-    ResourceRegister,
-
-    Delegations,
-
-    Metadata,
 }

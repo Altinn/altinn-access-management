@@ -1,3 +1,5 @@
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
@@ -19,7 +21,7 @@ public class PolicyFactory(IAzureClientFactory<BlobServiceClient> factory, IOpti
     public IOptionsFactory<PolicyOptions> Options { get; } = options;
 
     /// <inheritdoc/>
-    public IPolicyRepositoryV2 Create(AccountType account, string filepath)
+    public IPolicyRepository Create(PolicyAccountType account, string filepath)
     {
         var options = Options.Create(account.ToString());
         var client = Factory
@@ -27,20 +29,14 @@ public class PolicyFactory(IAzureClientFactory<BlobServiceClient> factory, IOpti
             .CreateBlobContainer(options.Container).Value
             .GetBlobClient(filepath);
 
-        return new PolicyRepositoryV2(client, options);
+        return new PolicyRepository(client, options);
     }
-}
 
-/// <summary>
-/// Create clients for interacting with files 
-/// </summary>
-public interface IPolicyFactory
-{
-    /// <summary>
-    /// Creates a client for interacting with storage
-    /// </summary>
-    /// <param name="account">which storage account to write blob</param>
-    /// <param name="filepath">path of the file</param>
-    /// <returns></returns>
-    IPolicyRepositoryV2 Create(AccountType account, string filepath);
+    /// <inheritdoc/>
+    public IPolicyRepository Create(string filepath) => filepath switch
+    {
+        var blob when blob.EndsWith("delegationpolicy.xml") => Create(PolicyAccountType.Delegations, filepath),
+        var blob when blob.EndsWith("resourcepolicy.xml") => Create(PolicyAccountType.ResourceRegister, filepath),
+        _ => Create(PolicyAccountType.Metadata, filepath),
+    };
 }

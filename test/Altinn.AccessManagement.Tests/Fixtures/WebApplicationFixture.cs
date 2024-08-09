@@ -105,7 +105,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
         services.AddSingleton<IResourceRegistryClient, ResourceRegistryMock>();
 
         services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
-        services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
+        services.AddSingleton<IPolicyFactory, PolicyFactoryMock>();
         services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
         services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
 

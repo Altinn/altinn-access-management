@@ -215,7 +215,7 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
             {
                 services.AddSingleton<IPolicyRetrievalPoint, PolicyRetrievalPointMock>();
                 services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepositoryMock>();
-                services.AddSingleton<IPolicyRepository, PolicyRepositoryMock>();
+                services.AddSingleton<IPolicyFactory, PolicyFactoryMock>();
                 services.AddSingleton<IPostConfigureOptions<JwtCookieOptions>, JwtCookiePostConfigureOptionsStub>();
                 services.AddSingleton<IPublicSigningKeyProvider, SigningKeyResolverMock>();
                 services.AddSingleton<IPartiesClient, PartiesClientMock>();

@@ -27,7 +27,7 @@ namespace Altinn.AccessManagement.Tests
     public class PolicyAdministrationPointTest
     {
         private readonly IPolicyAdministrationPoint _pap;
-        private readonly IPolicyRepository _prp;
+        private readonly IPolicyFactory _prp;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly Mock<ILogger<IPolicyAdministrationPoint>> _logger;
         private DelegationMetadataRepositoryMock _delegationMetadataRepositoryMock;
@@ -45,7 +45,7 @@ namespace Altinn.AccessManagement.Tests
 
             _logger = new Mock<ILogger<IPolicyAdministrationPoint>>();
             _delegationMetadataRepositoryMock = new DelegationMetadataRepositoryMock();
-            _prp = new PolicyRepositoryMock(new Mock<ILogger<PolicyRepositoryMock>>().Object);
+            _prp = new PolicyFactoryMock(new Mock<ILogger<PolicyRepositoryMock>>().Object);
             _eventQueue = new DelegationChangeEventQueueMock();
             _pap = new PolicyAdministrationPoint(
                 new PolicyRetrievalPoint(_prp, memoryCache, Options.Create(new CacheConfig { PolicyCacheTimeout = 1 })),
@@ -141,7 +141,7 @@ namespace Altinn.AccessManagement.Tests
             {
                 TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org1", "app3", new List<string> { "0d0c8570-64fb-49f9-9f7d-45c057fddf94", "6f11dd0b-5e5d-4bd1-85f0-9796300dfded" }, coveredByUserId: coveredBy),
                 TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org2", "app3", new List<string> { "244278c1-7c6b-4f6b-b6e9-2bd41f84812f" }, coveredByUserId: coveredBy),
-                TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org1", "app4", new List<string> { "adfa64fa-5859-46e5-8d0d-62762082f3b9" }, coveredByUserId: coveredBy)                
+                TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org1", "app4", new List<string> { "adfa64fa-5859-46e5-8d0d-62762082f3b9" }, coveredByUserId: coveredBy)
             };
 
             List<Rule> expected = new List<Rule>
@@ -524,7 +524,7 @@ namespace Altinn.AccessManagement.Tests
                 TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org2", "app3", new List<string> { "244278c1-7c6b-4f6b-b6e9-2bd41f84812f" }, coveredByUserId: coveredBy),
                 TestDataUtil.GetRequestToDeleteModel(performedByUserId, offeredByPartyId, "org1", "app4", new List<string> { "ade3b138-7fa4-4c83-9306-8ec4a72c2daa" }, coveredByUserId: 0)
             };
-            
+
             List<Rule> expected = new List<Rule>
             {
                 TestDataUtil.GetRuleModel(performedByUserId, offeredByPartyId, coveredBy.ToString(), coveredByType, "read", "org1", "app3", createdSuccessfully: true),
@@ -1244,7 +1244,7 @@ namespace Altinn.AccessManagement.Tests
 
             List<Rule> unsortedRules = new List<Rule>
             {
-                TestDataUtil.GetRuleModel(delegatedByUserId, offeredByPartyId, coveredBy, coveredByType, "read", "org1", "app1"), 
+                TestDataUtil.GetRuleModel(delegatedByUserId, offeredByPartyId, coveredBy, coveredByType, "read", "org1", "app1"),
                 TestDataUtil.GetRuleModel(delegatedByUserId, offeredByPartyId, coveredBy, coveredByType, "read", "org2", "app1"),
                 TestDataUtil.GetRuleModel(delegatedByUserId, offeredByPartyId, coveredBy, coveredByType, "sign", "org1", "app1", "task1"),
                 TestDataUtil.GetRuleModel(delegatedByUserId, offeredByPartyId, coveredBy, coveredByType, "read", "org1", "app1", task: null, "event1") // This should fail all rules for org1, app1 as there is no event1 resource in the App Policy for this app

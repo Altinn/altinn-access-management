@@ -1,5 +1,5 @@
 
-exports.getToken = async function () {
+exports.getToken = async function (scopes) {
   const axios = require("axios");
   const btoa = require("btoa");
 
@@ -13,7 +13,7 @@ exports.getToken = async function () {
   const tokenUser = bru.getVar("auth_userId");
   const tokenParty = bru.getVar("auth_partyId");
   const tokenPid = bru.getVar("auth_ssn");
-  const tokenScopes = bru.getVar("auth_scopes");
+  const tokenScopes = scopes;
   const tokenOrg = bru.getVar("auth_org");
   const tokenOrgNo = bru.getVar("auth_orgNo");
   const tokenUsername = bru.getVar("auth_username");
@@ -37,5 +37,5 @@ exports.getToken = async function () {
     headers: { Authorization }
   });
 
-  bru.setVar("bearerToken", response.data);
+  return response.data;
 }

@@ -68,7 +68,7 @@ script:pre-request {
   bru.setVar("servicecode", testdata.servicecode);
   bru.setVar("serviceeditioncode", testdata.serviceeditioncode);
   
-  await tokenGenerator.getToken();
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
 }
 
 tests {

@@ -6,40 +6,55 @@ namespace Altinn.AccessManagement.Persistence.Policy;
 /// <summary>
 /// Options for configuring storage account
 /// </summary>
-public class PolicyOptions(PolicyAccountType account, string accountName, string container, string uri, string key, int leaseAcquireTimeoutInSec = 3)
+public class PolicyOptions
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyOptions"/> class.
+    /// </summary>
+    public PolicyOptions()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyOptions"/> class.
+    /// </summary>
+    public PolicyOptions(PolicyAccountType account, string accountName, string container, string uri, string key, int leaseAcquireTimeoutInSec = 3)
+    {
+        Account = account;
+        AccountName = accountName;
+        Container = container;
+        Uri = uri;
+        Key = key;
+        LeaseAcquireTimeout = TimeSpan.FromSeconds(leaseAcquireTimeoutInSec);
+    }
+
     /// <summary>
     /// Specifies Storage Account. Mostly used as a symbol for consumer for making it simpler to targeting storage account
     /// </summary>
-    [Required]
-    public PolicyAccountType Account { get; set; } = account;
+    public PolicyAccountType Account { get; set; }
 
     /// <summary>
     /// AzureRM account name
     /// </summary>
-    [Required]
-    public string AccountName { get; set; } = accountName;
+    public string AccountName { get; set; }
 
     /// <summary>
     /// Container name
     /// </summary>
-    [Required]
-    public string Container { get; set; } = container;
+    public string Container { get; set; }
 
     /// <summary>
     /// Blob URI
     /// </summary>
-    [Required]
-    public string Uri { get; set; } = uri;
+    public string Uri { get; set; }
 
     /// <summary>
     /// SAS key for authentication
     /// </summary>
-    [Required]
-    public string Key { get; set; } = key;
+    public string Key { get; set; }
 
     /// <summary>
     /// Timeout for some specific operations. Defaults to 3 seconds
     /// </summary>
-    public TimeSpan LeaseAcquireTimeout { get; set; } = TimeSpan.FromSeconds(leaseAcquireTimeoutInSec);
+    public TimeSpan LeaseAcquireTimeout { get; set; } = TimeSpan.FromSeconds(3);
 }

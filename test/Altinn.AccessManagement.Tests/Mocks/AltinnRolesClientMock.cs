@@ -59,7 +59,7 @@ public class AltinnRolesClientMock : IAltinnRolesClient
         string authorizedPartiesPath = GetAltinn2AuthorizedPartiesWithRolesPath(userId);
         if (File.Exists(authorizedPartiesPath))
         {
-            string content = await File.ReadAllTextAsync(authorizedPartiesPath);
+            string content = await File.ReadAllTextAsync(authorizedPartiesPath, cancellationToken);
             List<SblAuthorizedParty> bridgeAuthParties = (List<SblAuthorizedParty>)JsonSerializer.Deserialize(content, typeof(List<SblAuthorizedParty>), jsonOptions);
             return bridgeAuthParties.Select(sblAuthorizedParty => new AuthorizedParty(sblAuthorizedParty)).ToList();
         }

@@ -197,7 +197,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights[0].Resource, fromAttribute.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), to);
 
-            await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            await _pap.TryDeleteDelegationPolicies(policiesToDelete, cancellationToken);
             return assertion;
         }
 

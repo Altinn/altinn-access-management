@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="delegation">The delegation</param>
         /// <returns>The result of the delegation</returns>
-        public Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation);
+        public Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all offered single rights delegations for a reportee

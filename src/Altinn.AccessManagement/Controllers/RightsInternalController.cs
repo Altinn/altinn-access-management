@@ -178,6 +178,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="party">The reportee party</param>
         /// <param name="rightsDelegationRequest">Request model for rights delegation</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized</response>
@@ -194,7 +195,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
         [FeatureGate(FeatureFlags.RightsDelegationApi)]
-        public async Task<ActionResult<RightsDelegationResponseExternal>> Delegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal rightsDelegationRequest)
+        public async Task<ActionResult<RightsDelegationResponseExternal>> Delegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal rightsDelegationRequest, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
@@ -206,7 +207,7 @@ namespace Altinn.AccessManagement.Controllers
                 DelegationLookup rightsDelegationRequestInternal = _mapper.Map<DelegationLookup>(rightsDelegationRequest);
                 rightsDelegationRequestInternal.From = reportee.SingleToList();
 
-                DelegationActionResult delegationResultInternal = await _rights.DelegateRights(authenticatedUserId, authenticationLevel, rightsDelegationRequestInternal);
+                DelegationActionResult delegationResultInternal = await _rights.DelegateRights(authenticatedUserId, authenticationLevel, rightsDelegationRequestInternal, cancellationToken);
                 if (!delegationResultInternal.IsValid)
                 {
                     foreach (var error in delegationResultInternal.Errors)

@@ -28,6 +28,7 @@ namespace Altinn.AccessManagement.Tests
             builder.ConfigureLogging((ctx, logging) =>
             {
                 logging.ClearProviders();
+                logging.AddConsole();
             });
         }
     }

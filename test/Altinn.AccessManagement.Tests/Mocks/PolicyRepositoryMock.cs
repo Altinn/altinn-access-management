@@ -90,7 +90,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         private static string GetDataOutputBlobPath()
         {
             return Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Data", "blobs", "output");
-
         }
 
         private static string GetDataInputBlobPath()

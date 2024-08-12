@@ -33,7 +33,7 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="delegationRepository">The delegation change repository (postgresql).</param>
         /// <param name="eventQueue">The delegation change event queue service to post events for any delegation change.</param>
         /// <param name="logger">Logger instance.</param>
-        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyFactory policyFactory, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger)
+        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyFactory policyFactory, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<PolicyAdministrationPoint> logger)
         {
             _prp = policyRetrievalPoint;
             _policyFactory = policyFactory;
@@ -393,7 +393,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                policyClient.ReleaseBlobLease(leaseId);
+                policyClient.ReleaseBlobLease(leaseId, cancellationToken);
             }
 
             return currentRules;
@@ -436,7 +436,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             try
             {
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType, cancellationToken);
 
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
@@ -508,7 +508,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                policyClient.ReleaseBlobLease(leaseId);
+                policyClient.ReleaseBlobLease(leaseId, cancellationToken);
             }
         }
 

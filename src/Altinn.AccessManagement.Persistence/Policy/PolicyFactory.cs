@@ -23,13 +23,13 @@ public class PolicyFactory(IAzureClientFactory<BlobServiceClient> factory, IOpti
     /// <inheritdoc/>
     public IPolicyRepository Create(PolicyAccountType account, string filepath)
     {
-        var options = Options.Create(account.ToString());
+        var config = Options.Create(account.ToString());
         var client = Factory
             .CreateClient(account.ToString())
-            .CreateBlobContainer(options.Container).Value
+            .CreateBlobContainer(config.Container).Value
             .GetBlobClient(filepath);
 
-        return new PolicyRepository(client, options);
+        return new PolicyRepository(client, config);
     }
 
     /// <inheritdoc/>

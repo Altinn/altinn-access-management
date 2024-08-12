@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,10 +30,10 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// </summary>
 public class PostgresFixture : IAsyncLifetime
 {
-    private ConsoleTraceService Tracer { get; } = new ConsoleTraceService(LoggerFactory.Create(options =>
+    private ConsoleTraceService Tracer { get; } = new()
     {
-        options.AddDebug();
-    }).CreateLogger<PostgresFixture>());
+        IsDebugEnabled = true
+    };
 
     /// <summary>
     /// Creates a new database and runs the migrations

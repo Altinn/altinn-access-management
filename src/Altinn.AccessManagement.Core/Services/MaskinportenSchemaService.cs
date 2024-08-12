@@ -239,7 +239,7 @@ namespace Altinn.AccessManagement.Core.Services
                 throw new ArgumentException($"Is not well formatted: {scope}", nameof(scope));
             }
 
-            return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope);
+            return await GetAllMaskinportenSchemaDelegations(supplierPartyId, consumerPartyId, scope, cancellationToken);
         }
 
         /// <inheritdoc/>

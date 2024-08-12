@@ -185,7 +185,7 @@ namespace Altinn.AccessManagement.Core.Services
             if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
                 // Create a new empty blob for lease locking
-                await policyClient.WritePolicyAsync(cancellationToken: cancellationToken);
+                await policyClient.WritePolicyAsync(new MemoryStream(), cancellationToken: cancellationToken);
             }
 
             string leaseId = await policyClient.TryAcquireBlobLease(cancellationToken);

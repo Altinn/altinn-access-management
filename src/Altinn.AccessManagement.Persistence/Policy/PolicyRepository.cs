@@ -82,7 +82,7 @@ public class PolicyRepository(BlobClient client, PolicyOptions options) : IPolic
     }
 
     /// <inheritdoc/>
-    public async Task<Response<BlobContentInfo>> WritePolicyAsync(Stream fileStream = null, CancellationToken cancellationToken = default)
+    public async Task<Response<BlobContentInfo>> WritePolicyAsync(Stream fileStream, CancellationToken cancellationToken = default)
     {
         return await RoundTripper(async () => await Client.UploadAsync(fileStream ?? new MemoryStream(), true, cancellationToken));
     }

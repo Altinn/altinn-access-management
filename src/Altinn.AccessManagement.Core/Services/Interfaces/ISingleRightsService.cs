@@ -23,6 +23,7 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="authenticatedUserId">The user id of the authenticated user performing the delegation</param>
         /// <param name="authenticatedUserAuthlevel">The authentication level of the authenticated user performing the delegation</param>
         /// <param name="delegation">The delegation</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>The result of the delegation</returns>
         public Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation, CancellationToken cancellationToken = default);
 

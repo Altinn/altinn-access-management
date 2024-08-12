@@ -29,7 +29,7 @@ public interface IPolicyRepository
     /// <param name="fileStream">File stream of the policy file to be written</param>
     /// <param name="cancellationToken">cancellation token</param>
     /// <returns>Azure response BlobContentInfo</returns>
-    Task<Response<BlobContentInfo>> WritePolicyAsync(Stream fileStream = null, CancellationToken cancellationToken = default);
+    Task<Response<BlobContentInfo>> WritePolicyAsync(Stream fileStream, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Writes a file stream to blobstorage to the specified path, including the conditional check that the provided blob lease id is valid.

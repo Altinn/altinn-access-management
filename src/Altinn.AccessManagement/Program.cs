@@ -80,8 +80,8 @@ void ConfigureSetupLogging()
         builder
             .AddFilter("Microsoft", LogLevel.Warning)
             .AddFilter("System", LogLevel.Warning)
-            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug);
-        // .AddConsole();
+            .AddFilter("Altinn.AccessManagement.Program", LogLevel.Debug)
+            .AddConsole();
     });
 
     logger = logFactory.CreateLogger<Program>();

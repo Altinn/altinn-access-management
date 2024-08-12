@@ -7,30 +7,33 @@ using Microsoft.Extensions.Options;
 namespace Altinn.AccessManagement.Persistence.Policy;
 
 /// <inheritdoc/>
-public class PolicyFactory(IAzureClientFactory<BlobServiceClient> factory, IOptionsFactory<PolicyOptions> options) : IPolicyFactory
+public class PolicyFactory : IPolicyFactory
 {
     /// <summary>
-    /// Factory for creating clients
+    /// Creates a new factory that handles blobs
     /// </summary>
-    /// <value>asd</value>
-    public IAzureClientFactory<BlobServiceClient> Factory { get; } = factory;
+    /// <param name="factory">Azure client factory for creating blob clients</param>
+    /// <param name="options">options for configuring azure blob clients</param>
+    public PolicyFactory(IAzureClientFactory<BlobServiceClient> factory, IOptionsFactory<PolicyOptions> options)
+    {
+        Factory = factory;
+        Options = options;
 
-    /// <summary>
-    /// Factory for getting configuration for client factory
-    /// </summary>
-    public IOptionsFactory<PolicyOptions> Options { get; } = options;
+        foreach (var account in Enum.GetValues(typeof(PolicyAccountType)).Cast<PolicyAccountType>())
+        {
+            var config = options.Create(account.ToString());
+            Clients[account] = Factory.CreateClient(account.ToString()).CreateBlobContainer(config.Container).Value;
+        }
+    }
+
+    private IAzureClientFactory<BlobServiceClient> Factory { get; }
+
+    private IOptionsFactory<PolicyOptions> Options { get; }
+
+    private IDictionary<PolicyAccountType, BlobContainerClient> Clients { get; } = new Dictionary<PolicyAccountType, BlobContainerClient>();
 
     /// <inheritdoc/>
-    public IPolicyRepository Create(PolicyAccountType account, string filepath)
-    {
-        var config = Options.Create(account.ToString());
-        var client = Factory
-            .CreateClient(account.ToString())
-            .CreateBlobContainer(config.Container).Value
-            .GetBlobClient(filepath);
-
-        return new PolicyRepository(client, config);
-    }
+    public IPolicyRepository Create(PolicyAccountType account, string filepath) => new PolicyRepository(Clients[account].GetBlobClient(filepath), Options.Create(account.ToString()));
 
     /// <inheritdoc/>
     public IPolicyRepository Create(string filepath) => filepath switch

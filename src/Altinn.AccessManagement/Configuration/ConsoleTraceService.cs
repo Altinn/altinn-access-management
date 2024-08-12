@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Altinn.AccessManagement.Core.Models;
 using Yuniql.Extensibility;
 
 namespace Altinn.AccessManagement.Configuration
@@ -8,7 +7,7 @@ namespace Altinn.AccessManagement.Configuration
     /// Copied from sample project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class ConsoleTraceService(ILogger logger) : ITraceService
+    public class ConsoleTraceService : ITraceService
     {
         /// <inheritdoc/>
         public bool IsDebugEnabled { get; set; } = false;
@@ -28,31 +27,39 @@ namespace Altinn.AccessManagement.Configuration
         /// <inheritdoc/>
         public void Info(string message, object payload = null)
         {
-            logger.LogInformation(message, payload);
+            var traceMessage = $"INF   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
+            Console.Write(traceMessage);
         }
 
         /// <inheritdoc/>
         public void Error(string message, object payload = null)
         {
-            logger.LogError(message, payload);
+            var traceMessage = $"ERR   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
+            Console.Write(traceMessage);
         }
 
         /// <inheritdoc/>
         public void Debug(string message, object payload = null)
         {
-            logger.LogDebug(message, payload);
+            if (IsDebugEnabled)
+            {
+                var traceMessage = $"DBG   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
+                Console.Write(traceMessage);
+            }
         }
 
         /// <inheritdoc/>
         public void Success(string message, object payload = null)
         {
-            logger.LogInformation(message, payload);
+            var traceMessage = $"INF   {DateTime.UtcNow.ToString("u")}   {message}{Environment.NewLine}";
+            Console.Write(traceMessage);
         }
 
         /// <inheritdoc/>
         public void Warn(string message, object payload = null)
         {
-            logger.LogInformation(message, payload);
+            var traceMessage = $"WRN   {DateTime.UtcNow.ToString("o")}   {message}{Environment.NewLine}";
+            Console.Write(traceMessage);
         }
     }
 }

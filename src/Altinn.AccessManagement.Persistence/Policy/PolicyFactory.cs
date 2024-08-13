@@ -18,22 +18,18 @@ public class PolicyFactory : IPolicyFactory
     {
         Factory = factory;
         Options = options;
-
-        foreach (var account in Enum.GetValues(typeof(PolicyAccountType)).Cast<PolicyAccountType>())
-        {
-            var config = options.Create(account.ToString());
-            Clients[account] = Factory.CreateClient(account.ToString()).CreateBlobContainer(config.Container).Value;
-        }
     }
 
     private IAzureClientFactory<BlobServiceClient> Factory { get; }
 
     private IOptionsFactory<PolicyOptions> Options { get; }
 
-    private IDictionary<PolicyAccountType, BlobContainerClient> Clients { get; } = new Dictionary<PolicyAccountType, BlobContainerClient>();
-
     /// <inheritdoc/>
-    public IPolicyRepository Create(PolicyAccountType account, string filepath) => new PolicyRepository(Clients[account].GetBlobClient(filepath), Options.Create(account.ToString()));
+    public IPolicyRepository Create(PolicyAccountType account, string filepath)
+    {
+        var options = Options.Create(account.ToString());
+        return new PolicyRepository(Factory.CreateClient(account.ToString()).GetBlobContainerClient(options.Container).GetBlobClient(filepath), options);
+    }
 
     /// <inheritdoc/>
     public IPolicyRepository Create(string filepath) => filepath switch

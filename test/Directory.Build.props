@@ -3,8 +3,7 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <IsProductProject>true</IsProductProject>
-        <NoWarn>CS1591</NoWarn>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
 </Project>

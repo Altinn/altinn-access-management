@@ -1,17 +1,42 @@
 <Project>
+    <Choose>
+        <When Condition=" '$(IsTestProject)' == 'true' ">
+            <ItemGroup>
+                <PackageReference Include="Microsoft.NET.Test.Sdk" />
+                <PackageReference Include="xunit" />
+                <PackageReference Include="xunit.runner.visualstudio">
+                    <PrivateAssets>all</PrivateAssets>
+                    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+                </PackageReference>
+                <PackageReference Include="coverlet.collector">
+                    <PrivateAssets>all</PrivateAssets>
+                    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+                </PackageReference>
+                <Using Include="Xunit" />
+            </ItemGroup>
+        </When>
 
-    <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="xunit" />
-        <PackageReference Include="xunit.runner.visualstudio">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <Using Include="Xunit" />
+        <Otherwise>
+            <!-- not test project -->
+
+            <ItemGroup>
+                <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+            </ItemGroup>
+
+        </Otherwise>
+    </Choose>
+
+    <ItemGroup Condition=" '$(EnableStyleCop)' == 'true' ">
+        <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all"
+            IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json">
+            <Link>stylecop.json</Link>
+        </AdditionalFiles>
     </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Altinn3.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
 
 </Project>

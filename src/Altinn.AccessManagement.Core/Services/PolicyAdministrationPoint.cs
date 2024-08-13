@@ -281,7 +281,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
                 finally
                 {
-                    policyClient.ReleaseBlobLease(leaseId, cancellationToken);
+                    policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
                 }
             }
 
@@ -393,7 +393,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                policyClient.ReleaseBlobLease(leaseId, cancellationToken);
+                policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
             }
 
             return currentRules;
@@ -508,7 +508,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                policyClient.ReleaseBlobLease(leaseId, cancellationToken);
+                policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
             }
         }
 

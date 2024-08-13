@@ -103,5 +103,4 @@ public class PolicyRepository(BlobClient client, PolicyOptions options) : IPolic
 
         return result;
     }
-
 }

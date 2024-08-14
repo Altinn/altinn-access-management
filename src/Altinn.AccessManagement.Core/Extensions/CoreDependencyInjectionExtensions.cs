@@ -40,8 +40,6 @@ public static class CoreDependencyInjectionExtensions
         builder.Services.AddSingleton<IPolicyAdministrationPoint, PolicyAdministrationPoint>();
         builder.Services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
 
-        builder.Services.AddSingleton<IResourceRegistryClient, IResourceRegistryClient>();
-
         builder.Services.AddSingleton<IResourceAdministrationPoint, ResourceAdministrationPoint>();
         builder.Services.AddSingleton<IContextRetrievalService, ContextRetrievalService>();
         builder.Services.AddSingleton<IMaskinportenSchemaService, MaskinportenSchemaService>();

@@ -12,7 +12,7 @@ namespace Altinn.AccessManagement.Integration.Extensions;
 /// <summary>
 /// Extension methods for adding access management services to the dependency injection container.
 /// </summary>
-public static class PersistenceDependencyInjectionExtensions
+public static class IntegrationDependencyInjectionExtensions
 {
     /// <summary>
     /// Registers access management integration services with the dependency injection container.
@@ -30,6 +30,7 @@ public static class PersistenceDependencyInjectionExtensions
         builder.Services.AddHttpClient<IAltinnRolesClient, AltinnRolesClient>();
         builder.Services.AddHttpClient<IAltinn2RightsClient, Altinn2RightsClient>();
         builder.Services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
+        builder.Services.AddSingleton<IResourceRegistryClient, ResourceRegistryClient>();
 
         return builder;
     }

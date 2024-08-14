@@ -39,10 +39,11 @@ internal static class AccessManagementHost
 
         builder.Services.AddAutoMapper(typeof(Program));
         builder.Services.AddFeatureManagement();
+        builder.Services.AddHttpContextAccessor();
 
-        builder.ConfigureAltinnPackages();
         builder.ConfigureAppsettings();
         builder.ConfigureInternals();
+        builder.ConfigureAltinnPackages();
         builder.ConfigureOpenAPI();
         builder.ConfigureAuthorization();
 

@@ -540,11 +540,5 @@ namespace Altinn.AccessManagement.Tests.Utils
             string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(PartiesClientMock).Assembly.Location).LocalPath);
             return Path.Combine(unitTestFolder, "Data", "Parties");
         }
-
-        private static string GetResourcesPath()
-        {
-            string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationsControllerTest).Assembly.Location).LocalPath);
-            return Path.Combine(unitTestFolder, "..", "..", "..", "Data", "Resources");
-        }
     }
 }

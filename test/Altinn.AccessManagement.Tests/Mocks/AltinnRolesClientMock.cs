@@ -26,7 +26,7 @@ public class AltinnRolesClientMock : IAltinnRolesClient
     }
 
     /// <inheritdoc/>
-    public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken)
+    public async Task<List<Role>> GetDecisionPointRolesForUser(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
         List<Role> roles = new List<Role>();
         string rolesPath = GetRolesPath(coveredByUserId, offeredByPartyId);
@@ -40,7 +40,7 @@ public class AltinnRolesClientMock : IAltinnRolesClient
     }
 
     /// <inheritdoc/>
-    public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken)
+    public async Task<List<Role>> GetRolesForDelegation(int coveredByUserId, int offeredByPartyId, CancellationToken cancellationToken = default)
     {
         List<Role> roles = new List<Role>();
         string rolesPath = GetRolesForDelegationPath(coveredByUserId, offeredByPartyId);
@@ -54,7 +54,7 @@ public class AltinnRolesClientMock : IAltinnRolesClient
     }
 
     /// <inheritdoc/>
-    public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken)
+    public async Task<List<AuthorizedParty>> GetAuthorizedPartiesWithRoles(int userId, CancellationToken cancellationToken = default)
     {
         string authorizedPartiesPath = GetAltinn2AuthorizedPartiesWithRolesPath(userId);
         if (File.Exists(authorizedPartiesPath))

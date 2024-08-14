@@ -47,15 +47,15 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> GetRulesAsync(List<string> resourceIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds)
+        public async Task<List<Rule>> GetRulesAsync(List<string> resourceIds, List<int> offeredByPartyIds, List<int> coveredByPartyIds, List<int> coveredByUserIds, CancellationToken cancellationToken = default)
         {
             List<Rule> rules = new List<Rule>();
-            List<DelegationChange> delegationChanges = await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds, coveredByUserIds);
+            List<DelegationChange> delegationChanges = await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds, coveredByUserIds, cancellationToken);
             foreach (DelegationChange delegationChange in delegationChanges)
             {
                 if (delegationChange.DelegationChangeType != DelegationChangeType.RevokeLast)
                 {
-                    XacmlPolicy policy = await _prp.GetPolicyVersionAsync(delegationChange.BlobStoragePolicyPath, delegationChange.BlobStorageVersionId);
+                    XacmlPolicy policy = await _prp.GetPolicyVersionAsync(delegationChange.BlobStoragePolicyPath, delegationChange.BlobStorageVersionId, cancellationToken);
                     rules.AddRange(GetRulesFromPolicyAndDelegationChange(policy.Rules, delegationChange));
                 }
             }
@@ -147,7 +147,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken = default)
         {
             var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
 
@@ -168,7 +168,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken = default)
         {
             var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
 
@@ -224,7 +224,7 @@ namespace Altinn.AccessManagement.Core.Services
             return result;
         }
 
-        private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int subjectPartyId, Guid subjectUuid, UuidType subjectUuidType, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType, CancellationToken cancellationToken)
+        private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int subjectPartyId, Guid subjectUuid, UuidType subjectUuidType, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType, CancellationToken cancellationToken = default)
         {
             if (resourceMatchType == ResourceAttributeMatchType.None)
             {

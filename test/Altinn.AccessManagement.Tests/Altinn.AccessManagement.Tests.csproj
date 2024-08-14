@@ -27,6 +27,10 @@
     <ProjectReference Include="..\..\src\Altinn.AccessManagement\Altinn.AccessManagement.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Data\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>

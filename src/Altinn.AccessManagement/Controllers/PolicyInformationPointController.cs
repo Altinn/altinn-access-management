@@ -31,13 +31,14 @@ namespace Altinn.AccessManagement.Controllers
         /// Endpoint to find all delegation changes for a given user, reportee and app/resource context
         /// </summary>
         /// <param name="request">The input model that contains id info about user, reportee, resource and resourceMatchType </param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>A list of delegation changes that's stored in the database </returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         [Route("getdelegationchanges")]
-        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput request)
+        public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput request, CancellationToken cancellationToken)
         {
-            DelegationChangeList response = await _pip.GetAllDelegations(request);
+            DelegationChangeList response = await _pip.GetAllDelegations(request, cancellationToken);
 
             if (!response.IsValid)
             {

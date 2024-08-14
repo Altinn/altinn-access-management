@@ -14,19 +14,19 @@ namespace Altinn.AccessManagement.Core.Services
     /// </summary>
     public class PolicyRetrievalPoint : IPolicyRetrievalPoint
     {
-        private readonly IPolicyRepository _repository;
+        private readonly IPolicyFactory _policyFactory;
         private readonly IMemoryCache _memoryCache;
         private readonly CacheConfig _cacheConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyRetrievalPoint"/> class.
         /// </summary>
-        /// <param name="policyRepository">The policy Repository..</param>
-        /// <param name="memoryCache">The cache handler </param>
+        /// <param name="policyFactory">The policy factory</param>
+        /// <param name="memoryCache">The cache handler</param>
         /// <param name="cacheConfig">The cache config settings</param>
-        public PolicyRetrievalPoint(IPolicyRepository policyRepository, IMemoryCache memoryCache, IOptions<CacheConfig> cacheConfig)
+        public PolicyRetrievalPoint(IPolicyFactory policyFactory, IMemoryCache memoryCache, IOptions<CacheConfig> cacheConfig)
         {
-            _repository = policyRepository;
+            _policyFactory = policyFactory;
             _memoryCache = memoryCache;
             _cacheConfig = cacheConfig.Value;
         }
@@ -63,8 +63,8 @@ namespace Altinn.AccessManagement.Core.Services
             if (!_memoryCache.TryGetValue(policyPath + version, out XacmlPolicy policy))
             {
                 Stream policyBlob = string.IsNullOrEmpty(version) ?
-                    await _repository.GetPolicyAsync(policyPath) :
-                    await _repository.GetPolicyVersionAsync(policyPath, version);
+                    await _policyFactory.Create(policyPath).GetPolicyAsync(cancellationToken) :
+                    await _policyFactory.Create(policyPath).GetPolicyVersionAsync(version, cancellationToken);
                 using (policyBlob)
                 {
                     policy = (policyBlob.Length > 0) ? PolicyHelper.ParsePolicy(policyBlob) : null;

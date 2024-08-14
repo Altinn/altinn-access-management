@@ -51,6 +51,7 @@ namespace Altinn.AccessManagement.Controllers
         /// Endpoint for performing a query of rights between two parties for a specific resource
         /// </summary>
         /// <param name="rightsQuery">Query model for rights lookup</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user have access to</param>
         /// <response code="200" cref="List{RightExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
@@ -59,12 +60,12 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("internal/query/rights/")]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
+        public async Task<ActionResult<List<RightExternal>>> RightsQuery([FromBody] RightsQueryExternal rightsQuery, CancellationToken cancellationToken, [FromQuery] bool returnAllPolicyRights = false)
         {
             try
             {
                 RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
-                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights);
+                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, cancellationToken: cancellationToken);
                 return _mapper.Map<List<RightExternal>>(rightsInternal);
             }
             catch (ValidationException valEx)
@@ -84,6 +85,7 @@ namespace Altinn.AccessManagement.Controllers
         /// IMPORTANT: The delegable rights lookup does itself not check that the user has access to the necessary RolesAdministration/MainAdmin or MaskinportenSchema delegation system resources needed to be allowed to perform delegation.
         /// </summary>
         /// <param name="rightsQuery">Query model for rights lookup</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <param name="returnAllPolicyRights">Whether the response should return all possible rights for the resource, not just the rights the user is allowed to delegate</param>
         /// <response code="200" cref="List{DelegationRightExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
@@ -92,12 +94,12 @@ namespace Altinn.AccessManagement.Controllers
         [Authorize(Policy = AuthzConstants.ALTINNII_AUTHORIZATION)]
         [Route("internal/query/delegablerights")]
         [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, [FromQuery] bool returnAllPolicyRights = false)
+        public async Task<ActionResult<List<RightExternal>>> DelegableRightsQuery([FromBody] RightsQueryExternal rightsQuery, CancellationToken cancellationToken, [FromQuery] bool returnAllPolicyRights = false)
         {
             try
             {
                 RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
-                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, getDelegableRights: true);
+                List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, getDelegableRights: true, cancellationToken);
                 return _mapper.Map<List<RightExternal>>(rightsInternal);
             }
             catch (ValidationException valEx)
@@ -176,6 +178,7 @@ namespace Altinn.AccessManagement.Controllers
         /// </summary>
         /// <param name="party">The reportee party</param>
         /// <param name="rightsDelegationRequest">Request model for rights delegation</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <response code="200" cref="List{RightDelegationStatusExternal}">Ok</response>
         /// <response code="400">Bad Request</response>
         /// <response code="401">Unauthorized</response>
@@ -192,7 +195,7 @@ namespace Altinn.AccessManagement.Controllers
         [ProducesResponseType(403)]
         [ProducesResponseType(500)]
         [FeatureGate(FeatureFlags.RightsDelegationApi)]
-        public async Task<ActionResult<RightsDelegationResponseExternal>> Delegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal rightsDelegationRequest)
+        public async Task<ActionResult<RightsDelegationResponseExternal>> Delegation([FromRoute] string party, [FromBody] RightsDelegationRequestExternal rightsDelegationRequest, CancellationToken cancellationToken)
         {
             int authenticatedUserId = AuthenticationHelper.GetUserId(HttpContext);
             int authenticationLevel = AuthenticationHelper.GetUserAuthenticationLevel(HttpContext);
@@ -204,7 +207,7 @@ namespace Altinn.AccessManagement.Controllers
                 DelegationLookup rightsDelegationRequestInternal = _mapper.Map<DelegationLookup>(rightsDelegationRequest);
                 rightsDelegationRequestInternal.From = reportee.SingleToList();
 
-                DelegationActionResult delegationResultInternal = await _rights.DelegateRights(authenticatedUserId, authenticationLevel, rightsDelegationRequestInternal);
+                DelegationActionResult delegationResultInternal = await _rights.DelegateRights(authenticatedUserId, authenticationLevel, rightsDelegationRequestInternal, cancellationToken);
                 if (!delegationResultInternal.IsValid)
                 {
                     foreach (var error in delegationResultInternal.Errors)

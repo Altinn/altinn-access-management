@@ -87,7 +87,7 @@ public class V2MaskinportenSchemaControllerTest(WebApplicationFixture fixture) :
     }
 
     /// <summary>
-    /// <see cref="MaskinportenSchemaController.GetOfferedMaskinportenSchemaDelegations(string)"/>
+    /// <see cref="MaskinportenSchemaController.GetOfferedMaskinportenSchemaDelegations(string, System.Threading.CancellationToken)"/>
     /// </summary>
     /// <param name="acceptanceCriteria">acceptance criteria</param>
     [Theory]

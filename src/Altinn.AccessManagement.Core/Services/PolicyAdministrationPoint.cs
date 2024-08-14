@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
@@ -21,7 +20,7 @@ namespace Altinn.AccessManagement.Core.Services
     {
         private readonly ILogger<IPolicyAdministrationPoint> _logger;
         private readonly IPolicyRetrievalPoint _prp;
-        private readonly IPolicyRepository _policyRepository;
+        private readonly IPolicyFactory _policyFactory;
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly int delegationChangeEventQueueErrorId = 911;
@@ -30,21 +29,21 @@ namespace Altinn.AccessManagement.Core.Services
         /// Initializes a new instance of the <see cref="PolicyAdministrationPoint"/> class.
         /// </summary>
         /// <param name="policyRetrievalPoint">The policy retrieval point.</param>
-        /// <param name="policyRepository">The policy repository (blob storage).</param>
+        /// <param name="policyFactory">The policy repository (blob storage).</param>
         /// <param name="delegationRepository">The delegation change repository (postgresql).</param>
         /// <param name="eventQueue">The delegation change event queue service to post events for any delegation change.</param>
         /// <param name="logger">Logger instance.</param>
-        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyRepository policyRepository, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger)
+        public PolicyAdministrationPoint(IPolicyRetrievalPoint policyRetrievalPoint, IPolicyFactory policyFactory, IDelegationMetadataRepository delegationRepository, IDelegationChangeEventQueue eventQueue, ILogger<IPolicyAdministrationPoint> logger)
         {
             _prp = policyRetrievalPoint;
-            _policyRepository = policyRepository;
+            _policyFactory = policyFactory;
             _delegationRepository = delegationRepository;
             _eventQueue = eventQueue;
             _logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<bool> WritePolicyAsync(string org, string app, Stream fileStream)
+        public async Task<bool> WritePolicyAsync(string org, string app, Stream fileStream, CancellationToken cancellationToken = default)
         {
             if (fileStream == null)
             {
@@ -52,13 +51,13 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             string filePath = PolicyHelper.GetAltinnAppsPolicyPath(org, app);
-            Response<BlobContentInfo> response = await _policyRepository.WritePolicyAsync(filePath, fileStream);
+            Response<BlobContentInfo> response = await _policyFactory.Create(filePath).WritePolicyAsync(fileStream, cancellationToken: cancellationToken);
 
             return response?.GetRawResponse()?.Status == (int)HttpStatusCode.Created;
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> TryWriteDelegationPolicyRules(List<Rule> rules)
+        public async Task<List<Rule>> TryWriteDelegationPolicyRules(List<Rule> rules, CancellationToken cancellationToken = default)
         {
             List<Rule> result = new List<Rule>();
             Dictionary<string, List<Rule>> delegationDict = DelegationHelper.SortRulesByDelegationPolicyPath(rules, out List<Rule> unsortables);
@@ -69,7 +68,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                 try
                 {
-                    writePolicySuccess = await WriteDelegationPolicyInternal(delegationPolicypath, delegationDict[delegationPolicypath]);
+                    writePolicySuccess = await WriteDelegationPolicyInternal(delegationPolicypath, delegationDict[delegationPolicypath], cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -103,13 +102,13 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete)
+        public async Task<List<Rule>> TryDeleteDelegationPolicyRules(List<RequestToDelete> rulesToDelete, CancellationToken cancellationToken = default)
         {
             List<Rule> result = new List<Rule>();
 
             foreach (RequestToDelete deleteRequest in rulesToDelete)
             {
-                List<Rule> currentRules = await DeleteRulesInPolicy(deleteRequest);
+                List<Rule> currentRules = await DeleteRulesInPolicy(deleteRequest, cancellationToken);
                 if (currentRules != null)
                 {
                     result.AddRange(currentRules);
@@ -120,13 +119,13 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Rule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete)
+        public async Task<List<Rule>> TryDeleteDelegationPolicies(List<RequestToDelete> policiesToDelete, CancellationToken cancellationToken = default)
         {
             List<Rule> result = new List<Rule>();
 
             foreach (RequestToDelete policyToDelete in policiesToDelete)
             {
-                List<Rule> currentRules = await DeleteAllRulesInPolicy(policyToDelete);
+                List<Rule> currentRules = await DeleteAllRulesInPolicy(policyToDelete, cancellationToken);
                 if (currentRules != null)
                 {
                     result.AddRange(currentRules);
@@ -136,7 +135,7 @@ namespace Altinn.AccessManagement.Core.Services
             return result;
         }
 
-        private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules)
+        private async Task<bool> WriteDelegationPolicyInternal(string policyPath, List<Rule> rules, CancellationToken cancellationToken = default)
         {
             if (!DelegationHelper.TryGetDelegationParamsFromRule(rules[0], out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out int offeredByPartyId, out Guid? fromUuid, out UuidType fromUuidType, out Guid? toUuid, out UuidType toUuidType, out int? coveredByPartyId, out int? coveredByUserId, out int? delegatedByUserId, out int? delegatedByPartyId, out DateTime delegatedDateTime)
                 || resourceMatchType == ResourceAttributeMatchType.None)
@@ -147,7 +146,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
             {
-                XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceId);
+                XacmlPolicy resourcePolicy = await _prp.GetPolicyAsync(resourceId, cancellationToken);
                 if (resourcePolicy == null)
                 {
                     _logger.LogWarning("No valid resource policy found for delegation policy path: {policyPath}", policyPath);
@@ -165,7 +164,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
             else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
             {
-                XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app);
+                XacmlPolicy appPolicy = await _prp.GetPolicyAsync(org, app, cancellationToken);
                 if (appPolicy == null)
                 {
                     _logger.LogWarning("No valid App policy found for delegation policy path: {policyPath}", policyPath);
@@ -182,24 +181,25 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            if (!await _policyRepository.PolicyExistsAsync(policyPath))
+            var policyClient = _policyFactory.Create(policyPath);
+            if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
                 // Create a new empty blob for lease locking
-                await _policyRepository.WritePolicyAsync(policyPath, new MemoryStream());
+                await policyClient.WritePolicyAsync(new MemoryStream(), cancellationToken: cancellationToken);
             }
 
-            string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
+            string leaseId = await policyClient.TryAcquireBlobLease(cancellationToken);
             if (leaseId != null)
             {
                 try
                 {
                     // Check for a current delegation change from postgresql
-                    DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, toUuid, toUuidType);
+                    DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, offeredByPartyId, coveredByPartyId, coveredByUserId, toUuid, toUuidType, cancellationToken);
 
                     XacmlPolicy existingDelegationPolicy = null;
                     if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
                     {
-                        existingDelegationPolicy = await _prp.GetPolicyVersionAsync(policyPath, currentChange.BlobStorageVersionId);
+                        existingDelegationPolicy = await _prp.GetPolicyVersionAsync(policyPath, currentChange.BlobStorageVersionId, cancellationToken);
                     }
 
                     // Build delegation XacmlPolicy either as a new policy or add rules to existing
@@ -223,7 +223,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                     // Write delegation policy to blob storage
                     MemoryStream dataStream = PolicyHelper.GetXmlMemoryStreamFromXacmlPolicy(delegationPolicy);
-                    Response<BlobContentInfo> blobResponse = await _policyRepository.WritePolicyConditionallyAsync(policyPath, dataStream, leaseId);
+                    Response<BlobContentInfo> blobResponse = await policyClient.WritePolicyConditionallyAsync(dataStream, leaseId, cancellationToken);
                     Response httpResponse = blobResponse.GetRawResponse();
                     if (httpResponse.Status != (int)HttpStatusCode.Created)
                     {
@@ -252,10 +252,10 @@ namespace Altinn.AccessManagement.Core.Services
                         PerformedByUuidType = performedUuidType,
                         Created = delegatedDateTime,
                         BlobStoragePolicyPath = policyPath,
-                        BlobStorageVersionId = blobResponse.Value.VersionId                        
+                        BlobStorageVersionId = blobResponse.Value.VersionId
                     };
 
-                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
+                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change, cancellationToken);
                     if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
@@ -281,7 +281,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
                 finally
                 {
-                    _policyRepository.ReleaseBlobLease(policyPath, leaseId);
+                    policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
                 }
             }
 
@@ -289,11 +289,12 @@ namespace Altinn.AccessManagement.Core.Services
             return false;
         }
 
-        private async Task<List<Rule>> ProcessPolicyFile(string policyPath, ResourceAttributeMatchType resourceMatchType, string resourceId, RequestToDelete deleteRequest)
+        private async Task<List<Rule>> ProcessPolicyFile(string policyPath, ResourceAttributeMatchType resourceMatchType, string resourceId, RequestToDelete deleteRequest, CancellationToken cancellationToken = default)
         {
             List<Rule> currentRules = new List<Rule>();
+            var policyClient = _policyFactory.Create(policyPath);
+            string leaseId = await policyClient.TryAcquireBlobLease(cancellationToken);
 
-            string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
             if (leaseId == null)
             {
                 _logger.LogError("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
@@ -306,7 +307,7 @@ namespace Altinn.AccessManagement.Core.Services
                 string coveredBy = DelegationHelper.GetCoveredByFromMatch(deleteRequest.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
                 string offeredBy = deleteRequest.PolicyMatch.OfferedByPartyId.ToString();
 
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, deleteRequest.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType, cancellationToken);
 
                 XacmlPolicy existingDelegationPolicy = null;
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
@@ -315,7 +316,7 @@ namespace Altinn.AccessManagement.Core.Services
                     return null;
                 }
 
-                existingDelegationPolicy = await _prp.GetPolicyVersionAsync(currentChange.BlobStoragePolicyPath, currentChange.BlobStorageVersionId);
+                existingDelegationPolicy = await _prp.GetPolicyVersionAsync(currentChange.BlobStoragePolicyPath, currentChange.BlobStorageVersionId, cancellationToken);
 
                 foreach (string ruleId in deleteRequest.RuleIds)
                 {
@@ -341,7 +342,7 @@ namespace Altinn.AccessManagement.Core.Services
                     {
                         // Write delegation policy to blob storage
                         MemoryStream dataStream = PolicyHelper.GetXmlMemoryStreamFromXacmlPolicy(existingDelegationPolicy);
-                        response = await _policyRepository.WritePolicyConditionallyAsync(policyPath, dataStream, leaseId);
+                        response = await policyClient.WritePolicyConditionallyAsync(dataStream, leaseId, cancellationToken);
                     }
                     catch (Exception ex)
                     {
@@ -360,9 +361,9 @@ namespace Altinn.AccessManagement.Core.Services
                         PerformedByUserId = deleteRequest.DeletedByUserId,
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = response.Value.VersionId
-                    }; 
+                    };
 
-                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
+                    change = await _delegationRepository.InsertDelegation(resourceMatchType, change, cancellationToken);
                     if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                     {
                         // Comment:
@@ -392,13 +393,13 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                _policyRepository.ReleaseBlobLease(policyPath, leaseId);
+                policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
             }
 
             return currentRules;
         }
 
-        private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete)
+        private async Task<List<Rule>> DeleteAllRulesInPolicy(RequestToDelete policyToDelete, CancellationToken cancellationToken = default)
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(policyToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
 
@@ -419,13 +420,14 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            if (!await _policyRepository.PolicyExistsAsync(policyPath))
+            var policyClient = _policyFactory.Create(policyPath);
+            if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
                 _logger.LogWarning("No blob was found for the expected path: {policyPath} this must be removed without upading the database", policyPath);
                 return null;
             }
 
-            string leaseId = await _policyRepository.TryAcquireBlobLease(policyPath);
+            string leaseId = await policyClient.TryAcquireBlobLease(cancellationToken);
             if (leaseId == null)
             {
                 _logger.LogError("Could not acquire blob lease on delegation policy at path: {policyPath}", policyPath);
@@ -434,7 +436,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             try
             {
-                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType);
+                DelegationChange currentChange = await _delegationRepository.GetCurrentDelegationChange(resourceMatchType, resourceId, policyToDelete.PolicyMatch.OfferedByPartyId, coveredByPartyId, coveredByUserId, coveredByUuid, coveredByUuidType, cancellationToken);
 
                 if (currentChange.DelegationChangeType == DelegationChangeType.RevokeLast)
                 {
@@ -442,7 +444,7 @@ namespace Altinn.AccessManagement.Core.Services
                     return null;
                 }
 
-                XacmlPolicy existingDelegationPolicy = await _prp.GetPolicyVersionAsync(currentChange.BlobStoragePolicyPath, currentChange.BlobStorageVersionId);
+                XacmlPolicy existingDelegationPolicy = await _prp.GetPolicyVersionAsync(currentChange.BlobStoragePolicyPath, currentChange.BlobStorageVersionId, cancellationToken);
                 List<Rule> currentPolicyRules = new List<Rule>();
                 foreach (XacmlRule xacmlRule in existingDelegationPolicy.Rules)
                 {
@@ -455,7 +457,7 @@ namespace Altinn.AccessManagement.Core.Services
                 try
                 {
                     MemoryStream dataStream = PolicyHelper.GetXmlMemoryStreamFromXacmlPolicy(existingDelegationPolicy);
-                    response = await _policyRepository.WritePolicyConditionallyAsync(policyPath, dataStream, leaseId);
+                    response = await policyClient.WritePolicyConditionallyAsync(dataStream, leaseId, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -472,10 +474,10 @@ namespace Altinn.AccessManagement.Core.Services
                     CoveredByUserId = coveredByUserId,
                     PerformedByUserId = policyToDelete.DeletedByUserId,
                     BlobStoragePolicyPath = policyPath,
-                    BlobStorageVersionId = response.Value.VersionId                    
+                    BlobStorageVersionId = response.Value.VersionId
                 };
 
-                change = await _delegationRepository.InsertDelegation(resourceMatchType, change);
+                change = await _delegationRepository.InsertDelegation(resourceMatchType, change, cancellationToken);
                 if (change == null || (change.DelegationChangeId <= 0 && change.ResourceRegistryDelegationChangeId <= 0))
                 {
                     // Comment:
@@ -506,11 +508,11 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                _policyRepository.ReleaseBlobLease(policyPath, leaseId);
+                policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
             }
         }
 
-        private async Task<List<Rule>> DeleteRulesInPolicy(RequestToDelete rulesToDelete)
+        private async Task<List<Rule>> DeleteRulesInPolicy(RequestToDelete rulesToDelete, CancellationToken cancellationToken = default)
         {
             string coveredBy = DelegationHelper.GetCoveredByFromMatch(rulesToDelete.PolicyMatch.CoveredBy, out int? coveredByUserId, out int? coveredByPartyId, out Guid? coveredByUuid, out UuidType coveredByUuidType);
 
@@ -532,13 +534,14 @@ namespace Altinn.AccessManagement.Core.Services
                 return null;
             }
 
-            if (!await _policyRepository.PolicyExistsAsync(policyPath))
+            var policyClient = _policyFactory.Create(policyPath);
+            if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
                 _logger.LogWarning("No blob was found for the expected path: {policyPath} this must be removed without updating the database", policyPath);
                 return null;
             }
 
-            List<Rule> currentRules = await ProcessPolicyFile(policyPath, resourceMatchType, resourceId, rulesToDelete);
+            List<Rule> currentRules = await ProcessPolicyFile(policyPath, resourceMatchType, resourceId, rulesToDelete, cancellationToken);
 
             return currentRules;
         }

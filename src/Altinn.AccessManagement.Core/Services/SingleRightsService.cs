@@ -104,7 +104,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation)
+        public async Task<DelegationActionResult> DelegateRights(int authenticatedUserId, int authenticatedUserAuthlevel, DelegationLookup delegation, CancellationToken cancellationToken = default)
         {
             (DelegationActionResult result, ServiceResource resource, Party fromParty, List<AttributeMatch> to) = await ValidateDelegationLookupModel(DelegationActionType.Delegation, delegation, authenticatedUserId);
             if (!result.IsValid)
@@ -125,7 +125,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             // Verify authenticated users delegable rights
             RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
-            List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true);
+            List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, cancellationToken: cancellationToken);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
                 result.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
@@ -187,7 +187,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 return assertion;
             }
-            
+
             var fromAttribute = await _resolver.Resolve(delegation.From, [AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], cancellationToken);
             var toAttribute = await _resolver.Resolve(delegation.To, Urn.Altinn2InternalIds, cancellationToken);
 
@@ -197,7 +197,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             var policiesToDelete = DelegationHelper.GetRequestToDeleteResource(authenticatedUserId, delegation.Rights[0].Resource, fromAttribute.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), to);
 
-            await _pap.TryDeleteDelegationPolicies(policiesToDelete);
+            await _pap.TryDeleteDelegationPolicies(policiesToDelete, cancellationToken);
             return assertion;
         }
 
@@ -395,7 +395,7 @@ namespace Altinn.AccessManagement.Core.Services
             else if (DelegationHelper.TryGetSingleAttributeMatchValue(delegation.To, AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid, out string toSystemUserUuidAttrValue))
             {
                 toSystemUser = await _contextRetrievalService.GetSystemUserById(fromParty.PartyId, toSystemUserUuidAttrValue);
-                
+
                 if (toSystemUser == null)
                 {
                     result.Errors.Add("To", $"The provided To attribute value could not be found as a valid systemuser.");
@@ -421,14 +421,14 @@ namespace Altinn.AccessManagement.Core.Services
                 result.Errors.Add("To", $"A distinct recipient party for the delegation, could not be identified by the supplied attributes. A recipient can be identified by either a single {AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationNumberAttribute} or {AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserName} attribute, or a combination of {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes, {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUserName} and {AltinnXacmlConstants.MatchAttributeIdentifiers.PersonLastName} attributes or {AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid} attribute.");
                 return (result, resource, null, null);
             }
-            
+
             // Verify delegation From and To is not the same party (with exception for Altinn 2 Enterprise users)
             if (fromParty.PartyId == toParty?.PartyId || (toUser != null && fromParty.PartyId == toUser.PartyId && toUser.Party.PartyTypeName != PartyType.Organisation))
             {
                 result.Errors.Add("To", $"The From party and the To recipient are the same. Self-delegation is not supported as it serves no purpose.");
                 return (result, resource, null, null);
             }
-            
+
             // Build To AttributeMatch to be used for the delegation rules
             List<AttributeMatch> to = new List<AttributeMatch>();
             if (toParty != null)

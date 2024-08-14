@@ -1,35 +1,16 @@
+﻿
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <CodeAnalysisRuleSet>..\..\Altinn3.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.35"/>
-    <PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.3"/>
-    <PackageReference Include="OpenTelemetry" Version="1.9.0"/>
-    <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.4"/>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Npgsql.OpenTelemetry" />
+    <PackageReference Include="OpenTelemetry" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj"/>
+    <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\"/>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Debug'">
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <AdditionalFiles Include="..\..\stylecop.json">
-      <Link>stylecop.json</Link>
-    </AdditionalFiles>
+    <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
   </ItemGroup>
 </Project>

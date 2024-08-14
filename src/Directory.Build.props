@@ -1,0 +1,21 @@
+<Project>
+    <Import Project="..\Directory.Build.props" />
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all"
+            IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)..\stylecop.json">
+            <Link>stylecop.json</Link>
+        </AdditionalFiles>
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)..\Altinn3.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
+</Project>

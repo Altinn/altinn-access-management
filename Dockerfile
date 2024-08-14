@@ -1,15 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /app
 
-COPY src/Altinn.AccessManagement/*.csproj ./src/Altinn.AccessManagement/
-COPY src/Altinn.AccessManagement.Core/*.csproj ./src/Altinn.AccessManagement.Core/
-COPY src/Altinn.AccessManagement.Integration/*.csproj ./src/Altinn.AccessManagement.Integration/
-COPY src/Altinn.AccessManagement.Persistence/*.csproj ./src/Altinn.AccessManagement.Persistence/
-RUN dotnet restore ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
-
+# Copy everything and build
+COPY . .
+RUN dotnet restore
 
 # Copy everything else and build
-COPY src ./src
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image

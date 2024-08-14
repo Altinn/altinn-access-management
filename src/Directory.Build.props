@@ -1,0 +1,10 @@
+<Project>
+    <Import Project="..\Directory.Build.props" />
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IsProductProject>true</IsProductProject>
+        <NoWarn>CS1591</NoWarn>
+    </PropertyGroup>
+
+</Project>

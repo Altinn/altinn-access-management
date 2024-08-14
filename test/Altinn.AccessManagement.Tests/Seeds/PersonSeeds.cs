@@ -1,5 +1,3 @@
-#pragma warning disable SA1600
-
 using System;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;

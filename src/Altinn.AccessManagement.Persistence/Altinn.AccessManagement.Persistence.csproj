@@ -7,10 +7,13 @@
     <PackageReference Include="Microsoft.Extensions.Azure" />
     <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
   </ItemGroup>
+
 </Project>

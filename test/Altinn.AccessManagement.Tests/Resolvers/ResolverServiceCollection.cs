@@ -37,7 +37,6 @@ public static class ResolverServiceCollection
     /// </summary>
     public static void DefaultServiceCollection(IServiceCollection services)
     {
-        services.ConfigureResolvers();
         services.AddMemoryCache();
         services.Configure<CacheConfig>(options =>
         {

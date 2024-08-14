@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Policy;
 using Azure.Core;
 using Azure.Storage;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,28 +25,27 @@ public static class PersistenceDependencyInjectionExtensions
     /// <summary>
     /// Registers access management persistence services with the dependency injection container.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="config">The <see cref="IConfiguration"/>.</param>
-    /// <returns><paramref name="services"/> for further chaining.</returns>
-    public static IServiceCollection AddAccessManagementPersistence(
-        this IServiceCollection services, IConfiguration config)
+    /// <param name="builder">The <see cref="WebApplicationBuilder"/>.</param>
+    /// <returns><paramref name="builder"/> for further chaining.</returns>
+    public static WebApplicationBuilder AddAccessManagementPersistence(this WebApplicationBuilder builder)
     {
-        services.AddDatabase();
+        builder.Services.AddDatabase();
+        builder.Services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
 
-        if (config.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
+        if (builder.Configuration.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
         {
-            services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
-            services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
+            builder.Services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepo>();
+            builder.Services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepo>();
         }
         else
         {
-            services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
-            services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
+            builder.Services.AddSingleton<IDelegationMetadataRepository, DelegationMetadataRepository>();
+            builder.Services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
         }
 
-        services.AddDelegationPolicyRepository(config);
+        builder.Services.AddDelegationPolicyRepository(builder.Configuration);
 
-        return services;
+        return builder;
     }
 
     /// <summary>

@@ -1,10 +1,10 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.OpenTelemetry" />
     <PackageReference Include="OpenTelemetry" />
+    <PackageReference Include="Microsoft.Extensions.Azure" />
     <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
   <ItemGroup>

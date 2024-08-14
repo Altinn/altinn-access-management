@@ -1,8 +1,10 @@
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Extensions;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Extensions;
+using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.Authorization.ServiceDefaults;
@@ -38,6 +40,7 @@ internal static class AccessManagementHost
         var builder = AltinnHost.CreateWebApplicationBuilder("access-management", args);
 
         builder.Services.AddAutoMapper(typeof(Program));
+        builder.Services.AddControllers();
         builder.Services.AddFeatureManagement();
         builder.Services.AddHttpContextAccessor();
 

@@ -15,11 +15,11 @@ namespace Altinn.AccessManagement.Core.Models.Register;
 /// </summary>
 [JsonConverter(typeof(OrganizationNumber.JsonConverter))]
 public class OrganizationNumber
-    : IParsable<OrganizationNumber>
-    , ISpanParsable<OrganizationNumber>
-    , IFormattable
-    , ISpanFormattable
-    , IExampleDataProvider<OrganizationNumber>
+    : IParsable<OrganizationNumber>,
+    ISpanParsable<OrganizationNumber>,
+    IFormattable,
+    ISpanFormattable,
+    IExampleDataProvider<OrganizationNumber>
 {
     private static readonly SearchValues<char> NUMBERS = SearchValues.Create(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
 

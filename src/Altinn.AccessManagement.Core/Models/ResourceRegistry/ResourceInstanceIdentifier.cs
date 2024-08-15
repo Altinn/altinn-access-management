@@ -17,11 +17,11 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry;
 [JsonConverter(typeof(JsonConverter))]
 [DebuggerDisplay("{_value}")]
 public sealed record ResourceInstanceIdentifier
-    : IParsable<ResourceInstanceIdentifier>
-    , ISpanParsable<ResourceInstanceIdentifier>
-    , IFormattable
-    , ISpanFormattable
-    , IExampleDataProvider<ResourceInstanceIdentifier>
+    : IParsable<ResourceInstanceIdentifier>,
+    ISpanParsable<ResourceInstanceIdentifier>,
+    IFormattable,
+    ISpanFormattable,
+    IExampleDataProvider<ResourceInstanceIdentifier>
 {
     private readonly string _value;
 

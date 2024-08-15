@@ -201,7 +201,28 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
             Type = SecuritySchemeType.ApiKey
         });
         options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+        var originalIdSelector = options.SchemaGeneratorOptions.SchemaIdSelector;
+        options.SchemaGeneratorOptions.SchemaIdSelector = (Type t) =>
+        {
+            if (!t.IsNested)
+            {
+                return originalIdSelector(t);
+            }
+
+            var chain = new List<string>();
+            do
+            {
+                chain.Add(originalIdSelector(t));
+                t = t.DeclaringType;
+            }
+            while (t != null);
+
+            chain.Reverse();
+            return string.Join(".", chain);
+        };
     });
+    services.AddUrnSwaggerSupport();
     services.AddMvc();
 
     PlatformSettings platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();

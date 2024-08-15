@@ -4,7 +4,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 namespace Altinn.AccessManagement.Core.Resolvers;
 
 /// <summary>
-/// Resolves attributes for <see cref="Urn.Altinn.Resource"/> 
+/// Resolves attributes for <see cref="BaseUrn.Altinn.Resource"/> 
 /// </summary>
 public class AltinnResourceResolver : AttributeResolver
 {
@@ -13,26 +13,26 @@ public class AltinnResourceResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Resource.String())
+    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Resource.String())
     {
-        AddLeaf([Urn.Altinn.Resource.AppOwner, Urn.Altinn.Resource.AppId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type, Urn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
-        AddLeaf([Urn.Altinn.Resource.ResourceRegistryId], [Urn.Altinn.Resource.Delegable, Urn.Altinn.Resource.Type], ResolveResourceRegistryId());
+        AddLeaf([BaseUrn.Altinn.Resource.AppOwner, BaseUrn.Altinn.Resource.AppId], [BaseUrn.Altinn.Resource.Delegable, BaseUrn.Altinn.Resource.Type, BaseUrn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
+        AddLeaf([BaseUrn.Altinn.Resource.ResourceRegistryId], [BaseUrn.Altinn.Resource.Delegable, BaseUrn.Altinn.Resource.Type], ResolveResourceRegistryId());
         _contextRetrievalService = contextRetrievalService;
     }
 
     /// <summary>
-    /// Resolves a resource if given <see cref="Urn.Altinn.Resource.AppOwner"/> and <see cref="Urn.Altinn.Resource.AppId"/>
+    /// Resolves a resource if given <see cref="BaseUrn.Altinn.Resource.AppOwner"/> and <see cref="BaseUrn.Altinn.Resource.AppId"/>
     /// </summary>
     public LeafResolver ResolveAppOwnerAndAppId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetRequiredString(Urn.Altinn.Resource.AppOwner), attributes.GetRequiredString(Urn.Altinn.Resource.AppId), null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(null, attributes.GetRequiredString(BaseUrn.Altinn.Resource.AppOwner), attributes.GetRequiredString(BaseUrn.Altinn.Resource.AppId), null, null);
         if (resource != null)
         {
             return
             [
-                new(Urn.Altinn.Resource.Delegable, resource.Delegable),
-                new(Urn.Altinn.Resource.Type, resource.ResourceType),
-                new(Urn.Altinn.Resource.ResourceRegistryId, resource.Identifier),
+                new(BaseUrn.Altinn.Resource.Delegable, resource.Delegable),
+                new(BaseUrn.Altinn.Resource.Type, resource.ResourceType),
+                new(BaseUrn.Altinn.Resource.ResourceRegistryId, resource.Identifier),
             ];
         }
 
@@ -40,17 +40,17 @@ public class AltinnResourceResolver : AttributeResolver
     };
 
     /// <summary>
-    /// /// Resolves a resource if given <see cref="Urn.Altinn.Resource.ResourceRegistryId"/>
+    /// /// Resolves a resource if given <see cref="BaseUrn.Altinn.Resource.ResourceRegistryId"/>
     /// </summary>
     public LeafResolver ResolveResourceRegistryId() => async (attributes, cancellationToken) =>
     {
-        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRequiredString(Urn.Altinn.Resource.ResourceRegistryId), null, null, null, null);
+        var resource = await _contextRetrievalService.GetResourceFromResourceList(attributes.GetRequiredString(BaseUrn.Altinn.Resource.ResourceRegistryId), null, null, null, null);
         if (resource != null)
         {
             return
             [
-                new(Urn.Altinn.Resource.Delegable, resource.Delegable),
-                new(Urn.Altinn.Resource.Type, resource.ResourceType),
+                new(BaseUrn.Altinn.Resource.Delegable, resource.Delegable),
+                new(BaseUrn.Altinn.Resource.Type, resource.ResourceType),
             ];
         }
 

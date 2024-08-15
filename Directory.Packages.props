@@ -22,7 +22,7 @@
         <PackageVersion Include="Microsoft.Extensions.Logging.ApplicationInsights"
             Version="2.22.0" />
         <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.4.0" />
-        <PackageVersion Include="Microsoft.IdentityModel.Logging" Version="7.6.2" />
+        <PackageVersion Include="Microsoft.IdentityModel.Logging" Version="8.0.1" />
         <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
             Version="1.21.0" />
         <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />

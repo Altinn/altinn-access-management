@@ -28,7 +28,7 @@ public static class DelegationScenarios
     /// 2. Add random delegation to delegationchange table.
     ///     - Uses random ID in range [9000, 99999]
     /// </summary>
-    public static void Defaults(IWebHostBuilder host, MockContext mock)
+    public static void Defaults(MockContext mock)
     {
         mock.Resources.AddRange([
             ResourceSeeds.AltinnApp.Defaults,
@@ -72,7 +72,7 @@ public static class DelegationScenarios
     /// <param name="profile">profile</param>
     /// <param name="organizations">organization</param>
     /// <returns></returns>
-    public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => (builder, mock) =>
+    public static Scenario WherePersonHasKeyRole(IUserProfile profile, params IParty[] organizations) => mock =>
     {
         var partyids = organizations.Select(organization => organization?.Party?.PartyId ?? 0);
         if (mock.KeyRoles.TryGetValue(profile.UserProfile.UserId, out var value))
@@ -91,7 +91,7 @@ public static class DelegationScenarios
     /// <param name="subunit">subunit</param>
     /// <param name="mainunit">mainunit</param>
     /// <returns></returns>
-    public static Scenario WhereUnitHasMainUnit(IParty subunit, IParty mainunit) => (host, mock) =>
+    public static Scenario WhereUnitHasMainUnit(IParty subunit, IParty mainunit) => mock =>
     {
         mock.MainUnits[subunit.Party.PartyId] = new MainUnit
         {
@@ -105,7 +105,7 @@ public static class DelegationScenarios
     /// <summary>
     /// Removes a resource from mock context
     /// </summary>
-    public static Scenario WithoutResource(IAccessManagementResource resource) => (host, mock) =>
+    public static Scenario WithoutResource(IAccessManagementResource resource) => mock =>
     {
         mock.Resources.RemoveAt(mock.Resources.FindIndex(r => r.Identifier == resource.Resource.Identifier));
     };
@@ -117,7 +117,7 @@ public static class DelegationScenarios
     /// <param name="person">person that lose the delegation to the organization</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario WithRevokedDelegationToUser(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => (host, mock) =>
+    public static Scenario WithRevokedDelegationToUser(IParty organization, IUserProfile person, IAccessManagementResource resource = null) => mock =>
     {
         resource ??= ResourceSeeds.AltinnApp.Defaults;
 
@@ -139,7 +139,7 @@ public static class DelegationScenarios
     /// <param name="to">to person</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => (host, mock) =>
+    public static Scenario FromOrganizationToPerson(IParty from, IUserProfile to, IAccessManagementResource resource = null) => mock =>
     {
         resource ??= ResourceSeeds.AltinnApp.Defaults;
 
@@ -164,7 +164,7 @@ public static class DelegationScenarios
     /// <param name="to">to person</param>
     /// <param name="resource">resource</param>
     /// <returns></returns>
-    public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => (host, mock) =>
+    public static Scenario FromOrganizationToOrganization(IParty from, IParty to, IAccessManagementResource resource = null) => mock =>
     {
         resource ??= ResourceSeeds.AltinnApp.Defaults;
 

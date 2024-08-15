@@ -1,10 +1,8 @@
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Extensions;
-using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Extensions;
-using Altinn.AccessManagement.Integration.Services;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.Authorization.ServiceDefaults;
@@ -23,8 +21,6 @@ using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-
-namespace Altinn.AccessManagement;
 
 /// <summary>
 /// Configures the register host.
@@ -45,8 +41,9 @@ internal static class AccessManagementHost
         builder.Services.AddHttpContextAccessor();
 
         builder.ConfigureAppsettings();
-        builder.ConfigureInternals();
+        builder.ConfigurePostgreSqlConfiguration();
         builder.ConfigureAltinnPackages();
+        builder.ConfigureInternals();
         builder.ConfigureOpenAPI();
         builder.ConfigureAuthorization();
 
@@ -88,9 +85,6 @@ internal static class AccessManagementHost
     {
         var config = builder.Configuration;
 
-        var platformSettings = config.GetSection("PlatformSettings").Get<PlatformSettings>();
-        var oidcProviders = config.GetSection("OidcProviders").Get<OidcProviderSettings>();
-
         builder.Services.Configure<GeneralSettings>(config.GetSection("GeneralSettings"));
         builder.Services.Configure<PlatformSettings>(config.GetSection("PlatformSettings"));
         builder.Services.Configure<Altinn.Common.PEP.Configuration.PlatformSettings>(config.GetSection("PlatformSettings"));
@@ -98,7 +92,6 @@ internal static class AccessManagementHost
         builder.Services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
         builder.Services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
         builder.Services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
-        builder.Services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
         builder.Services.Configure<KeyVaultSettings>(config.GetSection("kvSetting"));
         builder.Services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
         builder.Services.Configure<UserProfileLookupSettings>(config.GetSection("UserProfileLookupSettings"));
@@ -151,5 +144,31 @@ internal static class AccessManagementHost
         builder.Services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
         builder.Services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
         builder.Services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
+    }
+
+    private static void ConfigurePostgreSqlConfiguration(this WebApplicationBuilder builder)
+    {
+        var runMigrations = builder.Configuration.GetValue<bool>("PostgreSQLSettings:EnableDBConnection");
+        var adminConnectionStringFmt = builder.Configuration.GetValue<string>("PostgreSQLSettings:AdminConnectionString");
+        var adminConnectionStringPwd = builder.Configuration.GetValue<string>("PostgreSQLSettings:AuthorizationDbAdminPwd");
+        var connectionStringFmt = builder.Configuration.GetValue<string>("PostgreSQLSettings:ConnectionString");
+        var connectionStringPwd = builder.Configuration.GetValue<string>("PostgreSQLSettings:AuthorizationDbPwd");
+
+        var adminConnectionString = string.Format(adminConnectionStringFmt, adminConnectionStringPwd);
+        var connectionString = string.Format(connectionStringFmt, connectionStringPwd);
+
+        var serviceDescriptor = builder.Services.GetAltinnServiceDescriptor();
+        var existing = builder.Configuration.GetValue<string>($"ConnectionStrings:{serviceDescriptor.Name}_db");
+
+        if (!string.IsNullOrEmpty(existing))
+        {
+            return;
+        }
+
+        builder.Configuration.AddInMemoryCollection([
+            KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db", connectionString),
+            KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db_migrate", adminConnectionString),
+            KeyValuePair.Create($"Altinn:Npgsql:{serviceDescriptor.Name}:Migrate:Enabled", runMigrations ? "true" : "false"),
+        ]);
     }
 }

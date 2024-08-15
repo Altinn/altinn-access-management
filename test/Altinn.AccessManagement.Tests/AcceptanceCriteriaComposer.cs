@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
-using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Altinn.AccessManagement.Tests;
 
@@ -157,8 +152,13 @@ public abstract class AcceptanceCriteriaComposer
     /// <param name="fixture">web application fixture</param>
     public async Task Test(WebApplicationFixture fixture)
     {
-        var host = await fixture.UseScenarios([.. Scenarios]);
+        var host = await fixture.ConfigureHostBuilderWithScenarios([.. Scenarios]);
         Request.RequestUri = new Uri(host.Client.BaseAddress, RequestUri);
+
+        foreach (var seed in host.Mock.DbSeeds)
+        {
+            await seed(host.Api.Services.GetRequiredService<RepositoryContainer>());
+        }
 
         await AssertResponse(await host.Client.SendAsync(Request));
         await AssertApi(host);

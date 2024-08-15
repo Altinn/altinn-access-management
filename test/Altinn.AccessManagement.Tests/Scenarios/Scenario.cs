@@ -9,4 +9,4 @@ namespace Altinn.AccessManagement.Tests.Scenarios;
 /// </summary>
 /// <param name="host">host builder</param>
 /// <param name="mock">mock context object</param>
-public delegate void Scenario(IWebHostBuilder host, MockContext mock);
+public delegate void Scenario(MockContext mock);

@@ -3,11 +3,13 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
+        <PackageVersion Include="Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql" Version="2.2.2" />
         <PackageVersion Include="Altinn.Authorization.ServiceDefaults" Version="2.2.2" />
         <PackageVersion Include="Altinn.Authorization.ABAC" Version="0.0.8" />
         <PackageVersion Include="Altinn.Common.AccessToken" Version="4.5.0" />
         <PackageVersion Include="Altinn.Common.PEP" Version="3.0.0" />
-        <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection"
+            Version="12.0.1" />
         <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.1" />
         <PackageVersion Include="Azure.Identity" Version="1.12.0" />
         <PackageVersion Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.3.0" />
@@ -19,10 +21,12 @@
         <PackageVersion Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
         <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
         <PackageVersion Include="Microsoft.IdentityModel.Logging" Version="8.0.1" />
-        <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+        <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
+            Version="1.21.0" />
         <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
         <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.9.0" />
         <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+        <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.7" />
         <PackageVersion Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
         <PackageVersion Include="System.Text.Json" Version="8.0.4" />
         <PackageVersion Include="Yuniql.AspNetCore" Version="1.2.25" />

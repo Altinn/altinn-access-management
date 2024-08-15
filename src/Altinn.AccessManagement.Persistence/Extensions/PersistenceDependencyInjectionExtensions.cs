@@ -1,9 +1,11 @@
-﻿using Altinn.AccessManagement.Core.Enums;
+﻿using System.Reflection;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Policy;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 using Azure.Core;
 using Azure.Storage;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,8 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -29,7 +33,6 @@ public static class PersistenceDependencyInjectionExtensions
     /// <returns><paramref name="builder"/> for further chaining.</returns>
     public static WebApplicationBuilder AddAccessManagementPersistence(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDatabase();
         builder.Services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
 
         if (builder.Configuration.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
@@ -43,6 +46,7 @@ public static class PersistenceDependencyInjectionExtensions
             builder.Services.AddSingleton<IResourceMetadataRepository, ResourceMetadataRepository>();
         }
 
+        builder.AddDatabase();
         builder.Services.AddDelegationPolicyRepository(builder.Configuration);
 
         return builder;
@@ -53,7 +57,7 @@ public static class PersistenceDependencyInjectionExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    public static IServiceCollection AddDelegationPolicyRepository(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddDelegationPolicyRepository(this IServiceCollection services, IConfiguration configuration)
     {
         var config = new AzureStorageConfiguration();
 
@@ -79,7 +83,7 @@ public static class PersistenceDependencyInjectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configureOptions">options for configuring blob service</param>
     /// <returns><paramref name="services"/> for further chaining.</returns>
-    public static IServiceCollection AddDelegationPolicyRepository(this IServiceCollection services, Action<List<PolicyOptions>> configureOptions)
+    private static IServiceCollection AddDelegationPolicyRepository(this IServiceCollection services, Action<List<PolicyOptions>> configureOptions)
     {
         var options = new List<PolicyOptions>();
         configureOptions(options);
@@ -118,28 +122,28 @@ public static class PersistenceDependencyInjectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    private static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
-        services.AddOptions<PostgreSQLSettings>()
-            .Validate(s => !string.IsNullOrEmpty(s.ConnectionString), "connection string cannot be null or empty")
-            .Validate(s => !string.IsNullOrEmpty(s.AuthorizationDbPwd), "connection string password be null or empty");
-
-        services.TryAddSingleton((IServiceProvider sp) =>
+        if (builder.Services.Any(s => s.ServiceType == typeof(Marker)))
         {
-            var settings = sp.GetRequiredService<IOptions<PostgreSQLSettings>>().Value;
+            return builder;
+        }
 
-            var bld = new NpgsqlConnectionStringBuilder(string.Format(settings.ConnectionString, settings.AuthorizationDbPwd));
-            bld.AutoPrepareMinUsages = 2;
-            bld.MaxAutoPrepare = 50;
+        builder.Services.AddSingleton<Marker>();
 
-            var builder = new NpgsqlDataSourceBuilder(bld.ConnectionString);
-            builder.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
-            builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
-            builder.MapEnum<UuidType>("delegation.uuidtype");
+        var fs = new ManifestEmbeddedFileProvider(typeof(PersistenceDependencyInjectionExtensions).Assembly, "Migration");
 
-            return builder.Build();
-        });
+        builder.AddAltinnPostgresDataSource()
+            .MapEnum<DelegationChangeType>("delegation.delegationchangetype")
+            .MapEnum<UuidType>("delegation.uuidtype")
+            .AddYuniqlMigrations(cfg =>
+            {
+                cfg.Workspace = "/";
+                cfg.WorkspaceFileProvider = fs;
+            });
 
-        return services;
+        return builder;
     }
+
+    private record Marker;
 }

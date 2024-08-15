@@ -1,4 +1,4 @@
-using Altinn.AccessManagement;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.IdentityModel.Logging;
 
 WebApplication app = AccessManagementHost.Create(args);
@@ -26,6 +26,7 @@ await app.RunAsync();
 /// <summary>
 /// Startup class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed partial class Program
 {
     private Program()

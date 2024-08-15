@@ -1,11 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.OpenTelemetry" />
     <PackageReference Include="OpenTelemetry" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
+    <PackageReference Include="Altinn.Authorization.ServiceDefaults" />
+    <PackageReference Include="Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -13,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Migration\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Migration\" />
+    <EmbeddedResource Include="Migration/**/*.sql" />
   </ItemGroup>
 
 </Project>

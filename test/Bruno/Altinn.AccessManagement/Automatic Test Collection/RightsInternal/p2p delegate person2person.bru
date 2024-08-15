@@ -68,7 +68,7 @@ script:pre-request {
   bru.setVar("org", testdata.org);
   bru.setVar("app", testdata.app);
   
-  await tokenGenerator.getToken();
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
 }
 
 tests {

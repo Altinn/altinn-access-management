@@ -29,10 +29,11 @@ vars:pre-request {
   auth_org: digdir
   auth_orgNo: 991825827
   auth_scopes: altinn:maskinporten/delegations.admin
+  bearerToken: 
 }
 
 script:pre-request {
-  await tokenGenerator.getToken();
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:maskinporten/delegations.admin"));   
 }
 
 tests {

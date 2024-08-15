@@ -25,7 +25,7 @@ script:pre-request {
   bru.setVar("auth_ssn", testdata.org2.dagl.pid);
   bru.setVar("party", testdata.org2.partyid);
   
-  await tokenGenerator.getToken();
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
 }
 
 tests {

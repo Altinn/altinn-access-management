@@ -58,7 +58,7 @@ script:pre-request {
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org2.partyid);
   
-  await tokenGenerator.getToken();
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
 }
 
 tests {

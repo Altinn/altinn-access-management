@@ -15,7 +15,7 @@ namespace Altinn.AccessManagement.Controllers;
 /// Controller responsible for all instance delegation operations from Apps
 /// </summary>
 [ApiController]
-[Route("accessmanagement/api/v1/apps/instance")]
+[Route("accessmanagement/api/v1/apps/instancedelegation")]
 public class AppsInstanceDelegationController : ControllerBase
 {
     private readonly ILogger _logger;
@@ -44,8 +44,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="appInstanceDelegationRequest">The request model</param>
     /// <returns>Result</returns>
     [HttpPost]
-    [Authorize(Policy = AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES)]
-    [Route("delegation")]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
@@ -70,8 +69,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="appInstanceDelegationRequest">The request model</param>
     /// <returns>Result</returns>
     [HttpGet]
-    [Authorize(Policy = AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES)]
-    [Route("delegation")]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
@@ -96,7 +94,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="appInstanceDelegationRequest">The request model</param>
     /// <returns>Result</returns>
     [HttpPost]
-    [Authorize(Policy = AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES)]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
     [Route("revoke")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]

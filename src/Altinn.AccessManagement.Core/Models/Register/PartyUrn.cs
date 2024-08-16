@@ -13,14 +13,6 @@ namespace Altinn.AccessManagement.Core.Models.Register;
 public abstract partial record PartyUrn
 {
     /// <summary>
-    /// Try to get the urn as a party id.
-    /// </summary>
-    /// <param name="partyId">The resulting party id.</param>
-    /// <returns><see langword="true"/> if this party reference is a party id, otherwise <see langword="false"/>.</returns>
-    [UrnKey("altinn:party:id")]
-    public partial bool IsPartyId(out int partyId);
-
-    /// <summary>
     /// Try to get the urn as a party uuid.
     /// </summary>
     /// <param name="partyUuid">The resulting party uuid.</param>

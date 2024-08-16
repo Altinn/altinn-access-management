@@ -33,7 +33,7 @@ public sealed record ResourceIdentifier
     /// <inheritdoc/>
     public static IEnumerable<ResourceIdentifier>? GetExamples(ExampleDataOptions options)
     {
-        yield return new ResourceIdentifier("test");
+        yield return new ResourceIdentifier("example-resourceid");
         yield return new ResourceIdentifier("app_skd_flyttemelding");
     }
 

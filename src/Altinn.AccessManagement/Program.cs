@@ -18,6 +18,7 @@ using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
+using Altinn.AccessManagement.Services.Interfaces;
 using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
@@ -27,6 +28,7 @@ using Altinn.Common.PEP.Authorization;
 using Altinn.Common.PEP.Clients;
 using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
+using Altinn.Platform.Authorization.Services.Implementation;
 using AltinnCore.Authentication.JwtCookie;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.Exporter;
@@ -273,6 +275,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
     services.AddSingleton<IPlatformAuthorizationTokenProvider, PlatformAuthorizationTokenProvider>();
     services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
     services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
+    services.AddSingleton<IAppsInstanceDelegationService, AppsInstanceDelegationService>();
     services.AddAccessManagementPersistence(config);
 
     if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
@@ -315,6 +318,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy =>
             policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
+        options.AddPolicy(AuthzConstants.POLICY_APPS_INSTANCEDELEGATION, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_APPS_INSTANCEDELEGATION })));
     });
 
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();

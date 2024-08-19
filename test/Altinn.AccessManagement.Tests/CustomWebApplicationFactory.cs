@@ -18,22 +18,14 @@ namespace Altinn.AccessManagement.Tests
         /// <param name="builder">IWebHostBuilder</param>
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration(config =>
-                {
-                    config.AddConfiguration(new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.test.json")
-                        .AddInMemoryCollection(new Dictionary<string, string>
-                        {
-                            ["Logging:LogLevel:*"] = "Warning"
-                        })
-                        .Build());
-                });
-
-            builder.ConfigureLogging((ctx, logging) =>
+            var appsettings = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.test.json")
+            .AddInMemoryCollection(new Dictionary<string, string>
             {
-                logging.ClearProviders();
-                logging.AddConsole();
+                ["Logging:LogLevel:*"] = "Warning",
             });
+
+            builder.UseConfiguration(appsettings.Build());
         }
     }
 }

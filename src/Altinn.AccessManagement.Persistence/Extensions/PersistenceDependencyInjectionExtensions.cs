@@ -33,6 +33,13 @@ public static class PersistenceDependencyInjectionExtensions
     /// <returns><paramref name="builder"/> for further chaining.</returns>
     public static WebApplicationBuilder AddAccessManagementPersistence(this WebApplicationBuilder builder)
     {
+        if (builder.Services.Any(s => s.ServiceType == typeof(Marker)))
+        {
+            return builder;
+        }
+
+        builder.Services.AddSingleton<Marker>();
+
         builder.Services.AddSingleton<IDelegationChangeEventQueue, DelegationChangeEventQueue>();
 
         if (builder.Configuration.GetSection("FeatureManagement").GetValue<bool>("UseNewQueryRepo"))
@@ -124,13 +131,6 @@ public static class PersistenceDependencyInjectionExtensions
 
     private static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
-        if (builder.Services.Any(s => s.ServiceType == typeof(Marker)))
-        {
-            return builder;
-        }
-
-        builder.Services.AddSingleton<Marker>();
-
         var fs = new ManifestEmbeddedFileProvider(typeof(PersistenceDependencyInjectionExtensions).Assembly, "Migration");
 
         builder.AddAltinnPostgresDataSource()
@@ -145,5 +145,5 @@ public static class PersistenceDependencyInjectionExtensions
         return builder;
     }
 
-    private record Marker;
+    private sealed record Marker;
 }

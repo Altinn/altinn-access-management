@@ -27,7 +27,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
         var db = PostgresServer.NewDatabase();
 
         var appsettings = new ConfigurationBuilder()
-           .AddJsonFile(Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "appsettings.test.json"))
+           .AddJsonFile("appsettings.test.json")
            .AddInMemoryCollection(new Dictionary<string, string>
            {
                ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),

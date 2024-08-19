@@ -19,8 +19,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapDefaultAltinnEndpoints();
 app.MapControllers();
+app.MapDefaultAltinnEndpoints();
 
 await app.RunAsync();
 

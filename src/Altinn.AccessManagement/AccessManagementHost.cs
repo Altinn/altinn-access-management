@@ -1,6 +1,7 @@
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Extensions;
+using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Extensions;
 using Altinn.AccessManagement.Persistence.Configuration;
@@ -41,6 +42,8 @@ internal static class AccessManagementHost
         builder.Services.AddAutoMapper(typeof(Program));
         builder.Services.AddControllers();
         builder.Services.AddFeatureManagement();
+        builder.Services.AddHealthChecks()
+            .AddCheck<HealthCheck>("authorization_admin_health_check");
         builder.Services.AddHttpContextAccessor();
 
         builder.ConfigureAppsettings();

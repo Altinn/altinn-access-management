@@ -24,7 +24,7 @@ namespace Altinn.AccessManagement.Tests
                         .AddJsonFile("appsettings.test.json")
                         .AddInMemoryCollection(new Dictionary<string, string>
                         {
-                            ["Logging:LogLevel:*"] = "Error"
+                            ["Logging:LogLevel:*"] = "Warning"
                         })
                         .Build());
                 });

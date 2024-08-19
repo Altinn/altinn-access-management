@@ -167,8 +167,8 @@ internal static class AccessManagementHost
 
         builder.Configuration.AddInMemoryCollection([
             KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db", connectionString),
-            KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db_migrate", adminConnectionString),
-            KeyValuePair.Create($"Altinn:Npgsql:{serviceDescriptor.Name}:Migrate:Enabled", runMigrations ? "true" : "false"),
-        ]);
+                KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db_migrate", adminConnectionString),
+                KeyValuePair.Create($"Altinn:Npgsql:{serviceDescriptor.Name}:Migrate:Enabled", runMigrations ? "true" : "false"),
+            ]);
     }
 }

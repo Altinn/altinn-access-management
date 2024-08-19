@@ -6,6 +6,7 @@ using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Resolvers;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Common.AccessToken.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,18 @@ public static class ResolverServiceCollection
     public static void DefaultServiceCollection(IServiceCollection services)
     {
         services.AddMemoryCache();
+        services.AddTransient<IDelegationRequests, DelegationRequestService>();
+        services.AddTransient<IAttributeResolver, UrnResolver>();
+
+        services.AddTransient<UrnResolver>();
+        services.AddTransient<AltinnEnterpriseUserResolver>();
+        services.AddTransient<AltinnResolver>();
+        services.AddTransient<AltinnResourceResolver>();
+        services.AddTransient<AltinnOrganizationResolver>();
+        services.AddTransient<AltinnPersonResolver>();
+        services.AddTransient<PartyAttributeResolver>();
+        services.AddTransient<UserAttributeResolver>();
+
         services.Configure<CacheConfig>(options =>
         {
             options.PartyCacheTimeout = 5;

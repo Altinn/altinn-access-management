@@ -152,7 +152,7 @@ public abstract class AcceptanceCriteriaComposer
     /// <param name="fixture">web application fixture</param>
     public async Task Test(WebApplicationFixture fixture)
     {
-        var host = await fixture.ConfigureHostBuilderWithScenarios([.. Scenarios]);
+        var host = fixture.ConfigureHostBuilderWithScenarios([.. Scenarios]);
         Request.RequestUri = new Uri(host.Client.BaseAddress, RequestUri);
 
         foreach (var seed in host.Mock.DbSeeds)

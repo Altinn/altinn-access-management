@@ -22,6 +22,10 @@ namespace Altinn.AccessManagement.Tests
                 {
                     config.AddConfiguration(new ConfigurationBuilder()
                         .AddJsonFile("appsettings.test.json")
+                        .AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            ["Logging:LogLevel:*"] = "Error"
+                        })
                         .Build());
                 });
 

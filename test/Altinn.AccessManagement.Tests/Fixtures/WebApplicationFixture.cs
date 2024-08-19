@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Tests.Fixtures;
@@ -26,19 +25,19 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var db = PostgresServer.NewDatabase();
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config
+
+        var appsettings = new ConfigurationBuilder()
            .AddJsonFile(Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "appsettings.test.json"))
            .AddInMemoryCollection(new Dictionary<string, string>
            {
                ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),
                ["PostgreSQLSettings:ConnectionString"] = db.User.ToString(),
                ["PostgreSQLSettings:EnableDBConnection"] = "true",
+               ["Logging:LogLevel:*"] = "Warning",
            });
-        });
-    }
 
+        builder.UseConfiguration(appsettings.Build());
+    }
 
     /// <summary>
     /// Creates a specific mock context based on given scenarios.

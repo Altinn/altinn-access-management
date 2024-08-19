@@ -33,7 +33,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
                ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),
                ["PostgreSQLSettings:ConnectionString"] = db.User.ToString(),
                ["PostgreSQLSettings:EnableDBConnection"] = "true",
-               //    ["Logging:LogLevel:*"] = "Warning",
+               ["Logging:LogLevel:*"] = "Error",
            });
 
         builder.UseConfiguration(appsettings.Build());

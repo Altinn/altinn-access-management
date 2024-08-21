@@ -41,9 +41,9 @@ public class AltinnPersonResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.IdentifierNo, "02056260016")],
-                [Urn.Altinn.Person.PartyId],
-                AssertContains(new AttributeMatch(Urn.Altinn.Person.UserId, "20000095"))
+                [new(BaseUrn.Altinn.Person.IdentifierNo, "02056260016")],
+                [BaseUrn.Altinn.Person.PartyId],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Person.UserId, "20000095"))
             }
         };
 
@@ -54,9 +54,9 @@ public class AltinnPersonResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.UserId, "20000095")],
-                [Urn.Altinn.Person.IdentifierNo],
-                AssertContains(new AttributeMatch(Urn.Altinn.Person.IdentifierNo, "02056260016"))
+                [new(BaseUrn.Altinn.Person.UserId, "20000095")],
+                [BaseUrn.Altinn.Person.IdentifierNo],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Person.IdentifierNo, "02056260016"))
             }
         };
 
@@ -67,9 +67,9 @@ public class AltinnPersonResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.UserId, "20000095")],
-                [Urn.Altinn.Person.IdentifierNo],
-                AssertContains(new AttributeMatch(Urn.Altinn.Person.IdentifierNo, "02056260016"))
+                [new(BaseUrn.Altinn.Person.UserId, "20000095")],
+                [BaseUrn.Altinn.Person.IdentifierNo],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Person.IdentifierNo, "02056260016"))
             }
         };
 
@@ -80,9 +80,9 @@ public class AltinnPersonResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.PartyId, "50002203")],
-                [Urn.Altinn.Person.UserId],
-                AssertContains(new AttributeMatch(Urn.Altinn.Person.UserId, "20000095"))
+                [new(BaseUrn.Altinn.Person.PartyId, "50002203")],
+                [BaseUrn.Altinn.Person.UserId],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Person.UserId, "20000095"))
             }
         };
 
@@ -94,9 +94,9 @@ public class AltinnPersonResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.UserId, "00000000")],
-                [Urn.Altinn.Person.IdentifierNo],
-                AssertEqual(new AttributeMatch(Urn.Altinn.Person.UserId, "00000000"))
+                [new(BaseUrn.Altinn.Person.UserId, "00000000")],
+                [BaseUrn.Altinn.Person.IdentifierNo],
+                AssertEqual(new AttributeMatch(BaseUrn.Altinn.Person.UserId, "00000000"))
             }
         };
 

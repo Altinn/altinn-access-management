@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Altinn.Authorization.ProblemDetails" />
     <PackageReference Include="Altinn.Authorization.ServiceDefaults" />
     <PackageReference Include="Altinn.Authorization.ABAC" />
     <PackageReference Include="Altinn.Common.AccessToken" />
     <PackageReference Include="Altinn.Common.PEP" />
+    <PackageReference Include="Altinn.Urn.Swashbuckle" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />
     <PackageReference Include="Azure.Identity" />
@@ -30,10 +32,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Altinn.AccessManagement.Core\Altinn.AccessManagement.Core.csproj" />
-    <ProjectReference
-      Include="..\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj" />
-    <ProjectReference
-      Include="..\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj" />
+    <ProjectReference Include="..\Altinn.AccessManagement.Integration\Altinn.AccessManagement.Integration.csproj" />
+    <ProjectReference Include="..\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

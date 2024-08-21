@@ -40,9 +40,9 @@ public class AltinnOrganizationResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "910493353")],
-                [Urn.Altinn.Organization.PartyId],
-                AssertContains(new AttributeMatch(Urn.Altinn.Organization.PartyId, "50006078"))
+                [new(BaseUrn.Altinn.Organization.IdentifierNo, "910493353")],
+                [BaseUrn.Altinn.Organization.PartyId],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Organization.PartyId, "50006078"))
             }
         };
 
@@ -53,9 +53,9 @@ public class AltinnOrganizationResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Organization.PartyId, "50006078")],
-                [Urn.Altinn.Organization.IdentifierNo],
-                AssertContains(new AttributeMatch(Urn.Altinn.Organization.IdentifierNo, "910493353"))
+                [new(BaseUrn.Altinn.Organization.PartyId, "50006078")],
+                [BaseUrn.Altinn.Organization.IdentifierNo],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Organization.IdentifierNo, "910493353"))
             }
         };
 
@@ -67,9 +67,9 @@ public class AltinnOrganizationResolverTests
         new()
         {
             {
-                [new(Urn.Altinn.Organization.PartyId, "00000000")],
-                [Urn.Altinn.Organization.IdentifierNo],
-                AssertContains(new AttributeMatch(Urn.Altinn.Organization.PartyId, "00000000"))
+                [new(BaseUrn.Altinn.Organization.PartyId, "00000000")],
+                [BaseUrn.Altinn.Organization.IdentifierNo],
+                AssertContains(new AttributeMatch(BaseUrn.Altinn.Organization.PartyId, "00000000"))
             }
         };
 

@@ -46,6 +46,11 @@
         public const string POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES = "ResourceOwnerAuthorizedParty";
 
         /// <summary>
+        /// Policy tag for scope authorization on the instance delegation API for Apps
+        /// </summary>
+        public const string POLICY_APPS_INSTANCEDELEGATION = "AppsInstanceDelegation";
+
+        /// <summary>
         /// Scope giving access to getting authorized parties for a given subject.
         /// </summary>
         public const string SCOPE_AUTHORIZEDPARTIES_ENDUSERSYSTEM = "altinn:accessmanagement/authorizedparties";
@@ -69,6 +74,11 @@
         /// Scope giving access to delegations for arbitrary Maskinporten schemes
         /// </summary>
         public const string SCOPE_MASKINPORTEN_DELEGATIONS_ADMIN = "altinn:maskinporten/delegations.admin";
+
+        /// <summary>
+        /// Scope giving access to getting authorized parties for any third party, for which the third party have access to one or more of the resource owners services, apps or resources.
+        /// </summary>
+        public const string SCOPE_APPS_INSTANCEDELEGATION = "altinn:accessmanagement/instancedelegation.apps";
 
         /// <summary>
         /// Claim for scopes from maskinporten token

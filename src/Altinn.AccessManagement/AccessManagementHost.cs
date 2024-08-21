@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Altinn.AccessManagement;
@@ -156,8 +157,12 @@ internal static class AccessManagementHost
         var connectionStringFmt = builder.Configuration.GetValue<string>("PostgreSQLSettings:ConnectionString");
         var connectionStringPwd = builder.Configuration.GetValue<string>("PostgreSQLSettings:AuthorizationDbPwd");
 
-        var adminConnectionString = string.Format(adminConnectionStringFmt, adminConnectionStringPwd);
-        var connectionString = string.Format(connectionStringFmt, connectionStringPwd);
+        var adminConnectionString = new NpgsqlConnectionStringBuilder(string.Format(adminConnectionStringFmt, adminConnectionStringPwd));
+        var connectionString = new NpgsqlConnectionStringBuilder(string.Format(connectionStringFmt, connectionStringPwd))
+        {
+            MaxAutoPrepare = 50,
+            AutoPrepareMinUsages = 2,
+        };
 
         var serviceDescriptor = builder.Services.GetAltinnServiceDescriptor();
         var existing = builder.Configuration.GetValue<string>($"ConnectionStrings:{serviceDescriptor.Name}_db");
@@ -168,8 +173,8 @@ internal static class AccessManagementHost
         }
 
         builder.Configuration.AddInMemoryCollection([
-            KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db", connectionString),
-                KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db_migrate", adminConnectionString),
+            KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db", connectionString.ToString()),
+                KeyValuePair.Create($"ConnectionStrings:{serviceDescriptor.Name}_db_migrate", adminConnectionString.ToString()),
                 KeyValuePair.Create($"Altinn:Npgsql:{serviceDescriptor.Name}:Migrate:Enabled", runMigrations ? "true" : "false"),
             ]);
     }

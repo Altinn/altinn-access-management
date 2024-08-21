@@ -328,6 +328,95 @@ namespace Altinn.AccessManagement.Persistence
             return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
         }
 
+        public async Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange delegationChange, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            string query = /*strpsql*/@"
+            INSERT INTO delegation.delegationChanges(
+                resourceId
+                ,offeredByPartyId
+                ,fromUuid
+                ,fromType
+                ,coveredByUserId
+                ,coveredByPartyId
+                ,toUuid
+                ,toType
+                ,performedByUuid
+                ,performedByUuidType
+                ,blobStoragePolicyPath
+                ,blobStorageVersionId)
+            VALUES (
+                @resourceId
+                ,@offeredByPartyId
+                ,@fromUuid
+                ,@fromType
+                ,@coveredByUserId
+                ,@coveredByPartyId
+                ,@toUuid
+                ,@toType
+                ,@performedByUuid
+                ,@performedByUuidType
+                ,@blobStoragePolicyPath
+                ,@blobStorageVersionId)
+            RETURNING *;
+            ";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("altinnAppId", NpgsqlDbType.Text, delegationChange.ResourceId);
+                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, delegationChange.FromUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("fromType", delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
+                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("toType", delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
+                cmd.Parameters.AddWithValue("performedByUuid", NpgsqlDbType.Uuid, delegationChange.PerformedByUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("performedByUuidType", delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
+                cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
+                cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
+
+                using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
+                if (await reader.ReadAsync(cancellationToken))
+                {
+                    return await GetInstanceDelegationChange(reader);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
+        private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChange(NpgsqlDataReader reader)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            try
+            {
+                return new InstanceDelegationChange
+                {
+                    InstanceDelegationChangeId = await reader.GetFieldValueAsync<int>("delegationchangeid"),
+                    ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
+                    FromUuid = await reader.GetFieldValueAsync<Guid>("fromuuid"),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
+                    ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
+                    PerformedByUuid = await reader.GetFieldValueAsync<Guid>("performedByUuid"),
+                    PerformedByUuidType = await reader.GetFieldValueAsync<UuidType?>("performedByUuidType") ?? UuidType.NotSpecified,
+                    BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
+                    BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
+                    Created = await reader.GetFieldValueAsync<DateTime>("created")
+                };
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return await new ValueTask<InstanceDelegationChange>(Task.FromException<InstanceDelegationChange>(ex));
+            }
+        }
+
         private async Task<DelegationChange> InsertAppDelegation(DelegationChange delegationChange, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);

@@ -68,7 +68,10 @@ script:pre-request {
   bru.setVar("servicecode", testdata.servicecode);
   bru.setVar("serviceeditioncode", testdata.serviceeditioncode);
   
-  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
+  const ssn = bru.getVar("auth_ssn");
+  const userid = bru.getVar("auth_userId");
+  const partyid = bru.getVar("auth_partyId");
+  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read", ssn, userid, partyid));
 }
 
 tests {

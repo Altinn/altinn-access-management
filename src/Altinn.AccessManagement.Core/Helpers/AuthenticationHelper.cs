@@ -95,7 +95,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 return jwtSystemUserClaims;
             }
 
-            return string.Empty;
+            return null;
         }
     }
 }

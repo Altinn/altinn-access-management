@@ -1,5 +1,5 @@
 
-exports.getToken = async function (scopes, tokenPid, tokenUser, tokenParty) {
+exports.getToken = async function (tokenType, scopes, tokenPid, tokenUser, tokenParty) {
   const axios = require("axios");
   const btoa = require("btoa");
 
@@ -9,7 +9,7 @@ exports.getToken = async function (scopes, tokenPid, tokenUser, tokenParty) {
   const Authorization = 'Basic ' + btoa(`${basicAuthUser}:${basicAuthPw}`);
 
   const tokenEnv = bru.getEnvVar("tokenEnv");
-  const tokenType = bru.getVar("auth_tokenType");
+  // const tokenType = bru.getVar("auth_tokenType");
   // const tokenUser = auth_userId;
   // const tokenParty = bru.getVar("auth_partyId");
   // const tokenPid = bru.getVar("auth_ssn");

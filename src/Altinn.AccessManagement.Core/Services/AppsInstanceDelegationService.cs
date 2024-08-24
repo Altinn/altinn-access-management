@@ -1,9 +1,8 @@
-using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Services.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.Authorization.ProblemDetails;
 using Microsoft.Extensions.Logging;
 
-namespace Altinn.Platform.Authorization.Services.Implementation;
+namespace Altinn.AccessManagement.Core.Services.Implementation;
 
 /// <summary>
 /// Contains all actions related to app instance delegation from Apps
@@ -21,19 +20,19 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Delegate(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public Task<Result<bool>> Delegate()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Get(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public Task<Result<bool>> Get()
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Revoke(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public Task<Result<bool>> Revoke()
     {
         throw new NotImplementedException();
     }

@@ -8,7 +8,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry;
 /// A unique reference to a resource in the form of an URN.
 /// </summary>
 [KeyValueUrn]
-public abstract partial record ResourceUrn
+public abstract partial record ResourceIdUrn
 {
     /// <summary>
     /// Try to get the urn as a resource id.

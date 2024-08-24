@@ -33,8 +33,8 @@ public class OrganizationNumber
     /// <inheritdoc/>
     public static IEnumerable<OrganizationNumber>? GetExamples(ExampleDataOptions options)
     {
-        yield return new OrganizationNumber("123456789");
         yield return new OrganizationNumber("987654321");
+        yield return new OrganizationNumber("123456789");
     }
 
     /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)"/>

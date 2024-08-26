@@ -31,22 +31,30 @@ assert {
 
 script:pre-request {
   const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("auth_userId", testdata.org2.dagl.userid);
-  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
-  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
   bru.setVar("party", testdata.org2.partyid);
   
-  const ssn = bru.getVar("auth_ssn");
-  const userid = bru.getVar("auth_userId");
-  const partyid = bru.getVar("auth_partyId");
-  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read", ssn, userid, partyid));
+  var getTokenParameters = {
+    auth_userId: testdata.org2.dagl.userid,
+    auth_partyId: testdata.org2.dagl.partyid,
+    auth_ssn: testdata.org2.dagl.pid,
+    party: testdata.org2.partyid,
+    to_partyid: testdata.org1.partyid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
 }
 
 tests {
   
   test("get MaskinPortenSchema Received", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
-    const data = res.getBody();  
+    const data = res.getBody();  5
     expect(res.status).to.equal(200);
     expect(data[0]).to.have.property('offeredByPartyId', testdata.org1.partyid);
     expect(data[0]).to.have.property('offeredByName', 'ALDRA OG FORTUN');

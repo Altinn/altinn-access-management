@@ -1,0 +1,13 @@
+{
+    "scopes": {
+        "read": "altinn:instances:read"
+    },
+    "auth_scopes": {
+        "read": "altinn:instances:read"
+    },
+    "authTokenType": {
+        "personal": "Personal",
+        "enterprise": "Enterprise",
+        "enterpriseUser": "EnterpriseUser"
+    }
+}

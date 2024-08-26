@@ -22,7 +22,7 @@ script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   bru.setVar("auth_userId", testdata.org2.dagl.userid);
   bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
-  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  bru.setVar("auth_ssn", testdata.org2.dagl.pid);5
   bru.setVar("party", testdata.org2.partyid);
   
   const ssn = bru.getVar("auth_ssn");

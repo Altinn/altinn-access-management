@@ -1,6 +1,5 @@
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Extensions;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Extensions;
@@ -8,7 +7,6 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.Authorization.ServiceDefaults;
 using Altinn.Common.AccessToken;
-using Altinn.Common.AccessToken.Configuration;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.Authentication.Configuration;
 using Altinn.Common.Authentication.Models;
@@ -98,7 +96,7 @@ internal static class AccessManagementHost
         builder.Services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
         builder.Services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
         builder.Services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
-        builder.Services.Configure<KeyVaultSettings>(config.GetSection("kvSetting"));
+        builder.Services.Configure<AltinnCore.Authentication.Constants.KeyVaultSettings>(config.GetSection("kvSetting"));
         builder.Services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
         builder.Services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
         builder.Services.Configure<UserProfileLookupSettings>(config.GetSection("UserProfileLookupSettings"));

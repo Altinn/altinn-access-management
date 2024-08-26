@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Reflection;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -16,9 +13,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Fixtures;
 
@@ -27,48 +22,39 @@ namespace Altinn.AccessManagement.Tests.Fixtures;
 /// </summary>
 public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    /// <summary>
-    /// ConfigureWebHost for setup of configuration and test services
-    /// </summary>
-    /// <param name="builder">IWebHostBuilder</param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var db = PostgresServer.NewDatabase();
-        builder.ConfigureAppConfiguration(config =>
+
+        var appsettings = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.test.json")
+           .AddInMemoryCollection(new Dictionary<string, string>
            {
-               config.AddConfiguration(new ConfigurationBuilder()
-                   .AddJsonFile("appsettings.test.json")
-                   .AddInMemoryCollection(new Dictionary<string, string>
-                   {
-                       ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),
-                       ["PostgreSQLSettings:ConnectionString"] = db.User.ToString(),
-                       ["PostgreSQLSettings:EnableDBConnection"] = "true",
-                   })
-                   .Build());
+               ["PostgreSQLSettings:AdminConnectionString"] = db.Admin.ToString(),
+               ["PostgreSQLSettings:ConnectionString"] = db.User.ToString(),
+               ["PostgreSQLSettings:EnableDBConnection"] = "true",
+               ["Logging:LogLevel:*"] = "Error",
            });
+
+        builder.UseConfiguration(appsettings.Build());
     }
 
     /// <summary>
     /// Creates a specific mock context based on given scenarios.
     /// </summary>
     /// <param name="scenarios">list of scenarios</param>
-    public async Task<Host> UseScenarios(params Scenario[] scenarios)
+    public Host ConfigureHostBuilderWithScenarios(params Scenario[] scenarios)
     {
         var mock = new MockContext();
         var host = CreateHost(scenarios, mock);
-
         var client = host.CreateClient();
+
         foreach (var header in mock.HttpHeaders)
         {
             client.DefaultRequestHeaders.Add(header.Key, header.Value);
         }
 
-        foreach (var seed in mock.DbSeeds)
-        {
-            await seed(host.Services.GetRequiredService<RepositoryContainer>());
-        }
-
-        return new Host(host, client);
+        return new Host(host, client, mock);
     }
 
     private WebApplicationFactory<Program> CreateHost(Scenario[] scenarios, MockContext mock)
@@ -77,7 +63,7 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
         {
             foreach (var scenario in scenarios)
             {
-                scenario(builder, mock);
+                scenario(mock);
             }
 
             mock.Parties = mock.Parties.DistinctBy(party => party.PartyId).ToList();
@@ -99,7 +85,6 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
 
     private static void AddMockClients(IServiceCollection services)
     {
-        // services.AddSingleton<IResourceRegistryClient, ResourceRegistryClientMock>();
         services.AddSingleton<IPartiesClient, Contexts.PartiesClientMock>();
         services.AddSingleton<IProfileClient, Contexts.ProfileClientMock>();
         services.AddSingleton<IResourceRegistryClient, ResourceRegistryMock>();
@@ -137,8 +122,10 @@ public class WebApplicationFixture : WebApplicationFactory<Program>, IAsyncLifet
 /// <summary>
 /// Container for the test server API and HTTP Client for sending requests 
 /// </summary>
-public class Host(WebApplicationFactory<Program> api, HttpClient client)
+public class Host(WebApplicationFactory<Program> api, HttpClient client, MockContext mock)
 {
+    public MockContext Mock { get; set; } = mock;
+
     /// <summary>
     /// Test server
     /// </summary>

@@ -103,7 +103,7 @@ public class AltinnPersonResolver : AttributeResolver
         {
             if (party.Person != null)
             {
-                return 
+                return
                 [
                     new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN),
                     new(Urn.Altinn.Person.Shortname, party.Person.Name),

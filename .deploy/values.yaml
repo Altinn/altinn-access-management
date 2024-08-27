@@ -1,0 +1,402 @@
+replicaCount: 1
+
+environment: development
+
+image:
+  repository: altinntjenesterregistry.azurecr.io/altinn-access-management
+  containerPort: 5110
+environmentVariables:
+  at21:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Staging
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=at21-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=at21-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=7;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: at21.altinn.cloud
+    - name: GeneralSettings__FrontendBaseUrl
+      value: https://amcdntest.z16.web.core.windows.net/
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.at21.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://at21.altinn.cloud/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.at21.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.at21.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+    - name: FeatureManagement__UseNewQueryRepo
+      value: true
+  at22:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Staging
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=at22-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=at22-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=7;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: at22.altinn.cloud
+    - name: GeneralSettings__FrontendBaseUrl
+      value: https://amcdntest.z16.web.core.windows.net/
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.at22.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://at22.altinn.cloud/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.at22.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.at22.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+    - name: FeatureManagement__UseNewQueryRepo
+      value: true
+  at23:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Staging
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=at23-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=at23-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=7;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: at23.altinn.cloud
+    - name: GeneralSettings__FrontendBaseUrl
+      value: https://amcdntest.z16.web.core.windows.net/
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.at23.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://at23.altinn.cloud/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.at23.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.at23.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+  at24:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Staging
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=at24-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=at24-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Maximum Pool Size=7;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: at24.altinn.cloud
+    - name: GeneralSettings__FrontendBaseUrl
+      value: https://amcdntest.z16.web.core.windows.net/
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.at24.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://at24.altinn.cloud/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.at24.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.at24.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+    - name: FeatureManagement__UseNewQueryRepo
+      value: true
+  development:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=at22-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=at22-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: at22.altinn.cloud
+    - name: GeneralSettings__FrontendBaseUrl
+      value: https://amcdntest.z16.web.core.windows.net/
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: https://platform.at22.altinn.cloud/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: https://platform.at22.altinn.cloud/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: https://platform.at22.altinn.cloud/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: https://platform.at22.altinn.cloud/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: https://platform.at22.altinn.cloud/register/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.at22.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://at22.altinn.cloud/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.at22.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.at22.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+  prod:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Production
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=authorization-postgres.altinn.no;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=authorization-postgres.altinn.no;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=120;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: altinn.no
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://ai-pr-vip-sblbridge.ai.basefarm.net/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.altinn.no/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.altinn.no/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten__Issuer
+      value: https://maskinporten.no/
+    - name: OidcProviders__maskinporten__WellKnownConfigEndpoint
+      value: https://maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+  tt02:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Production
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=tt02-authorization-postgres.altinn.no;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=tt02-authorization-postgres.altinn.no;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=120;
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: GeneralSettings__Hostname
+      value: tt02.altinn.no
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.tt02.altinn.no/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://ai-tt02-vip-sblbridge.ai.basefarm.net/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.tt02.altinn.no/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.tt02.altinn.no/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+    - name: FeatureManagement__UseNewQueryRepo
+      value: true
+  yt01:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Production
+    - name: ASPNETCORE_URLS
+      value: http://+:5110
+    - name: PostgreSQLSettings__EnableDBConnection
+      value: true
+    - name: PostgreSQLSettings__AdminConnectionString
+      value: Host=yt01-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization_admin;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;
+    - name: PostgreSQLSettings__ConnectionString
+      value: Host=yt01-authorization-postgres.altinn.cloud;Port=5432;Username=platform_authorization;Password={0};Database=authorizationdb;SslMode=Require;Trust Server Certificate=true;Maximum Pool Size=120;
+    - name: GeneralSettings__Hostname
+      value: yt01.altinn.cloud
+    - name: PlatformSettings__ApiAuthenticationEndpoint
+      value: http://altinn-authentication.default.svc.cluster.local/authentication/api/v1/
+    - name: PlatformSettings__ApiAuthorizationEndpoint
+      value: http://altinn-authorization.default.svc.cluster.local/authorization/api/v1/
+    - name: PlatformSettings__ApiProfileEndpoint
+      value: http://altinn-profile.default.svc.cluster.local/profile/api/v1/
+    - name: PlatformSettings__ApiRegisterEndpoint
+      value: http://altinn-register.default.svc.cluster.local/register/api/v1/
+    - name: PlatformSettings__ApiResourceRegistryEndpoint
+      value: http://altinn-resource-registry.default.svc.cluster.local/resourceregistry/api/v1/
+    - name: PlatformSettings__AltinnPlatformBaseUrl
+      value: https://platform.yt01.altinn.cloud/
+    - name: SblBridgeSettings__BaseApiUrl
+      value: https://ai-yt01-vip-sblbridge.ai.basefarm.net/sblbridge/
+    - name: OidcProviders__altinn__Issuer
+      value: https://platform.yt01.altinn.cloud/authentication/api/v1/openid/
+    - name: OidcProviders__altinn__WellKnownConfigEndpoint
+      value: https://platform.yt01.altinn.cloud/authentication/api/v1/openid/.well-known/openid-configuration
+    - name: OidcProviders__maskinporten-ver2__Issuer
+      value: https://ver2.maskinporten.no/
+    - name: OidcProviders__maskinporten-ver2__WellKnownConfigEndpoint
+      value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    - name: OidcProviders__maskinporten-test__Issuer
+      value: https://test.maskinporten.no/
+    - name: OidcProviders__maskinporten-test__WellKnownConfigEndpoint
+      value: https://test.maskinporten.no/.well-known/oauth-authorization-server
+    - name: FeatureManagement__RightsDelegationApi
+      value: true
+    - name: FeatureManagement__UseNewQueryRepo
+      value: true
+
+volumeMounts:
+  - name: altinn-appsettings
+    mountPath: "/altinn-appsettings"
+  - name: accesstoken
+    mountPath: "/accesstoken"
+volumes:
+  - name: altinn-appsettings
+    secret:
+      secretName: altinn-appsettings-secret
+  - name: accesstoken
+    secret:
+      secretName: accesstoken
+
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 5110
+
+middlewares: []
+
+linkerd:
+  enabled: true
+  header: altinn-access-management
+  host: altinn-access-management.default.svc.cluster.local:80
+
+ingressRoute:
+  name: altinn-access-management-ingress-route
+  entryPoints:
+    - http
+    - https
+  routes:
+    - match:
+        at21: Host(`internal.platform.at21.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        at22: Host(`internal.platform.at22.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        at23: Host(`internal.platform.at23.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        at24: Host(`internal.platform.at24.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        development: Host(`platform.at22.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        production: Host(`internal.platform.prod.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        tt02: Host(`internal.platform.tt02.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        yt01: Host(`internal.platform.yt01.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+        prod: Host(`internal.platform.prod.altinn.cloud`) && PathPrefix(`/accessmanagement`)
+      kind: Rule
+      middlewares:
+        - name: hsts-header
+      services:
+        - name: altinn-access-management
+          port: 80
+  tls:
+    options:
+      name: tls-options
+    secretName: ssl-cert

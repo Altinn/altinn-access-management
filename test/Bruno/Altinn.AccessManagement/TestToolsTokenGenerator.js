@@ -45,7 +45,7 @@ exports.getToken = async function (getTokenParameters) {
     headers: { Authorization }
   });
 
-  console.log(tokenUrl);
+  // console.log(tokenUrl);
   // console.log(response.data);
   return response.data;
 }

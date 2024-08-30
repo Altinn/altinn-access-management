@@ -72,7 +72,7 @@ script:pre-request {
   
   var getTokenParameters = {
     auth_userId: testdata.org1.dagl.userid,
-    auth_partyId: testdata.org1.dagl.partyi5d,
+    auth_partyId: testdata.org1.dagl.partyid,
     auth_ssn: testdata.org1.dagl.pid,
     party: testdata.org1.partyid,
     scope: sharedtestdata.scopes.read,
@@ -82,18 +82,16 @@ script:pre-request {
     const token = await testTokenGenerator.getToken(getTokenParameters);
   
   bru.setVar("bearerToken",  token);
-  console.log("blablabla pre-request script")
 }
 
 tests {
   test("post Maskinporten Schema To Self", function() {
-    console.log("blablabla");
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();
     console.log(data);
     expect(res.status).to.equal(400);
     expect(data).to.have.property('status', 400);
-    expect(data.errors.To[0]).to.equal('Maskinporten schema delegation can not have the same party in the From and To Attributes: 810414782');
+    expect(data.errors.To[0]).to.include('Maskinporten schema delegation can not have the same party in the From and To Attributes:');
   });
 }
 

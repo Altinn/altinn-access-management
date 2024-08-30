@@ -21,7 +21,7 @@ vars:pre-request {
   auth_scopes: altinn:instances.read
   auth_partyId: 
   auth_ssn: 
-  party: 50067258
+  party: 
 }
 
 assert {
@@ -32,7 +32,7 @@ assert {
 script:pre-request {
   const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  bru.setVar("auth_userId", testdata.org1.dagl.userid)
+  bru.setVar("party", testdata.org1.partyid)
   
   var getTokenParameters = {
     auth_userId: testdata.org1.dagl.userid,

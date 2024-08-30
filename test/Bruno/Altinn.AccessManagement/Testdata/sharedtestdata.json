@@ -1,9 +1,11 @@
 {
     "scopes": {
-        "read": "altinn:instances:read"
+        "read": "altinn:instances:read",
+        "k6Read": "test:am/k6.read"
     },
     "auth_scopes": {
-        "read": "altinn:instances:read"
+        "read": "altinn:instances:read",
+        "maskinportenAdmin": "altinn:maskinporten/delegations.admin"
     },
     "authTokenType": {
         "personal": "Personal",

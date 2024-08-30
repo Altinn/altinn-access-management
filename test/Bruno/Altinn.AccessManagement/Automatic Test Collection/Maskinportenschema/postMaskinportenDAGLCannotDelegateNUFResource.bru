@@ -53,7 +53,7 @@ assert {
 script:pre-request {
   const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  bru.setVar("auth_userId", testdata.org1.dagl.userid);
+  bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org2.partyid);
   
   var getTokenParameters = {

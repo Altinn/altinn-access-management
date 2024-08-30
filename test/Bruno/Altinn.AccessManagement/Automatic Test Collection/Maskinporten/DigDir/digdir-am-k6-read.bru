@@ -25,7 +25,7 @@ vars:pre-request {
   consumerOrg: 
   scope: test:am/k6.read
   auth_tokenType: Enterprise
-  auth_partyId: 50088610
+  auth_partyId: 
   auth_org: digdir
   auth_orgNo: 991825827
   auth_scopes: altinn:maskinporten/delegations.admin
@@ -33,7 +33,23 @@ vars:pre-request {
 }
 
 script:pre-request {
-  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:maskinporten/delegations.admin"));   
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_orgno", testdata.org2.orgno);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
+  
+  var getTokenParameters = {
+    auth_org: testdata.digdir.partyid,
+    auth_orgNo: testdata.digdir.orgno,
+    scope: sharedtestdata.scopes.k6Read,
+    auth_tokenType: sharedtestdata.authTokenType.enterprise,
+    auth_scopes: sharedtestdata.auth_scopes.maskinportenAdmin
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
 }
 
 tests {

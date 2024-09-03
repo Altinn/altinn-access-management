@@ -49,7 +49,6 @@ script:pre-request {
 }
 
 tests {
-  console.log(res.getBody().toString());
     test("person successfully delegated to a person", function() {
     const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
       const data = res.getBody();

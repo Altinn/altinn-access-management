@@ -88,7 +88,6 @@ tests {
   test("post Maskinporten Schema To Self", function() {
     const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
     const data = res.getBody();
-    console.log(data);
     expect(res.status).to.equal(400);
     expect(data).to.have.property('status', 400);
     expect(data.errors.To[0]).to.include('Maskinporten schema delegation can not have the same party in the From and To Attributes:');

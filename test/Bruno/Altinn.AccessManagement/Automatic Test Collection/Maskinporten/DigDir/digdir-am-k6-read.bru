@@ -53,6 +53,11 @@ script:pre-request {
 }
 
 tests {
+  console.log("request url:" + req.getUrl())
+  console.log("request body: ")
+  console.log(req.getBody())
+  console.log("response body: ")
+  console.log(res.getBody())
   test("getMaskinportenDelegations", function() {
     var body = res.getBody();  
     expect(res.status).to.equal(200);

@@ -96,8 +96,6 @@ script:pre-request {
 }
 
 tests {
-  console.log(req.getBody());
-  console.log(res.getBody());
   test("person to person delegation", function() {
     const data = res.getBody();  
     expect(res.status).to.equal(200);

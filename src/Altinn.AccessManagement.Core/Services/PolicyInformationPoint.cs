@@ -171,6 +171,10 @@ namespace Altinn.AccessManagement.Core.Services
         public async Task<IEnumerable<DelegationChange>> GetOfferedDelegationsFromRepository(int partyId, CancellationToken cancellationToken = default)
         {
             var party = await _contextRetrievalService.GetPartyAsync(partyId, cancellationToken);
+            if (party == null)
+            {
+                return [];
+            }
 
             if (party.PartyTypeName == PartyType.Person)
             {

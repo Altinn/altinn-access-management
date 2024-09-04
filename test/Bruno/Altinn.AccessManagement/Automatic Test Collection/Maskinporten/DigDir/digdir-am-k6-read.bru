@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/maskinporten/delegations?scope={{scope}}
+  url: {{baseUrl}}/accessmanagement/api/v1/maskinporten/delegations?supplierOrg={{supplierOrg}}&consumerOrg={{consumerOrg}}&scope={{scope}}
   body: none
   auth: inherit
 }
@@ -39,6 +39,7 @@ script:pre-request {
   bru.setVar("to_orgno", testdata.org2.orgno);
   bru.setVar("org", testdata.org);
   bru.setVar("app", testdata.app);
+  bru.setVar("scope", sharedtestdata.scopes.k6Read);
   
   var getTokenParameters = {
     auth_org: testdata.digdir.partyid,

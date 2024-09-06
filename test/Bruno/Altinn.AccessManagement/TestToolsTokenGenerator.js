@@ -18,9 +18,6 @@ exports.getToken = async function (getTokenParameters) {
     const tokenUser = getTokenParameters.auth_userId;
     const tokenParty = getTokenParameters.auth_partyId;
     const tokenPid = getTokenParameters.auth_ssn;
-    // console.log("tokenUser: " + tokenUser);
-    // console.log("tokenParty: " + tokenParty);
-    // console.log("tokenPid: " + tokenPid);
 
     tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&pid=${tokenPid}&userid=${tokenUser}&partyid=${tokenParty}&authLvl=3&ttl=3000`;
   }
@@ -45,7 +42,5 @@ exports.getToken = async function (getTokenParameters) {
     headers: { Authorization }
   });
 
-  // console.log(tokenUrl);
-  // console.log(response.data);
   return response.data;
 }

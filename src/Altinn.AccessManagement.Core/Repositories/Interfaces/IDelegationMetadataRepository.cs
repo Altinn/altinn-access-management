@@ -20,11 +20,19 @@ public interface IDelegationMetadataRepository
     Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns the last change from db to fetch the current policy version and path to policy file
+    /// </summary>
+    /// <param name="request">The parameters to request the latest change for</param>
+    /// /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>The last InstanceDelegationChange record stored in the database corresponding to the request</returns>
+    Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Writes the delegation change metadata to the delegation database
     /// </summary>
     /// <param name="instanceDelegationChange">The InstanceDelegationChange model describing the delegation, to insert in the database</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    /// <returns>The complete DelegationChange record stored in the database</returns>
+    /// <returns>The complete InstanceDelegationChange record stored in the database</returns>
     Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default);
 
     /// <summary>

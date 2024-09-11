@@ -27,7 +27,7 @@ public abstract partial record PartyUrn
     /// <returns><see langword="true"/> if this party reference is an organization number, otherwise <see langword="false"/>.</returns>
     [UrnKey("altinn:organization:identifier-no")]
     public partial bool IsOrganizationIdentifier(out OrganizationNumber organizationNumber);
-
+    
     // Manually overridden to disallow negative party ids
     private static bool TryParsePartyId(ReadOnlySpan<char> segment, IFormatProvider? provider, out int value)
         => int.TryParse(segment, NumberStyles.None, provider, out value);

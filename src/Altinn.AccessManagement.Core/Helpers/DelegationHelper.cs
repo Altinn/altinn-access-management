@@ -1,4 +1,5 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using System.Text;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
@@ -418,6 +419,60 @@ namespace Altinn.AccessManagement.Core.Helpers
             return false;
         }
 
+        public static bool TryGetInstanceDelegationPolicyPathFromAppsInstanceDelegationRequest(AppsInstanceDelegationRequest request, out string instanceDelegationPolicyPath)
+        {
+            instanceDelegationPolicyPath = null;
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(request.Resource.KeySpan);
+            sb.Append('-');
+            sb.Append(request.Resource.ValueSpan);
+            
+            sb.Append('/');
+            
+            bool validFrom = EnumExtensions.EnumValue(request.From.KeySpan.ToString(), out UuidType fromType);
+            if (!validFrom)
+            {
+                return false;
+            }
+
+            sb.Append(fromType.ToString());
+            sb.Append('-');
+            sb.Append(request.From.ValueSpan);
+            sb.Append('/');
+
+            bool validTo = EnumExtensions.EnumValue(request.To.KeySpan.ToString(), out UuidType toType);
+            if (!validTo)
+            {
+                return false;
+            }
+
+            sb.Append(toType.ToString());
+            sb.Append('-');
+            sb.Append(request.To.ValueSpan);
+            sb.Append('/');
+
+            sb.Append(request.InstanceDelegationType.ToString());
+            sb.Append('/');
+
+            sb.Append(request.Instance.KeySpan);
+            sb.Append('-');
+            
+            try
+            {
+                sb.Append(request.Instance.ValueSpan.ToString().AsFileName());
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            
+            sb.Append("/delegationpolicy.xml");
+            instanceDelegationPolicyPath = sb.ToString();
+
+            return true;
+        }
+        
         /// <summary>
         /// Returns the count of unique Policies in a list of Rules
         /// </summary>

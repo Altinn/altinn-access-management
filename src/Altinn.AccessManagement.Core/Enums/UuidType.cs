@@ -40,6 +40,13 @@ namespace Altinn.AccessManagement.Enums
         /// </summary>
         [EnumMember(Value = "urn:altinn:enterpriseuser:uuid")]
         [PgName("urn:altinn:enterpriseuser:uuid")]
-        EnterpriseUser
+        EnterpriseUser,
+
+        /// <summary>
+        /// Identifies a enterpriseuser this is marked as obsolete and is used for existing integration is also identified with an unique username
+        /// </summary>
+        [EnumMember(Value = "urn:altinn:resource")]
+        [PgName("urn:altinn:resource")]
+        Resource
     }
 }

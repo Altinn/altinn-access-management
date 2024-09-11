@@ -86,6 +86,12 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(currentDelegationChange);
     }
 
+    public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();

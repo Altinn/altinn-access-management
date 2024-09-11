@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
@@ -32,6 +33,12 @@ public class AppsInstanceDelegationRequest
     /// </summary>
     [Required]
     public ResourceInstanceUrn Instance { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of delegation to distinguish between parallel signing and other instance delegations
+    /// </summary>
+    [Required]
+    public InstanceDelegationType InstanceDelegationType { get; set; }
 
     /// <summary>
     /// Gets or sets the rights to delegate

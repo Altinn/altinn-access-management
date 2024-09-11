@@ -1,10 +1,12 @@
-﻿using Altinn.AccessManagement.Enums;
+﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Altinn.AccessManagement.Core.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -20,10 +22,26 @@ namespace Altinn.AccessManagement.Core.Models
         public int InstanceDelegationChangeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource id.
+        /// Gets or sets the DelegationChangeType.
         /// </summary>
-        [JsonPropertyName("resourceid")]
-        public string ResourceId { get; set; } = string.Empty;
+        public DelegationChangeType DelegationChangeType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the InstanceDelegationType.
+        /// </summary>
+        public InstanceDelegationType InstanceDelegationType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource.
+        /// </summary>
+        [JsonPropertyName("resource")]
+        public ResourceUrn Resource { get; set; }
+
+        /// <summary>
+        /// Gets or sets the instance.
+        /// </summary>
+        [JsonPropertyName("instance")]
+        public ResourceInstanceUrn Instance { get; set; }
 
         /// <summary>
         /// The uuid of the party the right is on behalf of
@@ -53,13 +71,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// The uuid of the party that performed the delegation
         /// </summary>
         [JsonPropertyName("performedby")]
-        public Guid PerformedByUuid { get; set; }
+        public string PerformedBy { get; set; }
 
         /// <summary>
         /// The type of the party that performed the delegation
         /// </summary>
         [JsonPropertyName("performedbytype")]
-        public UuidType PerformedByUuidType { get; set; }
+        public UuidType PerformedByType { get; set; }
 
         /// <summary>
         /// Gets or sets blobstoragepolicypath.

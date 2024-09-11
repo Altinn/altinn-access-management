@@ -59,6 +59,12 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
     }
 
+    public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange,
         CancellationToken cancellationToken = default)
     {

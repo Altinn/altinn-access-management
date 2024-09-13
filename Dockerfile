@@ -9,7 +9,7 @@ RUN dotnet restore
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .

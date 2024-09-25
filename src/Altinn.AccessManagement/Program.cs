@@ -7,6 +7,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Implementation;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Filters;
 using Altinn.AccessManagement.Health;
@@ -18,7 +19,6 @@ using Altinn.AccessManagement.Persistence;
 using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Altinn.AccessManagement.Services;
-using Altinn.AccessManagement.Services.Interfaces;
 using Altinn.Common.AccessToken;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.AccessTokenClient.Services;
@@ -28,7 +28,6 @@ using Altinn.Common.PEP.Authorization;
 using Altinn.Common.PEP.Clients;
 using Altinn.Common.PEP.Implementation;
 using Altinn.Common.PEP.Interfaces;
-using Altinn.Platform.Authorization.Services.Implementation;
 using AltinnCore.Authentication.JwtCookie;
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.Exporter;
@@ -308,7 +307,7 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
 
     services.AddAuthorization(options =>
     {
-        options.AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()));
+        options.AddPolicy(AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION, policy => policy.Requirements.Add(new AccessTokenRequirement()));
         options.AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")));
         options.AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")));
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_maskinporten_scope_delegation")));
@@ -316,11 +315,11 @@ void ConfigureServices(IServiceCollection services, IConfiguration config)
         options.AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATIONS_PROXY, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { "altinn:maskinporten/delegations", "altinn:maskinporten/delegations.admin" })));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_access_management")));
         options.AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")));
-        options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy =>
-            policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
+        options.AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN })));
         options.AddPolicy(AuthzConstants.POLICY_APPS_INSTANCEDELEGATION, policy => policy.Requirements.Add(new ScopeAccessRequirement(new string[] { AuthzConstants.SCOPE_APPS_INSTANCEDELEGATION })));
     });
 
+    services.AddTransient<IAuthorizationHandler, AccessTokenHandler>();
     services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
     services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();

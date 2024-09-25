@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Enums
@@ -6,6 +7,7 @@ namespace Altinn.AccessManagement.Enums
     /// <summary>
     /// Enum defining the different uuids used for defining parts in a delegation
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum UuidType
     {
         /// <summary>

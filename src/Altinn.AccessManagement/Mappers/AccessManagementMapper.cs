@@ -1,11 +1,14 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
+using Altinn.Urn;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Mappers
 {
@@ -79,6 +82,13 @@ namespace Altinn.AccessManagement.Mappers
 
             CreateMap<AuthorizedParty, AuthorizedPartyExternal>();
             CreateMap<AuthorizedPartyType, AuthorizedPartyTypeExternal>();
+            CreateMap<AppsInstanceDelegationRequestDto, AppsInstanceDelegationRequest>()
+                .ForMember(dest => dest.From, act => act.MapFrom(src => src.From.Value))
+                .ForMember(dest => dest.To, act => act.MapFrom(src => src.To.Value));
+            CreateMap<RightDto, RightV2>()
+                .ForMember(dest => dest.Action, act => act.MapFrom( src => src.Action.Value));
+            CreateMap<AppsInstanceDelegationResponse, AppsInstanceDelegationResponseDto>();
+            CreateMap<RightV2DelegationResult, RightDelegationResultDto>();
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Text.Json;
+using System.Threading;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -54,6 +56,168 @@ namespace Altinn.AccessManagement.Core.Services
             Response<BlobContentInfo> response = await _policyFactory.Create(filePath).WritePolicyAsync(fileStream, cancellationToken: cancellationToken);
 
             return response?.GetRawResponse()?.Status == (int)HttpStatusCode.Created;
+        }
+
+        private async Task<bool> WriteInstanceDelegationPolicyInternal(string policyPath, InstanceRight rules, CancellationToken cancellationToken = default)
+        {
+            var policyClient = _policyFactory.Create(policyPath);
+            if (!await policyClient.PolicyExistsAsync(cancellationToken))
+            {
+                // Create a new empty blob for lease locking
+                await policyClient.WritePolicyAsync(new MemoryStream(), cancellationToken: cancellationToken);
+            }
+
+            string leaseId = await policyClient.TryAcquireBlobLease(cancellationToken);
+            if (leaseId != null)
+            {
+                try
+                {
+                    // Check for a current delegation change from postgresql
+                    InstanceDelegationChangeRequest requestLastChanged = new InstanceDelegationChangeRequest
+                    {
+                        FromType = rules.FromType,
+                        FromUuid = rules.FromUuid,
+                        ToType = rules.ToType,
+                        ToUuid = rules.ToUuid,
+                        Resource = rules.ResourceId,
+                        InstanceDelegationMode = rules.InstanceDelegationMode,
+                        Instance = rules.Instance
+                    };
+
+                    InstanceDelegationChange currentChange =
+                        await _delegationRepository.GetLastInstanceDelegationChange(requestLastChanged,
+                            cancellationToken);
+
+                    XacmlPolicy existingDelegationPolicy = null;
+                    if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
+                    {
+                        policyPath = currentChange.BlobStoragePolicyPath;
+                        existingDelegationPolicy = await _prp.GetPolicyVersionAsync(policyPath,
+                            currentChange.BlobStorageVersionId, cancellationToken);
+                    }
+
+                    // Build delegation XacmlPolicy either as a new policy or add rules to existing
+                    XacmlPolicy delegationPolicy;
+                    if (existingDelegationPolicy != null)
+                    {
+                        delegationPolicy = existingDelegationPolicy;
+                        PolicyHelper.GetPolicyDataFromInstanceRight(rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+
+                        foreach (InstanceRule rule in rules.InstanceRules)
+                        {
+                            if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
+                            {
+                                // TODO: Decide how From and To should be stored to policy file.
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(resourceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        delegationPolicy = PolicyHelper.BuildInstanceDelegationPolicy(rules);
+                    }
+
+                    // Write delegation policy to blob storage
+                    MemoryStream dataStream = PolicyHelper.GetXmlMemoryStreamFromXacmlPolicy(delegationPolicy);
+                    Response<BlobContentInfo> blobResponse =
+                        await policyClient.WritePolicyConditionallyAsync(dataStream, leaseId, cancellationToken);
+                    Response httpResponse = blobResponse.GetRawResponse();
+                    if (httpResponse.Status != (int) HttpStatusCode.Created)
+                    {
+                        _logger.LogError(
+                            "Writing of delegation policy at path: {policyPath} failed. Response Status Code:\n{httpResponse.Status}. Response Reason Phrase:\n{httpResponse.ReasonPhrase}",
+                            policyPath, httpResponse.Status, httpResponse.ReasonPhrase);
+                        return false;
+                    }
+
+                    // Update db and use new version from latest update
+                    InstanceDelegationChange instanceDelegationChange = new InstanceDelegationChange
+                    {
+                        DelegationChangeType = DelegationChangeType.Grant,
+                        InstanceDelegationMode = requestLastChanged.InstanceDelegationMode,
+                        Resource = rules.ResourceId,
+                        Instance = rules.Instance,
+
+                        BlobStoragePolicyPath = policyPath,
+                        BlobStorageVersionId = blobResponse.Value.VersionId,
+
+                        FromUuid = requestLastChanged.FromUuid,
+                        FromUuidType = requestLastChanged.FromType,
+                        ToUuid = (Guid)requestLastChanged.ToUuid,
+                        ToUuidType = requestLastChanged.ToType,
+
+                        PerformedBy = rules.PerformedBy,
+                        PerformedByType = rules.PerformedByType
+                    };
+
+                    instanceDelegationChange =
+                        await _delegationRepository.InsertInstanceDelegation(instanceDelegationChange);
+                    if (instanceDelegationChange == null || instanceDelegationChange.InstanceDelegationChangeId <= 0)
+                    {
+                        // Comment:
+                        // This means that the current version of the root blob is no longer in sync with changes in authorization postgresql delegation.delegatedpolicy table.
+                        // The root blob is in effect orphaned/ignored as the delegation policies are always to be read by version, and will be overritten by the next delegation change.
+                        _logger.LogError(
+                            "Writing of delegation change to authorization postgresql database failed for changes to delegation policy at path: {policyPath}",
+                            policyPath);
+                        return false;
+                    }
+                    
+                    return true;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    policyClient.ReleaseBlobLease(leaseId, CancellationToken.None);
+                }
+            }
+
+            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            return false;
+        }
+
+        /// <inheritdoc />
+        public async Task<InstanceRight> TryWriteInstanceDelegationPolicyRules(InstanceRight rules, CancellationToken cancellationToken = default)
+        {
+            bool validPath = DelegationHelper.TryGetDelegationPolicyPathFromInstanceRule(rules, out string path);
+            
+            if(validPath)
+            {
+                bool writePolicySuccess = false;
+
+                try
+                {
+                    writePolicySuccess = await WriteInstanceDelegationPolicyInternal(path, rules, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        "An exception occured while processing authorization rules for delegation on delegation policy path: {path}", path);
+                }
+
+                foreach (InstanceRule rule in rules.InstanceRules)
+                {
+                    if (writePolicySuccess)
+                    {
+                        rule.CreatedSuccessfully = true;
+                    }
+                    else
+                    {
+                        rule.RuleId = string.Empty;
+                        rule.CreatedSuccessfully = false;
+                    }
+                }
+            }
+            else
+            {
+                string unsortablesJson = JsonSerializer.Serialize(rules);
+                _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
+            }
+
+            return rules;
         }
 
         /// <inheritdoc/>

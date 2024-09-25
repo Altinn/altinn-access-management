@@ -22,6 +22,9 @@
     <None Update="appsettings.test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Data\Xacml\3.0\AltinnApps\ttd\am-devtest-instancedelegation\policy.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="platform-org.pem">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -34,10 +37,24 @@
     <None Update="selfSignedTestCertificatePublic.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ttd-org.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ttd-org.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\AuthorizedParties\TestDataAppsInstanceDelegation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Xacml\3.0\AltinnApps\ttd\am-devtest-instancedelegation\" />
   </ItemGroup>
 
 </Project>

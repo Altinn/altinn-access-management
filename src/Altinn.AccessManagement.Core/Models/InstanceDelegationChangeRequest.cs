@@ -11,18 +11,18 @@ public class InstanceDelegationChangeRequest
     /// Gets or sets the resource.
     /// </summary>
     [JsonPropertyName("resource")]
-    public ResourceUrn Resource { get; set; }
+    public string Resource { get; set; }
 
     /// <summary>
     /// Gets or sets the instance.
     /// </summary>
     [JsonPropertyName("instance")]
-    public ResourceInstanceUrn Instance { get; set; }
+    public string Instance { get; set; }
 
     /// <summary>
     /// Gets or sets the InstanceDelegationType.
     /// </summary>
-    public InstanceDelegationType InstanceDelegationType { get; set; }
+    public InstanceDelegationMode InstanceDelegationMode { get; set; }
 
     /// <summary>
     /// The uuid of the party the right is on behalf of
@@ -34,7 +34,7 @@ public class InstanceDelegationChangeRequest
     /// The type of party the right is on behalf of (Person, Organization, SystemUser)
     /// </summary>
     [JsonPropertyName("fromtype")]
-    public UuidType FromUuidType { get; set; }
+    public UuidType FromType { get; set; }
 
     /// <summary>
     /// The uuid of the party holding the right
@@ -46,5 +46,5 @@ public class InstanceDelegationChangeRequest
     /// The type of party holding the right
     /// </summary>
     [JsonPropertyName("totype")]
-    public UuidType ToUuidType { get; set; }
+    public UuidType ToType { get; set; }
 }

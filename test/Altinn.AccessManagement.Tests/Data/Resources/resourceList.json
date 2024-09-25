@@ -1371,5 +1371,45 @@
         "value": "apps-test"
       }
     ]
+  },
+  {
+    "identifier": "app_ttd_am-devtest-instancedelegation",
+    "title": {
+      "en": "AM DevTest - Instance delegation test app",
+      "nb": "AM DevTest - Instansdelegering test app",
+      "nn": "AM DevTest - Instansdelegering test app"
+    },
+    "resourceReferences": [
+      {
+        "referenceSource": "Altinn3",
+        "reference": "ttd/am-devtest-instancedelegation",
+        "referenceType": "ApplicationId"
+      }
+    ],
+    "delegable": true,
+    "visible": true,
+    "hasCompetentAuthority": {
+      "name": {
+        "en": "Test Ministry",
+        "nn": "Testdepartementet",
+        "nb": "Testdepartementet"
+      },
+      "organization": "991825827",
+      "orgcode": "ttd"
+    },
+    "accessListMode": "Disabled",
+    "selfIdentifiedUserEnabled": false,
+    "enterpriseUserEnabled": false,
+    "resourceType": "AltinnApp",
+    "authorizationReference": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "am-devtest-instancedelegation"
+      }
+    ]
   }
 ]

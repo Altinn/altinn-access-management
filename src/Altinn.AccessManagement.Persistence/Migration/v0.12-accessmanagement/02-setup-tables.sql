@@ -1,6 +1,6 @@
 -- Enum: delegation.instanceType
 DO $$ BEGIN
-	CREATE TYPE delegation.instanceDelegationType AS ENUM ('paralell', 'endUser');
+	CREATE TYPE delegation.instanceDelegationMode AS ENUM ('parallelsigning', 'normal');
 EXCEPTION
 	WHEN duplicate_object THEN null;
 END $$;
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS delegation.instancedelegationchanges
 (
     instancedelegationchangeid bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
     delegationchangetype delegation.delegationchangetype NOT NULL,
-    instanceDelegationType delegation.instanceDelegationType NOT NULL,
+    instanceDelegationMode delegation.instanceDelegationMode NOT NULL,
     resourceid text NOT NULL,
     instanceid text NOT NULL,
     fromuuid uuid NOT NULL,

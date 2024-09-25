@@ -136,7 +136,7 @@ public static class PersistenceDependencyInjectionExtensions
             builder.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
             builder.MapEnum<DelegationChangeType>("delegation.delegationchangetype");
             builder.MapEnum<UuidType>("delegation.uuidtype");
-            builder.MapEnum<InstanceDelegationType>("delegation.instancedelegationtype");
+            builder.MapEnum<InstanceDelegationMode>("delegation.instancedelegationmode");
 
             return builder.Build();
         });

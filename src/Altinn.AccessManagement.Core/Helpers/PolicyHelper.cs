@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -140,7 +141,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             return rule;
         }
-
+        
         /// <summary>
         /// Builds the delegation policy path based on org and app names, as well as identifiers for the delegating and receiving entities
         /// </summary>
@@ -348,6 +349,74 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Extracts policy data from 
+        /// </summary>
+        /// <param name="rules">The rules that is delegated</param>
+        /// <param name="resourceId">ResourceId delegated</param>
+        /// <param name="fromType">The id receiving the rights</param>
+        /// <param name="fromId">The type receiving the rights</param>
+        /// <param name="toType">the id offering the rights</param>
+        /// <param name="toId">the type offering the rights</param>
+        /// <param name="performedById">the party performing the delegation</param>
+        /// <param name="performedByType">The type of the party performing the delegation</param>
+        public static void GetPolicyDataFromInstanceRight(InstanceRight rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType)
+        {
+            resourceId = rules.ResourceId;
+            fromType = rules.FromType.EnumMemberAttributeValueOrName();
+            fromId = rules.FromUuid.ToString().ToLowerInvariant();
+            toType = rules.ToType.EnumMemberAttributeValueOrName();
+            toId = rules.ToUuid.ToString().ToLowerInvariant();
+            performedById = rules.PerformedBy;
+            performedByType = rules.PerformedByType.EnumMemberAttributeValueOrName();
+        }
+
+        /// <summary>
+        /// Builds a XacmlPolicy <see cref="XacmlPolicy"/> representation based on the DelegationPolicy input
+        /// </summary>
+        /// <param name="rules">The set of rules to be delegated</param>
+        public static XacmlPolicy BuildInstanceDelegationPolicy(InstanceRight rules)
+        {
+            XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
+            delegationPolicy.Version = "1.0";
+            GetPolicyDataFromInstanceRight(rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+
+            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {fromType}:{fromId} to {toType}:{toId}, for the resource; {resourceId}";
+
+            foreach (InstanceRule rule in rules.InstanceRules)
+            {
+                if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
+                {
+                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(resourceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                }
+            }
+
+            return delegationPolicy;
+        }
+
+        /// <summary>
+        /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
+        /// </summary>
+        /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
+        /// <param name="fromId">The id of the entity offering the delegated the policy</param>
+        /// <param name="fromType">The type of the entity offering the delegated policy</param>
+        /// <param name="toId">The id of the entity having received the delegated policy</param>
+        /// <param name="toType">The type of the entity having received the delegated policy</param>
+        /// <param name="performedById">The id of the entity delegated the policy</param>
+        /// <param name="performedByType">The type of the entity delegated the policy</param>
+        /// <param name="rule">The rule to be delegated</param>
+        public static XacmlRule BuildDelegationInstanceRule(string resourceId, string fromId, string fromType, string toId, string toType, string performedById, string performedByType, InstanceRule rule)
+        {
+            rule.RuleId = Guid.NewGuid().ToString();
+            
+            XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
+            {
+                Description = $"Delegation of a right/action from {fromType}:{fromId} to {toType}:{toId}, for the resource: {resourceId}, by: {performedByType}:{performedById}",
+                Target = BuildInstanceDelegationRuleTarget(toId, toType, rule)
+            };
+            return delegationRule;
+        }
+
+        /// <summary>
         /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
         /// </summary>
         /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
@@ -409,6 +478,57 @@ namespace Altinn.AccessManagement.Core.Helpers
                         new Uri(XacmlConstants.AttributeMatchFunction.StringEqual),
                         new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), rule.Action.Value),
                         new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Action), new Uri(XacmlConstants.MatchAttributeIdentifiers.ActionId), new Uri(XacmlConstants.DataTypes.XMLString), false))
+            }));
+
+            targetList.Add(new XacmlAnyOf(subjectAllOfs));
+            targetList.Add(new XacmlAnyOf(resourceAllOfs));
+            targetList.Add(new XacmlAnyOf(actionAllOfs));
+
+            return new XacmlTarget(targetList);
+        }
+
+        /// <summary>
+        /// Builds a XacmlTarget <see cref="XacmlTarget"/> representation based on the Rule input
+        /// </summary>
+        /// <param name="coveredBy">The the entity having received the delegated policy</param>
+        /// <param name="toType">The type of identifier received the delegated policy user, party or system user</param>
+        /// <param name="rule">The rule to be delegated</param>
+        public static XacmlTarget BuildInstanceDelegationRuleTarget(string toId, string toType, InstanceRule rule)
+        {
+            List<XacmlAnyOf> targetList = new List<XacmlAnyOf>();
+
+            // Build Subject
+            List<XacmlAllOf> subjectAllOfs = new List<XacmlAllOf>();
+
+            subjectAllOfs.Add(new XacmlAllOf(new List<XacmlMatch>
+            {
+                new XacmlMatch(
+                    new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
+                    new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), toId),
+                    new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Subject), new Uri(toType), new Uri(XacmlConstants.DataTypes.XMLString), false))
+            }));
+
+            // Build Resource
+            List<XacmlMatch> resourceMatches = new List<XacmlMatch>();
+            foreach (UrnJsonTypeValue resourceMatch in rule.Resource)
+            {
+                resourceMatches.Add(
+                    new XacmlMatch(
+                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
+                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value.ValueSpan.ToString()),
+                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Resource), new Uri(resourceMatch.Value.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false)));
+            }
+
+            List<XacmlAllOf> resourceAllOfs = new List<XacmlAllOf> { new XacmlAllOf(resourceMatches) };
+
+            // Build Action
+            List<XacmlAllOf> actionAllOfs = new List<XacmlAllOf>();
+            actionAllOfs.Add(new XacmlAllOf(new List<XacmlMatch>
+            {
+                new XacmlMatch(
+                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
+                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), rule.Action.ValueSpan.ToString()),
+                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Action), new Uri(rule.Action.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false))
             }));
 
             targetList.Add(new XacmlAnyOf(subjectAllOfs));
@@ -693,6 +813,34 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return ruleAttributeMatches;
+        }
+
+        /// <summary>
+        /// Check of a given app definition exist as a subject in a list of subjects 
+        /// </summary>
+        /// <param name="ruleSubjects">The subject list to check</param>
+        /// <param name="delegaterApp">the app to check for</param>
+        /// <returns>true if the app deffinion exist in list of subjects and false if not</returns>
+        public static bool ContainsDelegatorAppInSubject(List<List<PolicyAttributeMatch>> ruleSubjects, IEnumerable<AttributeMatch> delegaterApp)
+        {
+            bool result = false;
+
+            foreach (List<PolicyAttributeMatch> subject in ruleSubjects)
+            {
+                result = true;
+                foreach (var match in delegaterApp)
+                {
+                    if (subject.Any(s => s.Id == match.Id && s.Value == match.Value))
+                    {
+                        continue;
+                    }
+
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         private static List<AttributeMatch> GetAttributeMatchFromXacmlAllOfs(XacmlAllOf allOf)

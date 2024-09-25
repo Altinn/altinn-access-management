@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Urn;
 
 namespace Altinn.AccessManagement.Core.Models.Register;

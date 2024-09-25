@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
@@ -13,6 +15,7 @@ using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Utils;
 using static Altinn.AccessManagement.Tests.Seeds.ResourceSeeds;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 
 namespace Altinn.AccessManagement.Tests.Mocks;
 
@@ -86,15 +89,69 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(currentDelegationChange);
     }
 
-    public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request,
-        CancellationToken cancellationToken = default)
+    public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        switch (request.Instance)
+        {
+            default:
+                return Task.FromResult((InstanceDelegationChange)null);
+        }
     }
 
     public Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        Random random = new();
+        string path = GetDelegationPolicyPathFromInstanceRule(instanceDelegationChange);
+        InstanceDelegationChange result = instanceDelegationChange.Instance switch
+        {
+            "00000000-0000-0000-0000-000000000001" => null,
+            _ => new InstanceDelegationChange
+            {
+                InstanceDelegationChangeId = random.Next(0, 1000),
+                DelegationChangeType = instanceDelegationChange.DelegationChangeType,
+                InstanceDelegationMode = instanceDelegationChange.InstanceDelegationMode,
+                Resource = instanceDelegationChange.Resource,
+                Instance = instanceDelegationChange.Instance,
+                FromUuid = instanceDelegationChange.FromUuid,
+                FromUuidType = instanceDelegationChange.FromUuidType,
+                ToUuid = instanceDelegationChange.ToUuid,
+                ToUuidType = instanceDelegationChange.ToUuidType,
+                PerformedBy = instanceDelegationChange.PerformedBy,
+                PerformedByType = instanceDelegationChange.PerformedByType,
+                BlobStoragePolicyPath = path,
+                BlobStorageVersionId = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Created = DateTime.Now
+            },
+        };
+
+        return Task.FromResult(result);
+    }
+
+    private static string GetDelegationPolicyPathFromInstanceRule(InstanceDelegationChange change)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(change.Resource);
+
+        sb.Append('/');
+
+        sb.Append(change.FromUuidType);
+        sb.Append('-');
+        sb.Append(change.FromUuid);
+        sb.Append('/');
+
+        sb.Append(change.ToUuidType);
+        sb.Append('-');
+        sb.Append(change.ToUuid);
+        sb.Append('/');
+
+        sb.Append(change.Instance.AsFileName(false));
+        
+        sb.Append('/');
+        sb.Append(change.InstanceDelegationMode);
+
+        sb.Append("/delegationpolicy.xml");
+        return sb.ToString();
     }
 
     /// <inheritdoc/>

@@ -1,13 +1,15 @@
-﻿using System.Net.Mime;
-using Altinn.AccessManagement.Core.Configuration;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mime;
+using System.Security.Claims;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Services.Interfaces;
+using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Mappers;
+using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ProblemDetails;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.FeatureManagement.Mvc;
 
 namespace Altinn.AccessManagement.Controllers;
 
@@ -15,7 +17,7 @@ namespace Altinn.AccessManagement.Controllers;
 /// Controller responsible for all instance delegation operations from Apps
 /// </summary>
 [ApiController]
-[Route("accessmanagement/api/v1/apps/instancedelegation")]
+[Route("accessmanagement/api")]
 public class AppsInstanceDelegationController : ControllerBase
 {
     private readonly ILogger _logger;
@@ -41,44 +43,74 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <summary>
     /// Delegates access to an app instance
     /// </summary>
-    /// <param name="appInstanceDelegationRequest">The request model</param>
+    /// <param name="appInstanceDelegationRequestDto">The request model</param>
+    /// <param name="resourceId">The resource id</param>
+    /// <param name="instanceId">The instance id</param>
     /// <returns>Result</returns>
     [HttpPost]
-    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Delegation(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public async Task<ActionResult> Delegation([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId)
     {
-        Result<bool> result = await _appInstanceDelegationService.Delegate(appInstanceDelegationRequest);
+        AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
+        
+        request.ResourceId = resourceId;
+        request.InstanceId = instanceId;
 
-        if (result.IsProblem)
+        List<AttributeMatch> performedBy = GetOrgAppFromToken(Request.Headers["PlatformAccessToken"]);
+                
+        request.PerformedBy = performedBy;
+
+        Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Delegate(request);
+
+        return serviceResult.IsProblem ? serviceResult.Problem?.ToActionResult() : Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+    }
+
+    /// <summary>
+    /// delegating app from the platform token
+    /// </summary>
+    private static List<AttributeMatch> GetOrgAppFromToken(string token)
+    {
+        List<AttributeMatch> performedBy = new List<AttributeMatch>();
+
+        if (!string.IsNullOrEmpty(token))
         {
-            return result.Problem.ToActionResult();
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var appidentifier = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
+            performedBy.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = jwtSecurityToken.Issuer });
+            if (appidentifier != null)
+            {
+                performedBy.Add(new AttributeMatch { Id = appidentifier.Type, Value = appidentifier.Value });
+            }
         }
 
-        return Ok(result.Value);
+        return performedBy;
     }
 
     /// <summary>
     /// Gets app instance delegation
     /// </summary>
-    /// <param name="appInstanceDelegationRequest">The request model</param>
+    /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <returns>Result</returns>
-    [HttpGet]
+    [HttpPost]
     [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Route("v1/apps/instancedelegation/query")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationRequestDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Get(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public async Task<ActionResult> Get(AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto)
     {
-        Result<bool> result = await _appInstanceDelegationService.Delegate(appInstanceDelegationRequest);
+        Result<AppsInstanceDelegationRequestDto> result = new();
 
         if (result.IsProblem)
         {
@@ -91,20 +123,106 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <summary>
     /// Revokes access to an app instance
     /// </summary>
-    /// <param name="appInstanceDelegationRequest">The request model</param>
+    /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <returns>Result</returns>
     [HttpPost]
     [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
-    [Route("revoke")]
+    [Route("v1/apps/instancedelegation/revoke")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Revoke(AppsInstanceDelegationRequest appInstanceDelegationRequest)
+    public async Task<ActionResult> Revoke(AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto)
     {
-        Result<bool> result = await _appInstanceDelegationService.Revoke(appInstanceDelegationRequest);
+        Result<AppsInstanceDelegationResponseDto> result = new();
+
+        if (result.IsProblem)
+        {
+            return result.Problem.ToActionResult();
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Delegates access to an app instance
+    /// </summary>
+    /// <param name="appInstanceDelegationRequest">The request model</param>
+    /// <returns>Result</returns>
+    [HttpPost]
+    [Route("v2/apps/instancedelegation/{resourceId}/{resourceInstanceId}")]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseV2), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> DelegationV2(AppsInstanceDelegationRequestV2 appInstanceDelegationRequest)
+    {
+        Result<AppsInstanceDelegationResponseV2> result = new();
+
+        if (result.IsProblem)
+        {
+            return result.Problem.ToActionResult();
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Gets all instance delegations for a given instance
+    /// </summary>
+    /// <param name="resourceId">The resource identifier</param>
+    /// <param name="resourceInstanceId">The resource instance identifier</param>
+    /// <param name="fromPartyUuid">The party uuid of the party the delegation is made from</param>
+    /// <param name="toPartyUuid">he party uuid of the party the delegation is made to</param>
+    /// <param name="isParalellTaskDelegation">Whether the delegation to lookup is a paralell task delegation</param>
+    /// <returns>Result</returns>
+    [HttpGet]
+    [Route("v2/apps/instancedelegation/{resourceId}/{resourceInstanceId}")]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(IEnumerable<AppsInstanceDelegationResponseV2>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> GetV2([FromRoute] string resourceId, [FromRoute] string resourceInstanceId, [FromQuery] string fromPartyUuid, [FromQuery] string toPartyUuid, [FromQuery] bool isParalellTaskDelegation = false)
+    {
+        Result<AppsInstanceDelegationResponseV2> result = new();
+
+        if (result.IsProblem)
+        {
+            return result.Problem.ToActionResult();
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Delegates access to an app instance
+    /// </summary>
+    /// <param name="resourceId">The resource identifier</param>
+    /// <param name="resourceInstanceId">The resource instance identifier</param>
+    /// <param name="fromPartyUuid">The party uuid of the party the delegation is made from</param>
+    /// <param name="toPartyUuid">he party uuid of the party the delegation is made to</param>
+    /// <param name="isParalellTaskDelegation">Whether the delegation to lookup is a paralell task delegation</param>
+    /// <returns>Result</returns>
+    [HttpDelete]
+    [Route("v2/apps/instancedelegation/{resourceId}/{resourceInstanceId}")]
+    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseV2), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> RevokeV2([FromRoute] string resourceId, [FromRoute] string resourceInstanceId, [FromQuery] string fromPartyUuid, [FromQuery] string toPartyUuid, [FromQuery] bool isParalellTaskDelegation = false)
+    {
+        Result<AppsInstanceDelegationResponseV2> result = new();
 
         if (result.IsProblem)
         {

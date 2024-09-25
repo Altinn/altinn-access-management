@@ -11,20 +11,20 @@ using System.Threading.Tasks;
 namespace Altinn.AccessManagement.Core.Enums
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum InstanceDelegationType
+    public enum InstanceDelegationMode
     {
         /// <summary>
         /// Defining a instance delegation to be of type parallell task person this could also be identified with "Fødselsnummer"/"Dnummer"
         /// </summary>
-        [EnumMember(Value = "paralell")]
-        [PgName("paralell")]
-        Paralell,
+        [EnumMember(Value = "parallelSigning")]
+        [PgName("parallelsigning")]
+        ParallelSigning,
 
         /// <summary>
         /// Identifies a unit could also be identified with a Organization number
         /// </summary>
-        [EnumMember(Value = "end-user")]
-        [PgName("endUser")]
-        EndUser
+        [EnumMember(Value = "normal")]
+        [PgName("normal")]
+        Normal
     }
 }

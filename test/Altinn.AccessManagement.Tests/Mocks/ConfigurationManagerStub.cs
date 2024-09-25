@@ -32,7 +32,6 @@ namespace Altinn.AccessManagement.Tests.Mocks
         /// <inheritdoc />
         public void RequestRefresh()
         {
-            throw new NotImplementedException();
         }
 
         private async Task<ICollection<SecurityKey>> GetSigningKeys()

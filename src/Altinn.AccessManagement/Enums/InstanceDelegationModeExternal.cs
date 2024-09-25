@@ -12,7 +12,7 @@ public enum InstanceDelegationModeExternal
     /// </summary>
     [EnumMember(Value = "parallelSigning")]
     [PgName("parallelsigning")]
-    ParalellSigning,
+    ParallelSigning,
 
     /// <summary>
     /// Identifies a unit could also be identified with a Organization number

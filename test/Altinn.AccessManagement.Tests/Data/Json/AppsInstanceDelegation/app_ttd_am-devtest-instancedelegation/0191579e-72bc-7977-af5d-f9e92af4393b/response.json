@@ -9,7 +9,7 @@
   },
   "resource": "app_ttd_am-devtest-instancedelegation",
   "instance": "0191579e-72bc-7977-af5d-f9e92af4393b",
-  "instanceDelegationMode": "Paralell",
+  "instanceDelegationMode": "ParallelSigning",
   "rights": [
     {
       "resource": [

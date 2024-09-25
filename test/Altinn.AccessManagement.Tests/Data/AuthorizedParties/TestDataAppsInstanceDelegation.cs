@@ -58,7 +58,7 @@ public static class TestDataAppsInstanceDelegation
         Assert.NotNull(expected);
 
         AssertPartyUrn(expected.From, actual.From);
-        Assert.Equal(expected.To.Value, actual.To.V);
+        Assert.Equal(expected.To.Value, actual.To.Value);
         Assert.Equal(expected.Resource, actual.Resource);
         Assert.Equal(expected.Instance, actual.Instance);
         Assert.Equal(expected.InstanceDelegationMode, actual.InstanceDelegationMode);

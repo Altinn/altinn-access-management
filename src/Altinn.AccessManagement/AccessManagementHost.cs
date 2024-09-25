@@ -62,7 +62,6 @@ internal static class AccessManagementHost
     {
         builder.Services.AddTransient<IPublicSigningKeyProvider, PublicSigningKeyProvider>();
         builder.Services.AddSingleton<IPDP, PDPAppSI>();
-        builder.Services.AddSingleton<IAppsInstanceDelegationService, AppsInstanceDelegationService>();
         builder.Services.AddHttpClient<AuthorizationApiClient>();
         return builder;
     }

@@ -12,19 +12,25 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         Default = 0,
 
         [PgName("systemresource")]
-        Systemresource = 1,
+        Systemresource = 1 << 0,
 
         [PgName("maskinportenschema")]
-        MaskinportenSchema = 2,
+        MaskinportenSchema = 1 << 1,
 
         [PgName("altinn2service")]
-        Altinn2Service = 4,
+        Altinn2Service = 1 << 2,
 
         [PgName("altinnapp")]
-        AltinnApp = 8,
+        AltinnApp = 1 << 3,
 
         [PgName("genericaccessresource")]
-        GenericAccessResource = 16,
+        GenericAccessResource = 1 << 4,
+
+        [PgName("brokerservice")]
+        BrokerService = 1 << 5,
+
+        [PgName("correspondenceservice")]
+        CorrespondenceService = 1 << 6,
 
         All = ~Default
     }

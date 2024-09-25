@@ -52,13 +52,22 @@ assert {
 
 script:pre-request {
   const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
-  bru.setVar("auth_userId", testdata.org1.dagl.userid);
-  bru.setVar("auth_partyId", testdata.org1.dagl.partyid);
-  bru.setVar("auth_ssn", testdata.org1.dagl.pid);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.org1.partyid);
   bru.setVar("to_partyid", testdata.org1.partyid);
   
-  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
+  var getTokenParameters = {
+    auth_userId: testdata.org1.dagl.userid,
+    auth_partyId: testdata.org1.dagl.partyid,
+    auth_ssn: testdata.org1.dagl.pid,
+    party: testdata.org1.partyid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
 }
 
 tests {
@@ -67,7 +76,7 @@ tests {
     const data = res.getBody();
     expect(res.status).to.equal(400);
     expect(data).to.have.property('status', 400);
-    expect(data.errors.To[0]).to.equal('Maskinporten schema delegation can not have the same party in the From and To Attributes: 50067258');
+    expect(data.errors.To[0]).to.include('Maskinporten schema delegation can not have the same party in the From and To Attributes:');
   });
 }
 

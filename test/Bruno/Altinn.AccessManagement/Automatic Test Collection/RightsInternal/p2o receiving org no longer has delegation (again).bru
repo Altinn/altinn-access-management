@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{auth_partyId}}/rights/delegation/received
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
   body: json
   auth: inherit
 }
@@ -20,12 +20,20 @@ vars:pre-request {
 
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
-  bru.setVar("auth_userId", testdata.org2.dagl.userid);
-  bru.setVar("auth_partyId", testdata.org2.dagl.partyid);
-  bru.setVar("auth_ssn", testdata.org2.dagl.pid);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.org2.dagl.partyid);
   
-  bru.setVar("bearerToken", await tokenGenerator.getToken("altinn:instances.read"));
+  var getTokenParameters = {
+    auth_userId: testdata.org2.dagl.userid,
+    auth_partyId: testdata.org2.dagl.partyid,
+    auth_ssn: testdata.org2.dagl.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
 }
 
 tests {

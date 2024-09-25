@@ -1,28 +1,16 @@
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Health;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Xunit;
+using Altinn.AccessManagement.Tests.Fixtures;
 
 namespace Altinn.AccessManagement.Tests.Health
 {
     /// <summary>
     /// Health check 
     /// </summary>
-    public class HealthCheckTests : IClassFixture<CustomWebApplicationFactory<HealthCheck>>
+    /// 
+    public class HealthCheckTests(WebApplicationFixture fixture) : IClassFixture<WebApplicationFixture>
     {
-        private readonly CustomWebApplicationFactory<HealthCheck> _factory;
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <param name="fixture">The web application fixture</param>
-        public HealthCheckTests(CustomWebApplicationFactory<HealthCheck> fixture)
-        {
-            _factory = fixture;
-        }
+        public WebApplicationFixture Fixture { get; } = fixture;
 
         /// <summary>
         /// Verify that component responds on health check
@@ -31,25 +19,29 @@ namespace Altinn.AccessManagement.Tests.Health
         [Fact]
         public async Task VerifyHealthCheck_OK()
         {
-            HttpClient client = GetTestClient();
+            HttpClient client = Fixture.ConfigureHostBuilderWithScenarios().Client;
 
-            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "/health");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/health");
 
-            HttpResponseMessage response = await client.SendAsync(httpRequestMessage);
-            string content = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await client.SendAsync(request);
+            Assert.Equal("Healthy", await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        private HttpClient GetTestClient()
+        /// <summary>
+        /// Verify that component responds on health check
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task VerifyAliveCheck_OK()
         {
-            HttpClient client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                });
-            }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+            HttpClient client = Fixture.ConfigureHostBuilderWithScenarios().Client;
 
-            return client;
+            var request = new HttpRequestMessage(HttpMethod.Get, "/alive");
+
+            HttpResponseMessage response = await client.SendAsync(request);
+            await response.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }

@@ -10,25 +10,6 @@ namespace Altinn.AccessManagement.Core.Resolvers.Extensions;
 public static class ResolverExtensions
 {
     /// <summary>
-    /// configure DPI for resolvers
-    /// </summary>
-    /// <param name="services">service collection</param>
-    /// <returns></returns>
-    public static IServiceCollection ConfigureResolvers(this IServiceCollection services)
-    {
-        services.AddTransient<IAttributeResolver, UrnResolver>();
-        services.AddTransient<UrnResolver>();
-        services.AddTransient<AltinnEnterpriseUserResolver>();
-        services.AddTransient<AltinnResolver>();
-        services.AddTransient<AltinnResourceResolver>();
-        services.AddTransient<AltinnOrganizationResolver>();
-        services.AddTransient<AltinnPersonResolver>();
-        services.AddTransient<PartyAttributeResolver>();
-        services.AddTransient<UserAttributeResolver>();
-        return services;
-    }
-
-    /// <summary>
     /// Gets first match of specific attribute value as string
     /// </summary>
     /// <param name="values">list of attributes</param>

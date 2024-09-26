@@ -237,6 +237,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         result.To = appInstanceDelegationRequest.To;
         result.Resource = appInstanceDelegationRequest.ResourceId;
         result.Instance = appInstanceDelegationRequest.InstanceId;
+        result.InstanceDelegationMode = appInstanceDelegationRequest.InstanceDelegationMode;
 
         // Perform delegation
         DelegationHelper.TryGetPerformerFromAttributeMatches(appInstanceDelegationRequest.PerformedBy, out string performedById, out UuidType performedByType);

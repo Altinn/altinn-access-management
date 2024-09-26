@@ -38,13 +38,16 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
     }
 
     /// <summary>
-    /// Test case:  POST resourceowner/authorizedparties?includeAltinn2={includeAltinn2}
-    ///             with a valid token but missing required scope
-    /// Expected:   - Should return 403 Forbidden
-    /// Reason:     Operation requires valid token with authorized scope
+    /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with a valid delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdat cases for details
     /// </summary>
     [Theory]
-    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateReadForApp), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateParallelReadForAppNoExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateParallelSignForAppExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateNormalReadForAppNoExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateNormalSignForAppExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
     public async Task AppsInstanceDelegationController_ValidToken_Delegate_OK(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceDelegationResponseDto expected)
     {
         var client = GetTestClient(platformToken);
@@ -54,6 +57,28 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
+        TestDataAppsInstanceDelegation.AssertAppsInstanceDelegationResponseDtoEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with a valid delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdat cases for details
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateReadForAppNoExistingPolicyNoResponceDBWrite), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_Delegate_DBWriteFails(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceDelegationResponseDto expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.PartialContent, response.StatusCode);
 
         AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
         TestDataAppsInstanceDelegation.AssertAppsInstanceDelegationResponseDtoEqual(expected, actual);

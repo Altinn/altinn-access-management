@@ -7,7 +7,7 @@
     "type": "urn:altinn:party:uuid",
     "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
   },
-  "instanceDelegationMode": "ParallelSigning",
+  "instanceDelegationType": "Normal",
   "rights": [
     {
       "resource": [
@@ -26,7 +26,7 @@
       ],
       "action": {
         "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
-        "value": "read"
+        "value": "sign"
       }
     }
   ]

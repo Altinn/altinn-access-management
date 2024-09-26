@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
+using System.Linq;
 using System.Security.Claims;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
@@ -10,6 +11,8 @@ using Altinn.Authorization.ProblemDetails;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Net;
 
 namespace Altinn.AccessManagement.Controllers;
 
@@ -53,6 +56,7 @@ public class AppsInstanceDelegationController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status206PartialContent)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
@@ -64,12 +68,32 @@ public class AppsInstanceDelegationController : ControllerBase
         request.InstanceId = instanceId;
 
         List<AttributeMatch> performedBy = GetOrgAppFromToken(Request.Headers["PlatformAccessToken"]);
-                
+        /*
+        performedBy =
+        [
+            new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = "ttd" },
+            new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = "am-devtest-instancedelegation" },
+        ];
+        */
         request.PerformedBy = performedBy;
 
         Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Delegate(request);
 
-        return serviceResult.IsProblem ? serviceResult.Problem?.ToActionResult() : Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+        if (serviceResult.IsProblem)
+        {
+            return serviceResult.Problem?.ToActionResult();
+        }
+
+        // Check result
+        int totalDelegations = request.Rights.Count();
+        int validDelegations = serviceResult.Value.Rights.Where(r => r.Status == Core.Enums.DelegationStatus.Delegated).Count();
+
+        if (validDelegations == totalDelegations)
+        {
+            return Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+        }
+
+        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));        
     }
 
     /// <summary>

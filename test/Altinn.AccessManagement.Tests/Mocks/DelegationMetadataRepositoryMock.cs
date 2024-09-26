@@ -91,8 +91,28 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
 
     public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default)
     {
+        Random random = new Random();
         switch (request.Instance)
         {
+            case "00000000-0000-0000-0000-000000000001":
+                
+                return Task.FromResult(new InstanceDelegationChange
+                {
+                    FromUuidType = request.FromType,
+                    FromUuid = request.FromUuid,
+                    ToUuidType = request.ToType,
+                    ToUuid = request.ToUuid,
+                    PerformedBy = request.Resource,
+                    PerformedByType = UuidType.Resource,
+                    BlobStoragePolicyPath = $"Instance/{request.Resource}/{request.Instance.AsFileName(false)}/{request.InstanceDelegationMode}/delegationpolicy.xml",
+                    BlobStorageVersionId = "2024-09-13T16:59:13.123Z",
+                    Created = new DateTime(2024, 9, 13, 16, 59, 13, 347, DateTimeKind.Utc),
+                    Instance = request.Instance,
+                    DelegationChangeType = DelegationChangeType.Grant,
+                    InstanceDelegationChangeId = random.Next(1, 1000),
+                    InstanceDelegationMode = InstanceDelegationMode.ParallelSigning,
+                    Resource = request.Resource
+                });
             default:
                 return Task.FromResult((InstanceDelegationChange)null);
         }
@@ -104,7 +124,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         string path = GetDelegationPolicyPathFromInstanceRule(instanceDelegationChange);
         InstanceDelegationChange result = instanceDelegationChange.Instance switch
         {
-            "00000000-0000-0000-0000-000000000001" => null,
+            "00000000-0000-0000-0000-000000000002" => null,
             _ => new InstanceDelegationChange
             {
                 InstanceDelegationChangeId = random.Next(0, 1000),

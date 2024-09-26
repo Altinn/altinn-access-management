@@ -89,6 +89,7 @@ namespace Altinn.AccessManagement.Mappers
                 .ForMember(dest => dest.Action, act => act.MapFrom( src => src.Action.Value));
             CreateMap<AppsInstanceDelegationResponse, AppsInstanceDelegationResponseDto>();
             CreateMap<RightV2DelegationResult, RightDelegationResultDto>();
+            CreateMap<InstanceDelegationModeExternal, InstanceDelegationMode>();
         }
     }
 }

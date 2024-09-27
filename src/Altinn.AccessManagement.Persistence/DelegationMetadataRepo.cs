@@ -107,7 +107,7 @@ namespace Altinn.AccessManagement.Persistence
             }
 
             string query = string.Empty;
-            if (coveredByPartyIds?.Count != 0)
+            if (coveredByPartyIds?.Count > 0)
             {
                 query = /*strpsql*/@$"
                 WITH latestChanges AS (
@@ -123,7 +123,7 @@ namespace Altinn.AccessManagement.Persistence
                     INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
                 ";
             }
-            else if (coveredByUserIds?.Count != 0)
+            else if (coveredByUserIds?.Count > 0)
             {
                 query = /*strpsql*/@$"
                 WITH latestChanges AS (

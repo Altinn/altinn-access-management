@@ -49,6 +49,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <param name="resourceId">The resource id</param>
     /// <param name="instanceId">The instance id</param>
+    /// <param name="platformAccessToken">platform token needed to define fetch wich app is calling this method</param>
     /// <returns>Result</returns>
     [HttpPost]
     [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
@@ -60,21 +61,14 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Delegation([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId)
+    public async Task<ActionResult> Delegation([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token)
     {
         AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
         
         request.ResourceId = resourceId;
         request.InstanceId = instanceId;
 
-        List<AttributeMatch> performedBy = GetOrgAppFromToken(Request.Headers["PlatformAccessToken"]);
-        /*
-        performedBy =
-        [
-            new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = "ttd" },
-            new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = "am-devtest-instancedelegation" },
-        ];
-        */
+        List<AttributeMatch> performedBy = GetOrgAppFromToken(token);
         request.PerformedBy = performedBy;
 
         Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Delegate(request);

@@ -493,7 +493,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a XacmlTarget <see cref="XacmlTarget"/> representation based on the Rule input
         /// </summary>
-        /// <param name="coveredBy">The the entity having received the delegated policy</param>
+        /// <param name="toId">The the entity having received the delegated policy</param>
         /// <param name="toType">The type of identifier received the delegated policy user, party or system user</param>
         /// <param name="rule">The rule to be delegated</param>
         public static XacmlTarget BuildInstanceDelegationRuleTarget(string toId, string toType, InstanceRule rule)
@@ -512,7 +512,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             }));
 
             // Build Resource
-            List<XacmlMatch> resourceMatches = new List<XacmlMatch>();
+            List<XacmlMatch> resourceMatches = [];
             foreach (UrnJsonTypeValue resourceMatch in rule.Resource)
             {
                 resourceMatches.Add(
@@ -833,7 +833,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 result = true;
                 foreach (var match in delegaterApp)
                 {
-                    if (subject.Any(s => s.Id == match.Id && s.Value == match.Value))
+                    if (subject.Exists(s => s.Id == match.Id && s.Value == match.Value))
                     {
                         continue;
                     }

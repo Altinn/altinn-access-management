@@ -535,14 +535,14 @@ namespace Altinn.AccessManagement.Core.Helpers
                             }
                         }
 
-                        if (resourceMatch.Any())
+                        if (resourceMatch.Count > 0)
                         {
                             policyResourceMatches.Add(resourceMatch);
                         }
                     }
                 }
 
-                if (policyResourceMatches.Any(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
+                if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
                 {
                     rule.RuleId = policyRule.RuleId;
                     return true;
@@ -624,6 +624,13 @@ namespace Altinn.AccessManagement.Core.Helpers
             return string.Concat(attributeMatches.OrderBy(r => r.Value.KeySpan.ToString()).Select(r => r.Value.PrefixSpan.ToString() + r.Value.ValueSpan.ToString()));
         }
 
+        /// <summary>
+        /// Extract UuidType and Uuid from a AttributeMatch list
+        /// </summary>
+        /// <param name="performer">The lsit to fetch data from</param>
+        /// <param name="id">The id of the party in the</param>
+        /// <param name="type">The resulting type</param>
+        /// <returns>true if a valid type and id was extracted else false</returns>
         public static bool TryGetPerformerFromAttributeMatches(IEnumerable<AttributeMatch> performer, out string id, out UuidType type)
         {
             string org = null, app = null, person = null, organization = null, enterpriseUser = null, systemUser = null;

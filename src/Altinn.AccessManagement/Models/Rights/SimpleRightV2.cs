@@ -11,6 +11,8 @@ namespace Altinn.AccessManagement.Models;
 [SwaggerExampleFromExampleProvider]
 public class SimpleRightV2 : IExampleDataProvider<SimpleRightV2>
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+
     /// <summary>
     /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
     /// </summary>
@@ -39,6 +41,6 @@ public class SimpleRightV2 : IExampleDataProvider<SimpleRightV2>
               "action": "read"
             }
             """;
-        yield return JsonSerializer.Deserialize<SimpleRightV2>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        yield return JsonSerializer.Deserialize<SimpleRightV2>(json, SerializerOptions);
     }
 }

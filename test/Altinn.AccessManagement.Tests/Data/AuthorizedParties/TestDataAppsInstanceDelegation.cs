@@ -1,11 +1,10 @@
-using Altinn.AccessManagement.Core.Models;
+using System.Text.Json;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Urn.Json;
-using System.Text.Json;
 
 namespace Altinn.AccessManagement.Tests.Data;
 
@@ -106,10 +105,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdParallelNewPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalNewPolicy),
             AppId,
-            InstanceIdParallelNewPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdParallelNewPolicy)
+            InstanceIdNormalNewPolicy,
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalNewPolicy)
         }
     };
 
@@ -128,10 +127,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdParallelExistingPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalExistingPolicy),
             AppId,
-            InstanceIdParallelExistingPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdParallelExistingPolicy)
+            InstanceIdNormalExistingPolicy,
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalExistingPolicy)
         }
     };
 

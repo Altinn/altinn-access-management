@@ -12,6 +12,8 @@ namespace Altinn.AccessManagement.Models;
 [SwaggerExampleFromExampleProvider]
 public class RightDto : IExampleDataProvider<RightDto>
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+
     /// <summary>
     /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
     /// </summary>
@@ -52,6 +54,6 @@ public class RightDto : IExampleDataProvider<RightDto>
               }
             }
             """;
-        yield return JsonSerializer.Deserialize<RightDto>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        yield return JsonSerializer.Deserialize<RightDto>(json, SerializerOptions);
     }
 }

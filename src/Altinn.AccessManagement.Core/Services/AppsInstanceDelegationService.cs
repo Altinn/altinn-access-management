@@ -73,7 +73,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return (delegationType, uuid);
     }
 
-    private bool CheckIfInstanceIsDelegable(List<Right> delegableRights, RightInternal rightToDelegate)
+    private static bool CheckIfInstanceIsDelegable(List<Right> delegableRights, RightInternal rightToDelegate)
     {
         return delegableRights.Exists(delegableRight => InstanceRightComparesEqualToDelegableRight(delegableRight, rightToDelegate));
     }
@@ -142,7 +142,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return false;
     }
 
-    private void AddValidationErrorsForResourceInstance(ref ValidationErrorBuilder errors, IEnumerable<RightInternal> rights, string resourceid)
+    private static void AddValidationErrorsForResourceInstance(ref ValidationErrorBuilder errors, IEnumerable<RightInternal> rights, string resourceid)
     {
         ValidateAndGetSignificantResourcePartsFromResource(rights.FirstOrDefault()?.Resource, out List<UrnJsonTypeValue> firstResource, resourceid);
         int counter = -1;
@@ -279,13 +279,13 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Get(CancellationToken cancellationToken)
+    public Task<Result<bool>> Get(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
     
     /// <inheritdoc/>
-    public Task<Result<bool>> Revoke(CancellationToken cancellationToken)
+    public Task<Result<bool>> Revoke(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

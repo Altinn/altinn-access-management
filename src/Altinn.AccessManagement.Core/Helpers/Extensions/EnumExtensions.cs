@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
+using System.Linq;
 
 namespace Altinn.AccessManagement.Core.Helpers.Extensions
 {
@@ -40,13 +41,10 @@ namespace Altinn.AccessManagement.Core.Helpers.Extensions
         public static bool EnumValue<T>(string value, out T enumValue)
         {
             string[] names = Enum.GetNames(typeof(T));
-            foreach (string name in names)
+            foreach (var name in names.Where(name => EnumMemberAttributeValueOrName((Enum)Enum.Parse(typeof(T), name)).Equals(value)))
             {
-                if (EnumMemberAttributeValueOrName((Enum)Enum.Parse(typeof(T), name)).Equals(value))
-                {
-                    enumValue = (T)Enum.Parse(typeof(T), name);
-                    return true;
-                }
+                enumValue = (T)Enum.Parse(typeof(T), name);
+                return true;
             }
 
             enumValue = default;

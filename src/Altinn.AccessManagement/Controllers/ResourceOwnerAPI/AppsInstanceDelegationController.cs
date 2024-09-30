@@ -1,18 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
-using System.Linq;
-using System.Security.Claims;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Mappers;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ProblemDetails;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System.Net;
 
 namespace Altinn.AccessManagement.Controllers;
 
@@ -23,22 +18,18 @@ namespace Altinn.AccessManagement.Controllers;
 [Route("accessmanagement/api")]
 public class AppsInstanceDelegationController : ControllerBase
 {
-    private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly IAppsInstanceDelegationService _appInstanceDelegationService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppsInstanceDelegationController"/> class.
     /// </summary>
-    /// <param name="logger">logger service</param>
     /// <param name="mapper">mapper service</param>
     /// <param name="appInstanceDelegationService">app instance delegation handler</param>
     public AppsInstanceDelegationController(
-        ILogger<ResourceOwnerAuthorizedPartiesController> logger,
         IMapper mapper,
         IAppsInstanceDelegationService appInstanceDelegationService)
     {
-        _logger = logger;
         _mapper = mapper;
         _appInstanceDelegationService = appInstanceDelegationService;
     }
@@ -49,7 +40,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <param name="resourceId">The resource id</param>
     /// <param name="instanceId">The instance id</param>
-    /// <param name="platformAccessToken">platform token needed to define fetch wich app is calling this method</param>
+    /// <param name="token">platform token needed to define fetch wich app is calling this method</param>
     /// <returns>Result</returns>
     [HttpPost]
     [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
@@ -80,7 +71,7 @@ public class AppsInstanceDelegationController : ControllerBase
 
         // Check result
         int totalDelegations = request.Rights.Count();
-        int validDelegations = serviceResult.Value.Rights.Where(r => r.Status == Core.Enums.DelegationStatus.Delegated).Count();
+        int validDelegations = serviceResult.Value.Rights.Count(r => r.Status == Core.Enums.DelegationStatus.Delegated);
 
         if (validDelegations == totalDelegations)
         {
@@ -107,7 +98,7 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Get([FromRoute] string resourceId, [FromRoute] string instanceId)
     {
-        Result<AppsInstanceDelegationRequestDto> result = new();
+        Result<AppsInstanceDelegationRequestDto> result = default;
 
         if (result.IsProblem)
         {
@@ -126,16 +117,16 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <returns>Result</returns>
     [HttpPost]
     [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
-    [Route("v1/apps/instancedelegation/revoke")]
+    [Route("v1/apps/instancedelegation/revoke/{resourceId}/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Revoke([FromRoute] string resourceId, [FromRoute] string instanceId, [FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto)
+    public async Task<ActionResult> Revoke([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId)
     {
-        Result<AppsInstanceDelegationResponseDto> result = new();
+        Result<AppsInstanceDelegationResponseDto> result = default;
 
         if (result.IsProblem)
         {

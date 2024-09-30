@@ -85,15 +85,18 @@ namespace Altinn.AccessManagement.Core.Services
                     };
 
                     InstanceDelegationChange currentChange =
-                        await _delegationRepository.GetLastInstanceDelegationChange(requestLastChanged,
+                        await _delegationRepository.GetLastInstanceDelegationChange(
+                            requestLastChanged,
                             cancellationToken);
 
                     XacmlPolicy existingDelegationPolicy = null;
                     if (currentChange != null && currentChange.DelegationChangeType != DelegationChangeType.RevokeLast)
                     {
                         policyPath = currentChange.BlobStoragePolicyPath;
-                        existingDelegationPolicy = await _prp.GetPolicyVersionAsync(policyPath,
-                            currentChange.BlobStorageVersionId, cancellationToken);
+                        existingDelegationPolicy = await _prp.GetPolicyVersionAsync(
+                            policyPath,
+                            currentChange.BlobStorageVersionId, 
+                            cancellationToken);
                     }
 
                     // Build delegation XacmlPolicy either as a new policy or add rules to existing
@@ -121,7 +124,7 @@ namespace Altinn.AccessManagement.Core.Services
                     Response<BlobContentInfo> blobResponse =
                         await policyClient.WritePolicyConditionallyAsync(dataStream, leaseId, cancellationToken);
                     Response httpResponse = blobResponse.GetRawResponse();
-                    if (httpResponse.Status != (int) HttpStatusCode.Created)
+                    if (httpResponse.Status != (int)HttpStatusCode.Created)
                     {
                         int status = httpResponse.Status;
                         string reasonPhrase = httpResponse.ReasonPhrase;
@@ -146,7 +149,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                         FromUuid = requestLastChanged.FromUuid,
                         FromUuidType = requestLastChanged.FromType,
-                        ToUuid = (Guid)requestLastChanged.ToUuid,
+                        ToUuid = requestLastChanged.ToUuid,
                         ToUuidType = requestLastChanged.ToType,
 
                         PerformedBy = rules.PerformedBy,
@@ -154,7 +157,7 @@ namespace Altinn.AccessManagement.Core.Services
                     };
 
                     instanceDelegationChange =
-                        await _delegationRepository.InsertInstanceDelegation(instanceDelegationChange);
+                        await _delegationRepository.InsertInstanceDelegation(instanceDelegationChange, cancellationToken);
                     if (instanceDelegationChange == null || instanceDelegationChange.InstanceDelegationChangeId <= 0)
                     {
                         // Comment:
@@ -168,7 +171,7 @@ namespace Altinn.AccessManagement.Core.Services
                     
                     return true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
@@ -187,7 +190,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             bool validPath = DelegationHelper.TryGetDelegationPolicyPathFromInstanceRule(rules, out string path);
             
-            if(validPath)
+            if (validPath)
             {
                 bool writePolicySuccess = false;
 
@@ -197,8 +200,10 @@ namespace Altinn.AccessManagement.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
-                        "An exception occured while processing authorization rules for delegation on delegation policy path: {path}", path);
+                    _logger.LogError(
+                        ex,
+                        "An exception occured while processing authorization rules for delegation on delegation policy path: {path}", 
+                        path);
                 }
 
                 foreach (InstanceRule rule in rules.InstanceRules)

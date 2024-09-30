@@ -11,6 +11,7 @@ using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Urn.Json;
+using System.Linq;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -513,15 +514,10 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             // Build Resource
             List<XacmlMatch> resourceMatches = [];
-            foreach (UrnJsonTypeValue resourceMatch in rule.Resource)
-            {
-                resourceMatches.Add(
-                    new XacmlMatch(
-                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
-                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value.ValueSpan.ToString()),
-                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Resource), new Uri(resourceMatch.Value.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false)));
-            }
-
+            resourceMatches.AddRange(rule.Resource.Select(resourceMatch => new XacmlMatch(
+                    new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
+                    new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value.ValueSpan.ToString()),
+                    new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Resource), new Uri(resourceMatch.Value.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false))));
             List<XacmlAllOf> resourceAllOfs = new List<XacmlAllOf> { new XacmlAllOf(resourceMatches) };
 
             // Build Action

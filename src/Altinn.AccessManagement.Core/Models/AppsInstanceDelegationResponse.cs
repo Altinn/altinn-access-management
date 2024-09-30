@@ -29,13 +29,13 @@ public class AppsInstanceDelegationResponse
     /// Gets or sets the urn identifying the resource of the instance
     /// </summary>
     [Required]
-    public string Resource { get; set; }
+    public string ResourceId { get; set; }
 
     /// <summary>
     /// Gets or sets the urn identifying the instance id
     /// </summary>
     [Required]
-    public string Instance { get; set; }
+    public string InstanceId { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the instance delegation is for a parallel task

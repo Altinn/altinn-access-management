@@ -7,8 +7,8 @@
     "type": "urn:altinn:party:uuid",
     "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
   },
-  "resource": "app_ttd_am-devtest-instancedelegation",
-  "instance": "00000000-0000-0000-0000-000000000005",
+  "resourceid": "app_ttd_am-devtest-instancedelegation",
+  "instanceid": "00000000-0000-0000-0000-000000000005",
   "instanceDelegationMode": "Normal",
   "rights": [
     {

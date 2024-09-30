@@ -147,8 +147,8 @@ public static class TestDataAppsInstanceDelegation
 
         AssertPartyUrn(expected.From, actual.From);
         Assert.Equal(expected.To.Value, actual.To.Value);
-        Assert.Equal(expected.Resource, actual.Resource);
-        Assert.Equal(expected.Instance, actual.Instance);
+        Assert.Equal(expected.ResourceId, actual.ResourceId);
+        Assert.Equal(expected.InstanceId, actual.InstanceId);
         Assert.Equal(expected.InstanceDelegationMode, actual.InstanceDelegationMode);
         AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRightsEqual);
     }

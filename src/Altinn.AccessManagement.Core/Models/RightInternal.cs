@@ -3,7 +3,7 @@ using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Models;
 
-public class RightV2
+public class RightInternal
 {
     /// <summary>
     /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.

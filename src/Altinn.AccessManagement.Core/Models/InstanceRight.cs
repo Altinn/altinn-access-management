@@ -49,7 +49,7 @@ public class InstanceRight
     /// <summary>
     /// The urn for this instance
     /// </summary>
-    public string Instance { get; set; }
+    public string InstanceId { get; set; }
 
     /// <summary>
     /// The mode of delegation for now Parallel Signing and normal

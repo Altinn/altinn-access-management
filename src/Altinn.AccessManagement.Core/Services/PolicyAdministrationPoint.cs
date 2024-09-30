@@ -81,7 +81,7 @@ namespace Altinn.AccessManagement.Core.Services
                         ToUuid = rules.ToUuid,
                         Resource = rules.ResourceId,
                         InstanceDelegationMode = rules.InstanceDelegationMode,
-                        Instance = rules.Instance
+                        Instance = rules.InstanceId
                     };
 
                     InstanceDelegationChange currentChange =
@@ -101,14 +101,13 @@ namespace Altinn.AccessManagement.Core.Services
                     if (existingDelegationPolicy != null)
                     {
                         delegationPolicy = existingDelegationPolicy;
-                        PolicyHelper.GetPolicyDataFromInstanceRight(rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+                        PolicyHelper.GetPolicyDataFromInstanceRight(rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
 
                         foreach (InstanceRule rule in rules.InstanceRules)
                         {
                             if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
                             {
-                                // TODO: Decide how From and To should be stored to policy file.
-                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(resourceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(resourceId, instanceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
                             }
                         }
                     }
@@ -124,9 +123,13 @@ namespace Altinn.AccessManagement.Core.Services
                     Response httpResponse = blobResponse.GetRawResponse();
                     if (httpResponse.Status != (int) HttpStatusCode.Created)
                     {
+                        int status = httpResponse.Status;
+                        string reasonPhrase = httpResponse.ReasonPhrase;
                         _logger.LogError(
-                            "Writing of delegation policy at path: {policyPath} failed. Response Status Code:\n{httpResponse.Status}. Response Reason Phrase:\n{httpResponse.ReasonPhrase}",
-                            policyPath, httpResponse.Status, httpResponse.ReasonPhrase);
+                            "Writing of delegation policy at path: {policyPath} failed. Response Status Code:\n{status}. Response Reason Phrase:\n{reasonPhrase}",
+                            policyPath, 
+                            status,
+                            reasonPhrase);
                         return false;
                     }
 
@@ -136,7 +139,7 @@ namespace Altinn.AccessManagement.Core.Services
                         DelegationChangeType = DelegationChangeType.Grant,
                         InstanceDelegationMode = requestLastChanged.InstanceDelegationMode,
                         Resource = rules.ResourceId,
-                        Instance = rules.Instance,
+                        Instance = rules.InstanceId,
 
                         BlobStoragePolicyPath = policyPath,
                         BlobStorageVersionId = blobResponse.Value.VersionId,

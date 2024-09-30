@@ -149,7 +149,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<Right>> GetDelegableRigtsForApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default)
+        public async Task<List<Right>> GetDelegableRightsByApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default)
         {
             List<Right> result;
             XacmlPolicy policy = null;

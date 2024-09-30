@@ -49,5 +49,5 @@ public class AppsInstanceDelegationRequest
     /// Gets or sets the rights to delegate
     /// </summary>
     [Required]
-    public IEnumerable<RightV2> Rights { get; set; }
+    public IEnumerable<RightInternal> Rights { get; set; }
 }

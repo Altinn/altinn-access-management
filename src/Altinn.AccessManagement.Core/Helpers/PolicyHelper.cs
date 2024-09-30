@@ -353,15 +353,17 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rules">The rules that is delegated</param>
         /// <param name="resourceId">ResourceId delegated</param>
+        /// <param name="instanceId">InstanceId delegated</param>
         /// <param name="fromType">The id receiving the rights</param>
         /// <param name="fromId">The type receiving the rights</param>
         /// <param name="toType">the id offering the rights</param>
         /// <param name="toId">the type offering the rights</param>
         /// <param name="performedById">the party performing the delegation</param>
         /// <param name="performedByType">The type of the party performing the delegation</param>
-        public static void GetPolicyDataFromInstanceRight(InstanceRight rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType)
+        public static void GetPolicyDataFromInstanceRight(InstanceRight rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType)
         {
             resourceId = rules.ResourceId;
+            instanceId = rules.InstanceId;
             fromType = rules.FromType.EnumMemberAttributeValueOrName();
             fromId = rules.FromUuid.ToString().ToLowerInvariant();
             toType = rules.ToType.EnumMemberAttributeValueOrName();
@@ -376,17 +378,17 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="rules">The set of rules to be delegated</param>
         public static XacmlPolicy BuildInstanceDelegationPolicy(InstanceRight rules)
         {
-            XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
+            XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyPermidOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
             delegationPolicy.Version = "1.0";
-            GetPolicyDataFromInstanceRight(rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+            GetPolicyDataFromInstanceRight(rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
 
-            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {fromType}:{fromId} to {toType}:{toId}, for the resource; {resourceId}";
+            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {fromType}:{fromId} to {toType}:{toId}, for the resource: {resourceId} and InstanceId: {instanceId}";
 
             foreach (InstanceRule rule in rules.InstanceRules)
             {
                 if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
                 {
-                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(resourceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(resourceId, instanceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
                 }
             }
 
@@ -397,6 +399,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
         /// </summary>
         /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
+        /// <param name="instanceId">The identifier of the instance</param>
         /// <param name="fromId">The id of the entity offering the delegated the policy</param>
         /// <param name="fromType">The type of the entity offering the delegated policy</param>
         /// <param name="toId">The id of the entity having received the delegated policy</param>
@@ -404,13 +407,13 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="performedById">The id of the entity delegated the policy</param>
         /// <param name="performedByType">The type of the entity delegated the policy</param>
         /// <param name="rule">The rule to be delegated</param>
-        public static XacmlRule BuildDelegationInstanceRule(string resourceId, string fromId, string fromType, string toId, string toType, string performedById, string performedByType, InstanceRule rule)
+        public static XacmlRule BuildDelegationInstanceRule(string resourceId, string instanceId, string fromId, string fromType, string toId, string toType, string performedById, string performedByType, InstanceRule rule)
         {
             rule.RuleId = Guid.NewGuid().ToString();
             
             XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
             {
-                Description = $"Delegation of a right/action from {fromType}:{fromId} to {toType}:{toId}, for the resource: {resourceId}, by: {performedByType}:{performedById}",
+                Description = $"Delegation of a right/action from {fromType}:{fromId} to {toType}:{toId}, for the resourceId: {resourceId} instanceId: {instanceId}, by: {performedByType}:{performedById}",
                 Target = BuildInstanceDelegationRuleTarget(toId, toType, rule)
             };
             return delegationRule;

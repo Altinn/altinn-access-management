@@ -446,7 +446,7 @@ namespace Altinn.AccessManagement.Core.Helpers
 
             try
             {
-                sb.Append(rule.Instance.AsFileName());
+                sb.Append(rule.InstanceId.AsFileName());
             }
             catch (Exception e)
             {
@@ -829,7 +829,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rights">The rights to convert</param>
         /// <returns>List of RightDelegationResult</returns>
-        public static IEnumerable<RightV2DelegationResult> GetRightDelegationResultsFromFailedRightV2s(List<RightV2> rights)
+        public static IEnumerable<RightV2DelegationResult> GetRightDelegationResultsFromFailedRightV2s(List<RightInternal> rights)
         {
             return rights.Select(right => new RightV2DelegationResult
             {

@@ -9,6 +9,7 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Urn.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -17,44 +18,6 @@ namespace Altinn.AccessManagement.Core.Helpers
     /// </summary>
     public static class DelegationHelper
     {
-        /// <summary>
-        /// Returns a resource representation out of org app representation
-        /// </summary>
-        /// <param name="resource">The list of parts for building resource</param>
-        /// <returns></returns>
-        public static string GetResourceStringFromUrnJsonTypeEnumerable(IEnumerable<UrnJsonTypeValue> resource)
-        { 
-            ReadOnlySpan<char> org = null, app = null, resourceString = null;
-
-            foreach (UrnJsonTypeValue urnJsonTypeValue in resource)
-            {
-                if (urnJsonTypeValue.HasValue)
-                {
-                    if (urnJsonTypeValue.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)
-                    {
-                        org = urnJsonTypeValue.Value.ValueSpan;
-                    }
-
-                    if (urnJsonTypeValue.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)
-                    {
-                        app = urnJsonTypeValue.Value.ValueSpan;
-                    }
-
-                    if (urnJsonTypeValue.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)
-                    {
-                        resourceString = urnJsonTypeValue.Value.ValueSpan;
-                    }
-                }
-            }
-
-            if (org != null && app != null)
-            {
-                return $"app_{org.ToString()}_{app.ToString()}";
-            }
-
-            return resourceString != null ? resourceString.ToString() : null;
-        }
-
         /// <summary>
         /// Sort rules for delegation by delegation policy file path, i.e. Org/App/OfferedBy/CoveredBy
         /// </summary>

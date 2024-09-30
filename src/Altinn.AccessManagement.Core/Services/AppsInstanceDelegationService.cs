@@ -105,7 +105,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return true;
     }
 
-    private bool TryGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
+    private bool ValidateAndGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
     {
         resource = new List<UrnJsonTypeValue>();
         
@@ -114,8 +114,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             return false;
         }
 
-        bool hasOrg = false, hasApp = false, hasResource = false;
-        
+        string org = null, app = null, resourceRegistryId = null;
+        int significantParts = 0;
         foreach (UrnJsonTypeValue urnJsonTypeValue in input)
         {
             if (urnJsonTypeValue.HasValue)
@@ -124,28 +124,31 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
                 {
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasOrg = true;
+                        org = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasApp = true;
+                        app = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasResource = true;
+                        resourceRegistryId = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                 }
             }
         }
 
-        if (hasOrg && hasApp && !hasResource)
+        if (org != null && app != null && resourceRegistryId == null && significantParts == 2)
         {
-            return DelegationHelper.GetResourceStringFromUrnJsonTypeEnumerable(resource) == resourceTag;
+            return $"app_{org}_{app}" == resourceTag;
         }
 
-        if (!hasOrg && !hasApp && hasResource)
+        if (org == null && app == null && resourceRegistryId != null && significantParts == 1)
         {
-            return resource[0].Value.ValueSpan.ToString() == resourceTag;
+            return resourceRegistryId == resourceTag;
         }
 
         return false;
@@ -153,14 +156,14 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
     private void AddValidationErrorsForResourceInstance(ref ValidationErrorBuilder errors, IEnumerable<RightV2> rights, string resourceid)
     {
-        TryGetSignificantResourcePartsFromResource(rights.FirstOrDefault()?.Resource, out List<UrnJsonTypeValue> firstResource, resourceid);
+        ValidateAndGetSignificantResourcePartsFromResource(rights.FirstOrDefault()?.Resource, out List<UrnJsonTypeValue> firstResource, resourceid);
         int counter = -1;
 
         foreach (RightV2 rightV2 in rights)
         {
             counter++;
 
-            bool valid = TryGetSignificantResourcePartsFromResource(rightV2.Resource, out List<UrnJsonTypeValue> currentResource, resourceid);
+            bool valid = ValidateAndGetSignificantResourcePartsFromResource(rightV2.Resource, out List<UrnJsonTypeValue> currentResource, resourceid);
             if (!valid)
             {
                 errors.Add(ValidationErrors.InvalidResource, $"Rights[{counter}]/Resource");

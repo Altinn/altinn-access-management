@@ -3,6 +3,9 @@ using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Models;
 
+/// <summary>
+/// DTO for holding resource and action for instance delegations
+/// </summary>
 public class RightInternal
 {
     /// <summary>

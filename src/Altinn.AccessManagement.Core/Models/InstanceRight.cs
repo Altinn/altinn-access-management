@@ -1,14 +1,19 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models;
 
+/// <summary>
+/// DTO to send instance delegation to Authorization Administration point
+/// </summary>
 public class InstanceRight
 {
+    /// <summary>
+    /// Constructor setting the list of rules to a list ready to add data to
+    /// </summary>
     public InstanceRight()
     {
-        InstanceRules = new List<InstanceRule>();
+        InstanceRules = [];
     }
 
     /// <summary>

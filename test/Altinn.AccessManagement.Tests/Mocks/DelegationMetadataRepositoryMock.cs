@@ -1,21 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Utils;
-using static Altinn.AccessManagement.Tests.Seeds.ResourceSeeds;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 
 namespace Altinn.AccessManagement.Tests.Mocks;
 

@@ -1,17 +1,11 @@
-﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
-    /// 
+    /// InstanceDelegationChange
     /// </summary>
     public class InstanceDelegationChange
     {

@@ -1,25 +1,22 @@
-﻿using Altinn.AccessManagement.Tests.Data;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
+using System.Text.Json;
+using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
+using Altinn.AccessManagement.Models;
+using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
-using Microsoft.Extensions.Options;
-using Altinn.AccessManagement.Controllers;
-using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Altinn.AccessManagement.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
-using System.Text;
-using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Tests.Utils;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Altinn.AccessManagement.Tests.Controllers;
 

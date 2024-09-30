@@ -16,10 +16,7 @@ namespace Altinn.AccessManagement.Core.Models.Rights;
 /// </summary>
 [JsonConverter(typeof(ActionIdentifier.JsonConverter))]
 [SwaggerString]
-public class ActionIdentifier
-    : IParsable<ActionIdentifier>,
-    ISpanParsable<ActionIdentifier>,
-    IFormattable,
+public class ActionIdentifier : ISpanParsable<ActionIdentifier>,
     ISpanFormattable,
     IExampleDataProvider<ActionIdentifier>
 {

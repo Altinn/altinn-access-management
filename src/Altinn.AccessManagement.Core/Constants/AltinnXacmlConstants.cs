@@ -46,6 +46,9 @@ namespace Altinn.AccessManagement.Core.Constants
             /// </summary>
             public const string InstanceAttribute = "urn:altinn:instance-id";
 
+            /// <summary>
+            /// ResouceRegistry Instance attribute match indentifier
+            /// </summary>
             public const string ResourceInstanceAttribute = "urn:altinn:resource:instance-id";
 
             /// <summary>

@@ -181,7 +181,7 @@ namespace Altinn.AccessManagement.Core.Services
             return result;
         }
 
-        private List<Right> GetRightsFromPolicy(XacmlPolicy policy, IEnumerable<AttributeMatch> delegater)
+        private static List<Right> GetRightsFromPolicy(XacmlPolicy policy, IEnumerable<AttributeMatch> delegater)
         {
             Dictionary<string, Right> rights = new Dictionary<string, Right>();
             foreach (XacmlRule rule in policy.Rules)

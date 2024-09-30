@@ -448,7 +448,7 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 sb.Append(rule.InstanceId.AsFileName());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

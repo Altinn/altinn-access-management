@@ -3,6 +3,9 @@ using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Models;
 
+/// <summary>
+/// DTO for delegation rules
+/// </summary>
 public class InstanceRule
 {
     /// <summary>

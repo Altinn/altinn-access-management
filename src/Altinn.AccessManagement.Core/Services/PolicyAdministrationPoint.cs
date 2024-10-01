@@ -104,13 +104,13 @@ namespace Altinn.AccessManagement.Core.Services
                     if (existingDelegationPolicy != null)
                     {
                         delegationPolicy = existingDelegationPolicy;
-                        PolicyHelper.GetPolicyDataFromInstanceRight(rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+                        PolicyParameters policyData = PolicyHelper.GetPolicyDataFromInstanceRight(rules);
 
                         foreach (InstanceRule rule in rules.InstanceRules)
                         {
                             if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
                             {
-                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(resourceId, instanceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(policyData.ResourceId, policyData.InstanceId, policyData.FromId, policyData.FromType, policyData.ToId, policyData.ToType, policyData.PerformedById, policyData.PerformedByType, rule));
                             }
                         }
                     }

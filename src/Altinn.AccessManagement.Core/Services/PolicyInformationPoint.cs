@@ -196,12 +196,13 @@ namespace Altinn.AccessManagement.Core.Services
                 
                 foreach (Right ruleRight in ruleRights)
                 {
-                    if (!rights.ContainsKey(ruleRight.RightKey))
+                    if (!rights.TryGetValue(ruleRight.RightKey, out Right value))
                     {
-                        rights.Add(ruleRight.RightKey, ruleRight);
+                        value = ruleRight;
+                        rights.Add(ruleRight.RightKey, value);
                     }
 
-                    rights[ruleRight.RightKey].RightSources.Add(
+                    value.RightSources.Add(
                         new RightSource
                         {
                             PolicyId = policy.PolicyId.OriginalString,

@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Xml;
 using Altinn.AccessManagement.Core.Constants;
@@ -10,8 +9,6 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
-using Altinn.Urn.Json;
-using System.Linq;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -361,16 +358,21 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="toId">the type offering the rights</param>
         /// <param name="performedById">the party performing the delegation</param>
         /// <param name="performedByType">The type of the party performing the delegation</param>
-        public static void GetPolicyDataFromInstanceRight(InstanceRight rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType)
+        public static PolicyParameters GetPolicyDataFromInstanceRight(InstanceRight rules)
         {
-            resourceId = rules.ResourceId;
-            instanceId = rules.InstanceId;
-            fromType = rules.FromType.EnumMemberAttributeValueOrName();
-            fromId = rules.FromUuid.ToString().ToLowerInvariant();
-            toType = rules.ToType.EnumMemberAttributeValueOrName();
-            toId = rules.ToUuid.ToString().ToLowerInvariant();
-            performedById = rules.PerformedBy;
-            performedByType = rules.PerformedByType.EnumMemberAttributeValueOrName();
+            PolicyParameters result = new PolicyParameters
+            {
+                ResourceId = rules.ResourceId,
+                InstanceId = rules.InstanceId,
+                FromType = rules.FromType.EnumMemberAttributeValueOrName(),
+                FromId = rules.FromUuid.ToString().ToLowerInvariant(),
+                ToType = rules.ToType.EnumMemberAttributeValueOrName(),
+                ToId = rules.ToUuid.ToString().ToLowerInvariant(),
+                PerformedById = rules.PerformedBy,
+                PerformedByType = rules.PerformedByType.EnumMemberAttributeValueOrName()
+            };
+            
+            return result;
         }
 
         /// <summary>
@@ -381,15 +383,15 @@ namespace Altinn.AccessManagement.Core.Helpers
         {
             XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyPermidOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
             delegationPolicy.Version = "1.0";
-            GetPolicyDataFromInstanceRight(rules, out string resourceId, out string instanceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
+            PolicyParameters policydata = GetPolicyDataFromInstanceRight(rules);
 
-            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {fromType}:{fromId} to {toType}:{toId}, for the resource: {resourceId} and InstanceId: {instanceId}";
+            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {policydata.FromType}:{policydata.FromId} to {policydata.ToType}:{policydata.ToId}, for the resource: {policydata.ResourceId} and InstanceId: {policydata.InstanceId}";
 
             foreach (InstanceRule rule in rules.InstanceRules)
             {
                 if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
                 {
-                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(resourceId, instanceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
+                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(policydata.ResourceId, policydata.InstanceId, policydata.FromId, policydata.FromType, policydata.ToId, policydata.ToType, policydata.PerformedById, policydata.PerformedByType, rule));
                 }
             }
 

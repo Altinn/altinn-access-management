@@ -1,7 +1,7 @@
 meta {
-  name: p2p delegate person2person
+  name: org1 delegates resource to tilg
   type: http
-  seq: 5
+  seq: 46
 }
 
 post {
@@ -48,8 +48,8 @@ body:json {
 vars:pre-request {
   toSsn: 
   toLastName: 
-  org: ttd
-  app: apps-test
+  org: 
+  app: 
   auth_tokenType: Personal
   auth_userId: 
   auth_partyId: 
@@ -60,7 +60,7 @@ vars:pre-request {
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  bru.setVar("party", testdata.org1.dagl.partyid);
+  bru.setVar("party", testdata.org1.partyid);
   bru.setVar("toSsn", testdata.org2.dagl.pid);
   bru.setVar("toLastName", testdata.org2.dagl.lastname);
   bru.setVar("org", testdata.org);
@@ -70,6 +70,7 @@ script:pre-request {
     auth_userId: testdata.org1.dagl.userid,
     auth_partyId: testdata.org1.dagl.partyid,
     auth_ssn: testdata.org1.dagl.pid,
+    scope: sharedtestdata.scopes.read,
     auth_tokenType: sharedtestdata.authTokenType.personal,
     auth_scopes: sharedtestdata.auth_scopes.read
   }
@@ -79,7 +80,7 @@ script:pre-request {
 }
 
 tests {
-  test("person to person delegation", function() {
+  test("organization to person delegation", function() {
     const data = res.getBody();  
     expect(res.status).to.equal(200);
     expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');

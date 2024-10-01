@@ -1,7 +1,7 @@
 meta {
-  name: devtest_gar_bloop
+  name: apps-test_success-2
   type: http
-  seq: 2
+  seq: 45
 }
 
 post {
@@ -13,27 +13,31 @@ post {
 headers {
   Content-Type: application/json
   Accept: application/json
-  Altinn-Party-OrganizationNumber: {{partyOrganizationNumber}}
 }
 
 body:json {
   {
     "resource": [
       {
-        "id": "urn:altinn:resource",
-        "value": "{{resourceId}}"
+        "id": "urn:altinn:org",
+        "value": "{{org}}"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "{{app}}"
       }
     ]
   }
 }
 
 vars:pre-request {
-  resourceId: devtest_gar_bloop
+  org: ttd
   party: 50005545
   auth_tokenType: Personal
   auth_userId: 20000490
   auth_partyId: 50002598
   auth_ssn: '07124912037'
+  app: apps-test
 }
 
 script:pre-request {

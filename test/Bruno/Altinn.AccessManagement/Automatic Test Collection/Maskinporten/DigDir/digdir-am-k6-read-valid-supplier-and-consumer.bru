@@ -1,0 +1,62 @@
+meta {
+  name: digdir-am-k6-read-valid-supplier-and-consumer
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/maskinporten/delegations?supplierOrg={{supplierOrg}}&consumerOrg={{consumerOrg}}&scope={{scope}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  supplierOrg: {{supplierOrg}}
+  consumerOrg: {{consumerOrg}}
+  scope: {{scope}}
+}
+
+headers {
+  Accept: application/json
+}
+
+vars:pre-request {
+  supplierOrg: 810438932
+  consumerOrg: 910438794
+  scope: test:am/k6.read
+  auth_tokenType: Enterprise
+  auth_partyId: 
+  auth_org: digdir
+  auth_orgNo: 991825827
+  auth_scopes: altinn:maskinporten/delegations.admin
+  bearerToken: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("to_orgno", testdata.org1.orgno);
+  bru.setVar("org", testdata.org);
+  bru.setVar("app", testdata.app);
+  bru.setVar("scope", sharedtestdata.scopes.k6Read);
+  
+  var getTokenParameters = {
+    auth_org: testdata.digdir.partyid,
+    auth_orgNo: testdata.digdir.orgno,
+    scope: sharedtestdata.scopes.k6Read,
+    auth_tokenType: sharedtestdata.authTokenType.enterprise,
+    auth_scopes: sharedtestdata.auth_scopes.maskinportenAdmin
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("getMaskinportenDelegations-with-valid-supplierOrg-and-consumerOrg", function() {
+    var body = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(body[0]).to.have.property('resourceid', 'ttd-am-k6');
+  });
+}

@@ -19,7 +19,7 @@ public class AltinnPersonResolver : AttributeResolver
     /// </summary>
     /// <param name="contextRetrievalService">service init</param>
     /// <param name="profile">profile client</param>
-    public AltinnPersonResolver(IContextRetrievalService contextRetrievalService, IProfileClient profile) : base(BaseUrn.Altinn.Person.String())
+    public AltinnPersonResolver(IContextRetrievalService contextRetrievalService, IProfileClient profile) : base(BaseUrn.Altinn.Person.String)
     {
         AddLeaf([BaseUrn.Altinn.Person.IdentifierNo], [BaseUrn.Altinn.Person.UserId, BaseUrn.Altinn.Person.PartyId, BaseUrn.Altinn.Person.Shortname, BaseUrn.Altinn.Person.Firstname, BaseUrn.Altinn.Person.Middlename, BaseUrn.Altinn.Person.Lastname], ResolveProfileUsingIdentifierNo());
         AddLeaf([BaseUrn.Altinn.Person.UserId], [BaseUrn.Altinn.Person.IdentifierNo, BaseUrn.Altinn.Person.PartyId, BaseUrn.Altinn.Person.Shortname, BaseUrn.Altinn.Person.Firstname, BaseUrn.Altinn.Person.Middlename, BaseUrn.Altinn.Person.Lastname], ResolveProfileUsingUserId());

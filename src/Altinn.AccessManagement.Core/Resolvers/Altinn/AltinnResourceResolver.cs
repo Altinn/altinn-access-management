@@ -13,7 +13,7 @@ public class AltinnResourceResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Resource.String())
+    public AltinnResourceResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Resource.String)
     {
         AddLeaf([BaseUrn.Altinn.Resource.AppOwner, BaseUrn.Altinn.Resource.AppId], [BaseUrn.Altinn.Resource.Delegable, BaseUrn.Altinn.Resource.Type, BaseUrn.Altinn.Resource.ResourceRegistryId], ResolveAppOwnerAndAppId());
         AddLeaf([BaseUrn.Altinn.Resource.ResourceRegistryId], [BaseUrn.Altinn.Resource.Delegable, BaseUrn.Altinn.Resource.Type], ResolveResourceRegistryId());

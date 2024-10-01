@@ -11,7 +11,7 @@ public static class BaseUrn
     /// Urn
     /// </summary>
     /// <returns></returns>
-    public static string String() => $"urn";
+    public static string String { get; } = $"urn";
 
     /// <summary>
     /// InternalIds of delegatable entities 
@@ -31,7 +31,7 @@ public static class BaseUrn
         /// <summary>
         /// Urn.Altinn
         /// </summary>
-        public static string String() => $"{BaseUrn.String()}:{nameof(Altinn)}".ToLower();
+        public static string String { get; } = $"{BaseUrn.String}:{nameof(Altinn)}".ToLower();
 
         /// <summary>
         /// Urn.Altinn.Person
@@ -41,47 +41,47 @@ public static class BaseUrn
             /// <summary>
             /// A person Social security number
             /// </summary>
-            public static string IdentifierNo => $"{String()}:identifier-no";
+            public static string IdentifierNo => $"{String}:identifier-no";
 
             /// <summary>
             /// Uuid
             /// </summary>
-            public static string Uuid => $"{String()}:uuid";
+            public static string Uuid => $"{String}:uuid";
 
             /// <summary>
             /// UserId
             /// </summary>
-            public static string UserId => $"{String()}:userid";
+            public static string UserId => $"{String}:userid";
 
             /// <summary>
             /// PartyId
             /// </summary>
-            public static string PartyId => $"{String()}:partyid";
+            public static string PartyId => $"{String}:partyid";
 
             /// <summary>
             /// A person's first name
             /// </summary>
-            public static string Firstname => $"{String()}:firstname";
+            public static string Firstname => $"{String}:firstname";
 
             /// <summary>
             /// A Person's shortname
             /// </summary>
-            public static string Shortname => $"{String()}:shortname";
+            public static string Shortname => $"{String}:shortname";
 
             /// <summary>
             /// A Person's middlename
             /// </summary>
-            public static string Middlename => $"{String()}:middlename";
+            public static string Middlename => $"{String}:middlename";
 
             /// <summary>
             /// A Person's lastname
             /// </summary>
-            public static string Lastname => $"{String()}:lastname";
+            public static string Lastname => $"{String}:lastname";
 
             /// <summary>
             /// Urn.Altinn.Person
             /// </summary>
-            public static string String() => $"{Altinn.String()}:{nameof(Person)}".ToLower();
+            public static string String { get; } = $"{Altinn.String}:{nameof(Person)}".ToLower();
         }
 
         /// <summary>
@@ -92,27 +92,27 @@ public static class BaseUrn
             /// <summary>
             /// An organization brreg number
             /// </summary>
-            public static string IdentifierNo => $"{String()}:identifier-no";
+            public static string IdentifierNo => $"{String}:identifier-no";
 
             /// <summary>
             /// Organization's name
             /// </summary>
-            public static string Name => $"{String()}:name";
+            public static string Name => $"{String}:name";
 
             /// <summary>
             /// Organzation's Party Id
             /// </summary>
-            public static string PartyId => $"{String()}:partyid";
+            public static string PartyId => $"{String}:partyid";
 
             /// <summary>
             /// Uuid of organization
             /// </summary>
-            public static string Uuid => $"{String()}:uuid";
+            public static string Uuid => $"{String}:uuid";
 
             /// <summary>
             /// Urn.Altinn.Organization
             /// </summary>
-            public static string String() => $"{Altinn.String()}:{nameof(Organization)}".ToLower();
+            public static string String { get; } = $"{Altinn.String}:{nameof(Organization)}".ToLower();
         }
 
         /// <summary>
@@ -123,17 +123,17 @@ public static class BaseUrn
             /// <summary>
             /// username
             /// </summary>
-            public static string Username => $"{String()}:username";
+            public static string Username => $"{String}:username";
 
             /// <summary>
             /// uuid
             /// </summary>
-            public static string Uuid => $"{String()}:uuid";
+            public static string Uuid => $"{String}:uuid";
 
             /// <summary>
             /// UserId
             /// </summary>
-            public static string UserId => $"{String()}:userid";
+            public static string UserId => $"{String}:userid";
 
             /// <summary>
             /// Urn.Altinn.EnterpriseUser.Organization
@@ -143,18 +143,18 @@ public static class BaseUrn
                 /// <summary>
                 /// uuid
                 /// </summary>
-                public static string Uuid => $"{String()}:uuid";
+                public static string Uuid => $"{String}:uuid";
 
                 /// <summary>
                 /// Urn.Altinn.EnterpriseUser.Organization
                 /// </summary>
-                public static string String() => $"{EnterpriseUser.String()}:{nameof(Organization)}".ToLower();
+                public static string String { get; } = $"{EnterpriseUser.String}:{nameof(Organization)}".ToLower();
             }
 
             /// <summary>
             /// Urn.Altinn.EnterpriseUser
             /// </summary>
-            public static string String() => $"{Altinn.String()}:{nameof(EnterpriseUser)}".ToLower();
+            public static string String => $"{Altinn.String}:{nameof(EnterpriseUser)}".ToLower();
         }
 
         /// <summary>
@@ -180,17 +180,17 @@ public static class BaseUrn
             /// <summary>
             /// Specifies the type of the resource
             /// </summary>
-            public static string Type => $"{String()}:type".ToLower();
+            public static string Type => $"{String}:type".ToLower();
 
             /// <summary>
             /// boolean that specifies of the resource is delegable or not
             /// </summary>
-            public static string Delegable => $"{String()}:delegable".ToLower();
+            public static string Delegable => $"{String}:delegable".ToLower();
 
             /// <summary>
             /// Urn.Altinn.Resource
             /// </summary>
-            public static string String() => $"{Altinn.String()}:{nameof(Resource)}".ToLower();
+            public static string String { get; } = $"{Altinn.String}:{nameof(Resource)}".ToLower();
         }
     }
 }

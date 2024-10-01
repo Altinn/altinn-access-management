@@ -110,7 +110,7 @@ namespace Altinn.AccessManagement.Core.Services
                         {
                             if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
                             {
-                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(policyData.ResourceId, policyData.InstanceId, policyData.FromId, policyData.FromType, policyData.ToId, policyData.ToType, policyData.PerformedById, policyData.PerformedByType, rule));
+                                delegationPolicy.Rules.Add(PolicyHelper.BuildDelegationInstanceRule(policyData, rule));
                             }
                         }
                     }

@@ -514,34 +514,8 @@ namespace Altinn.AccessManagement.Core.Helpers
                     continue;
                 }
 
-                List<List<AttributeMatch>> policyResourceMatches = new List<List<AttributeMatch>>();
-                bool matchingActionFound = false;
-                foreach (XacmlAnyOf anyOf in policyRule.Target.AnyOf)
-                {
-                    foreach (XacmlAllOf allOf in anyOf.AllOf)
-                    {
-                        List<AttributeMatch> resourceMatch = new List<AttributeMatch>();
-                        foreach (XacmlMatch xacmlMatch in allOf.Matches)
-                        {
-                            if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
-                            {
-                                resourceMatch.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
-                            }
-                            else if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action) &&
-                                xacmlMatch.AttributeDesignator.AttributeId.OriginalString == rule.Action.PrefixSpan.ToString() &&
-                                xacmlMatch.AttributeValue.Value == rule.Action.ValueSpan.ToString())
-                            {
-                                matchingActionFound = true;
-                            }
-                        }
-
-                        if (resourceMatch.Count > 0)
-                        {
-                            policyResourceMatches.Add(resourceMatch);
-                        }
-                    }
-                }
-
+                bool matchingActionFound = MatchingActionFound(policyRule.Target.AnyOf, rule, out List<List<AttributeMatch>> policyResourceMatches);
+                
                 if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
                 {
                     rule.RuleId = policyRule.RuleId;
@@ -550,6 +524,48 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return false;
+        }
+
+        private static bool MatchingActionFound(ICollection<XacmlAnyOf> input, InstanceRule rule, out List<List<AttributeMatch>> policyResourceMatches)
+        {
+            policyResourceMatches = [];
+            bool matchingActionFound = false;
+
+            foreach (XacmlAnyOf anyOf in input)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    matchingActionFound = GetResourceMatch(allOf.Matches, rule, out List<AttributeMatch> resourceMatch);
+                    
+                    if (resourceMatch.Count > 0)
+                    {
+                        policyResourceMatches.Add(resourceMatch);
+                    }
+                }
+            }
+
+            return matchingActionFound;
+        }
+
+        private static bool GetResourceMatch(ICollection<XacmlMatch> input, InstanceRule rule, out List<AttributeMatch> resourceMatch)
+        {
+            resourceMatch = [];
+            bool matchingActionFound = false;
+            foreach (XacmlMatch xacmlMatch in input)
+            {
+                if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
+                {
+                    resourceMatch.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                }
+                else if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action) &&
+                    xacmlMatch.AttributeDesignator.AttributeId.OriginalString == rule.Action.PrefixSpan.ToString() &&
+                    xacmlMatch.AttributeValue.Value == rule.Action.ValueSpan.ToString())
+                {
+                    matchingActionFound = true;
+                }
+            }
+
+            return matchingActionFound;
         }
 
         /// <summary>

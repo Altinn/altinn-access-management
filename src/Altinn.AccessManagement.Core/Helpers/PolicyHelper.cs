@@ -347,17 +347,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Extracts policy data from 
+        /// Extracts policy data from InstanceRight
         /// </summary>
         /// <param name="rules">The rules that is delegated</param>
-        /// <param name="resourceId">ResourceId delegated</param>
-        /// <param name="instanceId">InstanceId delegated</param>
-        /// <param name="fromType">The id receiving the rights</param>
-        /// <param name="fromId">The type receiving the rights</param>
-        /// <param name="toType">the id offering the rights</param>
-        /// <param name="toId">the type offering the rights</param>
-        /// <param name="performedById">the party performing the delegation</param>
-        /// <param name="performedByType">The type of the party performing the delegation</param>
         public static PolicyParameters GetPolicyDataFromInstanceRight(InstanceRight rules)
         {
             PolicyParameters result = new PolicyParameters

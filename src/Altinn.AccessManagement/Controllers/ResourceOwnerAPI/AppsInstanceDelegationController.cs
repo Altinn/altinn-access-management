@@ -81,6 +81,7 @@ public class AppsInstanceDelegationController : ControllerBase
         return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));        
     }    
 
+    /*
     /// <summary>
     /// Gets app instance delegation
     /// </summary>
@@ -107,7 +108,7 @@ public class AppsInstanceDelegationController : ControllerBase
 
         return Ok(result.Value);
     }
-
+    
     /// <summary>
     /// Revokes access to an app instance
     /// </summary>
@@ -135,6 +136,7 @@ public class AppsInstanceDelegationController : ControllerBase
 
         return Ok(result.Value);
     }
+    */
 
     /// <summary>
     /// delegating app from the platform token

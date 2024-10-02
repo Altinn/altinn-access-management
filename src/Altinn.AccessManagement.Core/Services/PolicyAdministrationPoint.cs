@@ -179,7 +179,7 @@ namespace Altinn.AccessManagement.Core.Services
             return (existingDelegationPolicy, policyPath);
         }
 
-        private XacmlPolicy BuildInstanceDelegationPolicy(XacmlPolicy existingDelegationPolicy, InstanceRight rules)
+        private static XacmlPolicy BuildInstanceDelegationPolicy(XacmlPolicy existingDelegationPolicy, InstanceRight rules)
         {
             // Build delegation XacmlPolicy either as a new policy or add rules to existing
             XacmlPolicy delegationPolicy;

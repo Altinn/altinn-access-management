@@ -643,6 +643,19 @@ public static class TestDataAuthorizedParties
         }
     };
 
+    /// <summary>
+    /// Test case: Systemuser tries to get list of authorized parties
+    /// Expected: It gets a list
+    /// </summary>
+    /// <returns></returns>
+    public static TheoryData<string> SystemUserAuthorizedParty() => new()
+    {
+        {
+            PrincipalUtil.GetSystemUserToken("ebe4a681-0a8c-429e-a36f-8f9ca942b59f", "314168267", "the_matrix", "314330897")
+        }
+    };
+
+
     private static T GetExpectedResponse<T>(string delegationType, string retrievalType)
     {
         string content = File.ReadAllText($"Data/Json/AuthorizedParties/{delegationType}/{retrievalType}.json");

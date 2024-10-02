@@ -30,7 +30,4 @@ await app.RunAsync();
 [ExcludeFromCodeCoverage]
 public sealed partial class Program
 {
-    private Program()
-    {
-    }
 }

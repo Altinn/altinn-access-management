@@ -98,8 +98,7 @@ internal static class AccessManagementHost
         builder.Services.Configure<PostgreSQLSettings>(config.GetSection("PostgreSQLSettings"));
         builder.Services.Configure<AzureStorageConfiguration>(config.GetSection("AzureStorageConfiguration"));
         builder.Services.Configure<SblBridgeSettings>(config.GetSection("SblBridgeSettings"));
-        builder.Services.Configure<AltinnCore.Authentication.Constants.KeyVaultSettings>(config.GetSection("kvSetting"));
-        builder.Services.Configure<Altinn.Common.AccessToken.Configuration.KeyVaultSettings>(config.GetSection("kvSetting"));
+        builder.Services.Configure<KeyVaultSettings>(config.GetSection("kvSetting"));
         builder.Services.Configure<OidcProviderSettings>(config.GetSection("OidcProviders"));
         builder.Services.Configure<UserProfileLookupSettings>(config.GetSection("UserProfileLookupSettings"));
     }

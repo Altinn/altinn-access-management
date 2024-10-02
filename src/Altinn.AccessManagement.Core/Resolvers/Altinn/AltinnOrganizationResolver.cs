@@ -15,7 +15,7 @@ public class AltinnOrganizationResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Organization.String)
+    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Organization.String())
     {
         AddLeaf([BaseUrn.Altinn.Organization.PartyId], [BaseUrn.Altinn.Organization.Name, BaseUrn.Altinn.Organization.IdentifierNo], ResolvePartyId());
         AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [BaseUrn.Altinn.Organization.Name, BaseUrn.Altinn.Organization.IdentifierNo], ResolvePartyId());

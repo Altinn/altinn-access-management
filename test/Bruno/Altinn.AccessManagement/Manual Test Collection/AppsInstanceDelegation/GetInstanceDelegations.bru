@@ -1,0 +1,45 @@
+meta {
+  name: GetInstanceDelegations
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  instanceId: {{instanceId}}
+  resourceId: app_ttd_apps-test
+}
+
+headers {
+  Accept: application/json
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const { v4: uuidv4 } = require('uuid');
+  
+  var getTokenParameters = {
+    auth_org: sharedtestdata.serviceOwners.ttd.org,
+    auth_app: "apps-test",
+    auth_tokenType: sharedtestdata.authTokenType.platformAccess
+  }
+  
+  const uuid = uuidv4();
+  bru.setVar("instanceId",  uuid);
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("Get AppsInstanceDelegations", function() {
+    var body = res.getBody();  
+    expect(res.status).to.equal(200);
+  });
+}

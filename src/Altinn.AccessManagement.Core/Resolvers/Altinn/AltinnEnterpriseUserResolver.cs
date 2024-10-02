@@ -15,7 +15,7 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(BaseUrn.Altinn.EnterpriseUser.String)
+    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(BaseUrn.Altinn.EnterpriseUser.String())
     {
         AddLeaf([BaseUrn.Altinn.EnterpriseUser.Username], [BaseUrn.Altinn.EnterpriseUser.UserId], ResolveUsername());
         _profile = profile;

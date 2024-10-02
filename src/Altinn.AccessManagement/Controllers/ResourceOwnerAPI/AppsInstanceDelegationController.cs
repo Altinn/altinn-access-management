@@ -88,7 +88,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="instanceId">The instance to fetch instance delegations for</param>
     /// <returns>Result</returns>
     [HttpGet]
-    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -116,8 +116,8 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="instanceId">The instance identifier</param>
     /// <returns>Result</returns>
     [HttpPost]
-    [Authorize(Policy = AuthzConstants.POLICY_APPS_INSTANCEDELEGATION)]
-    [Route("v1/apps/instancedelegation/revoke/{resourceId}/{instanceId}")]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}/revoke")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]

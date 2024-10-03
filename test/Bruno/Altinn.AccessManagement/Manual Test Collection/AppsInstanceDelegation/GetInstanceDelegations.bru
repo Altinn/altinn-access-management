@@ -12,7 +12,7 @@ get {
 
 params:path {
   instanceId: {{instanceId}}
-  resourceId: app_ttd_apps-test
+  resourceId: app_{{org}}_{{app}}
 }
 
 headers {
@@ -24,14 +24,19 @@ script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   const { v4: uuidv4 } = require('uuid');
   
-  var getTokenParameters = {
-    auth_org: sharedtestdata.serviceOwners.ttd.org,
-    auth_app: "apps-test",
-    auth_tokenType: sharedtestdata.authTokenType.platformAccess
-  }
+  const org = sharedtestdata.serviceOwners.ttd.org;
+  bru.setVar("org",  org);
+  const app = "am-devtest-instancedelegation";
+  bru.setVar("app",  app);
   
   const uuid = uuidv4();
   bru.setVar("instanceId",  uuid);
+  
+  var getTokenParameters = {
+    auth_org: org,
+    auth_app: app,
+    auth_tokenType: sharedtestdata.authTokenType.platformAccess
+  }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
   bru.setVar("bearerToken",  token);

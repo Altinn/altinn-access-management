@@ -6,17 +6,45 @@ meta {
 
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
-  body: none
+  body: json
   auth: inherit
 }
 
 params:path {
-  resourceId: 
-  instanceId: 
+  resourceId: app_{{org}}_{{app}}
+  instanceId: {{instanceId}}
 }
 
 headers {
   Accept: application/json
+}
+
+body:json {
+  {
+    "from": {
+      "type": "urn:altinn:party:uuid",
+      "value": "ff6fbedd-95ef-4de2-aed3-e6aeb292bd50"
+    },
+    "to": {
+      "type": "urn:altinn:party:uuid",
+      "value": "c632a24e-910a-4332-a087-076bc98d600f"
+    },
+    "instanceDelegationMode": "Normal",
+    "rights": [
+      {
+        "resource": [
+          {
+            "type": "urn:altinn:resource",
+            "value": "app_{{org}}_{{app}}"
+          }
+        ],
+        "action": {
+          "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "value": "read"
+        }
+      }
+    ]
+  }
 }
 
 script:pre-request {
@@ -24,14 +52,19 @@ script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   const { v4: uuidv4 } = require('uuid');
   
-  var getTokenParameters = {
-    auth_org: sharedtestdata.serviceOwners.ttd.org,
-    auth_app: "apps-test",
-    auth_tokenType: sharedtestdata.authTokenType.platformAccess
-  }
+  const org = sharedtestdata.serviceOwners.ttd.org;
+  bru.setVar("org",  org);
+  const app = "am-devtest-instancedelegation";
+  bru.setVar("app",  app);
   
   const uuid = uuidv4();
   bru.setVar("instanceId",  uuid);
+  
+  var getTokenParameters = {
+    auth_org: org,
+    auth_app: app,
+    auth_tokenType: sharedtestdata.authTokenType.platformAccess
+  }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
   bru.setVar("bearerToken",  token);

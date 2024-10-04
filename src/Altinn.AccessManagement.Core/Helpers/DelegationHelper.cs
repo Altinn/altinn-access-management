@@ -822,9 +822,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rules">The rules output from a delegation to convert</param>
         /// <returns>List of RightDelegationResult</returns>
-        public static IEnumerable<RightV2DelegationResult> GetRightDelegationResultsFromInstanceRules(InstanceRight rules)
+        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromInstanceRules(InstanceRight rules)
         {
-            return rules.InstanceRules.Select(rule => new RightV2DelegationResult
+            return rules.InstanceRules.Select(rule => new InstanceRightDelegationResult
             {
                 Resource = rule.Resource,
                 Action = rule.Action,
@@ -852,9 +852,9 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rights">The rights to convert</param>
         /// <returns>List of RightDelegationResult</returns>
-        public static IEnumerable<RightV2DelegationResult> GetRightDelegationResultsFromFailedRightV2s(List<RightInternal> rights)
+        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromFailedRightV2s(List<RightInternal> rights)
         {
-            return rights.Select(right => new RightV2DelegationResult
+            return rights.Select(right => new InstanceRightDelegationResult
             {
                 Resource = right.Resource,
                 Action = right.Action,

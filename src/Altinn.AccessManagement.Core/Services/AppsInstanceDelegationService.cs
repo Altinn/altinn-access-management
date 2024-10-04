@@ -245,7 +245,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             InstanceDelegationMode = appsInstanceDelegationRequest.InstanceDelegationMode
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
-        List<RightV2DelegationResult> rights = new List<RightV2DelegationResult>();
+        List<InstanceRightDelegationResult> rights = new List<InstanceRightDelegationResult>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{appsInstanceDelegationRequest.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
         
         foreach (RightInternal rightToDelegate in appsInstanceDelegationRequest.Rights)

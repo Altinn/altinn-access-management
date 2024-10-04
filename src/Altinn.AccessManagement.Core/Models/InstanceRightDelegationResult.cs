@@ -7,7 +7,7 @@ namespace Altinn.AccessManagement.Core.Models;
 /// <summary>
 /// This model describes a single right
 /// </summary>
-public class RightV2DelegationResult
+public class InstanceRightDelegationResult
 {
     /// <summary>
     /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.

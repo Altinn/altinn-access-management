@@ -47,5 +47,5 @@ public class AppsInstanceDelegationResponse
     /// Gets or sets the rights to delegate
     /// </summary>
     [Required]
-    public IEnumerable<RightV2DelegationResult> Rights { get; set; }
+    public IEnumerable<InstanceRightDelegationResult> Rights { get; set; }
 }

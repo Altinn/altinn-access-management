@@ -1,0 +1,37 @@
+meta {
+  name: Kasper TT02
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=true
+  body: json
+  auth: none
+}
+
+query {
+  includeAltinn2: true
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 55899
+  auth_partyId: 50027004
+  auth_ssn: '07125602120'
+}
+
+script:pre-request {
+  await tokenGenerator.getToken();
+}
+
+tests {
+  test("Should return 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+}

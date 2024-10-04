@@ -5,6 +5,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Altinn.Platform.Models" />
     <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Altinn.Common.AccessToken" />
   </ItemGroup>
 
   <ItemGroup>

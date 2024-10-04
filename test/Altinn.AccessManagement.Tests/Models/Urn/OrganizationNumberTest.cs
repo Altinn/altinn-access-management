@@ -1,13 +1,9 @@
-﻿using Altinn.AccessManagement.Core.Models.Register;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+using Altinn.AccessManagement.Core.Models.Register;
 
 namespace Altinn.AccessManagement.Tests.Models.Urn
 {
+    [Collection("Models Test")]
     public class OrganizationNumberTest
     {
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };

@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.Authorization.ProblemDetails;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
 using AltinnCore.Authentication.JwtCookie;
@@ -79,6 +80,28 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
 
         AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
         TestDataAppsInstanceDelegation.AssertAppsInstanceDelegationResponseDtoEqual(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with a valid delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdat cases for details
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateToPartyNotExisting), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_Delegate_InvalidParty(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AltinnProblemDetails expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        AltinnProblemDetails actual = JsonSerializer.Deserialize<AltinnProblemDetails>(await response.Content.ReadAsStringAsync(), options);
+        TestDataAppsInstanceDelegation.AssertAltinnProblemDetailsEqual(expected, actual);
     }
 
     private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());

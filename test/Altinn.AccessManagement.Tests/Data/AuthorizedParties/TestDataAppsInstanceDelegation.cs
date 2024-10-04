@@ -4,7 +4,9 @@ using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
+using Altinn.Authorization.ProblemDetails;
 using Altinn.Urn.Json;
+using Dapper;
 
 namespace Altinn.AccessManagement.Tests.Data;
 
@@ -23,6 +25,8 @@ public static class TestDataAppsInstanceDelegation
     private static readonly string InstanceIdNormalNewPolicy = "00000000-0000-0000-0000-000000000003";
 
     private static readonly string InstanceIdNormalExistingPolicy = "00000000-0000-0000-0000-000000000005";
+
+    private static readonly string InstanceIdInvalidParty = "00000000-0000-0000-0000-000000000006";
 
     /// <summary>
     /// Test case:  POST v1/apps/instancedelegation/{resourceId}/{instanceId}
@@ -59,7 +63,7 @@ public static class TestDataAppsInstanceDelegation
     /// </summary>
     public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceDelegationResponseDto> DelegateParallelSignForAppExistingPolicy() => new()
     {
-        {            
+        {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
             GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdParallelExistingPolicy),
             AppId,
@@ -87,6 +91,17 @@ public static class TestDataAppsInstanceDelegation
             AppId,
             InstanceIdNewPolicyNoResponceOnWrite,
             GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNewPolicyNoResponceOnWrite)
+        }
+    };
+
+    public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AltinnProblemDetails> DelegateToPartyNotExisting() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdInvalidParty),
+            AppId,
+            InstanceIdInvalidParty,
+            GetExpectedResponse<AltinnProblemDetails>(AppId, InstanceIdInvalidParty)
         }
     };
 
@@ -152,6 +167,19 @@ public static class TestDataAppsInstanceDelegation
         AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRightsEqual);
     }
 
+    public static void AssertAltinnProblemDetailsEqual(AltinnProblemDetails expected, AltinnProblemDetails actual)
+    {
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+
+        Assert.Equal(expected.Instance, actual.Instance);
+        Assert.Equal(expected.Detail, actual.Detail);
+        Assert.Equal(expected.Type, actual.Type);
+        Assert.Equal(expected.Title, actual.Title);
+        Assert.Equal(expected.ErrorCode, actual.ErrorCode);
+        AssertionUtil.AssertCollections(expected.Extensions.ToDictionary(), actual.Extensions.ToDictionary(), AssertProblemDetailsExtensionEqual);        
+    }
+
     public static void AssertPartyUrn(UrnJsonTypeValue<PartyUrn> expected, UrnJsonTypeValue<PartyUrn> actual)
     {
         Assert.True(actual.HasValue);
@@ -181,6 +209,58 @@ public static class TestDataAppsInstanceDelegation
         AssertActionUrn(expected.Action, actual.Action);
         Assert.Equal(expected.Status, actual.Status);
         AssertionUtil.AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertResourceEqual);
+    }
+
+    public static void AssertProblemDetailsExtensionEqual(KeyValuePair<string, object> expected, KeyValuePair<string, object> actual)
+    {
+        Assert.Equal(expected.Key, actual.Key);
+        JsonElement? actualJson = actual.Value as JsonElement?;
+        JsonElement? expectedJson = expected.Value as JsonElement?;
+        
+        if (actualJson == null)
+        {
+            Assert.Null(expectedJson);
+            return;
+        }
+
+        Assert.NotNull(actualJson);
+        Assert.NotNull(expectedJson);
+        
+        var actualExtensionList = actualJson.Value.EnumerateArray().AsList();
+        var expectedExtensionList = expectedJson.Value.EnumerateArray().AsList();
+        Assert.Equal(expectedExtensionList.Count, actualExtensionList.Count);
+        
+        for (int i = 0; i < actualExtensionList.Count; i++)
+        {
+            ErrorDetails expectedDetail = JsonSerializer.Deserialize<ErrorDetails>(expectedExtensionList[i].GetRawText(), JsonOptions);
+            ErrorDetails actualDetail = JsonSerializer.Deserialize<ErrorDetails>(actualExtensionList[i].GetRawText(), JsonOptions);
+            Assert.Equal(expectedDetail.Code, actualDetail.Code);
+            Assert.Equal(expectedDetail.Detail, actualDetail.Detail);
+            
+            if (expectedDetail.Paths == null)
+            {
+                Assert.Null(expectedDetail.Paths);
+                return;
+            }
+
+            Assert.NotNull(actualDetail.Paths);
+            Assert.NotNull(expectedDetail.Paths);
+
+            Assert.Equal(expectedDetail.Paths.Count, actualDetail.Paths.Count);
+            for (int j = 0; j < expectedDetail.Paths.Count; j++)
+            {
+                Assert.Equal(expectedDetail.Paths[j], actualDetail.Paths[j]);
+            }
+        }
+    }
+
+    internal class ErrorDetails
+    {
+        public string Code { get; set; }
+
+        public string Detail { get; set; }
+
+        public List<string> Paths { get; set; }
     }
 
     /// <summary>

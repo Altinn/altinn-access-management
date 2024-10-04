@@ -28,6 +28,8 @@ public static class TestDataAppsInstanceDelegation
 
     private static readonly string InstanceIdInvalidParty = "00000000-0000-0000-0000-000000000006";
 
+    private static readonly string InstanceIdNormalNewPolicyOrgNumber = "00000000-0000-0000-0000-000000000007";
+
     /// <summary>
     /// Test case:  POST v1/apps/instancedelegation/{resourceId}/{instanceId}
     ///             with: 
@@ -124,6 +126,28 @@ public static class TestDataAppsInstanceDelegation
             AppId,
             InstanceIdNormalNewPolicy,
             GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalNewPolicy)
+        }
+    };
+
+    /// <summary>
+    /// Test case:  POST v1/apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with: 
+    ///                - a valid app as the delegater
+    ///                - valid resource for instance delegation
+    ///                - Instancedelegation mode set to ParallelSigning
+    ///                - no policy file with existing rights delegated
+    /// Expected:   - Should return 200 OK
+    ///             - Should include the delegated rights
+    /// Reason:     Apps defined in the policy file should be able to delegate the defined rights
+    /// </summary>
+    public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceDelegationResponseDto> DelegateNormalReadForAppNoExistingPolicyOrganizatonNumber() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalNewPolicyOrgNumber),
+            AppId,
+            InstanceIdNormalNewPolicyOrgNumber,
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalNewPolicyOrgNumber)
         }
     };
 

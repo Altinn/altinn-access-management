@@ -46,6 +46,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
     [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateParallelSignForAppExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
     [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateNormalReadForAppNoExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
     [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateNormalSignForAppExistingPolicy), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateNormalReadForAppNoExistingPolicyOrganizatonNumber), MemberType = typeof(TestDataAppsInstanceDelegation))]
     public async Task AppsInstanceDelegationController_ValidToken_Delegate_OK(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceDelegationResponseDto expected)
     {
         var client = GetTestClient(platformToken);

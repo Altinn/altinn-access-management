@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Altinn.Authorization.Helpers
+namespace Altinn.AccessManagement.Core.Helpers
 {
     /// <summary>
     /// ServiceResource helper methods

@@ -80,6 +80,11 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
     private static bool InstanceRightComparesEqualToDelegableRight(Right right, RightInternal instanceRight)
     {
+        if (right.Action.Value != instanceRight.Action.ValueSpan.ToString())
+        {
+            return false;
+        }
+
         foreach (var resourcePart in right.Resource)
         {
             bool valid = instanceRight.Resource.Exists(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
@@ -265,8 +270,11 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
         }
 
+        if (rulesToDelegate.InstanceRules.Count > 0)
+        {
         InstanceRight delegationResult = await _pap.TryWriteInstanceDelegationPolicyRules(rulesToDelegate, cancellationToken);
         rights.AddRange(DelegationHelper.GetRightDelegationResultsFromInstanceRules(delegationResult));
+        }
 
         if (rightsAppCantDelegate.Count > 0)
         {

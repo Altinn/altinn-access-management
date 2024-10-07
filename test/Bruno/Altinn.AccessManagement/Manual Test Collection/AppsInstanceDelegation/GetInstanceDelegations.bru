@@ -7,7 +7,7 @@ meta {
 get {
   url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
   body: none
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -17,6 +17,7 @@ params:path {
 
 headers {
   Accept: application/json
+  PlatformAccessToken: {{platformAccessToken}}
 }
 
 script:pre-request {
@@ -39,7 +40,7 @@ script:pre-request {
   }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
-  bru.setVar("bearerToken",  token);
+  bru.setVar("platformAccessToken",  token);
 }
 
 tests {

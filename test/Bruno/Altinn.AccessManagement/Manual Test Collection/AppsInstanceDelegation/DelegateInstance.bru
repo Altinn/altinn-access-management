@@ -7,7 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
   body: json
-  auth: inherit
+  auth: none
 }
 
 params:path {
@@ -17,6 +17,7 @@ params:path {
 
 headers {
   Accept: application/json
+  PlatformAccessToken: {{platformAccessToken}}
 }
 
 body:json {
@@ -34,8 +35,16 @@ body:json {
       {
         "resource": [
           {
-            "type": "urn:altinn:resource",
-            "value": "app_{{org}}_{{app}}"
+            "type": "urn:altinn:org",
+            "value": "{{org}}"
+          },
+          {
+            "type": "urn:altinn:app",
+            "value": "{{app}}"
+          },
+          {
+            "type": "urn:altinn:task",
+            "value": "task_1"
           }
         ],
         "action": {
@@ -67,7 +76,7 @@ script:pre-request {
   }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
-  bru.setVar("bearerToken",  token);
+  bru.setVar("platformAccessToken",  token);
 }
 
 tests {

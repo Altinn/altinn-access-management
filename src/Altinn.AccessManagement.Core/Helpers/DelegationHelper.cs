@@ -651,9 +651,11 @@ namespace Altinn.AccessManagement.Core.Helpers
             string org = null, app = null, person = null, organization = null, enterpriseUser = null, systemUser = null;
             id = null;
             type = UuidType.NotSpecified;
+            int counter = 0;
 
             foreach (AttributeMatch match in performer)
             {
+                counter++;
                 switch (match.Id)
                 {
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute:
@@ -677,35 +679,35 @@ namespace Altinn.AccessManagement.Core.Helpers
                 }
             }
 
-            if (org != null && app != null && person == null && organization == null && enterpriseUser == null && systemUser == null)
+            if (org != null && app != null && person == null && organization == null && enterpriseUser == null && systemUser == null && counter == 2)
             {
                 id = $"app_{org}_{app}";
                 type = UuidType.Resource;
                 return true;
             }
 
-            if (org == null && app == null && person != null && organization == null && enterpriseUser == null && systemUser == null)
+            if (org == null && app == null && person != null && organization == null && enterpriseUser == null && systemUser == null && counter == 1)
             {
                 id = person;
                 type = UuidType.Person;
                 return true;
             }
             
-            if (org == null && app == null && person == null && organization != null && enterpriseUser == null && systemUser == null)
+            if (org == null && app == null && person == null && organization != null && enterpriseUser == null && systemUser == null && counter == 1)
             {
                 id = organization;
                 type = UuidType.Organization;
                 return true;
             }
             
-            if (org == null && app == null && person == null && organization == null && enterpriseUser != null && systemUser == null)
+            if (org == null && app == null && person == null && organization == null && enterpriseUser != null && systemUser == null && counter == 1)
             {
                 id = enterpriseUser;
                 type = UuidType.EnterpriseUser;
                 return true;
             }
             
-            if (org == null && app == null && person == null && organization == null && enterpriseUser == null && systemUser != null)
+            if (org == null && app == null && person == null && organization == null && enterpriseUser == null && systemUser != null && counter == 1)
             {
                 id = systemUser;
                 type = UuidType.SystemUser;

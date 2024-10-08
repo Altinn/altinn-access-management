@@ -1,6 +1,5 @@
-﻿using Altinn.AccessManagement.Enums;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
-using Google.Protobuf.WellKnownTypes;
+﻿using Altinn.AccessManagement.Core.Helpers.Extensions;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Tests.Helpers.Extensions
 {

@@ -89,7 +89,7 @@ namespace Altinn.AccessManagement.Tests.Models.Urn
 
             List<ResourceInstanceIdentifier> actual = ResourceInstanceIdentifier.GetExamples(new Swashbuckle.Examples.ExampleDataOptions()).ToList();
 
-            Assert.Equal(expected.Count, actual.Count());
+            Assert.Equal(expected.Count, actual.Count);
 
             for (int i = 0; i < expected.Count; i++)
             {
@@ -113,7 +113,7 @@ namespace Altinn.AccessManagement.Tests.Models.Urn
             Span<char> result = new Span<char>(new char[36]);
             bool ok = resourceInstanceIdentifier.TryFormat(result, out int charsWritten, null, null);
             Assert.Equal(expected, result.ToString().Trim());
-            Assert.Equal(expected.Count(), charsWritten);
+            Assert.Equal(expected.Length, charsWritten);
             Assert.True(ok);
         }
 

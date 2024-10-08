@@ -132,7 +132,7 @@ namespace Altinn.AccessManagement.Integration.Clients
 
             try
             {
-                string endpointUrl = $"systemregister/system/{systemId}/rights";
+                string endpointUrl = $"systemregister/{systemId}/rights";
                 string token = JwtTokenUtil.GetTokenFromContext(_httpContextAccessor.HttpContext, _platformSettings.JwtCookieName);
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 HttpResponseMessage response = await _client.GetAsync(endpointUrl, cancellationToken);

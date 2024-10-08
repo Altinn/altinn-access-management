@@ -7,14 +7,12 @@ using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ProblemDetails;
 using Altinn.Platform.Register.Models;
 using Altinn.Urn;
 using Altinn.Urn.Json;
-using Microsoft.Extensions.Logging;
 
 namespace Altinn.AccessManagement.Core.Services.Implementation;
 
@@ -176,8 +174,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     /// <inheritdoc/>
     public async Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
     {
-        AppsInstanceDelegationResponse result = new AppsInstanceDelegationResponse();
-
         ValidationErrorBuilder errors = default;
 
         // Fetch from and to from partyuuid
@@ -229,12 +225,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             return errorResult;
         }
 
-        result.From = appsInstanceDelegationRequest.From;
-        result.To = appsInstanceDelegationRequest.To;
-        result.ResourceId = appsInstanceDelegationRequest.ResourceId;
-        result.InstanceId = appsInstanceDelegationRequest.InstanceId;
-        result.InstanceDelegationMode = appsInstanceDelegationRequest.InstanceDelegationMode;
-
         // Perform delegation
         DelegationHelper.TryGetPerformerFromAttributeMatches(appsInstanceDelegationRequest.PerformedBy, out string performedById, out UuidType performedByType);
         InstanceRight rulesToDelegate = new InstanceRight
@@ -250,7 +240,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             InstanceDelegationMode = appsInstanceDelegationRequest.InstanceDelegationMode
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
-        List<InstanceRightDelegationResult> rights = new List<InstanceRightDelegationResult>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{appsInstanceDelegationRequest.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
         
         foreach (RightInternal rightToDelegate in appsInstanceDelegationRequest.Rights)
@@ -270,20 +259,38 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
         }
 
-        if (rulesToDelegate.InstanceRules.Count > 0)
+        AppsInstanceDelegationResponse result = new()
         {
-        InstanceRight delegationResult = await _pap.TryWriteInstanceDelegationPolicyRules(rulesToDelegate, cancellationToken);
-        rights.AddRange(DelegationHelper.GetRightDelegationResultsFromInstanceRules(delegationResult));
-        }
+            From = appsInstanceDelegationRequest.From,
+            To = appsInstanceDelegationRequest.To,
+            ResourceId = appsInstanceDelegationRequest.ResourceId,
+            InstanceId = appsInstanceDelegationRequest.InstanceId,
+            InstanceDelegationMode = appsInstanceDelegationRequest.InstanceDelegationMode
+        };
 
-        if (rightsAppCantDelegate.Count > 0)
-        {
-            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromFailedRightV2s(rightsAppCantDelegate));
-        }
+        List<InstanceRightDelegationResult> rights = await DelegateRights(rulesToDelegate, rightsAppCantDelegate, cancellationToken);
 
         result.Rights = rights;
         
         return result;
+    }
+
+    private async Task<List<InstanceRightDelegationResult>> DelegateRights(InstanceRight rulesToDelegate, List<RightInternal> rightsAppCantDelegate, CancellationToken cancellationToken)
+    {
+        List<InstanceRightDelegationResult> rights = new List<InstanceRightDelegationResult>();
+
+        if (rulesToDelegate.InstanceRules.Count > 0)
+        {
+            InstanceRight delegationResult = await _pap.TryWriteInstanceDelegationPolicyRules(rulesToDelegate, cancellationToken);
+            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromInstanceRules(delegationResult));
+        }
+
+        if (rightsAppCantDelegate.Count > 0)
+        {
+            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromFailedInternalRights(rightsAppCantDelegate));
+        }
+
+        return rights;
     }
 
     /// <inheritdoc/>

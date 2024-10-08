@@ -89,7 +89,7 @@ namespace Altinn.AccessManagement.Tests.Models.Urn
 
             List<ActionIdentifier> actual = ActionIdentifier.GetExamples(new Swashbuckle.Examples.ExampleDataOptions()).ToList();
 
-            Assert.Equal(expected.Count, actual.Count());
+            Assert.Equal(expected.Count, actual.Count);
 
             for (int i = 0; i < expected.Count; i++)
             {

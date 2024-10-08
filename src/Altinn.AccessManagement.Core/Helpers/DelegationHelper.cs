@@ -9,7 +9,6 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Urn.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -852,7 +851,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// </summary>
         /// <param name="rights">The rights to convert</param>
         /// <returns>List of RightDelegationResult</returns>
-        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromFailedRightV2s(List<RightInternal> rights)
+        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromFailedInternalRights(List<RightInternal> rights)
         {
             return rights.Select(right => new InstanceRightDelegationResult
             {

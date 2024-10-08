@@ -3,7 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql" Version="2.2.0" />
+        <PackageVersion Include="Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql" Version="2.5.0" />
         <PackageVersion Include="Altinn.Authorization.ServiceDefaults" Version="2.2.2" />
         <PackageVersion Include="Altinn.Authorization.ABAC" Version="0.0.8" />
         <PackageVersion Include="Altinn.Common.AccessToken" Version="4.5.2" />

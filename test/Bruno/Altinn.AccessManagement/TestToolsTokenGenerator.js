@@ -38,6 +38,13 @@ exports.getToken = async function (getTokenParameters) {
     tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&scopes=${tokenScopes}&orgNo=${tokenOrgNo}&userId=${tokenUser}&partyId=${tokenParty}&userName=${tokenUserName}&ttl=30`;
   }
 
+  else if (tokenType == "PlatformAccess") {
+    const tokenOrg = getTokenParameters.auth_org;
+    const tokenApp = getTokenParameters.auth_app;
+
+    tokenUrl = `${tokenBaseUrl}/api/Get${tokenType}Token?env=${tokenEnv}&org=${tokenOrg}&app=${tokenApp}&ttl=30`;
+  }
+
   const response = await axios.get(tokenUrl, {
     headers: { Authorization }
   });

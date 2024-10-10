@@ -53,8 +53,8 @@ public static class TestDataRevokeReceivedDelegationExternal
         NewRevokeReceivedModel(
             WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         PersonOrjanPartyId
     ]];
 
@@ -67,8 +67,8 @@ public static class TestDataRevokeReceivedDelegationExternal
         NewRevokeReceivedModel(
             WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         OrganizationOrstaPartyId
     ]];
 
@@ -81,8 +81,8 @@ public static class TestDataRevokeReceivedDelegationExternal
         NewRevokeReceivedModel(
             WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationOrstaPartyId),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         OrganizationKolbjornPartyId
     ]];
 
@@ -95,8 +95,8 @@ public static class TestDataRevokeReceivedDelegationExternal
         NewRevokeReceivedModel(
             WithRevokeReceivedFrom(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationOrstaPartyId),
             WithRevokeReceivedAction("read"),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeReceivedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeReceivedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         PersonPaulaPartyId
     ]];
 

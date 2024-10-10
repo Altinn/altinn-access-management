@@ -5,13 +5,13 @@ namespace Altinn.AccessManagement.Core.Resolvers;
 /// <summary>
 /// Urn
 /// </summary>
-public static class Urn
+public static class BaseUrn
 {
     /// <summary>
     /// Urn
     /// </summary>
     /// <returns></returns>
-    public static string String() => $"{nameof(Urn)}".ToLower();
+    public static string String() => $"urn";
 
     /// <summary>
     /// InternalIds of delegatable entities 
@@ -31,7 +31,7 @@ public static class Urn
         /// <summary>
         /// Urn.Altinn
         /// </summary>
-        public static string String() => $"{Urn.String()}:{nameof(Altinn)}".ToLower();
+        public static string String() => $"{BaseUrn.String()}:{nameof(Altinn)}".ToLower();
 
         /// <summary>
         /// Urn.Altinn.Person

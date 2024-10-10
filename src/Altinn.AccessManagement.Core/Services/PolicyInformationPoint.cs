@@ -5,6 +5,7 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -13,6 +14,7 @@ using Altinn.Authorization.ABAC;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Register.Enums;
+using Altinn.Urn.Json;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
 
@@ -144,6 +146,78 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             return result.Values.Where(r => r.HasPermit.HasValue && r.HasPermit.Value).ToList();
+        }
+
+        /// <inheritdoc />
+        public async Task<List<Right>> GetDelegableRightsByApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default)
+        {
+            List<Right> result;
+            XacmlPolicy policy = null;
+
+            // Verify resource
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(resourceQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
+                || resourceMatchType == ResourceAttributeMatchType.None)
+            {
+                throw new ValidationException($"RightsQuery must specify a valid Resource. Valid resource can either be a single resource from the Altinn resource registry ({AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute}) or an Altinn app (identified by both {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute})");
+            }
+
+            if (resourceMatchType == ResourceAttributeMatchType.ResourceRegistry)
+            {
+                policy = await _prp.GetPolicyAsync(resourceId, cancellationToken);
+            }
+            else if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
+            {
+                policy = await _prp.GetPolicyAsync(org, app, cancellationToken);
+            }
+
+            if (policy == null)
+            {
+                throw new ValidationException($"No valid policy found for the specified resource");
+            }
+
+            // Fetch all rights delegable
+            result = GetRightsFromPolicy(policy, resourceQuery.OwnerApp);
+            
+            return result;
+        }
+
+        private static List<Right> GetRightsFromPolicy(XacmlPolicy policy, IEnumerable<AttributeMatch> delegater)
+        {
+            Dictionary<string, Right> rights = new Dictionary<string, Right>();
+            foreach (XacmlRule rule in policy.Rules)
+            {
+                List<List<PolicyAttributeMatch>> ruleSubjects = PolicyHelper.GetRulePolicyAttributeMatchesForCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
+                if (!PolicyHelper.ContainsDelegatorAppInSubject(ruleSubjects, delegater))
+                {
+                    continue;
+                }
+
+                ICollection<Right> ruleRights = PolicyHelper.GetRightsFromXacmlRules(rule.SingleToList());
+                
+                foreach (Right ruleRight in ruleRights)
+                {
+                    if (!rights.TryGetValue(ruleRight.RightKey, out Right value))
+                    {
+                        value = ruleRight;
+                        rights.Add(ruleRight.RightKey, value);
+                    }
+
+                    value.RightSources.Add(
+                        new RightSource
+                        {
+                            PolicyId = policy.PolicyId.OriginalString,
+                            PolicyVersion = policy.Version,
+                            RuleId = rule.RuleId,
+                            RightSourceType = RightSourceType.ResourceRegistryPolicy,
+                            HasPermit = false,
+                            CanDelegate = true,
+                            MinimumAuthenticationLevel = 0,
+                            PolicySubjects = ruleSubjects
+                        });
+                }
+            }
+
+            return rights.Values.ToList();
         }
 
         /// <inheritdoc/>

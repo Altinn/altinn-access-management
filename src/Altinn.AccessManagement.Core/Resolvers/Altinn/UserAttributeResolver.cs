@@ -53,7 +53,7 @@ public class UserAttributeResolver : AttributeResolver
     {
         if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute), cancellationToken) is var party && party?.Person != null)
         {
-            return await ResolveUserIdUsingIdentifierNo()([new(Urn.Altinn.Person.IdentifierNo, party.Person.SSN)], cancellationToken);
+            return await ResolveUserIdUsingIdentifierNo()([new(BaseUrn.Altinn.Person.IdentifierNo, party.Person.SSN)], cancellationToken);
         }
 
         return [];
@@ -65,7 +65,7 @@ public class UserAttributeResolver : AttributeResolver
     public LeafResolver ResolveUserIdUsingIdentifierNo() => async (attributes, cancellationToken) =>
     {
         var user = await _profile.GetUser(
-            new() { Ssn = attributes.GetRequiredString(Urn.Altinn.Person.IdentifierNo) },
+            new() { Ssn = attributes.GetRequiredString(BaseUrn.Altinn.Person.IdentifierNo) },
             cancellationToken);
 
         if (user != null)

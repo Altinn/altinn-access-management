@@ -1,8 +1,11 @@
-﻿namespace Altinn.AccessManagement.Core.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// The type of delegation change
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DelegationChangeType
     {
         /// <summary>

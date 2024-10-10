@@ -22,12 +22,34 @@ namespace Altinn.AccessManagement.Core.Helpers.Extensions
                 .Single(x => x.Name == value.ToString())
                 .GetCustomAttribute<EnumMemberAttribute>(false);
 
-            if (enumMemeberAttribute == null)
+            if (enumMemeberAttribute == null || enumMemeberAttribute.Value == null)
             {
                 return value.ToString();
             }
 
             return enumMemeberAttribute.Value;
+        }
+
+        /// <summary>
+        /// Tries to parse a string as a given Enum on the EnumMemberAttribute rater than the Name of the value in the enum returns false if no matching vale was found true if parsed ok
+        /// </summary>
+        /// <param name="value">The string to use for value in the enum</param>
+        /// <param name="enumValue">Out parameter containing The parsed enum or default value</param>
+        /// <typeparam name="T">The Enum type to Parse</typeparam>
+        /// <returns>Value indicating the parsing went ok or not</returns>
+        public static bool EnumValue<T>(string value, out T enumValue)
+        {
+            string[] names = Enum.GetNames(typeof(T));
+            string name = Array.Find(names, name => EnumMemberAttributeValueOrName((Enum)Enum.Parse(typeof(T), name)).Equals(value));
+            
+            if (name != null)
+            {
+                enumValue = (T)Enum.Parse(typeof(T), name);
+                return true;
+            }
+
+            enumValue = default;
+            return false;
         }
     }
 }

@@ -146,19 +146,19 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper B�rstad
             50002598, // From Kasper
-            new BaseAttributeExternal { Type = Urn.Altinn.Person.Uuid, Value = "00000000-0000-0000-0005-000000003899" }, // To �rjan Ravn�s
+            new BaseAttributeExternal { Type = BaseUrn.Altinn.Person.Uuid, Value = "00000000-0000-0000-0005-000000003899" }, // To �rjan Ravn�s
             AssertStatusCode(HttpStatusCode.OK)
         },
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper B�rstad
             50002598, // From Kasper
-            new BaseAttributeExternal { Type = Urn.Altinn.Organization.Uuid, Value = "00000000-0000-0000-0005-000000004222" }, // To KARLSTAD OG ULOYBUKT
+            new BaseAttributeExternal { Type = BaseUrn.Altinn.Organization.Uuid, Value = "00000000-0000-0000-0005-000000004222" }, // To KARLSTAD OG ULOYBUKT
             AssertStatusCode(HttpStatusCode.OK)
         },
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper B�rstad
             50005545, // From �rsta
-            new BaseAttributeExternal { Type = Urn.Altinn.EnterpriseUser.Uuid, Value = "00000000-0000-0000-0002-000000010727" }, // To OrstaECUser
+            new BaseAttributeExternal { Type = BaseUrn.Altinn.EnterpriseUser.Uuid, Value = "00000000-0000-0000-0002-000000010727" }, // To OrstaECUser
             AssertStatusCode(HttpStatusCode.OK)
         }
     };
@@ -189,13 +189,13 @@ public class Altinn2RightsControllerTest : IClassFixture<CustomWebApplicationFac
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper B�rstad
             50002598, // From Kasper
-            new BaseAttributeExternal { Type = Urn.Altinn.Person.Uuid, Value = "asdf" }, // To not a well-formated uuid
+            new BaseAttributeExternal { Type = BaseUrn.Altinn.Person.Uuid, Value = "asdf" }, // To not a well-formated uuid
             AssertStatusCode(HttpStatusCode.BadRequest)
         },
         {
             PrincipalUtil.GetToken(20000490, 50002598, 3), // Kasper B�rstad
             50005545, // From �rsta
-            new BaseAttributeExternal { Type = Urn.Altinn.Organization.Uuid, Value = "123" }, // To not a well-formated uuid
+            new BaseAttributeExternal { Type = BaseUrn.Altinn.Organization.Uuid, Value = "123" }, // To not a well-formated uuid
             AssertStatusCode(HttpStatusCode.BadRequest)
         }
     };

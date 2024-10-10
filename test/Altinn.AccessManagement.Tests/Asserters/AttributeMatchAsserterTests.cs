@@ -34,35 +34,35 @@ public class AttributeMatchAsserterTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.IdentifierNo, "<identifierno>")],
+                [new(BaseUrn.Altinn.Person.IdentifierNo, "<identifierno>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Person.UserId, "123")],
+                [new(BaseUrn.Altinn.Person.UserId, "123")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>")],
+                [new(BaseUrn.Altinn.Organization.IdentifierNo, "<identifierno>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.PartyId, "321")],
+                [new(BaseUrn.Altinn.Organization.PartyId, "321")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.PartyId, "<string>")],
+                [new(BaseUrn.Altinn.Organization.PartyId, "<string>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
+                [new(BaseUrn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                [new(BaseUrn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(BaseUrn.Altinn.Resource.AppId, "<appid>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Person.IdentifierNo, string.Empty)],
+                [new(BaseUrn.Altinn.Person.IdentifierNo, string.Empty)],
                 Assert.NotNull
             }
         };
@@ -88,35 +88,35 @@ public class AttributeMatchAsserterTests
         new()
         {
             {
-                [new(Urn.Altinn.Person.IdentifierNo, "<identifierno>")],
+                [new(BaseUrn.Altinn.Person.IdentifierNo, "<identifierno>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Person.UserId, "123")],
+                [new(BaseUrn.Altinn.Person.UserId, "123")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>")],
+                [new(BaseUrn.Altinn.Organization.IdentifierNo, "<identifierno>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.PartyId, "321")],
+                [new(BaseUrn.Altinn.Organization.PartyId, "321")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Organization.PartyId, "<string>")],
+                [new(BaseUrn.Altinn.Organization.PartyId, "<string>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
+                [new(BaseUrn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                [new(BaseUrn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(BaseUrn.Altinn.Resource.AppId, "<appid>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Person.IdentifierNo, string.Empty)],
+                [new(BaseUrn.Altinn.Person.IdentifierNo, string.Empty)],
                 Assert.NotNull
             }
         };
@@ -142,19 +142,19 @@ public class AttributeMatchAsserterTests
         new()
         {
             {
-                [new(Urn.Altinn.Resource.AppOwner, "<appowner>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                [new(BaseUrn.Altinn.Resource.AppOwner, "<appowner>"), new(BaseUrn.Altinn.Resource.AppId, "<appid>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
+                [new(BaseUrn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>")],
                 Assert.Null
             },
             {
-                [new(Urn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>"), new(Urn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(Urn.Altinn.Resource.AppId, "<appid>")],
+                [new(BaseUrn.Altinn.Resource.ResourceRegistryId, "<resourceregistryid>"), new(BaseUrn.Altinn.Organization.IdentifierNo, "<identifierno>"), new(BaseUrn.Altinn.Resource.AppId, "<appid>")],
                 Assert.NotNull
             },
             {
-                [new(Urn.Altinn.Resource.ResourceRegistryId, string.Empty)],
+                [new(BaseUrn.Altinn.Resource.ResourceRegistryId, string.Empty)],
                 Assert.NotNull
             }
         };

@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Altinn.AccessManagement.Tests.Mocks
 {
     /// <summary>
-    /// Mock for finding signing key on disck
+    /// Mock for finding signing key on disk
     /// </summary>
     public class SigningKeyResolverMock : IPublicSigningKeyProvider
     {

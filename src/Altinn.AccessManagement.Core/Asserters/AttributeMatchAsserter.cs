@@ -100,7 +100,7 @@ public static class AttributeMatchAsserter
     /// <param name="values">list of attributes</param>
     public static void IsDelegatableResource(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values)
     {
-        if (values.FirstOrDefault(value => value.Id.Equals(Urn.Altinn.Resource.Delegable, StringComparison.InvariantCultureIgnoreCase)) is var attribute && attribute != null)
+        if (values.FirstOrDefault(value => value.Id.Equals(BaseUrn.Altinn.Resource.Delegable, StringComparison.InvariantCultureIgnoreCase)) is var attribute && attribute != null)
         {
             if (bool.TryParse(attribute.Value, out var value) && value)
             {
@@ -113,7 +113,7 @@ public static class AttributeMatchAsserter
         }
         else
         {
-            errors.Add(nameof(IsDelegatableResource), [$"failed to find any attributes with value {Urn.Altinn.Resource.Delegable}"]);
+            errors.Add(nameof(IsDelegatableResource), [$"failed to find any attributes with value {BaseUrn.Altinn.Resource.Delegable}"]);
         }
     }
 
@@ -126,19 +126,19 @@ public static class AttributeMatchAsserter
     public static void DefaultTo(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
                 assert.Single(
-                    assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
-                    assert.HasAttributeTypes(Urn.Altinn.Person.Uuid),
-                    assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
-                    assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
-                    assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
-                    assert.HasAttributeTypes(Urn.Altinn.Organization.Uuid),
-                    assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
-                    assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Uuid),
-                    assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Person.IdentifierNo),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Person.Uuid),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Person.UserId),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Person.PartyId),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Organization.IdentifierNo),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Organization.Uuid),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.EnterpriseUser.Username),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.EnterpriseUser.Uuid),
+                    assert.HasAttributeTypes(BaseUrn.Altinn.Organization.PartyId),
                     assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
                     assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)),
                 assert.AllAttributesHasValues,
-                assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
+                assert.AttributesAreIntegers(BaseUrn.InternalIds))(errors, values);
 
     /// <summary>
     /// A default list of assertions that contains the baseline for validating in input delegaton from an entity.
@@ -149,18 +149,18 @@ public static class AttributeMatchAsserter
     public static void DefaultFrom(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
             assert.Single(
-                assert.HasAttributeTypes(Urn.Altinn.Person.IdentifierNo),
-                assert.HasAttributeTypes(Urn.Altinn.Person.Uuid),
-                assert.HasAttributeTypes(Urn.Altinn.Person.UserId),
-                assert.HasAttributeTypes(Urn.Altinn.Person.PartyId),
-                assert.HasAttributeTypes(Urn.Altinn.Organization.IdentifierNo),
-                assert.HasAttributeTypes(Urn.Altinn.Organization.Uuid),
-                assert.HasAttributeTypes(Urn.Altinn.Organization.PartyId),
-                assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Username),
-                assert.HasAttributeTypes(Urn.Altinn.EnterpriseUser.Uuid),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Person.IdentifierNo),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Person.Uuid),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Person.UserId),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Person.PartyId),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Organization.IdentifierNo),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Organization.Uuid),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Organization.PartyId),
+                assert.HasAttributeTypes(BaseUrn.Altinn.EnterpriseUser.Username),
+                assert.HasAttributeTypes(BaseUrn.Altinn.EnterpriseUser.Uuid),
                 assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute)),
             assert.AllAttributesHasValues,
-            assert.AttributesAreIntegers(Urn.InternalIds))(errors, values);
+            assert.AttributesAreIntegers(BaseUrn.InternalIds))(errors, values);
 
     /// <summary>
     /// A list of assertions for validating input is a single value of either of the internal Altinn 2 identifiers: UserId or PartyId.
@@ -174,7 +174,7 @@ public static class AttributeMatchAsserter
                 assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute),
                 assert.HasAttributeTypes(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute)),
             assert.AllAttributesHasValues,
-            assert.AttributesAreIntegers(Urn.Altinn2InternalIds))(errors, values);
+            assert.AttributesAreIntegers(BaseUrn.Altinn2InternalIds))(errors, values);
 
     /// <summary>
     /// A default list of assertions that contains the baseline for validating input for a resource.
@@ -185,7 +185,7 @@ public static class AttributeMatchAsserter
     public static void DefaultResource(this IAssert<AttributeMatch> assert, IDictionary<string, string[]> errors, IEnumerable<AttributeMatch> values) =>
         assert.All(
             assert.Single(
-                assert.HasAttributeTypes(Urn.Altinn.Resource.AppOwner, Urn.Altinn.Resource.AppId),
-                assert.HasAttributeTypes(Urn.Altinn.Resource.ResourceRegistryId)),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Resource.AppOwner, BaseUrn.Altinn.Resource.AppId),
+                assert.HasAttributeTypes(BaseUrn.Altinn.Resource.ResourceRegistryId)),
             assert.AllAttributesHasValues)(errors, values);
 }

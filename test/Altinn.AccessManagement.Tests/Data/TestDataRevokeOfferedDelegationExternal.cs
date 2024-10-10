@@ -53,8 +53,8 @@ public static class TestDataRevokeOfferedDelegationExternal
         NewRevokeOfferedModel(
             WithRevokeOfferedTo(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
             WithRevokeOfferedAction("read"),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         PersonOrjanPartyId
     ]];
 
@@ -67,8 +67,8 @@ public static class TestDataRevokeOfferedDelegationExternal
         NewRevokeOfferedModel(
             WithRevokeOfferedTo(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationOrstaPartyId),
             WithRevokeOfferedAction("read"),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         PersonPaulaPartyId
     ]];
 
@@ -81,8 +81,8 @@ public static class TestDataRevokeOfferedDelegationExternal
         NewRevokeOfferedModel(
             WithRevokeOfferedTo(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, OrganizationKolbjornPartyId),
             WithRevokeOfferedAction("read"),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         OrganizationOrstaPartyId
     ]];
 
@@ -95,8 +95,8 @@ public static class TestDataRevokeOfferedDelegationExternal
         NewRevokeOfferedModel(
             WithRevokeOfferedTo(AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, PersonPaulaUserId),
             WithRevokeOfferedAction("read"),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         OrganizationOrstaPartyId
     ]];
 
@@ -107,10 +107,10 @@ public static class TestDataRevokeOfferedDelegationExternal
     public static IEnumerable<object[]> FromOrganizationToEnterpriseuser() => [[
         PrincipalUtil.GetToken(PersonKasperUserId, PersonKasperPartyId, 3),
         NewRevokeOfferedModel(
-            WithRevokeOfferedTo(Urn.Altinn.EnterpriseUser.Username, EnterpriseUsername),
+            WithRevokeOfferedTo(BaseUrn.Altinn.EnterpriseUser.Username, EnterpriseUsername),
             WithRevokeOfferedAction("read"),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppOwner, ResourceOrg),
-            WithRevokeOfferedResource(Urn.Altinn.Resource.AppId, ResourceAppId)),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppOwner, ResourceOrg),
+            WithRevokeOfferedResource(BaseUrn.Altinn.Resource.AppId, ResourceAppId)),
         OrganizationOrstaPartyId
     ]];
 

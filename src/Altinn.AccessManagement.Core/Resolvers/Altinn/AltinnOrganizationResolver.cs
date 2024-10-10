@@ -6,7 +6,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 namespace Altinn.AccessManagement.Resolvers;
 
 /// <summary>
-/// Resolves attributes for <see cref="Urn.Altinn.Organization"/> 
+/// Resolves attributes for <see cref="BaseUrn.Altinn.Organization"/> 
 /// </summary>
 public class AltinnOrganizationResolver : AttributeResolver
 {
@@ -15,27 +15,27 @@ public class AltinnOrganizationResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(Urn.Altinn.Organization.String())
+    public AltinnOrganizationResolver(IContextRetrievalService contextRetrievalService) : base(BaseUrn.Altinn.Organization.String())
     {
-        AddLeaf([Urn.Altinn.Organization.PartyId], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
-        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.IdentifierNo], ResolvePartyId());
-        AddLeaf([Urn.Altinn.Organization.IdentifierNo], [Urn.Altinn.Organization.Name, Urn.Altinn.Organization.PartyId], ResolveOrganizationNumber());
+        AddLeaf([BaseUrn.Altinn.Organization.PartyId], [BaseUrn.Altinn.Organization.Name, BaseUrn.Altinn.Organization.IdentifierNo], ResolvePartyId());
+        AddLeaf([AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute], [BaseUrn.Altinn.Organization.Name, BaseUrn.Altinn.Organization.IdentifierNo], ResolvePartyId());
+        AddLeaf([BaseUrn.Altinn.Organization.IdentifierNo], [BaseUrn.Altinn.Organization.Name, BaseUrn.Altinn.Organization.PartyId], ResolveOrganizationNumber());
         _contextRetrievalService = contextRetrievalService;
     }
 
     /// <summary>
-    /// Resolves an organization if given <see cref="Urn.Altinn.Organization.PartyId"/>
+    /// Resolves an organization if given <see cref="BaseUrn.Altinn.Organization.PartyId"/>
     /// </summary>
     public LeafResolver ResolvePartyId() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(Urn.Altinn.Organization.PartyId)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyAsync(attributes.GetRequiredInt(BaseUrn.Altinn.Organization.PartyId)) is var party && party != null)
         {
             if (party.Organization != null)
             {
                 return
                 [
-                    new(Urn.Altinn.Organization.Name, party.Name),
-                    new(Urn.Altinn.Organization.IdentifierNo, party.Organization.OrgNumber),
+                    new(BaseUrn.Altinn.Organization.Name, party.Name),
+                    new(BaseUrn.Altinn.Organization.IdentifierNo, party.Organization.OrgNumber),
                 ];
             }
         }
@@ -44,16 +44,16 @@ public class AltinnOrganizationResolver : AttributeResolver
     };
 
     /// <summary>
-    /// Resolves an organization if given <see cref="Urn.Altinn.Organization.IdentifierNo"/>
+    /// Resolves an organization if given <see cref="BaseUrn.Altinn.Organization.IdentifierNo"/>
     /// </summary>
     public LeafResolver ResolveOrganizationNumber() => async (attributes, cancellationToken) =>
     {
-        if (await _contextRetrievalService.GetPartyForOrganization(attributes.GetRequiredString(Urn.Altinn.Organization.IdentifierNo)) is var party && party != null)
+        if (await _contextRetrievalService.GetPartyForOrganization(attributes.GetRequiredString(BaseUrn.Altinn.Organization.IdentifierNo)) is var party && party != null)
         {
             return
             [
-                new(Urn.Altinn.Organization.PartyId, party.PartyId),
-                new(Urn.Altinn.Organization.Name, party.Name)
+                new(BaseUrn.Altinn.Organization.PartyId, party.PartyId),
+                new(BaseUrn.Altinn.Organization.Name, party.Name)
             ];
         }
 

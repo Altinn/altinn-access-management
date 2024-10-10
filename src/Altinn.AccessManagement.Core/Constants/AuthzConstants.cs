@@ -16,6 +16,11 @@
         public const string INTERNAL_AUTHORIZATION = "InternalAuthorizationAccess";
 
         /// <summary>
+        /// Policy tag for authorizing Altinn.Platform.Authorization API access
+        /// </summary>
+        public const string PLATFORM_ACCESS_AUTHORIZATION = "PlatformAccess";
+        
+        /// <summary>
         /// Policy tag for reading an maskinporten delegation
         /// </summary>
         public const string POLICY_MASKINPORTEN_DELEGATION_READ = "MaskinportenDelegationRead";
@@ -44,6 +49,11 @@
         /// Policy tag for scope authorization on the resource owner API for getting the Authorized Party list for a third party
         /// </summary>
         public const string POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES = "ResourceOwnerAuthorizedParty";
+
+        /// <summary>
+        /// Policy tag for scope authorization on the instance delegation API for Apps
+        /// </summary>
+        public const string POLICY_APPS_INSTANCEDELEGATION = "AppsInstanceDelegation";
 
         /// <summary>
         /// Scope giving access to getting authorized parties for a given subject.

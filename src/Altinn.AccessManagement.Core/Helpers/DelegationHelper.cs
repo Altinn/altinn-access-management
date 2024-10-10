@@ -1,14 +1,14 @@
-﻿using Altinn.AccessManagement.Core.Constants;
+﻿using System.Text;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
-using static Altinn.AccessManagement.Core.Resolvers.Urn.Altinn;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -421,6 +421,47 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Gets the delegation policy path for a single Rule
+        /// </summary>
+        /// <returns>A bool indicating whether necessary params to build the path where found</returns>
+        public static bool TryGetDelegationPolicyPathFromInstanceRule(InstanceRight rule, out string instanceDelegationPolicyPath)
+        {
+            instanceDelegationPolicyPath = null;
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(rule.ResourceId);
+
+            sb.Append('/');
+
+            sb.Append(rule.FromType);
+            sb.Append('-');
+            sb.Append(rule.FromUuid);
+            sb.Append('/');
+
+            sb.Append(rule.ToType);
+            sb.Append('-');
+            sb.Append(rule.ToUuid);
+            sb.Append('/');
+
+            try
+            {
+                sb.Append(rule.InstanceId.AsFileName());
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            sb.Append('/');
+            sb.Append(rule.InstanceDelegationMode);
+
+            sb.Append("/delegationpolicy.xml");
+            instanceDelegationPolicyPath = sb.ToString();
+
+            return true;
+        }
+
+        /// <summary>
         /// Returns the count of unique Policies in a list of Rules
         /// </summary>
         /// <param name="rules">List of rules to check how many individual policies exist</param>
@@ -454,6 +495,76 @@ namespace Altinn.AccessManagement.Core.Helpers
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Checks whether the provided XacmlPolicy contains a rule having an identical Resource signature and contains the Action from the rule,
+        /// to be used for checking for duplicate rules in delegation, or that the rule exists in the Apps Xacml policy.
+        /// </summary>
+        /// <returns>A bool</returns>
+        public static bool PolicyContainsMatchingInstanceRule(XacmlPolicy policy, InstanceRule rule)
+        {
+            string ruleResourceKey = GetAttributeMatchKey(rule.Resource.ToList());
+
+            foreach (XacmlRule policyRule in policy.Rules)
+            {
+                if (!policyRule.Effect.Equals(XacmlEffectType.Permit) || policyRule.Target == null)
+                {
+                    continue;
+                }
+
+                bool matchingActionFound = MatchingActionFound(policyRule.Target.AnyOf, rule, out List<List<AttributeMatch>> policyResourceMatches);
+                
+                if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
+                {
+                    rule.RuleId = policyRule.RuleId;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool MatchingActionFound(ICollection<XacmlAnyOf> input, InstanceRule rule, out List<List<AttributeMatch>> policyResourceMatches)
+        {
+            policyResourceMatches = [];
+            bool matchingActionFound = false;
+
+            foreach (XacmlAnyOf anyOf in input)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    matchingActionFound = GetResourceMatch(allOf.Matches, rule, out List<AttributeMatch> resourceMatch);
+                    
+                    if (resourceMatch.Count > 0)
+                    {
+                        policyResourceMatches.Add(resourceMatch);
+                    }
+                }
+            }
+
+            return matchingActionFound;
+        }
+
+        private static bool GetResourceMatch(ICollection<XacmlMatch> input, InstanceRule rule, out List<AttributeMatch> resourceMatch)
+        {
+            resourceMatch = [];
+            bool matchingActionFound = false;
+            foreach (XacmlMatch xacmlMatch in input)
+            {
+                if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
+                {
+                    resourceMatch.Add(new AttributeMatch { Id = xacmlMatch.AttributeDesignator.AttributeId.OriginalString, Value = xacmlMatch.AttributeValue.Value });
+                }
+                else if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action) &&
+                    xacmlMatch.AttributeDesignator.AttributeId.OriginalString == rule.Action.PrefixSpan.ToString() &&
+                    xacmlMatch.AttributeValue.Value == rule.Action.ValueSpan.ToString())
+                {
+                    matchingActionFound = true;
+                }
+            }
+
+            return matchingActionFound;
         }
 
         /// <summary>
@@ -517,6 +628,93 @@ namespace Altinn.AccessManagement.Core.Helpers
         public static string GetAttributeMatchKey(List<AttributeMatch> attributeMatches)
         {
             return string.Concat(attributeMatches.OrderBy(r => r.Id).Select(r => r.Id + r.Value));
+        }
+
+        /// <summary>
+        /// Gets a string key representing the a list of attributematches
+        /// </summary>
+        /// <returns>A key string</returns>
+        public static string GetAttributeMatchKey(List<UrnJsonTypeValue> attributeMatches)
+        {
+            return string.Concat(attributeMatches.OrderBy(r => r.Value.KeySpan.ToString()).Select(r => r.Value.PrefixSpan.ToString() + r.Value.ValueSpan.ToString()));
+        }
+
+        /// <summary>
+        /// Extract UuidType and Uuid from a AttributeMatch list
+        /// </summary>
+        /// <param name="performer">The lsit to fetch data from</param>
+        /// <param name="id">The id of the party in the</param>
+        /// <param name="type">The resulting type</param>
+        /// <returns>true if a valid type and id was extracted else false</returns>
+        public static bool TryGetPerformerFromAttributeMatches(IEnumerable<AttributeMatch> performer, out string id, out UuidType type)
+        {
+            string org = null, app = null, person = null, organization = null, enterpriseUser = null, systemUser = null;
+            id = null;
+            type = UuidType.NotSpecified;
+            int counter = 0;
+
+            foreach (AttributeMatch match in performer)
+            {
+                counter++;
+                switch (match.Id)
+                {
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute:
+                        org = match.Value;
+                        break;
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute:
+                        app = match.Value;
+                        break;
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid:
+                        organization = match.Value;
+                        break;
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid:
+                        person = match.Value;
+                        break;
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid:
+                        enterpriseUser = match.Value;
+                        break;
+                    case AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid:
+                        systemUser = match.Value;
+                        break;
+                }
+            }
+
+            if (org != null && app != null && person == null && organization == null && enterpriseUser == null && systemUser == null && counter == 2)
+            {
+                id = $"app_{org}_{app}";
+                type = UuidType.Resource;
+                return true;
+            }
+
+            if (org == null && app == null && person != null && organization == null && enterpriseUser == null && systemUser == null && counter == 1)
+            {
+                id = person;
+                type = UuidType.Person;
+                return true;
+            }
+            
+            if (org == null && app == null && person == null && organization != null && enterpriseUser == null && systemUser == null && counter == 1)
+            {
+                id = organization;
+                type = UuidType.Organization;
+                return true;
+            }
+            
+            if (org == null && app == null && person == null && organization == null && enterpriseUser != null && systemUser == null && counter == 1)
+            {
+                id = enterpriseUser;
+                type = UuidType.EnterpriseUser;
+                return true;
+            }
+            
+            if (org == null && app == null && person == null && organization == null && enterpriseUser == null && systemUser != null && counter == 1)
+            {
+                id = systemUser;
+                type = UuidType.SystemUser;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -621,6 +819,21 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Gets the list of Rules as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rules">The rules output from a delegation to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromInstanceRules(InstanceRight rules)
+        {
+            return rules.InstanceRules.Select(rule => new InstanceRightDelegationResult
+            {
+                Resource = rule.Resource,
+                Action = rule.Action,
+                Status = rule.CreatedSuccessfully ? DelegationStatus.Delegated : DelegationStatus.NotDelegated
+            });
+        }
+
+        /// <summary>
         /// Gets the list of Rights as a list of RightDelegationResult
         /// </summary>
         /// <param name="rights">The rights to convert</param>
@@ -633,6 +846,21 @@ namespace Altinn.AccessManagement.Core.Helpers
                 Action = right.Action,
                 Status = DelegationStatus.NotDelegated
             }).ToList();
+        }
+
+        /// <summary>
+        /// Gets the list of Rights as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rights">The rights to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static IEnumerable<InstanceRightDelegationResult> GetRightDelegationResultsFromFailedInternalRights(List<RightInternal> rights)
+        {
+            return rights.Select(right => new InstanceRightDelegationResult
+            {
+                Resource = right.Resource,
+                Action = right.Action,
+                Status = DelegationStatus.NotDelegated
+            });
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

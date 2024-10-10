@@ -34,10 +34,19 @@
     <None Update="selfSignedTestCertificatePublic.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ttd-org.pem">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ttd-org.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Mocks\InstanceRepositoryMock.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Data\AuthorizedParties\TestDataAppsInstanceDelegation.cs" />
+  </ItemGroup>
 </Project>

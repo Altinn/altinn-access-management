@@ -1,7 +1,7 @@
 meta {
   name: generic-access-resource_success
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -36,7 +36,7 @@ vars:pre-request {
 }
 
 script:pre-request {
-  await tokenGenerator.getToken();
+  //await tokenGenerator.getToken();
 }
 
 tests {

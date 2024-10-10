@@ -1,7 +1,7 @@
 meta {
-  name: p2o receiving org revokes delegation from person
+  name: o2o org attempts to delegate to itself
   type: http
-  seq: 30
+  seq: 35
 }
 
 post {
@@ -52,7 +52,7 @@ script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.org2.partyid);
-  bru.setVar("fromPartyId", testdata.org1.dagl.partyid);
+  bru.setVar("fromPartyId", testdata.org2.partyid);
   bru.setVar("org", testdata.org);
   bru.setVar("app", testdata.app);
   

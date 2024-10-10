@@ -1,7 +1,7 @@
 meta {
-  name: p2o receiving org revokes delegation from person
+  name: tilg app testdata cleanup
   type: http
-  seq: 30
+  seq: 5
 }
 
 post {
@@ -24,11 +24,11 @@ body:json {
         "resource": [
           {
             "id": "urn:altinn:org",
-            "value": "{{org}}"
+            "value": "ttd"
           },
           {
             "id": "urn:altinn:app",
-            "value": "{{app}}"
+            "value": "apps-test-tba"
           }
         ] 
       }
@@ -43,23 +43,25 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
-  org: 
-  app: 
+  org: ttd
+  app: apps-test-prod
   fromPartyId: 
+}
+
+assert {
+  res.status: eq 204
 }
 
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  bru.setVar("party", testdata.org2.partyid);
-  bru.setVar("fromPartyId", testdata.org1.dagl.partyid);
-  bru.setVar("org", testdata.org);
-  bru.setVar("app", testdata.app);
+  bru.setVar("party", testdata.randomUser.partyid);
+  bru.setVar("fromPartyId", testdata.org3.partyid);
   
   var getTokenParameters = {
-    auth_userId: testdata.org2.dagl.userid,
-    auth_partyId: testdata.org2.dagl.partyid,
-    auth_ssn: testdata.org2.dagl.pid,
+    auth_userId: testdata.randomUser.userid,
+    auth_partyId: testdata.randomUser.partyid,
+    auth_ssn: testdata.randomUser.pid,
     scope: sharedtestdata.scopes.read,
     auth_tokenType: sharedtestdata.authTokenType.personal,
     auth_scopes: sharedtestdata.auth_scopes.read

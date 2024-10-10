@@ -1,40 +1,13 @@
 meta {
-  name: p2o receiving org revokes delegation from person
+  name: o2o cannot delegate to itself
   type: http
-  seq: 30
+  seq: 36
 }
 
-post {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/revoke
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
   body: json
   auth: inherit
-}
-
-body:json {
-  
-    {
-      "from": [
-        {
-          "id": "urn:altinn:partyid",
-          "value": "{{fromPartyId}}" 
-        }
-      ],
-      "rights": [
-      {
-        "resource": [
-          {
-            "id": "urn:altinn:org",
-            "value": "{{org}}"
-          },
-          {
-            "id": "urn:altinn:app",
-            "value": "{{app}}"
-          }
-        ] 
-      }
-    ]
-  }
-  
 }
 
 vars:pre-request {
@@ -43,18 +16,12 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
-  org: 
-  app: 
-  fromPartyId: 
 }
 
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.org2.partyid);
-  bru.setVar("fromPartyId", testdata.org1.dagl.partyid);
-  bru.setVar("org", testdata.org);
-  bru.setVar("app", testdata.app);
   
   var getTokenParameters = {
     auth_userId: testdata.org2.dagl.userid,
@@ -67,4 +34,13 @@ script:pre-request {
     const token = await testTokenGenerator.getToken(getTokenParameters);
   
   bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("no new delegations appear when an org attempts to delegate to itself", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data).to.be.empty;
+  });
+  
 }

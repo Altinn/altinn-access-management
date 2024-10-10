@@ -1,13 +1,36 @@
 meta {
-  name: randomUser accesses
+  name: tilg resource testdata cleanup
   type: http
-  seq: 41
+  seq: 6
 }
 
-get {
-  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/revoke
   body: json
   auth: inherit
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:partyid",
+          "value": "{{fromPartyId}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:resource",
+            "value": "devtest_gar_bruno-gar"
+          }
+        ] 
+      }
+    ]
+  }
+  
 }
 
 vars:pre-request {
@@ -16,12 +39,20 @@ vars:pre-request {
   auth_partyId: 
   auth_ssn: 
   party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+assert {
+  res.status: eq 204
 }
 
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.randomUser.partyid);
+  bru.setVar("fromPartyId", testdata.org3.partyid);
   
   var getTokenParameters = {
     auth_userId: testdata.randomUser.userid,
@@ -34,8 +65,4 @@ script:pre-request {
     const token = await testTokenGenerator.getToken(getTokenParameters);
   
   bru.setVar("bearerToken",  token);
-}
-
-tests {
-  5
 }

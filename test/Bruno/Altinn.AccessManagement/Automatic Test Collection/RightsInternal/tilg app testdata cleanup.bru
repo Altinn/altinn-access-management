@@ -1,7 +1,7 @@
 meta {
-  name: randomUser sletter delegering
+  name: tilg app testdata cleanup
   type: http
-  seq: 42
+  seq: 5
 }
 
 post {
@@ -24,11 +24,11 @@ body:json {
         "resource": [
           {
             "id": "urn:altinn:org",
-            "value": "{{org}}"
+            "value": "ttd"
           },
           {
             "id": "urn:altinn:app",
-            "value": "{{app}}"
+            "value": "apps-test-tba"
           }
         ] 
       }
@@ -44,15 +44,19 @@ vars:pre-request {
   auth_ssn: 
   party: 
   org: ttd
-  app: endring-av-navn-v2
+  app: apps-test-prod
   fromPartyId: 
+}
+
+assert {
+  res.status: eq 204
 }
 
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   bru.setVar("party", testdata.randomUser.partyid);
-  bru.setVar("fromPartyId", testdata.org1.partyid);
+  bru.setVar("fromPartyId", testdata.org3.partyid);
   
   var getTokenParameters = {
     auth_userId: testdata.randomUser.userid,

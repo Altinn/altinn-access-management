@@ -1,7 +1,7 @@
 meta {
   name: tilg cannot delegate app they don't have access to
   type: http
-  seq: 37
+  seq: 39
 }
 
 post {
@@ -32,11 +32,11 @@ body:json {
               "resource": [
                   {
                       "id": "urn:altinn:org",
-                      "value": "{{org}}"
+                      "value": "ttd"
                   },
                   {
                       "id": "urn:altinn:app",
-                      "value": "{{app}}"
+                      "value": "spraak-test"
                   }
               ],
               "action": "read"
@@ -60,14 +60,14 @@ vars:pre-request {
 script:pre-request {
   const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  bru.setVar("party", testdata.org1.partyid);
+  bru.setVar("party", testdata.org3.partyid);
   bru.setVar("toSsn", testdata.randomUser.pid);
   bru.setVar("toLastName", testdata.randomUser.lastname);
   
   var getTokenParameters = {
-    auth_userId: testdata.org1.tilg.userid,
-    auth_partyId: testdata.org1.tilg.partyid,
-    auth_ssn: testdata.org1.tilg.pid,
+    auth_userId: testdata.org3.tilg.userid,
+    auth_partyId: testdata.org3.tilg.partyid,
+    auth_ssn: testdata.org3.tilg.pid,
     scope: sharedtestdata.scopes.read,
     auth_tokenType: sharedtestdata.authTokenType.personal,
     auth_scopes: sharedtestdata.auth_scopes.read
@@ -80,8 +80,7 @@ script:pre-request {
 tests {
   test("person can't delegate app they don't have access to", function() {
     const data = res.getBody();  
-    expect(res.status).to.equal(200);
-    expect(data.rightDelegationResults[0]).to.have.property('status', 'Delegated');
+    expect(res.status).to.equal(400);
   });
   
 }

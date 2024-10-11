@@ -70,18 +70,14 @@
       </xacml:AnyOf>
     </xacml:Target>
   </xacml:Rule>
-  <xacml:Rule RuleId="urn:altinn:org:ttd:am-devtest-instancedelegation:ruleid:1" Effect="Permit">
+  <xacml:Rule RuleId="urn:altinn:org:ttd:am-devtest-instancedelegation:ruleid:2" Effect="Permit">
     <xacml:Description>A rule defining all instance delegation rights the App itself is allowed to perform for instances of the app ttd/am-devtest-instancedelegation. In this example the app can delegate the Read and Sign actions for Task_1</xacml:Description>
     <xacml:Target>
       <xacml:AnyOf>
         <xacml:AllOf>
-          <xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-            <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ttd</xacml:AttributeValue>
-            <xacml:AttributeDesignator AttributeId="urn:altinn:org" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
-          </xacml:Match>
 		  <xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-            <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">am-devtest-instancedelegation</xacml:AttributeValue>
-            <xacml:AttributeDesignator AttributeId="urn:altinn:app" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+            <xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">app_ttd_am-devtest-instancedelegation</xacml:AttributeValue>
+            <xacml:AttributeDesignator AttributeId="urn:altinn:resource:delegation" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
           </xacml:Match>
         </xacml:AllOf>
       </xacml:AnyOf>

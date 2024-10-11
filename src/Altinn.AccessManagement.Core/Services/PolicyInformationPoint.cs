@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -71,10 +72,15 @@ namespace Altinn.AccessManagement.Core.Services
             Dictionary<string, Right> result = new Dictionary<string, Right>();
             XacmlPolicy policy = null;
 
+            if (rightsQuery.Type != RightsQueryType.User)
+            {
+                return result.Values.ToList();
+            }
+
             // TODO: Caching??
 
             // Verify resource
-            if (!DelegationHelper.TryGetResourceFromAttributeMatch(rightsQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(rightsQuery.Resource.AuthorizationReference, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 throw new ValidationException($"RightsQuery must specify a valid Resource. Valid resource can either be a single resource from the Altinn resource registry ({AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute}) or an Altinn app (identified by both {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute})");
@@ -149,13 +155,29 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<Right>> GetDelegableRightsByApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default)
+        public async Task<List<Right>> GetDelegableRightsByApp(RightsQuery rightsQuery, CancellationToken cancellationToken = default)
         {
-            List<Right> result;
+            Dictionary<string, Right> result = new Dictionary<string, Right>();
+            if (rightsQuery.Type != RightsQueryType.AltinnApp)
+            {
+                return result.Values.ToList();
+            }
+
+            XacmlPolicy policy = await GetPolicy(rightsQuery.Resource.AuthorizationReference, cancellationToken);
+
+            int minimumAuthenticationLevel = PolicyHelper.GetMinimumAuthenticationLevelFromXacmlPolicy(policy);
+            RightSourceType policyType = rightsQuery.Resource.ResourceType == ResourceType.AltinnApp ? RightSourceType.AppPolicy : RightSourceType.ResourceRegistryPolicy;
+            EnrichRightsDictionaryWithRightsFromPolicy(result, policy, policyType, rightsQuery.To, minimumAuthenticationLevel: minimumAuthenticationLevel, returnAllPolicyRights: false, getDelegableRights: true);
+
+            return result.Values.Where(r => r.CanDelegate.HasValue && r.CanDelegate.Value).ToList();
+        }
+
+        private async Task<XacmlPolicy> GetPolicy(List<AttributeMatch> resource, CancellationToken cancellationToken)
+        {
             XacmlPolicy policy = null;
 
             // Verify resource
-            if (!DelegationHelper.TryGetResourceFromAttributeMatch(resourceQuery.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string serviceCode, out string serviceEditionCode)
+            if (!DelegationHelper.TryGetResourceFromAttributeMatch(resource, out ResourceAttributeMatchType resourceMatchType, out string resourceId, out string org, out string app, out string _, out string _)
                 || resourceMatchType == ResourceAttributeMatchType.None)
             {
                 throw new ValidationException($"RightsQuery must specify a valid Resource. Valid resource can either be a single resource from the Altinn resource registry ({AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute}) or an Altinn app (identified by both {AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute} and {AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute})");
@@ -175,10 +197,7 @@ namespace Altinn.AccessManagement.Core.Services
                 throw new ValidationException($"No valid policy found for the specified resource");
             }
 
-            // Fetch all rights delegable
-            result = GetRightsFromPolicy(policy, resourceQuery.OwnerApp);
-            
-            return result;
+            return policy;
         }
 
         private static List<Right> GetRightsFromPolicy(XacmlPolicy policy, IEnumerable<AttributeMatch> delegater)
@@ -421,7 +440,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
         }
 
-        private static void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> userSubjects, int minimumAuthenticationLevel = 0, int delegationOfferedByPartyId = 0, bool returnAllPolicyRights = false, bool getDelegableRights = false)
+        private static void EnrichRightsDictionaryWithRightsFromPolicy(Dictionary<string, Right> rights, XacmlPolicy policy, RightSourceType policySourceType, List<AttributeMatch> subjectMatches, int minimumAuthenticationLevel = 0, int delegationOfferedByPartyId = 0, bool returnAllPolicyRights = false, bool getDelegableRights = false)
         {
             PolicyDecisionPoint pdp = new PolicyDecisionPoint();
 
@@ -434,7 +453,7 @@ namespace Altinn.AccessManagement.Core.Services
                 ICollection<Right> ruleRights = PolicyHelper.GetRightsFromXacmlRules(rule.SingleToList());
                 foreach (Right ruleRight in ruleRights)
                 {
-                    ICollection<XacmlContextAttributes> contextAttributes = PolicyHelper.GetContextAttributes(userSubjects, ruleRight.Resource, ruleRight.Action.SingleToList());
+                    ICollection<XacmlContextAttributes> contextAttributes = PolicyHelper.GetContextAttributes(subjectMatches, ruleRight.Resource, ruleRight.Action.SingleToList());
                     XacmlContextRequest authRequest = new XacmlContextRequest(false, false, contextAttributes);
 
                     XacmlContextResponse response = pdp.Authorize(authRequest, singleRulePolicy);
@@ -446,24 +465,25 @@ namespace Altinn.AccessManagement.Core.Services
                         continue;
                     }
 
-                    if (!rights.ContainsKey(ruleRight.RightKey))
+                    if (!rights.TryGetValue(ruleRight.RightKey, out Right right))
                     {
                         rights.Add(ruleRight.RightKey, ruleRight);
+                        right = ruleRight;
                     }
 
                     // If getting rights for delegation, the xacml decision is to be used for indicating if the user can delegate the right. Otherwise the decision indicate whether the user actually have the right.
                     if (getDelegableRights)
                     {
-                        rights[ruleRight.RightKey].CanDelegate = (rights[ruleRight.RightKey].CanDelegate.HasValue && rights[ruleRight.RightKey].CanDelegate.Value) || decisionResult.Decision.Equals(XacmlContextDecision.Permit);
+                        right.CanDelegate = (right.CanDelegate.HasValue && right.CanDelegate.Value) || decisionResult.Decision.Equals(XacmlContextDecision.Permit);
                     }
                     else
                     {
-                        rights[ruleRight.RightKey].HasPermit = (rights[ruleRight.RightKey].HasPermit.HasValue && rights[ruleRight.RightKey].HasPermit.Value) || decisionResult.Decision.Equals(XacmlContextDecision.Permit);
+                        right.HasPermit = (right.HasPermit.HasValue && right.HasPermit.Value) || decisionResult.Decision.Equals(XacmlContextDecision.Permit);
                     }
 
                     if (decisionResult.Decision.Equals(XacmlContextDecision.Permit) || returnAllPolicyRights)
                     {
-                        rights[ruleRight.RightKey].RightSources.Add(
+                        right.RightSources.Add(
                             new RightSource
                             {
                                 PolicyId = policy.PolicyId.OriginalString,
@@ -474,7 +494,7 @@ namespace Altinn.AccessManagement.Core.Services
                                 CanDelegate = getDelegableRights ? decisionResult.Decision.Equals(XacmlContextDecision.Permit) : null,
                                 MinimumAuthenticationLevel = minimumAuthenticationLevel,
                                 OfferedByPartyId = delegationOfferedByPartyId,
-                                UserSubjects = userSubjects,
+                                UserSubjects = subjectMatches,
                                 PolicySubjects = ruleSubjects
                             });
                     }

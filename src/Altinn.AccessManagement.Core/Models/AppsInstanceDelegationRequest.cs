@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.Swashbuckle.Examples;
 
 namespace Altinn.AccessManagement.Core.Models;
 
@@ -43,7 +41,7 @@ public class AppsInstanceDelegationRequest
     /// <summary>
     /// The app performing the delegation
     /// </summary>
-    public IEnumerable<AttributeMatch> PerformedBy { get; set; }
+    public ResourceIdUrn PerformedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the rights to delegate

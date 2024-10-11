@@ -6,6 +6,8 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Altinn.Urn;
+using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -547,6 +549,27 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
             Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
             AssertCollections(expected.Subunits, actual.Subunits, AssertAuthorizedPartyEqual);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ResourceRightDelegationCheckResultDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertResourceRightDelegationCheckResultDto(ResourceRightDelegationCheckResultDto expected, ResourceRightDelegationCheckResultDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightKey, actual.RightKey);
+            Assert.Equal(expected.Status, actual.Status);
+            Assert.Equal(expected.Action.Value, actual.Action.Value);
+            AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertUrnJsonTypeValue);
+        }
+
+        private static void AssertUrnJsonTypeValue(UrnJsonTypeValue expected, UrnJsonTypeValue actual)
+        {
+            Assert.Equal(expected.Value, actual.Value);
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

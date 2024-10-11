@@ -87,6 +87,11 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string ResourceRegistryAttribute = "urn:altinn:resource";
 
             /// <summary>
+            /// Resource delegation urn prefix used in Xacml policy rule subjects to identify rights the resourceId value of the attribute, is allowed to perform delegation of.
+            /// </summary>
+            public const string ResourceDelegationAttribute = "urn:altinn:resource:delegation";
+
+            /// <summary>
             /// Organization name
             /// </summary>
             public const string OrganizationName = "urn:altinn:organization:name";

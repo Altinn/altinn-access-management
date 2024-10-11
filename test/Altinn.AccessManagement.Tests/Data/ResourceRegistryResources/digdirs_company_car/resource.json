@@ -7,13 +7,13 @@
   },
   "description": {
     "en": "Only the manager (DAGL) has access to drive the company car",
-    "nb-no": "Bare daglig leder (DAGL) har tilgang til å kjøre firmabilen",
-    "nn-no": "Berre dagleg leiar (DAGL) har høve til å kjøyre firmabilen"
+    "nb-no": "Bare daglig leder (DAGL) har tilgang til ï¿½ kjï¿½re firmabilen",
+    "nn-no": "Berre dagleg leiar (DAGL) har hï¿½ve til ï¿½ kjï¿½yre firmabilen"
   },
   "rightDescription": {
     "en": "Gives an employee permission to borrow the company car",
-    "nb-no": "Gir en ansatt lov til å låne firmabilen",
-    "nn-no": "Gjev ein tilsett løyve til å ta ei rånerunde ned i vik"
+    "nb-no": "Gir en ansatt lov til ï¿½ lï¿½ne firmabilen",
+    "nn-no": "Gjev ein tilsett lï¿½yve til ï¿½ ta ei rï¿½nerunde ned i vik"
   },
   "homepage": "https://www.jksfirmabiler.no/",
   "status": "Active",
@@ -43,5 +43,11 @@
   "sector": [
     "offentlig"
   ],
-  "resourceType": "MaskinportenSchema"
+  "resourceType": "MaskinportenSchema",
+  "authorizationReference": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "digdirs_company_car"
+    }
+  ]
 }

@@ -263,7 +263,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
         else
         {
-            ////RightQueryForApp resourceQuery = new RightQueryForApp { OwnerApp = appsInstanceDelegationRequest.PerformedBy, Resource = resource.AuthorizationReference };
             RightsQuery rightsQueryForApp = new RightsQuery
             {
                 Type = RightsQueryType.AltinnApp,
@@ -307,7 +306,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
-
+        
         foreach (RightInternal rightToDelegate in request.Rights)
         {
             if (CheckIfInstanceIsDelegable(delegableRights, rightToDelegate))

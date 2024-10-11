@@ -19,10 +19,10 @@ public interface IAppsInstanceDelegationService
     /// <summary>
     /// Delegate access to an app instance
     /// </summary>
-    /// <param name="appsInstanceDelegationRequest">App instance delegation request model</param>
+    /// <param name="request">App instance delegation request model</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Boolean whether the app instance delegation was successful</returns>
-    public Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default);
+    public Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Revokes access to an app instance

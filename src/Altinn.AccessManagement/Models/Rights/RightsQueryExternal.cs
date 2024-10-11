@@ -54,8 +54,8 @@ namespace Altinn.AccessManagement.Models
 
         private static string GetResourceIdentifier(List<AttributeMatchExternal> resource)
         {
-            return resource.FirstOrDefault(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)?.Value ??
-                $"app_{resource.FirstOrDefault(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)?.Value}_{resource.FirstOrDefault(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)?.Value}";
+            return resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)?.Value ??
+                $"app_{resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)?.Value}_{resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)?.Value}";
         }
     }
 }

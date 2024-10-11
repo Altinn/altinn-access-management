@@ -1,6 +1,8 @@
 using Altinn.AccessManagement.Core.Configuration;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Extensions;
+using Altinn.AccessManagement.Core.Services.Implementation;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Health;
 using Altinn.AccessManagement.Integration.Configuration;
 using Altinn.AccessManagement.Integration.Extensions;
@@ -84,7 +86,28 @@ internal static class AccessManagementHost
                 Type = SecuritySchemeType.ApiKey
             });
             options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+            var originalIdSelector = options.SchemaGeneratorOptions.SchemaIdSelector;
+            options.SchemaGeneratorOptions.SchemaIdSelector = (Type t) =>
+            {
+                if (!t.IsNested)
+                {
+                    return originalIdSelector(t);
+                }
+
+                var chain = new List<string>();
+                do
+                {
+                    chain.Add(originalIdSelector(t));
+                    t = t.DeclaringType;
+                }
+                while (t != null);
+                chain.Reverse();
+                return string.Join(".", chain);
+            };        
         });
+
+        builder.Services.AddUrnSwaggerSupport();
     }
 
     private static void ConfigureAppsettings(this WebApplicationBuilder builder)
@@ -133,8 +156,8 @@ internal static class AccessManagementHost
             });
         }
 
-        builder.Services.AddAuthorizationBuilder().
-            AddPolicy("PlatformAccess", policy => policy.Requirements.Add(new AccessTokenRequirement()))
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION, policy => policy.Requirements.Add(new AccessTokenRequirement()))
             .AddPolicy(AuthzConstants.ALTINNII_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "sbl.authorization")))
             .AddPolicy(AuthzConstants.INTERNAL_AUTHORIZATION, policy => policy.Requirements.Add(new ClaimAccessRequirement("urn:altinn:app", "internal.authorization")))
             .AddPolicy(AuthzConstants.POLICY_MASKINPORTEN_DELEGATION_READ, policy => policy.Requirements.Add(new ResourceAccessRequirement("read", "altinn_maskinporten_scope_delegation")))
@@ -144,6 +167,7 @@ internal static class AccessManagementHost
             .AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")))
             .AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy => policy.Requirements.Add(new ScopeAccessRequirement([AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN])));
 
+        builder.Services.AddTransient<IAuthorizationHandler, AccessTokenHandler>();
         builder.Services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
         builder.Services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
         builder.Services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();

@@ -6,7 +6,7 @@ using Altinn.AccessManagement.Core.Resolvers.Extensions;
 namespace Altinn.AccessManagement.Resolvers;
 
 /// <summary>
-/// Resolves attributes for <see cref="Urn.Altinn.EnterpriseUser"/> 
+/// Resolves attributes for <see cref="BaseUrn.Altinn.EnterpriseUser"/> 
 /// </summary>
 public class AltinnEnterpriseUserResolver : AttributeResolver
 {
@@ -15,22 +15,22 @@ public class AltinnEnterpriseUserResolver : AttributeResolver
     /// <summary>
     /// ctor
     /// </summary>
-    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(Urn.Altinn.EnterpriseUser.String())
+    public AltinnEnterpriseUserResolver(IProfileClient profile) : base(BaseUrn.Altinn.EnterpriseUser.String())
     {
-        AddLeaf([Urn.Altinn.EnterpriseUser.Username], [Urn.Altinn.EnterpriseUser.UserId], ResolveUsername());
+        AddLeaf([BaseUrn.Altinn.EnterpriseUser.Username], [BaseUrn.Altinn.EnterpriseUser.UserId], ResolveUsername());
         _profile = profile;
     }
 
     /// <summary>
-    /// Resolves an enterprise user if given <see cref="Urn.Altinn.EnterpriseUser.Username"/>
+    /// Resolves an enterprise user if given <see cref="BaseUrn.Altinn.EnterpriseUser.Username"/>
     /// </summary>
     public LeafResolver ResolveUsername() => async (attributes, cancellationToken) =>
     {
-        if (await _profile.GetUser(new UserProfileLookup { Username = attributes.GetRequiredString(Urn.Altinn.EnterpriseUser.Username) }) is var profile && profile != null)
+        if (await _profile.GetUser(new UserProfileLookup { Username = attributes.GetRequiredString(BaseUrn.Altinn.EnterpriseUser.Username) }) is var profile && profile != null)
         {
             return
             [
-                new(Urn.Altinn.EnterpriseUser.UserId, profile.UserId),
+                new(BaseUrn.Altinn.EnterpriseUser.UserId, profile.UserId),
             ];
         }
 

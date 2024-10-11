@@ -136,6 +136,7 @@ public static class PersistenceDependencyInjectionExtensions
         builder.AddAltinnPostgresDataSource()
             .MapEnum<DelegationChangeType>("delegation.delegationchangetype")
             .MapEnum<UuidType>("delegation.uuidtype")
+            .MapEnum<InstanceDelegationMode>("delegation.instancedelegationmode")
             .AddYuniqlMigrations(cfg =>
             {
                 cfg.Workspace = "/";

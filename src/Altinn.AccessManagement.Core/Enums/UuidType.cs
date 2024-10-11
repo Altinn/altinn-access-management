@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Enums
@@ -6,6 +7,7 @@ namespace Altinn.AccessManagement.Enums
     /// <summary>
     /// Enum defining the different uuids used for defining parts in a delegation
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum UuidType
     {
         /// <summary>
@@ -40,6 +42,13 @@ namespace Altinn.AccessManagement.Enums
         /// </summary>
         [EnumMember(Value = "urn:altinn:enterpriseuser:uuid")]
         [PgName("urn:altinn:enterpriseuser:uuid")]
-        EnterpriseUser
+        EnterpriseUser,
+
+        /// <summary>
+        /// Identifies a enterpriseuser this is marked as obsolete and is used for existing integration is also identified with an unique username
+        /// </summary>
+        [EnumMember(Value = "urn:altinn:resource")]
+        [PgName("urn:altinn:resource")]
+        Resource
     }
 }

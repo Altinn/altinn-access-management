@@ -1,0 +1,51 @@
+meta {
+  name: RevokeInstanceDelegations
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId/revoke
+  body: json
+  auth: none
+}
+
+params:path {
+  resourceId: app_{{org}}_{{app}}
+  instanceId: {{instanceId}}
+}
+
+headers {
+  Accept: application/json
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const { v4: uuidv4 } = require('uuid');
+  
+  const org = sharedtestdata.serviceOwners.ttd.org;
+  bru.setVar("org",  org);
+  const app = "am-devtest-instancedelegation";
+  bru.setVar("app",  app);
+  
+  const uuid = uuidv4();
+  bru.setVar("instanceId",  uuid);
+  
+  var getTokenParameters = {
+    auth_org: org,
+    auth_app: app,
+    auth_tokenType: sharedtestdata.authTokenType.platformAccess
+  }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("Post AppsInstanceDelegations Revoke", function() {
+    var body = res.getBody();  
+    expect(res.status).to.equal(204);
+  });
+}

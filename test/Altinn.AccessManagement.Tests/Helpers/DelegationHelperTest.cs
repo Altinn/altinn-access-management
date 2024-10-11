@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Mocks;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ABAC.Xacml;
@@ -382,6 +383,123 @@ namespace Altinn.AccessManagement.Tests.Helpers
 
             // Assert
             Assert.False(actual);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Given an AttributeMatch list parse out the type and Identificator from the list
+        /// Input:
+        /// Attribute match list containing a SystemUser urn.
+        /// Expected Result:
+        /// True and Type set to UuidType.SystemUser and Id set to correct Uuid
+        /// Success Criteria:
+        /// Rule is not found and expected result is returned
+        /// </summary>
+        [Fact]
+        public void ParseSystemUserTypeAndIdentifierFromUrn_Succsess()
+        {
+            string idString = "56224CB5-E8BF-4569-86EC-6CF104B63F74";
+            List<AttributeMatch> input = new List<AttributeMatch>
+            {
+                new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.SystemUserUuid, Value = idString }
+            };
+
+            bool result = DelegationHelper.TryGetPerformerFromAttributeMatches(input, out string id, out UuidType type);
+            Assert.True(result);
+            Assert.Equal(UuidType.SystemUser, type);
+            Assert.Equal(idString, id);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Given an AttributeMatch list parse out the type and Identificator from the list
+        /// Input:
+        /// Attribute match list containing a Organization urn.
+        /// Expected Result:
+        /// returns True and output Type set to UuidType.Organization and Id set to correct Uuid
+        /// </summary>
+        [Fact]
+        public void ParseOrganizationTypeAndIdentifierFromUrn_Succsess()
+        {
+            string idString = "9867756B-625E-4904-815E-889A5824C33C";
+            List<AttributeMatch> input = new List<AttributeMatch>
+            {
+                new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrganizationUuid, Value = idString }
+            };
+
+            bool result = DelegationHelper.TryGetPerformerFromAttributeMatches(input, out string id, out UuidType type);
+            Assert.True(result);
+            Assert.Equal(UuidType.Organization, type);
+            Assert.Equal(idString, id);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Given an AttributeMatch list parse out the type and Identificator from the list
+        /// Input:
+        /// Attribute match list containing a Person urn.
+        /// Expected Result:
+        /// returns True and output Type set to UuidType.Person and Id set to correct Uuid
+        /// </summary>
+        [Fact]
+        public void ParsePersonTypeAndIdentifierFromUrn_Succsess()
+        {
+            string idString = "7514B58F-ABBC-42F7-98EB-11BCE123E757";
+            List<AttributeMatch> input = new List<AttributeMatch>
+            {
+                new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonUuid, Value = idString }
+            };
+
+            bool result = DelegationHelper.TryGetPerformerFromAttributeMatches(input, out string id, out UuidType type);
+            Assert.True(result);
+            Assert.Equal(UuidType.Person, type);
+            Assert.Equal(idString, id);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Given an AttributeMatch list parse out the type and Identificator from the list
+        /// Input:
+        /// Attribute match list containing a EnterpriseUser urn.
+        /// Expected Result:
+        /// returns True and output Type set to UuidType.EnterpriseUser and Id set to correct Uuid
+        /// </summary>
+        [Fact]
+        public void ParseEnterpriseUserTypeAndIdentifierFromUrn_Succsess()
+        {
+            string idString = "1CF6DFC5-31BC-48F4-A5ED-48711DC0FF4B";
+            List<AttributeMatch> input = new List<AttributeMatch>
+            {
+                new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.EnterpriseUserUuid, Value = idString }
+            };
+
+            bool result = DelegationHelper.TryGetPerformerFromAttributeMatches(input, out string id, out UuidType type);
+            Assert.True(result);
+            Assert.Equal(UuidType.EnterpriseUser, type);
+            Assert.Equal(idString, id);
+        }
+
+        /// <summary>
+        /// Scenario:
+        /// Given an AttributeMatch list parse out the type and Identificator from the list
+        /// Input:
+        /// Attribute match list containing a EnterpriseUser urn.
+        /// Expected Result:
+        /// returns False and output Type set to UuidType.NotSpecified and Id set to NULL
+        /// </summary>
+        [Fact]
+        public void ParseSsnTypeAndIdentifierFromUrn_Failure()
+        {
+            string idString = "01010149978";
+            List<AttributeMatch> input = new List<AttributeMatch>
+            {
+                new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PersonId, Value = idString }
+            };
+
+            bool result = DelegationHelper.TryGetPerformerFromAttributeMatches(input, out string id, out UuidType type);
+            Assert.False(result);
+            Assert.Equal(UuidType.NotSpecified, type);
+            Assert.Null(id);
         }
     }
 }

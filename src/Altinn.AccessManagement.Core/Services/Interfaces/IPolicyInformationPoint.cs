@@ -1,4 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.Authorization.ProblemDetails;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -27,6 +30,14 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of rights</returns>
         Task<List<Right>> GetRights(RightsQuery rightsQuery, bool returnAllPolicyRights = false, bool getDelegableRights = false, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets the all rights an app have right to delegate
+        /// </summary>
+        /// <param name="resourceQuery">the resource to query for</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns>A list of rights</returns>
+        Task<List<Right>> GetDelegableRightsByApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context

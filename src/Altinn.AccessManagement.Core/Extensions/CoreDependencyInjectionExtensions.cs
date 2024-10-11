@@ -3,6 +3,7 @@ using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Services;
+using Altinn.AccessManagement.Core.Services.Implementation;
 using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Resolvers;
 using Altinn.Common.AccessTokenClient.Services;
@@ -51,5 +52,6 @@ public static class CoreDependencyInjectionExtensions
         builder.Services.AddSingleton<IUserProfileLookupService, UserProfileLookupService>();
         builder.Services.AddSingleton<IAuthorizedPartiesService, AuthorizedPartiesService>();
         builder.Services.AddSingleton<IAltinn2RightsService, Altinn2RightsService>();
+        builder.Services.AddSingleton<IAppsInstanceDelegationService, AppsInstanceDelegationService>();
     }
 }

@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Utils;
-using static Altinn.AccessManagement.Tests.Seeds.ResourceSeeds;
 
 namespace Altinn.AccessManagement.Tests.Mocks;
 
@@ -84,6 +79,91 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         }
 
         return Task.FromResult(currentDelegationChange);
+    }
+
+    public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default)
+    {
+        Random random = new Random();
+        switch (request.Instance)
+        {
+            case "00000000-0000-0000-0000-000000000001":
+                
+                return Task.FromResult(new InstanceDelegationChange
+                {
+                    FromUuidType = request.FromType,
+                    FromUuid = request.FromUuid,
+                    ToUuidType = request.ToType,
+                    ToUuid = request.ToUuid,
+                    PerformedBy = request.Resource,
+                    PerformedByType = UuidType.Resource,
+                    BlobStoragePolicyPath = $"Instance/{request.Resource}/{request.Instance.AsFileName(false)}/{request.InstanceDelegationMode}/delegationpolicy.xml",
+                    BlobStorageVersionId = "2024-09-13T16:59:13.123Z",
+                    Created = new DateTime(2024, 9, 13, 16, 59, 13, 347, DateTimeKind.Utc),
+                    Instance = request.Instance,
+                    DelegationChangeType = DelegationChangeType.Grant,
+                    InstanceDelegationChangeId = random.Next(1, 1000),
+                    InstanceDelegationMode = InstanceDelegationMode.ParallelSigning,
+                    Resource = request.Resource
+                });
+            default:
+                return Task.FromResult((InstanceDelegationChange)null);
+        }
+    }
+
+    public Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default)
+    {
+        Random random = new();
+        string path = GetDelegationPolicyPathFromInstanceRule(instanceDelegationChange);
+        InstanceDelegationChange result = instanceDelegationChange.Instance switch
+        {
+            "00000000-0000-0000-0000-000000000002" => null,
+            _ => new InstanceDelegationChange
+            {
+                InstanceDelegationChangeId = random.Next(0, 1000),
+                DelegationChangeType = instanceDelegationChange.DelegationChangeType,
+                InstanceDelegationMode = instanceDelegationChange.InstanceDelegationMode,
+                Resource = instanceDelegationChange.Resource,
+                Instance = instanceDelegationChange.Instance,
+                FromUuid = instanceDelegationChange.FromUuid,
+                FromUuidType = instanceDelegationChange.FromUuidType,
+                ToUuid = instanceDelegationChange.ToUuid,
+                ToUuidType = instanceDelegationChange.ToUuidType,
+                PerformedBy = instanceDelegationChange.PerformedBy,
+                PerformedByType = instanceDelegationChange.PerformedByType,
+                BlobStoragePolicyPath = path,
+                BlobStorageVersionId = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Created = DateTime.Now
+            },
+        };
+
+        return Task.FromResult(result);
+    }
+
+    private static string GetDelegationPolicyPathFromInstanceRule(InstanceDelegationChange change)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(change.Resource);
+
+        sb.Append('/');
+
+        sb.Append(change.FromUuidType);
+        sb.Append('-');
+        sb.Append(change.FromUuid);
+        sb.Append('/');
+
+        sb.Append(change.ToUuidType);
+        sb.Append('-');
+        sb.Append(change.ToUuid);
+        sb.Append('/');
+
+        sb.Append(change.Instance.AsFileName(false));
+        
+        sb.Append('/');
+        sb.Append(change.InstanceDelegationMode);
+
+        sb.Append("/delegationpolicy.xml");
+        return sb.ToString();
     }
 
     /// <inheritdoc/>

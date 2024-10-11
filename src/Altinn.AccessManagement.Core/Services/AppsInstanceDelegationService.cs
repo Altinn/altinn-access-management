@@ -171,6 +171,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
     }
 
+
     /// <inheritdoc/>
     public async Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
     {
@@ -294,14 +295,15 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Get(CancellationToken cancellationToken = default)
+    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
-    
+
     /// <inheritdoc/>
-    public Task<Result<bool>> Revoke(CancellationToken cancellationToken = default)
+    public async Task<Result<List<AppsInstanceDelegationResponse>>> Get(string resourceId, string instanceId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        List<AppsInstanceDelegationResponse> result = await _pip.GetInstanceDelegations(resourceId, instanceId, cancellationToken);
+        return result;
     }
 }

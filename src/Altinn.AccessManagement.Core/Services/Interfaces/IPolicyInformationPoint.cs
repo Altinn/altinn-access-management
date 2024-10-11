@@ -48,6 +48,15 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Finds all InstanceDelegations for a given Resource/Instance combination
+        /// </summary>
+        /// <param name="resourceId">The resourceId to fetch delegations for</param>
+        /// <param name="instanceId">The instanceId to fetch delegations for</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns>all delegations for a given Resource/Instance combination</returns>
+        Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(string resourceId, string instanceId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Finds all active received delegations (not including maskinporten schema) from db, both directly delegated to the party or through key roles if the party is a person
         /// </summary>
         /// <param name="partyId">Party id of a user or organization</param>

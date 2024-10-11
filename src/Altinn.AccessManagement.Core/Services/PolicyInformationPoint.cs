@@ -1,11 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -14,6 +17,7 @@ using Altinn.Authorization.ABAC;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Register.Enums;
+using Altinn.Urn;
 using Altinn.Urn.Json;
 using Authorization.Platform.Authorization.Models;
 using Microsoft.Extensions.Logging;
@@ -296,6 +300,88 @@ namespace Altinn.AccessManagement.Core.Services
 
             result.DelegationChanges = await FindAllDelegations(subjectUserId, subjectPartyId, subjectUuid, subjectUuidType, partyId, resourceId, resourceMatchType, cancellationToken);
             return result;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(string resourceId, string instanceId, CancellationToken cancellationToken)
+        {
+            List<AppsInstanceDelegationResponse> result = new List<AppsInstanceDelegationResponse>();
+
+            List<InstanceDelegationChange> delegations = await _delegationRepository.GetAllLatestInstanceDelegationChanges(resourceId, instanceId, cancellationToken);
+
+            foreach (InstanceDelegationChange delegation in delegations)
+            {
+                if (delegation.DelegationChangeType == DelegationChangeType.RevokeLast)
+                {
+                    continue;
+                }
+
+                AppsInstanceDelegationResponse appsInstanceDelegationResponse = new AppsInstanceDelegationResponse
+                {
+                    From = GetPartyUrnFromUuidTypeAndUuid(delegation.FromUuid, delegation.FromUuidType),
+                    To = GetPartyUrnFromUuidTypeAndUuid(delegation.ToUuid, delegation.ToUuidType),
+                    InstanceDelegationMode = delegation.InstanceDelegationMode,
+                    ResourceId = delegation.Resource,
+                    InstanceId = delegation.Instance
+                };
+
+                XacmlPolicy policy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId, cancellationToken);
+                appsInstanceDelegationResponse.Rights = GetRightsFromPolicy(policy);
+            }
+
+            return result;
+        }
+
+        private IEnumerable<InstanceRightDelegationResult> GetRightsFromPolicy(XacmlPolicy policy)
+        {
+            List<InstanceRightDelegationResult> result = new List<InstanceRightDelegationResult>();
+
+            foreach (XacmlRule xacmlRule in policy.Rules)
+            {
+                InstanceRightDelegationResult rule = new InstanceRightDelegationResult();
+
+                foreach (XacmlAnyOf anyOf in xacmlRule.Target.AnyOf)
+                {
+                    foreach (XacmlAllOf allOf in anyOf.AllOf)
+                    {
+                        foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                        {
+                            if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action))
+                            {
+                                bool validAction = ActionUrn.TryParse($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}", out ActionUrn action);
+                                rule.Action = action;
+                            }
+
+                            if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
+                            {
+                                UrnJsonTypeValue resourcePart = KeyValueUrn.CreateUnchecked($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}", xacmlMatch.AttributeDesignator.AttributeId.OriginalString.Length + 1);
+                                rule.Resource.Add(resourcePart);
+                            }
+                        }
+                    }
+                }
+
+                result.Add(rule);
+            }
+            
+            return result;
+        }
+
+        private static PartyUrn GetPartyUrnFromUuidTypeAndUuid(Guid uuid, UuidType type)
+        {
+            string urnString = null;
+
+            switch(type)
+            {
+                case UuidType.Person:
+                case UuidType.Organization:
+                    urnString = $"altinn:party:uuid:{uuid.ToString()}";
+                    break;
+            }
+
+            bool validParty = PartyUrn.TryParse(urnString, out PartyUrn result);
+
+            return validParty ? result : null;
         }
 
         private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int subjectPartyId, Guid subjectUuid, UuidType subjectUuidType, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType, CancellationToken cancellationToken = default)

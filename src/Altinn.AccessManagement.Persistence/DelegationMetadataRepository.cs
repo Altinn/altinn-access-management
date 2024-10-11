@@ -751,4 +751,9 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             throw;
         }
     }
+
+    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(string resourceID, string instanceID, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

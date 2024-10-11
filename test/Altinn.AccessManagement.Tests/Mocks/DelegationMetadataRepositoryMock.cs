@@ -543,4 +543,9 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");
     }
+
+    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(string resourceID, string instanceID, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -200,45 +200,6 @@ namespace Altinn.AccessManagement.Core.Services
             return policy;
         }
 
-        private static List<Right> GetRightsFromPolicy(XacmlPolicy policy, IEnumerable<AttributeMatch> delegater)
-        {
-            Dictionary<string, Right> rights = new Dictionary<string, Right>();
-            foreach (XacmlRule rule in policy.Rules)
-            {
-                List<List<PolicyAttributeMatch>> ruleSubjects = PolicyHelper.GetRulePolicyAttributeMatchesForCategory(rule, XacmlConstants.MatchAttributeCategory.Subject);
-                if (!PolicyHelper.ContainsDelegatorAppInSubject(ruleSubjects, delegater))
-                {
-                    continue;
-                }
-
-                ICollection<Right> ruleRights = PolicyHelper.GetRightsFromXacmlRules(rule.SingleToList());
-                
-                foreach (Right ruleRight in ruleRights)
-                {
-                    if (!rights.TryGetValue(ruleRight.RightKey, out Right value))
-                    {
-                        value = ruleRight;
-                        rights.Add(ruleRight.RightKey, value);
-                    }
-
-                    value.RightSources.Add(
-                        new RightSource
-                        {
-                            PolicyId = policy.PolicyId.OriginalString,
-                            PolicyVersion = policy.Version,
-                            RuleId = rule.RuleId,
-                            RightSourceType = RightSourceType.ResourceRegistryPolicy,
-                            HasPermit = false,
-                            CanDelegate = true,
-                            MinimumAuthenticationLevel = 0,
-                            PolicySubjects = ruleSubjects
-                        });
-                }
-            }
-
-            return rights.Values.ToList();
-        }
-
         /// <inheritdoc/>
         public async Task<IEnumerable<DelegationChange>> GetReceivedDelegationFromRepository(int partyId, CancellationToken cancellationToken = default)
         {

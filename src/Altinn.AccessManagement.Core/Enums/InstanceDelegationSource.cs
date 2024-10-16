@@ -1,27 +1,25 @@
 ﻿using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
 using NpgsqlTypes;
 
 namespace Altinn.AccessManagement.Core.Enums
 {
     /// <summary>
-    /// Enum defining delegation mode (normal or paralellsigning)
+    /// Enum defining delegation source (app or user)
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum InstanceDelegationMode
+    public enum InstanceDelegationSource
     {
         /// <summary>
         /// Normal instance delegation
         /// </summary>
-        [EnumMember(Value = "normal")]
-        [PgName("normal")]
-        Normal,
+        [EnumMember(Value = "user")]
+        [PgName("user")]
+        User,
 
         /// <summary>
         /// Special case of instance delegation extends delegations to organizations to all users in the receiving organization with parallel role/package to also getting access to the instance
         /// </summary>
-        [EnumMember(Value = "parallelSigning")]
-        [PgName("parallelsigning")]
-        ParallelSigning
+        [EnumMember(Value = "app")]
+        [PgName("app")]
+        App
     }
 }

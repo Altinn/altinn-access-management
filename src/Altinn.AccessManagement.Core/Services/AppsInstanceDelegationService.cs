@@ -171,7 +171,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
     }
 
-
     /// <inheritdoc/>
     public async Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
     {
@@ -275,6 +274,12 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         
         return result;
     }
+    
+    /// <inheritdoc/>
+    public async Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
+    {
+        return new AppsInstanceDelegationResponse();
+    }
 
     private async Task<List<InstanceRightDelegationResult>> DelegateRights(InstanceRight rulesToDelegate, List<RightInternal> rightsAppCantDelegate, CancellationToken cancellationToken)
     {
@@ -292,12 +297,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
 
         return rights;
-    }
-
-    /// <inheritdoc/>
-    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>

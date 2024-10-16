@@ -327,6 +327,7 @@ namespace Altinn.AccessManagement.Core.Services
 
                 XacmlPolicy policy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId, cancellationToken);
                 appsInstanceDelegationResponse.Rights = GetRightsFromPolicy(policy);
+                result.Add(appsInstanceDelegationResponse);
             }
 
             return result;
@@ -338,7 +339,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             foreach (XacmlRule xacmlRule in policy.Rules)
             {
-                InstanceRightDelegationResult rule = new InstanceRightDelegationResult();
+                InstanceRightDelegationResult rule = new InstanceRightDelegationResult { Resource = [], Status = DelegationStatus.Delegated };
 
                 foreach (XacmlAnyOf anyOf in xacmlRule.Target.AnyOf)
                 {
@@ -375,7 +376,7 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 case UuidType.Person:
                 case UuidType.Organization:
-                    urnString = $"altinn:party:uuid:{uuid.ToString()}";
+                    urnString = $"urn:altinn:party:uuid:{uuid.ToString()}";
                     break;
             }
 

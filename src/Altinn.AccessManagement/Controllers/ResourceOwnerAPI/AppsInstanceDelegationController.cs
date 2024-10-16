@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
+using System.Threading;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -8,6 +9,7 @@ using Altinn.Authorization.ProblemDetails;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace Altinn.AccessManagement.Controllers;
 
@@ -60,6 +62,7 @@ public class AppsInstanceDelegationController : ControllerBase
         
         request.ResourceId = resourceId;
         request.InstanceId = instanceId;
+        request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
 
         List<AttributeMatch> performedBy = GetOrgAppFromToken(token);
         request.PerformedBy = performedBy;
@@ -103,7 +106,6 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Get([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
-        //Check if the app is the owner
         bool authorization = ValidatePlatformAccessToken(resourceId, token);
         authorization = true;
 
@@ -119,16 +121,17 @@ public class AppsInstanceDelegationController : ControllerBase
             return serviceResult.Problem.ToActionResult();
         }
 
-        return Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+        return Ok(_mapper.Map<List<AppsInstanceDelegationResponseDto>>(serviceResult.Value));
     }
 
-    /*
     /// <summary>
     /// Revokes access to an app instance
     /// </summary>
     /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <param name="resourceId">The resource identifier</param>
     /// <param name="instanceId">The instance identifier</param>
+    /// <param name="token">the platformToken to use for Authorization</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Result</returns>
     [HttpPost]
     [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
@@ -139,45 +142,36 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Revoke([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId)
+    public async Task<ActionResult> Revoke([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
-        Result<AppsInstanceDelegationResponseDto> result = default;
+        AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
 
-        if (result.IsProblem)
+        request.ResourceId = resourceId;
+        request.InstanceId = instanceId;
+        request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
+
+        List<AttributeMatch> performedBy = GetOrgAppFromToken(token);
+        request.PerformedBy = performedBy;
+
+        Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Revoke(request, cancellationToken);
+
+        if (serviceResult.IsProblem)
         {
-            return result.Problem.ToActionResult();
+            return serviceResult.Problem?.ToActionResult();
         }
 
-        return Ok(result.Value);
+        // Check result
+        int totalDelegations = request.Rights.Count();
+        int validDelegations = serviceResult.Value.Rights.Count(r => r.Status == Core.Enums.DelegationStatus.Delegated);
+
+        if (validDelegations == totalDelegations)
+        {
+            return Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+        }
+
+        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
     }
-    */
-
-    private static bool ValidatePlatformAccessToken(string resourceId, string token)
-    {
-        string appId = null;
-        string serviceOwner = null;
-        string appResource = null;
-        if (!string.IsNullOrEmpty(token))
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-            var appidentifier = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
-            serviceOwner = jwtSecurityToken.Issuer;
-            if (appidentifier != null)
-            {
-                appId = appidentifier.Value;
-            }
-        }
-
-        if (appId != null && serviceOwner != null)
-        {
-            appResource = $"app_{serviceOwner}_{appId}";
-            return appResource.Equals(resourceId);
-        }
-
-        return false;
-    }
-
+    
     /// <summary>
     /// delegating app from the platform token
     /// </summary>

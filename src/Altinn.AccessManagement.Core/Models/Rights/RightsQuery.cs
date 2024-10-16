@@ -1,4 +1,7 @@
-﻿namespace Altinn.AccessManagement.Core.Models
+﻿using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+
+namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
     /// Queries for a list of all rights between two parties for a specific resource.
@@ -7,6 +10,11 @@
     /// </summary>
     public class RightsQuery
     {
+        /// <summary>
+        /// Gets or sets the type of rights query to perform
+        /// </summary>
+        public RightsQueryType Type { get; set; }
+
         /// <summary>
         /// Gets or sets the set of Attribute Id and Attribute Value for the entity having offered rights
         /// </summary>
@@ -18,8 +26,8 @@
         public List<AttributeMatch> To { get; set; }
 
         /// <summary>
-        /// Gets or sets the set of Attribute Id and Attribute Value for identifying the resource the rights 
+        /// Gets or sets the service resource model of the rights 
         /// </summary>
-        public List<AttributeMatch> Resource { get; set; }
+        public ServiceResource Resource { get; set; }
     }
 }

@@ -34,10 +34,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Gets the all rights an app have right to delegate
         /// </summary>
-        /// <param name="resourceQuery">the resource to query for</param>
+        /// <param name="rightsQuery">The query model</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of rights</returns>
-        Task<List<Right>> GetDelegableRightsByApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default);
+        Task<List<Right>> GetDelegableRightsByApp(RightsQuery rightsQuery, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context

@@ -27,6 +27,14 @@ public class ActionIdentifier : ISpanParsable<ActionIdentifier>,
         _value = value;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="ActionIdentifier"/> from the specified value without validation.
+    /// </summary>
+    /// <param name="value">The action identifier.</param>
+    /// <returns>A <see cref="ActionIdentifier"/>.</returns>
+    public static ActionIdentifier CreateUnchecked(string value)
+        => new(value);
+
     /// <inheritdoc/>
     public static IEnumerable<ActionIdentifier>? GetExamples(ExampleDataOptions options)
     {

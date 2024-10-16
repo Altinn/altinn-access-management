@@ -71,7 +71,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return await _altinn2RightsClient.PostDelegationCheck(authenticatedUserId, fromParty.PartyId, serviceCode, serviceEditionCode);
             }
 
-            rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+            rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resource);
 
             List<Right> allDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, returnAllPolicyRights: true);
             if (allDelegableRights == null || allDelegableRights.Count == 0)
@@ -113,8 +113,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Altinn 2 service delegation is handled by SBL Bridge
-            DelegationHelper.TryGetResourceFromAttributeMatch(resource.AuthorizationReference, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string _, out string _);
-            if (resourceMatchType == ResourceAttributeMatchType.Altinn2Service)
+            if (resource.ResourceType == ResourceType.Altinn2Service)
             {
                 SblRightDelegationRequest sblRightDelegationRequest = new SblRightDelegationRequest { To = to.FirstOrDefault(), Rights = delegation.Rights };
                 DelegationActionResult sblResult = await _altinn2RightsClient.PostDelegation(authenticatedUserId, fromParty.PartyId, sblRightDelegationRequest);
@@ -124,11 +123,11 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Verify authenticated users delegable rights
-            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resourceRegistryId, org, app);
+            RightsQuery rightsQuery = RightsHelper.GetRightsQuery(authenticatedUserId, fromParty.PartyId, resource);
             List<Right> usersDelegableRights = await _pip.GetRights(rightsQuery, getDelegableRights: true, cancellationToken: cancellationToken);
             if (usersDelegableRights == null || usersDelegableRights.Count == 0)
             {
-                result.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resourceRegistryId}");
+                result.Errors.Add("right[0].Resource", $"Authenticated user does not have any delegable rights for the resource: {resource.Identifier}");
                 return result;
             }
 

@@ -10,6 +10,7 @@ using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Data;
 using Altinn.AccessManagement.Tests.Mocks;
+using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ProblemDetails;
 using Altinn.Common.AccessToken.Services;
 using Altinn.Common.PEP.Interfaces;
@@ -33,6 +34,28 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
     public AppsInstanceDelegationControllerTest(CustomWebApplicationFactory<AppsInstanceDelegationController> factory)
     {
         _factory = factory;
+    }
+
+    /// <summary>
+    /// Test case:  GET apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck
+    ///             with a valid PlatformAccessToken for an app having xacml rules specifying rights available for delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdata cases for details
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.DelegationCheck_Ok), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task DelegationCheck_ValidToken_OK(string platformToken, string resourceId, string instanceId, List<ResourceRightDelegationCheckResultDto> expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        List<ResourceRightDelegationCheckResultDto> actual = JsonSerializer.Deserialize<List<ResourceRightDelegationCheckResultDto>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertCollections(actual, expected, AssertionUtil.AssertResourceRightDelegationCheckResultDto);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using Altinn.Urn;
 
 namespace Altinn.AccessManagement.Core.Models
 {
@@ -58,5 +59,12 @@ namespace Altinn.AccessManagement.Core.Models
         /// <returns></returns>
         public override string ToString() =>
             $"{Id.ToLowerInvariant()}:{Value}";
+
+        /// <summary>
+        /// Creates a KeyValueUrn from the attribute match
+        /// </summary>
+        /// <returns>KeyValueUrn</returns>
+        public KeyValueUrn ToKeyValueUrn() =>
+            KeyValueUrn.CreateUnchecked($"{Id.ToLowerInvariant()}:{Value}", Id.Length + 1);
     }
 }

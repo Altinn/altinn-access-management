@@ -64,7 +64,7 @@ namespace Altinn.AccessManagement.Controllers
         {
             try
             {
-                RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
+                RightsQuery rightsQueryInternal = rightsQuery.ToRightsQueryInternal(_mapper);
                 List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, cancellationToken: cancellationToken);
                 return _mapper.Map<List<RightExternal>>(rightsInternal);
             }
@@ -98,7 +98,8 @@ namespace Altinn.AccessManagement.Controllers
         {
             try
             {
-                RightsQuery rightsQueryInternal = _mapper.Map<RightsQuery>(rightsQuery);
+                RightsQuery rightsQueryInternal = rightsQuery.ToRightsQueryInternal(_mapper);
+
                 List<Right> rightsInternal = await _pip.GetRights(rightsQueryInternal, returnAllPolicyRights, getDelegableRights: true, cancellationToken);
                 return _mapper.Map<List<RightExternal>>(rightsInternal);
             }

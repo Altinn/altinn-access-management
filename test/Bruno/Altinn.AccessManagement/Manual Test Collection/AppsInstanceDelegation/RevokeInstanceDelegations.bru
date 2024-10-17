@@ -18,6 +18,7 @@ params:path {
 headers {
   Accept: application/json
   PlatformAccessToken: {{platformAccessToken}}
+  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
 }
 
 script:pre-request {
@@ -44,7 +45,7 @@ script:pre-request {
 }
 
 tests {
-  test("Post AppsInstanceDelegations Revoke", function() {
+  test("AppsInstanceDelegation Revoke POST {InsertRequestName}", function() {
     var body = res.getBody();  
     expect(res.status).to.equal(204);
   });

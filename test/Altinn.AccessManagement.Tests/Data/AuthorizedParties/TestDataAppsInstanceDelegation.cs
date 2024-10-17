@@ -31,6 +31,26 @@ public static class TestDataAppsInstanceDelegation
     private static readonly string InstanceIdNormalNewPolicyOrgNumber = "00000000-0000-0000-0000-000000000007";
 
     /// <summary>
+    /// Test case:  GET v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck
+    ///             with: 
+    ///                - a valid app authenticated as the delegater, authenticated with PlatformAccessToken
+    ///                - valid resource for instance delegation
+    ///                - xacml policy file for resource to be delegated configured with rights available for delegation by the authenticated app
+    /// Expected:   - Should return 200 OK
+    ///             - Should include the delegated rights
+    /// Reason:     Apps defined in the policy file should be able to delegate the defined rights
+    /// </summary>
+    public static TheoryData<string, string, string, List<ResourceRightDelegationCheckResultDto>> DelegationCheck_Ok() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            AppId,
+            InstanceIdParallelNewPolicy,
+            GetExpectedResponse<List<ResourceRightDelegationCheckResultDto>>("DelegationCheck", AppId, InstanceIdParallelNewPolicy)
+        }
+    };
+
+    /// <summary>
     /// Test case:  POST v1/apps/instancedelegation/{resourceId}/{instanceId}
     ///             with: 
     ///                - a valid app as the delegater
@@ -45,10 +65,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdParallelNewPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdParallelNewPolicy),
             AppId,
             InstanceIdParallelNewPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdParallelNewPolicy)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdParallelNewPolicy)
         }
     };
 
@@ -67,10 +87,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdParallelExistingPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdParallelExistingPolicy),
             AppId,
             InstanceIdParallelExistingPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdParallelExistingPolicy)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdParallelExistingPolicy)
         }
     };
 
@@ -89,10 +109,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNewPolicyNoResponceOnWrite),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdNewPolicyNoResponceOnWrite),
             AppId,
             InstanceIdNewPolicyNoResponceOnWrite,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNewPolicyNoResponceOnWrite)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdNewPolicyNoResponceOnWrite)
         }
     };
 
@@ -100,10 +120,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdInvalidParty),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdInvalidParty),
             AppId,
             InstanceIdInvalidParty,
-            GetExpectedResponse<AltinnProblemDetails>(AppId, InstanceIdInvalidParty)
+            GetExpectedResponse<AltinnProblemDetails>("Delegation", AppId, InstanceIdInvalidParty)
         }
     };
 
@@ -122,10 +142,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalNewPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdNormalNewPolicy),
             AppId,
             InstanceIdNormalNewPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalNewPolicy)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdNormalNewPolicy)
         }
     };
 
@@ -144,10 +164,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalNewPolicyOrgNumber),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdNormalNewPolicyOrgNumber),
             AppId,
             InstanceIdNormalNewPolicyOrgNumber,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalNewPolicyOrgNumber)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdNormalNewPolicyOrgNumber)
         }
     };
 
@@ -166,10 +186,10 @@ public static class TestDataAppsInstanceDelegation
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
-            GetRequest<AppsInstanceDelegationRequestDto>(AppId, InstanceIdNormalExistingPolicy),
+            GetRequest<AppsInstanceDelegationRequestDto>("Delegation", AppId, InstanceIdNormalExistingPolicy),
             AppId,
             InstanceIdNormalExistingPolicy,
-            GetExpectedResponse<AppsInstanceDelegationResponseDto>(AppId, InstanceIdNormalExistingPolicy)
+            GetExpectedResponse<AppsInstanceDelegationResponseDto>("Delegation", AppId, InstanceIdNormalExistingPolicy)
         }
     };
 
@@ -300,15 +320,15 @@ public static class TestDataAppsInstanceDelegation
         Assert.Equal(expected.Value, actual.Value);
     }
 
-    private static T GetExpectedResponse<T>(string appId, string instanceId)
+    private static T GetExpectedResponse<T>(string operation, string appId, string instanceId)
     {
-        string content = File.ReadAllText($"Data/Json/AppsInstanceDelegation/{appId}/{instanceId}/response.json");
+        string content = File.ReadAllText($"Data/Json/AppsInstanceDelegation/{operation}/{appId}/{instanceId}/response.json");
         return (T)JsonSerializer.Deserialize(content, typeof(T), JsonOptions);
     }
 
-    private static T GetRequest<T>(string appId, string instanceId)
+    private static T GetRequest<T>(string operation, string appId, string instanceId)
     {
-        string content = File.ReadAllText($"Data/Json/AppsInstanceDelegation/{appId}/{instanceId}/request.json");
+        string content = File.ReadAllText($"Data/Json/AppsInstanceDelegation/{operation}/{appId}/{instanceId}/request.json");
         return (T)JsonSerializer.Deserialize(content, typeof(T), JsonOptions);
     }
 }

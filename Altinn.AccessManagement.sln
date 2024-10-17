@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Int
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.AccessManagement.Persistence", "src\Altinn.AccessManagement.Persistence\Altinn.AccessManagement.Persistence.csproj", "{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.AccessManagement.SystemIntegrationTests", "Altinn.AccessManagement.SystemIntegrationTests\Altinn.AccessManagement.SystemIntegrationTests.csproj", "{73C0AD01-9AD0-44D2-ACCD-B2B56FB94A2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC6EE9E4-0C4B-4A2E-95D6-754CC0683863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73C0AD01-9AD0-44D2-ACCD-B2B56FB94A2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73C0AD01-9AD0-44D2-ACCD-B2B56FB94A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73C0AD01-9AD0-44D2-ACCD-B2B56FB94A2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73C0AD01-9AD0-44D2-ACCD-B2B56FB94A2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

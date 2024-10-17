@@ -1,20 +1,28 @@
 using System.Text.Json;
+using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;
 
+/// <summary>
+/// Test that we're able to get a Machineporten token
+/// </summary>
+/// <param name="outputHelper">Needed for logging</param>
 public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
 {
     private readonly MaskinPortenTokenGenerator _maskinPortenTokenGenerator = new();
     private readonly Helper _helper = new();
+
     private ITestOutputHelper OutputHelperutputHelperput { get; set; } = outputHelper;
     
+    /// <summary>
+    /// Test that we're able to read from jwks folder
+    /// </summary>
     [Fact]
     public void ReadJwkFile()
     {
-        var jsonString = File.ReadAllText("../../../Resources/Jwks/UnitTestJwks.json");
+        var jsonString = File.ReadAllText("../../../Resources/JwksUnitTest/UnitTestJwks.json");
 
         var test =
             JsonSerializer.Deserialize<Jwk>(jsonString);
@@ -33,6 +41,9 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
         Assert.Equal("NzYiQSN_RNk-LSCqoMjPXCUv7g-Q", test?.n);
     }
 
+    /// <summary>
+    /// Test that we're able to get a Machineporten token on behalf of an organization
+    /// </summary>
     [Fact]
     public async Task GetTokenAsOrganization()
     {
@@ -42,10 +53,11 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
         var maskinportenToken = await _maskinPortenTokenGenerator.RequestToken(token);
         Assert.Contains("systemregister.write", maskinportenToken);
         Assert.Contains("access_token", maskinportenToken);
-        
-        OutputHelperutputHelperput.WriteLine(maskinportenToken);
     }
 
+    /// <summary>
+    /// Make sure we test that the ExchangeToken endpoint is up and running
+    /// </summary>
     [Fact]
     public async Task GetExchangeToken()
     {
@@ -56,10 +68,10 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
         var jsonDoc = JsonDocument.Parse(maskinportenTokenResponse);
         var root = jsonDoc.RootElement;
 
-        // Extract the access token
         var accessToken = root.GetProperty("access_token").GetString();
+        Assert.NotNull(accessToken);
+
         var altinnToken = await _helper.GetExchangeToken(accessToken);
-        Assert.NotNull(altinnToken);
         Assert.NotEmpty(altinnToken);
     }
 

@@ -1,0 +1,7 @@
+{
+  "platformUrl": "https://platform.at22.altinn.cloud",
+  "TestCredentials": {
+    "username": "sampleuser",
+    "password": "samplepassword"
+  }
+}

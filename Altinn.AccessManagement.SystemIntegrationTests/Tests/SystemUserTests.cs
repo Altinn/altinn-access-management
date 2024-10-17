@@ -25,8 +25,8 @@ public class SystemUserTests
         const string userId = "1";
         const string partyId = "50651214";
         const string scopes = "altinn:authentication/systemuser.request.read";
-        const string pid = "17878997158";
-        const string organization = "313909042";
+        const string pid = "04855195742";
+        const string organization = "312397021";
 
         var token = await _helper.GetAltinnToken(partyId, scopes, pid, userId, _outputHelper, organization);
         _outputHelper.WriteLine(token);

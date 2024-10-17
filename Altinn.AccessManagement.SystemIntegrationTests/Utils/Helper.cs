@@ -14,7 +14,8 @@ public class Helper
 
     public Helper()
     {
-        Environment = LoadEnvironment("../../../Resources/Environment/sample.at22.json") ?? throw new Exception("Unable to read environment file");
+        Environment = LoadEnvironment("../../../Resources/Environment/sample.at22.json") ??
+                      throw new Exception("Unable to read environment file");
         PlatformUrl = Environment?.platformUrl ?? throw new InvalidOperationException("Platform URL not set");
         PlatformAuthenticationClient = new PlatformAuthenticationClient(PlatformUrl);
     }
@@ -24,13 +25,13 @@ public class Helper
         var environmentFile = File.ReadAllText(filePath);
         var env = JsonSerializer.Deserialize<PlatformEnvironment>(environmentFile);
         Assert.True(env != null, $"Environment file {filePath} not found");
-        
+
         if (env.testCredentials == null || string.IsNullOrEmpty(env.testCredentials.username) ||
             string.IsNullOrEmpty(env.testCredentials.password))
         {
             throw new InvalidOperationException("TestCredentials, username or password is not set.");
         }
-        
+
         return env;
     }
 
@@ -64,8 +65,7 @@ public class Helper
         return new string(result);
     }
 
-    public async Task<string> GetAltinnToken(string partyId, string scopes, string pid, string userId,
-        ITestOutputHelper helper, string organization)
+    public async Task<string> GetAltinnToken(string partyId, string scopes, string pid, string userId, ITestOutputHelper helper, string organization)
     {
         var url =
             $"https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=at24" +

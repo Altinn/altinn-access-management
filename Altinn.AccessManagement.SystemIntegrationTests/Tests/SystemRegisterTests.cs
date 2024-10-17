@@ -14,7 +14,7 @@ public class SystemRegisterTests
     public SystemRegisterTests(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
-        _helper = new Helper();
+        _helper = new Helper(_outputHelper);
     }
     
     public async Task<HttpResponseMessage> CreateNewSystem(string token)
@@ -32,20 +32,21 @@ public class SystemRegisterTests
         return await _helper.PlatformAuthenticationClient.PostAsync(endpoint, stringBody, token);
     }
 
+    /// <summary>
+    /// AK1 - Opprett system i systemregisteret
+    /// </summary>
     [Fact]
     public async Task CreateNewSystemReturns200Ok()
     {
         var token = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
         var altinnToken = await _helper.GetExchangeToken(token);
 
-        //Act
+        // Act
         var response = await CreateNewSystem(altinnToken);
         _outputHelper.WriteLine(await response.Content.ReadAsStringAsync());
 
-        //Assert
+        // Assert
         Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
-    
-    
 }

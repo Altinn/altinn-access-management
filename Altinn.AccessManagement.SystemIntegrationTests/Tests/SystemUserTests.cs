@@ -14,22 +14,29 @@ public class SystemUserTests
     public SystemUserTests(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
-        _helper = new Helper();
+        _helper = new Helper(_outputHelper);
+    }
+
+    [Fact]
+    public async Task CreateSystemUser()
+    {
+        
     }
 
     [Fact]
     public async Task GetCreatedSystemUser()
     {
-        const string party = "50651214";
+        const string party = "50692553";
         const string endpoint = "authentication/api/v1/systemuser/" + party;
-        const string userId = "1";
-        const string partyId = "50651214";
+        const string userId = "20012772";
+        const string partyId = "50822874";
         const string scopes = "altinn:authentication/systemuser.request.read";
         const string pid = "04855195742";
-        const string organization = "312397021";
+        const string orgNo = "314279794";
 
-        var token = await _helper.GetAltinnToken(partyId, scopes, pid, userId, _outputHelper, organization);
-        _outputHelper.WriteLine(token);
+        var token = await _helper.GetAltinnPersonalToken(partyId, scopes, pid, userId, _outputHelper, orgNo);
+        // var token = await _helper.GetAltinnEnterpriseToken(scopes, orgNo);
+        // _outputHelper.WriteLine(token);
         
         var respons = await _helper.PlatformAuthenticationClient.GetAsync(endpoint, token);
         _outputHelper.WriteLine(respons.StatusCode.ToString());

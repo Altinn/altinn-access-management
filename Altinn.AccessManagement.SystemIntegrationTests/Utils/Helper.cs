@@ -8,13 +8,18 @@ namespace Altinn.AccessManagement.SystemIntegrationTests.Utils;
 
 public class Helper
 {
-    public string? PlatformUrl { get; }
-    private PlatformEnvironment Environment { get; }
-    public PlatformAuthenticationClient PlatformAuthenticationClient { get; }
+    private string? PlatformUrl { get; }
 
-    public Helper()
+    private PlatformEnvironment Environment { get; }
+
+    public PlatformAuthenticationClient PlatformAuthenticationClient { get; }
+    
+    public ITestOutputHelper Output { get; }
+
+    public Helper(ITestOutputHelper output)
     {
-        Environment = LoadEnvironment("../../../Resources/Environment/sample.at22.json") ??
+        Output = output;
+        Environment = LoadEnvironment("../../../Resources/Environment/at22.json") ??
                       throw new Exception("Unable to read environment file");
         PlatformUrl = Environment?.platformUrl ?? throw new InvalidOperationException("Platform URL not set");
         PlatformAuthenticationClient = new PlatformAuthenticationClient(PlatformUrl);
@@ -65,25 +70,53 @@ public class Helper
         return new string(result);
     }
 
-    public async Task<string> GetAltinnToken(string partyId, string scopes, string pid, string userId, ITestOutputHelper helper, string organization)
+    public async Task<string> GetAltinnEnterpriseToken(string scopes, string orgNo)
     {
         var url =
-            $"https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=at24" +
+            $"https://altinn-testtools-token-generator.azurewebsites.net/api/GetEnterpriseToken?env=at22" +
+            $"&scopes={scopes}" +
+            $"&org=umake%hemmelighetsfull%katt%restaurant" +
+            $"&orgNo=310193380";
+        
+        //310193380
+
+        //Må angis: env: environment,
+        // org: idKey.org,
+        // orgNo: idKey.orgno,
+        // scopes: idKey.scopes,
+        // ttl: ttl
+        var token = GetAltinnToken(url, Output);
+        return await token;
+    }
+
+    public async Task<string> GetAltinnPersonalToken(string partyId, string scopes, string pid, string userId, ITestOutputHelper helper, string organization)
+    {
+        // scopes = "altinn:instances:read";
+        var url =
+            $"https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env=at22" +
             $"&scopes={scopes}" +
             $"&pid={pid}" +
-            $"&org={organization}" +
-            //$"&userid={userId}" +
-            //$"&partyid={partyId}" +
+            $"&userid={userId}" +
+            $"&partyid={partyId}" +
             $"&authLvl=3&ttl=3000";
 
+        var token = GetAltinnToken(url, helper);
+        return await token;
+    }
+
+    /// <summary>
+    /// Add header values to Http client needed for altinn test api
+    /// </summary>
+    /// <returns></returns>
+    private async Task<string> GetAltinnToken(string url, ITestOutputHelper helper)
+    {
+        var client = new HttpClient();
         var username = Environment.testCredentials.username;
         var password = Environment.testCredentials.password;
-
-        using var client = new HttpClient();
+        var basicAuth = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{password}"));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
         try
         {
-            var basicAuth = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{password}"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
             var response = await client.GetAsync(url);
 
             // Check the response status code

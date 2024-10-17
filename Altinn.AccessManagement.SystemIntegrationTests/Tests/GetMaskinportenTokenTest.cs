@@ -9,10 +9,9 @@ namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;
 /// Test that we're able to get a Machineporten token
 /// </summary>
 /// <param name="outputHelper">Needed for logging</param>
-public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
+public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper, Helper helper)
 {
     private readonly MaskinPortenTokenGenerator _maskinPortenTokenGenerator = new();
-    private readonly Helper _helper = new();
 
     private ITestOutputHelper OutputHelperutputHelperput { get; set; } = outputHelper;
     
@@ -71,7 +70,7 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper)
         var accessToken = root.GetProperty("access_token").GetString();
         Assert.NotNull(accessToken);
 
-        var altinnToken = await _helper.GetExchangeToken(accessToken);
+        var altinnToken = await helper.GetExchangeToken(accessToken);
         Assert.NotEmpty(altinnToken);
     }
 

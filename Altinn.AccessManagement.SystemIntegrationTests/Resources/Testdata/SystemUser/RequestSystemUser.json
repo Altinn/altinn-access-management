@@ -1,0 +1,17 @@
+{
+  "externalRef": "string",
+  "systemId": "string",
+  "partyOrgNo": "string",
+  "rights": [
+    {
+      "action": "string",
+      "resource": [
+        {
+          "id": "string",
+          "value": "string"
+        }
+      ]
+    }
+  ],
+  "redirectUrl": "string"
+}

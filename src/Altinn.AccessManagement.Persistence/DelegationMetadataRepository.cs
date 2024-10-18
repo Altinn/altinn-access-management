@@ -1,7 +1,6 @@
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -11,7 +10,6 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Npgsql;
 using NpgsqlTypes;
-using OpenTelemetry.Trace;
 
 namespace Altinn.AccessManagement.Persistence;
 
@@ -752,7 +750,8 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         }
     }
 
-    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(string resourceID, string instanceID, CancellationToken cancellationToken = default)
+    /// <inheritdoc />
+    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

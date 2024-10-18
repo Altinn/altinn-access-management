@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models;
 
@@ -15,14 +16,20 @@ public class AppsInstanceGetRequest
     public InstanceDelegationSource InstanceDelegationSource { get; set; }
 
     /// <summary>
+    /// The App performing the get request
+    /// </summary>
+    [Required]
+    public ResourceIdUrn.ResourceId PerformingResourceId { get; set; }
+
+    /// <summary>
     /// The instanceid to the spesific resource
     /// </summary>
+    [Required]
     public string InstanceId { get; set; }
 
     /// <summary>
     /// The ResourceId for the specific resource
     /// </summary>
+    [Required]
     public string ResourceId { get; set; }
-    
-
 }

@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.Swashbuckle.Examples;
 
 namespace Altinn.AccessManagement.Core.Models;
 

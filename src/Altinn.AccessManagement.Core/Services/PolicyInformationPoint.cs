@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading;
+﻿using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -283,11 +281,11 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(string resourceId, string instanceId, CancellationToken cancellationToken)
+        public async Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(AppsInstanceGetRequest request, CancellationToken cancellationToken)
         {
             List<AppsInstanceDelegationResponse> result = new List<AppsInstanceDelegationResponse>();
 
-            List<InstanceDelegationChange> delegations = await _delegationRepository.GetAllLatestInstanceDelegationChanges(resourceId, instanceId, cancellationToken);
+            List<InstanceDelegationChange> delegations = await _delegationRepository.GetAllLatestInstanceDelegationChanges(request.InstanceDelegationSource, request.ResourceId, request.InstanceId, cancellationToken);
 
             foreach (InstanceDelegationChange delegation in delegations)
             {
@@ -301,8 +299,8 @@ namespace Altinn.AccessManagement.Core.Services
                     From = GetPartyUrnFromUuidTypeAndUuid(delegation.FromUuid, delegation.FromUuidType),
                     To = GetPartyUrnFromUuidTypeAndUuid(delegation.ToUuid, delegation.ToUuidType),
                     InstanceDelegationMode = delegation.InstanceDelegationMode,
-                    ResourceId = delegation.Resource,
-                    InstanceId = delegation.Instance
+                    ResourceId = delegation.ResourceId,
+                    InstanceId = delegation.InstanceId
                 };
 
                 XacmlPolicy policy = await _prp.GetPolicyVersionAsync(delegation.BlobStoragePolicyPath, delegation.BlobStorageVersionId, cancellationToken);
@@ -352,7 +350,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             string urnString = null;
 
-            switch(type)
+            switch (type)
             {
                 case UuidType.Person:
                 case UuidType.Organization:

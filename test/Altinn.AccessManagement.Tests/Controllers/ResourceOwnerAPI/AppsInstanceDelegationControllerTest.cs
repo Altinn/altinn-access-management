@@ -44,18 +44,19 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
     /// </summary>
     [Theory]
     [MemberData(nameof(TestDataAppsInstanceDelegation.DelegationCheck_Ok), MemberType = typeof(TestDataAppsInstanceDelegation))]
-    public async Task DelegationCheck_ValidToken_OK(string platformToken, string resourceId, string instanceId, List<ResourceRightDelegationCheckResultDto> expected)
+    public async Task DelegationCheck_ValidToken_OK(string platformToken, string resourceId, string instanceId, Paginated<ResourceRightDelegationCheckResultDto> expected)
     {
         var client = GetTestClient(platformToken);
 
         // Act
-        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck");
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/app/delegationcheck/resource/{resourceId}/instance/{instanceId}");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        List<ResourceRightDelegationCheckResultDto> actual = JsonSerializer.Deserialize<List<ResourceRightDelegationCheckResultDto>>(await response.Content.ReadAsStringAsync(), options);
-        AssertionUtil.AssertCollections(actual, expected, AssertionUtil.AssertResourceRightDelegationCheckResultDto);
+        Paginated<ResourceRightDelegationCheckResultDto> actual = JsonSerializer.Deserialize<Paginated<ResourceRightDelegationCheckResultDto>>(await response.Content.ReadAsStringAsync(), options);
+        
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertResourceRightDelegationCheckResultDto);
     }
 
     /// <summary>
@@ -75,13 +76,13 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         var client = GetTestClient(platformToken);
 
         // Act
-        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/app/delegations/resource/{resourceId}/instance/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
-        TestDataAppsInstanceDelegation.AssertAppsInstanceDelegationResponseDtoEqual(expected, actual);
+        AssertionUtil.AssertAppsInstanceDelegationResponseDto(expected, actual);
     }
 
     /// <summary>
@@ -97,13 +98,13 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         var client = GetTestClient(platformToken);
 
         // Act
-        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/app/delegations/resource/{resourceId}/instance/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
 
         // Assert
         Assert.Equal(HttpStatusCode.PartialContent, response.StatusCode);
 
         AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
-        TestDataAppsInstanceDelegation.AssertAppsInstanceDelegationResponseDtoEqual(expected, actual);
+        AssertionUtil.AssertAppsInstanceDelegationResponseDto(expected, actual);
     }
 
     /// <summary>
@@ -119,13 +120,29 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         var client = GetTestClient(platformToken);
 
         // Act
-        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/apps/instancedelegation/{resourceId}/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/app/delegations/resource/{resourceId}/instance/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
         AltinnProblemDetails actual = JsonSerializer.Deserialize<AltinnProblemDetails>(await response.Content.ReadAsStringAsync(), options);
         TestDataAppsInstanceDelegation.AssertAltinnProblemDetailsEqual(expected, actual);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.GetAllAppDelegatedInstances), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_Get_OK(string platformToken, string resourceId, string instanceId, Paginated<AppsInstanceDelegationResponseDto> expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/app/delegations/resource/{resourceId}/instance/{instanceId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Paginated<AppsInstanceDelegationResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceDelegationResponseDto>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceDelegationResponseDto);        
     }
 
     private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());

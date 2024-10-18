@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using Altinn.Urn;
-using System.Buffers;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry;
 

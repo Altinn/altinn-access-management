@@ -22,11 +22,12 @@ public interface IDelegationMetadataRepository
     /// <summary>
     /// Fetch all the latest Instance delegations for a given instance
     /// </summary>
+    /// <param name="source">The source to fetch delegations for</param>
     /// <param name="resourceID">The resource to fetch delegations for</param>
     /// <param name="instanceID">The instance to fetch delegations for </param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>All the last InstanceDelegationChange records stored in the database corresponding to the request</returns>
-    Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(string resourceID, string instanceID, CancellationToken cancellationToken = default);
+    Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns the last change from db to fetch the current policy version and path to policy file

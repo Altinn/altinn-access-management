@@ -45,7 +45,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="token">platform token needed to define fetch wich app is calling this method</param>
     /// <returns>Result</returns>
     [HttpGet]
-    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck")]
+    [Route("v1/app/delegationcheck/resource/{resourceId}/instance/{instanceId}")]
     [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -65,7 +65,12 @@ public class AppsInstanceDelegationController : ControllerBase
             return serviceResult.Problem.ToActionResult();
         }
 
-        return Ok(_mapper.Map<IEnumerable<ResourceRightDelegationCheckResultDto>>(serviceResult.Value.ResourceRightDelegationCheckResults));
+        PaginatedLinks? next = new PaginatedLinks(null);
+        IEnumerable<ResourceRightDelegationCheckResultDto> data = _mapper.Map<IEnumerable<ResourceRightDelegationCheckResultDto>>(serviceResult.Value.ResourceRightDelegationCheckResults);
+
+        Paginated<ResourceRightDelegationCheckResultDto> result = new Paginated<ResourceRightDelegationCheckResultDto>(next, data);
+
+        return Ok(result);
     }
 
     /// <summary>
@@ -78,7 +83,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Result</returns>
     [HttpPost]
-    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
+    [Route("v1/app/delegations/resource/{resourceId}/instance/{instanceId}")]
     [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
@@ -96,6 +101,7 @@ public class AppsInstanceDelegationController : ControllerBase
         request.InstanceId = instanceId;
         request.PerformedBy = GetOrgAppFromToken(token);
         request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
+        request.InstanceDelegationMode = Core.Enums.InstanceDelegationMode.Normal;
 
         Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Delegate(request, cancellationToken);
 
@@ -116,7 +122,6 @@ public class AppsInstanceDelegationController : ControllerBase
         return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));        
     }    
 
-    /*
     /// <summary>
     /// Gets app instance delegation
     /// </summary>
@@ -126,8 +131,8 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Result</returns>
     [HttpGet]
-    // [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
-    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}")]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Route("v1/app/delegations/resource/{resourceId}/instance/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
@@ -137,24 +142,36 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Get([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
-        bool authorization = ValidatePlatformAccessToken(resourceId, token);
-        authorization = true;
-
-        if (!authorization) 
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+        
+        if (performer == null) 
     {
             return Forbid();
         }
 
-        Result<List<AppsInstanceDelegationResponse>> serviceResult = await _appInstanceDelegationService.Get(resourceId, instanceId, cancellationToken);
+        AppsInstanceGetRequest request = new()
+        {
+            InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App,
+            PerformingResourceId = performer,
+            ResourceId = resourceId,
+            InstanceId = instanceId,
+        };
+
+        Result<List<AppsInstanceDelegationResponse>> serviceResult = await _appInstanceDelegationService.Get(request, cancellationToken);
 
         if (serviceResult.IsProblem)
         {
             return serviceResult.Problem.ToActionResult();
         }
 
-        return Ok(_mapper.Map<List<AppsInstanceDelegationResponseDto>>(serviceResult.Value));
+        List<AppsInstanceDelegationResponseDto> list = _mapper.Map<List<AppsInstanceDelegationResponseDto>>(serviceResult.Value);
+        PaginatedLinks links = new PaginatedLinks(null);
+        Paginated<AppsInstanceDelegationResponseDto> result = new Paginated<AppsInstanceDelegationResponseDto>(links, list);
+        
+        return Ok(result);
     }
-    
+
+    /*
     /// <summary>
     /// Revokes access to an app instance
     /// </summary>

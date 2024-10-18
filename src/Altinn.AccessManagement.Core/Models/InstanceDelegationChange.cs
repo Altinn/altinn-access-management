@@ -29,13 +29,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the resource.
         /// </summary>
         [JsonPropertyName("resource")]
-        public string Resource { get; set; }
+        public string ResourceId { get; set; }
 
         /// <summary>
         /// Gets or sets the instance.
         /// </summary>
         [JsonPropertyName("instance")]
-        public string Instance { get; set; }
+        public string InstanceId { get; set; }
 
         /// <summary>
         /// The uuid of the party the right is on behalf of

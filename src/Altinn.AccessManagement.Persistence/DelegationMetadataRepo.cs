@@ -434,8 +434,8 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.Add(new NpgsqlParameter<DelegationChangeType>(DelegationChangeType, instanceDelegationChange.DelegationChangeType));
                 cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", instanceDelegationChange.InstanceDelegationMode));
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, instanceDelegationChange.Resource);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, instanceDelegationChange.Instance);
+                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, instanceDelegationChange.ResourceId);
+                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, instanceDelegationChange.InstanceId);
                 cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, instanceDelegationChange.FromUuid);
                 cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(FromType, instanceDelegationChange.FromUuidType != UuidType.NotSpecified ? instanceDelegationChange.FromUuidType : null));
                 cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, instanceDelegationChange.ToUuid);
@@ -461,7 +461,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(string resourceID, string instanceID, CancellationToken cancellationToken = default)
+        public async Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -472,7 +472,8 @@ namespace Altinn.AccessManagement.Persistence
 		    FROM
 			    delegation.instancedelegationchanges
 		    WHERE
-			    resourceid = @resourceId
+			    instancedelegationsource = @source
+                AND resourceid = @resourceId
 			    AND instanceid = @instanceId
 		    GROUP BY
 			    instancedelegationmode
@@ -504,6 +505,7 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationSource>("source", source));
                 cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, resourceID);
                 cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, instanceID);
 
@@ -528,8 +530,8 @@ namespace Altinn.AccessManagement.Persistence
                     InstanceDelegationChangeId = await reader.GetFieldValueAsync<int>("instancedelegationchangeid"),
                     DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>(DelegationChangeType),
                     InstanceDelegationMode = await reader.GetFieldValueAsync<InstanceDelegationMode>("instancedelegationmode"),
-                    Resource = await reader.GetFieldValueAsync<string>("resourceId"),
-                    Instance = await reader.GetFieldValueAsync<string>("instanceId"),
+                    ResourceId = await reader.GetFieldValueAsync<string>("resourceId"),
+                    InstanceId = await reader.GetFieldValueAsync<string>("instanceId"),
                     FromUuid = await reader.GetFieldValueAsync<Guid>(FromUuid),
                     FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
                     ToUuid = await reader.GetFieldValueAsync<Guid>(ToUuid),

@@ -1,9 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
-using System.Threading;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -116,8 +114,8 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 DelegationChangeType = DelegationChangeType.Grant,
                 InstanceDelegationMode = rules.InstanceDelegationMode,
-                Resource = rules.ResourceId,
-                Instance = rules.InstanceId,
+                ResourceId = rules.ResourceId,
+                InstanceId = rules.InstanceId,
 
                 BlobStoragePolicyPath = policyPath,
                 BlobStorageVersionId = versionId,

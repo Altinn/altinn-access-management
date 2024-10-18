@@ -7,17 +7,12 @@
     "type": "urn:altinn:party:uuid",
     "value": "594D195C-09C7-4EE0-8E83-BD4439EC27B1"
   },
-  "instanceDelegationMode": "Normal",
   "rights": [
     {
       "resource": [
         {
-          "type": "urn:altinn:org",
-          "value": "ttd"
-        },
-        {
-          "type": "urn:altinn:app",
-          "value": "am-devtest-instancedelegation"
+          "type": "urn:altinn:resource",
+          "value": "app_ttd_am-devtest-instancedelegation"
         },
         {
           "type": "urn:altinn:task",

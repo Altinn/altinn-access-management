@@ -16,7 +16,7 @@ public class InstanceRule
     /// <summary>
     /// The resource delegating for
     /// </summary>
-    public IEnumerable<UrnJsonTypeValue> Resource { get; set; }
+    public List<UrnJsonTypeValue> Resource { get; set; }
 
     /// <summary>
     /// The action to delegate

@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Altinn.AccessManagement.Core.Models.Register;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Enums;
 using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Models;
@@ -34,12 +32,6 @@ public class AppsInstanceDelegationResponseDto
     /// </summary>
     [Required]
     public string InstanceId { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the instance delegation is for a parallel task
-    /// </summary>
-    [Required]
-    public InstanceDelegationModeExternal InstanceDelegationMode { get; set; }
 
     /// <summary>
     /// Gets or sets the rights to delegate

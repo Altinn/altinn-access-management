@@ -1,11 +1,8 @@
 using System.Text.Json;
-using Altinn.AccessManagement.Core.Models.Register;
-using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Util;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Authorization.ProblemDetails;
-using Altinn.Urn.Json;
 using Dapper;
 
 namespace Altinn.AccessManagement.Tests.Data;
@@ -30,6 +27,8 @@ public static class TestDataAppsInstanceDelegation
 
     private static readonly string InstanceIdNormalNewPolicyOrgNumber = "00000000-0000-0000-0000-000000000007";
 
+    private static readonly string ListOfDelegationsForAnInstance = "00000000-0000-0000-0000-000000000008";
+
     /// <summary>
     /// Test case:  GET v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck
     ///             with: 
@@ -40,13 +39,13 @@ public static class TestDataAppsInstanceDelegation
     ///             - Should include the delegated rights
     /// Reason:     Apps defined in the policy file should be able to delegate the defined rights
     /// </summary>
-    public static TheoryData<string, string, string, List<ResourceRightDelegationCheckResultDto>> DelegationCheck_Ok() => new()
+    public static TheoryData<string, string, string, Paginated<ResourceRightDelegationCheckResultDto>> DelegationCheck_Ok() => new()
     {
         {
             PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
             AppId,
             InstanceIdParallelNewPolicy,
-            GetExpectedResponse<List<ResourceRightDelegationCheckResultDto>>("DelegationCheck", AppId, InstanceIdParallelNewPolicy)
+            GetExpectedResponse<Paginated<ResourceRightDelegationCheckResultDto>>("DelegationCheck", AppId, InstanceIdParallelNewPolicy)
         }
     };
 
@@ -193,23 +192,15 @@ public static class TestDataAppsInstanceDelegation
         }
     };
 
-    /// <summary>
-    /// Assert that two <see cref="AppsInstanceDelegationResponseDto"/> have the same property in the same positions.
-    /// </summary>
-    /// <param name="expected">An instance with the expected values.</param>
-    /// <param name="actual">The instance to verify.</param>
-    public static void AssertAppsInstanceDelegationResponseDtoEqual(AppsInstanceDelegationResponseDto expected, AppsInstanceDelegationResponseDto actual)
+    public static TheoryData<string, string, string, Paginated<AppsInstanceDelegationResponseDto>> GetAllAppDelegatedInstances() => new()
     {
-        Assert.NotNull(actual);
-        Assert.NotNull(expected);
-
-        AssertPartyUrn(expected.From, actual.From);
-        Assert.Equal(expected.To.Value, actual.To.Value);
-        Assert.Equal(expected.ResourceId, actual.ResourceId);
-        Assert.Equal(expected.InstanceId, actual.InstanceId);
-        Assert.Equal(expected.InstanceDelegationMode, actual.InstanceDelegationMode);
-        AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRightsEqual);
-    }
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            AppId,
+            ListOfDelegationsForAnInstance,
+            GetExpectedResponse<Paginated<AppsInstanceDelegationResponseDto>>("Get", AppId, ListOfDelegationsForAnInstance)
+        }
+    };
 
     public static void AssertAltinnProblemDetailsEqual(AltinnProblemDetails expected, AltinnProblemDetails actual)
     {
@@ -222,37 +213,6 @@ public static class TestDataAppsInstanceDelegation
         Assert.Equal(expected.Title, actual.Title);
         Assert.Equal(expected.ErrorCode, actual.ErrorCode);
         AssertionUtil.AssertCollections(expected.Extensions.ToDictionary(), actual.Extensions.ToDictionary(), AssertProblemDetailsExtensionEqual);        
-    }
-
-    public static void AssertPartyUrn(UrnJsonTypeValue<PartyUrn> expected, UrnJsonTypeValue<PartyUrn> actual)
-    {
-        Assert.True(actual.HasValue);
-        Assert.True(expected.HasValue);
-
-        Assert.Equal(expected.Value.Urn, actual.Value.Urn);
-    }
-
-    public static void AssertActionUrn(UrnJsonTypeValue<ActionUrn> expected, UrnJsonTypeValue<ActionUrn> actual)
-    {
-        Assert.True(actual.HasValue);
-        Assert.True(expected.HasValue);
-
-        Assert.Equal(expected.Value.Urn, actual.Value.Urn);
-    }
-
-    /// <summary>
-    /// Assert that two <see cref="RightDelegationResultDto"/> have the same property in the same positions.
-    /// </summary>
-    /// <param name="expected">An instance with the expected values.</param>
-    /// <param name="actual">The instance to verify.</param>
-    public static void AssertRightsEqual(RightDelegationResultDto expected, RightDelegationResultDto actual)
-    {
-        Assert.NotNull(actual);
-        Assert.NotNull(expected);
-
-        AssertActionUrn(expected.Action, actual.Action);
-        Assert.Equal(expected.Status, actual.Status);
-        AssertionUtil.AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertResourceEqual);
     }
 
     public static void AssertProblemDetailsExtensionEqual(KeyValuePair<string, object> expected, KeyValuePair<string, object> actual)
@@ -305,19 +265,6 @@ public static class TestDataAppsInstanceDelegation
         public string Detail { get; set; }
 
         public List<string> Paths { get; set; }
-    }
-
-    /// <summary>
-    /// Assert that two <see cref="RightDelegationResultDto"/> have the same property in the same positions.
-    /// </summary>
-    /// <param name="expected">An instance with the expected values.</param>
-    /// <param name="actual">The instance to verify.</param>
-    public static void AssertResourceEqual(UrnJsonTypeValue expected, UrnJsonTypeValue actual)
-    {
-        Assert.True(actual.HasValue);
-        Assert.True(expected.HasValue);
-
-        Assert.Equal(expected.Value, actual.Value);
     }
 
     private static T GetExpectedResponse<T>(string operation, string appId, string instanceId)

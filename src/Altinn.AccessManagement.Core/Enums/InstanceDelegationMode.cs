@@ -5,7 +5,7 @@ using NpgsqlTypes;
 namespace Altinn.AccessManagement.Core.Enums
 {
     /// <summary>
-    /// Enum defining delegation mode
+    /// Enum defining delegation mode (normal or paralellsigning)
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum InstanceDelegationMode

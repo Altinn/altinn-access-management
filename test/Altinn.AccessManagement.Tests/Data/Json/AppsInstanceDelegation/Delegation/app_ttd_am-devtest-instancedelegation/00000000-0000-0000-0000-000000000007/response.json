@@ -9,25 +9,16 @@
   },
   "resourceid": "app_ttd_am-devtest-instancedelegation",
   "instanceid": "00000000-0000-0000-0000-000000000007",
-  "instanceDelegationMode": "Normal",
   "rights": [
     {
       "resource": [
         {
-          "type": "urn:altinn:org",
-          "value": "ttd"
-        },
-        {
-          "type": "urn:altinn:app",
-          "value": "am-devtest-instancedelegation"
+          "type": "urn:altinn:resource",
+          "value": "app_ttd_am-devtest-instancedelegation"
         },
         {
           "type": "urn:altinn:task",
           "value": "task_1"
-        },
-        {
-          "type": "urn:altinn:resource:instance-id",
-          "value": "00000000-0000-0000-0000-000000000007"
         }
       ],
       "action": {

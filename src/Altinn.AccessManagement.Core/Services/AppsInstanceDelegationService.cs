@@ -341,7 +341,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest appsInstanceDelegationRequest, CancellationToken cancellationToken = default)
+    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -412,7 +412,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return result;
     }
 
-    private List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
+    private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
     {
         foreach (AppsInstanceDelegationResponse item in input)
         {
@@ -422,7 +422,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return input;
     }
 
-    private AppsInstanceDelegationResponse RemoveInstanceIdFromResourceForResponse(AppsInstanceDelegationResponse input)
+    private static AppsInstanceDelegationResponse RemoveInstanceIdFromResourceForResponse(AppsInstanceDelegationResponse input)
     {
         foreach (var right in input.Rights)
         {

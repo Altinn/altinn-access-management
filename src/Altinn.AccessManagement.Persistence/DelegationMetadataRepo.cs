@@ -25,6 +25,8 @@ namespace Altinn.AccessManagement.Persistence
         private const string FromType = "fromType";
         private const string ToUuid = "toUuid";
         private const string ToType = "toType";
+        private const string InstanceId = "instanceId";
+        private const string ResourceId = "resourceId";
         private const string DelegationChangeType = "delegationChangeType";
 
         /// <summary>
@@ -371,8 +373,8 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, request.Resource);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, request.Instance);
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, request.Resource);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, request.Instance);
                 cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", request.InstanceDelegationMode));
                 cmd.Parameters.AddWithValue(FromUuid, NpgsqlDbType.Uuid, request.FromUuid);
                 cmd.Parameters.Add(new NpgsqlParameter<UuidType>(FromType, request.FromType));
@@ -434,9 +436,9 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.Add(new NpgsqlParameter<DelegationChangeType>(DelegationChangeType, instanceDelegationChange.DelegationChangeType));
                 cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", instanceDelegationChange.InstanceDelegationMode));
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, instanceDelegationChange.ResourceId);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, instanceDelegationChange.InstanceId);
-                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, instanceDelegationChange.FromUuid);
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, instanceDelegationChange.ResourceId);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, instanceDelegationChange.InstanceId);
+                cmd.Parameters.AddWithValue(FromUuid, NpgsqlDbType.Uuid, instanceDelegationChange.FromUuid);
                 cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(FromType, instanceDelegationChange.FromUuidType != UuidType.NotSpecified ? instanceDelegationChange.FromUuidType : null));
                 cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, instanceDelegationChange.ToUuid);
                 cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(ToType, instanceDelegationChange.ToUuidType != UuidType.NotSpecified ? instanceDelegationChange.ToUuidType : null));
@@ -506,8 +508,8 @@ namespace Altinn.AccessManagement.Persistence
             {
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationSource>("source", source));
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, resourceID);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, instanceID);
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, resourceID);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, instanceID);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetInstanceDelegationChange)
@@ -530,8 +532,8 @@ namespace Altinn.AccessManagement.Persistence
                     InstanceDelegationChangeId = await reader.GetFieldValueAsync<int>("instancedelegationchangeid"),
                     DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>(DelegationChangeType),
                     InstanceDelegationMode = await reader.GetFieldValueAsync<InstanceDelegationMode>("instancedelegationmode"),
-                    ResourceId = await reader.GetFieldValueAsync<string>("resourceId"),
-                    InstanceId = await reader.GetFieldValueAsync<string>("instanceId"),
+                    ResourceId = await reader.GetFieldValueAsync<string>(ResourceId),
+                    InstanceId = await reader.GetFieldValueAsync<string>(InstanceId),
                     FromUuid = await reader.GetFieldValueAsync<Guid>(FromUuid),
                     FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
                     ToUuid = await reader.GetFieldValueAsync<Guid>(ToUuid),

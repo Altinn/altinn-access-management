@@ -311,39 +311,43 @@ namespace Altinn.AccessManagement.Core.Services
             return result;
         }
 
-        private IEnumerable<InstanceRightDelegationResult> GetRightsFromPolicy(XacmlPolicy policy)
+        private static List<InstanceRightDelegationResult> GetRightsFromPolicy(XacmlPolicy policy)
         {
             List<InstanceRightDelegationResult> result = new List<InstanceRightDelegationResult>();
 
             foreach (XacmlRule xacmlRule in policy.Rules)
             {
-                InstanceRightDelegationResult rule = new InstanceRightDelegationResult { Resource = [], Status = DelegationStatus.Delegated };
-
-                foreach (XacmlAnyOf anyOf in xacmlRule.Target.AnyOf)
-                {
-                    foreach (XacmlAllOf allOf in anyOf.AllOf)
-                    {
-                        foreach (XacmlMatch xacmlMatch in allOf.Matches)
-                        {
-                            if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action))
-                            {
-                                bool validAction = ActionUrn.TryParse($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}", out ActionUrn action);
-                                rule.Action = action;
-                            }
-
-                            if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
-                            {
-                                UrnJsonTypeValue resourcePart = KeyValueUrn.CreateUnchecked($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}", xacmlMatch.AttributeDesignator.AttributeId.OriginalString.Length + 1);
-                                rule.Resource.Add(resourcePart);
-                            }
-                        }
-                    }
-                }
-
-                result.Add(rule);
+                result.Add(GetInstanceRightDelegationResultFromPolicyRule(xacmlRule));
             }
             
             return result;
+        }
+
+        private static InstanceRightDelegationResult GetInstanceRightDelegationResultFromPolicyRule(XacmlRule xacmlRule)
+        {
+            InstanceRightDelegationResult rule = new InstanceRightDelegationResult { Resource = [], Status = DelegationStatus.Delegated };
+
+            foreach (XacmlAnyOf anyOf in xacmlRule.Target.AnyOf)
+            {
+                foreach (XacmlAllOf allOf in anyOf.AllOf)
+                {
+                    foreach (XacmlMatch xacmlMatch in allOf.Matches)
+                    {
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Action))
+                        {
+                            rule.Action = ActionUrn.Parse($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}");
+                        }
+
+                        if (xacmlMatch.AttributeDesignator.Category.Equals(XacmlConstants.MatchAttributeCategory.Resource))
+                        {
+                            UrnJsonTypeValue resourcePart = KeyValueUrn.Create($"{xacmlMatch.AttributeDesignator.AttributeId.OriginalString}:{xacmlMatch.AttributeValue.Value}", xacmlMatch.AttributeDesignator.AttributeId.OriginalString.Length + 1);
+                            rule.Resource.Add(resourcePart);
+                        }
+                    }
+                }
+            }
+
+            return rule;
         }
 
         private static PartyUrn GetPartyUrnFromUuidTypeAndUuid(Guid uuid, UuidType type)

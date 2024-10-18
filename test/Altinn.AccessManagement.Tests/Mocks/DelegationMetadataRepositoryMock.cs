@@ -568,16 +568,16 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return result;
     }
 
-    private string BuildPolicyPath(Guid to, InstanceDelegationMode mode, string resourceId, string instanceId)
+    private static string BuildPolicyPath(Guid to, InstanceDelegationMode mode, string resourceId, string instanceId)
     {
         StringBuilder sb = new StringBuilder();
         sb.Append($"Instance/{resourceId}");
-        sb.Append("/");
-        sb.Append(instanceId.Substring(24));
-        sb.Append("/");
-        sb.Append(InstanceDelegationMode.Normal.ToString().Substring(0, 1));
-        sb.Append("/");
-        sb.Append(to.ToString().Substring(24));
+        sb.Append('/');
+        sb.Append(instanceId.AsSpan(24));
+        sb.Append('/');
+        sb.Append(mode.ToString().AsSpan(0, 1));
+        sb.Append('/');
+        sb.Append(to.ToString().AsSpan(24));
         sb.Append("/delegationpolicy.xml");
         return sb.ToString();
     }

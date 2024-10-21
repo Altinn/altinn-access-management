@@ -1,0 +1,22 @@
+{
+  "env": "at22",
+  "org": "SOLID AKROBATISK TIGER AS",
+  "org1": {
+    "orgno": "314283252",
+    "partyid": 50067614,
+    "dagl": {
+      "pid": "06888595072",
+      "name": "RAVGUL FORUTSETNING",
+      "userid": 20012780,
+      "partyid": "51297202" 
+    },
+    "aktører": {
+      "orgno": "312217988",
+      "name" : "OPPRØMT VAKKER TIGER AS",
+      "underenheter" : {
+        "orgno" : "215136892",
+        "name" : "MOBIL TROSSIG FJELLREV"
+      }
+    }
+  }
+}

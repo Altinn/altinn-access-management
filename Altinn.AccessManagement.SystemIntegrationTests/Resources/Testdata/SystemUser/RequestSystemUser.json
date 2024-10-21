@@ -1,17 +1,4 @@
 {
-  "externalRef": "string",
-  "systemId": "string",
-  "partyOrgNo": "string",
-  "rights": [
-    {
-      "action": "string",
-      "resource": [
-        {
-          "id": "string",
-          "value": "string"
-        }
-      ]
-    }
-  ],
-  "redirectUrl": "string"
+  "integrationTitle": "Tilgangsliste81HtHoRIXa",
+  "systemId":"312605031_Tilgangsliste81HtHoRIXa"
 }

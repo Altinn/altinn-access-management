@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
 using Xunit.Abstractions;
@@ -8,20 +9,27 @@ namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;
 /// <summary>
 /// Test that we're able to get a Machineporten token
 /// </summary>
-/// <param name="outputHelper">Needed for logging</param>
-public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper, Helper helper)
+public class GetMaskinportenTokenTest
 {
     private readonly MaskinPortenTokenGenerator _maskinPortenTokenGenerator = new();
+    private readonly PlatformAuthenticationClient _platformAuthenticationClient;
 
-    private ITestOutputHelper OutputHelperutputHelperput { get; set; } = outputHelper;
-    
+    /// <summary>
+    /// Test machine porten functionality
+    /// </summary>
+    public GetMaskinportenTokenTest()
+    {
+        _platformAuthenticationClient = new PlatformAuthenticationClient();
+    }
+
+
     /// <summary>
     /// Test that we're able to read from jwks folder
     /// </summary>
     [Fact]
-    public void ReadJwkFile()
+    public async Task ReadJwkFile()
     {
-        var jsonString = File.ReadAllText("../../../Resources/JwksUnitTest/UnitTestJwks.json");
+        var jsonString = await Helper.ReadFile("Resources/JwksUnitTest/UnitTestJwks.json");
 
         var test =
             JsonSerializer.Deserialize<Jwk>(jsonString);
@@ -70,7 +78,7 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper, Helper hel
         var accessToken = root.GetProperty("access_token").GetString();
         Assert.NotNull(accessToken);
 
-        var altinnToken = await helper.GetExchangeToken(accessToken);
+        var altinnToken = await _platformAuthenticationClient.GetExchangeToken(accessToken);
         Assert.NotEmpty(altinnToken);
     }
 
@@ -78,7 +86,6 @@ public class GetMaskinportenTokenTest(ITestOutputHelper outputHelper, Helper hel
     public async Task GetBearerToken()
     {
         var token = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
-        OutputHelperutputHelperput.WriteLine(token);
         Assert.NotNull(token);
         Assert.NotEmpty(token);
     }

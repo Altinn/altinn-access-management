@@ -8,11 +8,14 @@ using Xunit;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Utils;
 
+/// <summary>
+/// Helper class to generate a machineporten token
+/// </summary>
 public class MaskinPortenTokenGenerator
 {
     private static string ToStandardBase64(string? base64Url)
     {
-        Assert.True(null != base64Url, "Base64 url should not be null");
+        Assert.True(base64Url != null, "Base64 url should not be null");
         var base64 = base64Url.Replace('-', '+').Replace('_', '/');
         switch (base64.Length % 4)
         {
@@ -101,7 +104,6 @@ public class MaskinPortenTokenGenerator
     public async Task<string> RequestToken(string jwt)
     {
         using var client = new HttpClient();
-        // Create the content for the request, application/x-www-form-urlencoded
         var requestContent = new FormUrlEncodedContent([
             new KeyValuePair<string, string>("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),
             new KeyValuePair<string, string>("assertion", jwt)

@@ -502,7 +502,9 @@ namespace Altinn.AccessManagement.Persistence
 	            ,created
             FROM
 	            LatestChanges lc
-	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid;";
+	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid
+            WHERE
+                delegationchangetype != 'revoke_last';";
 
             try
             {

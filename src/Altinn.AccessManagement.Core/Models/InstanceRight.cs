@@ -62,6 +62,11 @@ public class InstanceRight
     public InstanceDelegationMode InstanceDelegationMode { get; set; }
 
     /// <summary>
+    /// The source of delegation for now app or user
+    /// </summary>
+    public InstanceDelegationSource InstanceDelegationSource { get; set; }
+
+    /// <summary>
     /// List of rule specific data not shared between the difrent rules
     /// </summary>
     public List<InstanceRule> InstanceRules { get; set; }

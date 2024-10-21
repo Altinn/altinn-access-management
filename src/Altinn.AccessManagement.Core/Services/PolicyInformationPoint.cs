@@ -289,11 +289,6 @@ namespace Altinn.AccessManagement.Core.Services
 
             foreach (InstanceDelegationChange delegation in delegations)
             {
-                if (delegation.DelegationChangeType == DelegationChangeType.RevokeLast)
-                {
-                    continue;
-                }
-
                 AppsInstanceDelegationResponse appsInstanceDelegationResponse = new AppsInstanceDelegationResponse
                 {
                     From = GetPartyUrnFromUuidTypeAndUuid(delegation.FromUuid, delegation.FromUuidType),

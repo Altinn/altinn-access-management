@@ -302,7 +302,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             PerformedByType = UuidType.Resource,
             ResourceId = request.ResourceId,
             InstanceId = request.InstanceId,
-            InstanceDelegationMode = request.InstanceDelegationMode
+            InstanceDelegationMode = request.InstanceDelegationMode,
+            InstanceDelegationSource = request.InstanceDelegationSource,
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
@@ -396,6 +397,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
                 errors.Add(ValidationErrors.MissingPolicy, "request.Resource");
             }
 
+            // The app must be able to do at least one delegation to be able to do GET call
             if (delegableRights == null || !delegableRights.Exists(r => r.CanDelegate.HasValue && r.CanDelegate.Value))
             {
                 errors.Add(ValidationErrors.MissingDelegableRights, "request.Resource");

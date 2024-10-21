@@ -429,33 +429,37 @@ namespace Altinn.AccessManagement.Core.Helpers
             instanceDelegationPolicyPath = null;
             StringBuilder sb = new StringBuilder();
 
+            sb.Append("resourceregistry");
+            sb.Append('/');
+
             sb.Append(rule.ResourceId);
-
             sb.Append('/');
 
-            sb.Append(rule.FromType);
-            sb.Append('-');
-            sb.Append(rule.FromUuid);
-            sb.Append('/');
-
-            sb.Append(rule.ToType);
-            sb.Append('-');
-            sb.Append(rule.ToUuid);
+            sb.Append("instances");
             sb.Append('/');
 
             try
             {
                 sb.Append(rule.InstanceId.AsFileName());
+                sb.Append('/');
             }
             catch (Exception)
             {
                 return false;
-            }
-
+            }            
+            
+            sb.Append(rule.ToType);
+            sb.Append('-');
+            sb.Append(rule.ToUuid);
             sb.Append('/');
-            sb.Append(rule.InstanceDelegationMode);
 
-            sb.Append("/delegationpolicy.xml");
+            sb.Append(rule.InstanceDelegationSource);
+            sb.Append('/');
+            
+            sb.Append(rule.InstanceDelegationMode);
+            sb.Append('/');
+
+            sb.Append("delegationpolicy.xml");
             instanceDelegationPolicyPath = sb.ToString();
 
             return true;

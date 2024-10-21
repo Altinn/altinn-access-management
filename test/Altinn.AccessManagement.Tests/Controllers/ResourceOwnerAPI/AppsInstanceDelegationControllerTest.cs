@@ -139,6 +139,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/app/delegations/resource/{resourceId}/instance/{instanceId}");
 
         // Assert
+        Assert.Equal("Test", await response.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Paginated<AppsInstanceDelegationResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceDelegationResponseDto>>(await response.Content.ReadAsStringAsync(), options);

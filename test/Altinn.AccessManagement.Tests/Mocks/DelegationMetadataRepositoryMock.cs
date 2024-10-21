@@ -573,11 +573,11 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         StringBuilder sb = new StringBuilder();
         sb.Append($"Instance/{resourceId}");
         sb.Append('/');
-        sb.Append(instanceId.AsSpan(24));
+        sb.Append(instanceId.ToUpper().AsSpan(24));
         sb.Append('/');
-        sb.Append(mode.ToString().AsSpan(0, 1));
+        sb.Append(mode.ToString().ToUpper().AsSpan(0, 1));
         sb.Append('/');
-        sb.Append(to.ToString().AsSpan(24));
+        sb.Append(to.ToString().ToUpper().AsSpan(24));
         sb.Append("/delegationpolicy.xml");
         return sb.ToString();
     }

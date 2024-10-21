@@ -9,14 +9,14 @@ namespace Altinn.AccessManagement.Core.Enums
     public enum InstanceDelegationSource
     {
         /// <summary>
-        /// Normal instance delegation
+        /// Delegation by user
         /// </summary>
         [EnumMember(Value = "user")]
         [PgName("user")]
         User,
 
         /// <summary>
-        /// Special case of instance delegation extends delegations to organizations to all users in the receiving organization with parallel role/package to also getting access to the instance
+        /// Delegation by app
         /// </summary>
         [EnumMember(Value = "app")]
         [PgName("app")]

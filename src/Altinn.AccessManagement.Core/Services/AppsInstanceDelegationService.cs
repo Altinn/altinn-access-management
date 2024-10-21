@@ -302,7 +302,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             PerformedByType = UuidType.Resource,
             ResourceId = request.ResourceId,
             InstanceId = request.InstanceId,
-            InstanceDelegationMode = request.InstanceDelegationMode
+            InstanceDelegationMode = request.InstanceDelegationMode,
+            InstanceDelegationSource = request.InstanceDelegationSource,
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
@@ -334,10 +335,16 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
 
         List<InstanceRightDelegationResult> rights = await DelegateRights(rulesToDelegate, rightsAppCantDelegate, cancellationToken);
-
         result.Rights = rights;
-        
+        result = RemoveInstanceIdFromResourceForResponse(result);
+
         return result;
+    }
+
+    /// <inheritdoc/>
+    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task<List<InstanceRightDelegationResult>> DelegateRights(InstanceRight rulesToDelegate, List<RightInternal> rightsAppCantDelegate, CancellationToken cancellationToken)
@@ -359,14 +366,71 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Get(CancellationToken cancellationToken = default)
+    public async Task<Result<List<AppsInstanceDelegationResponse>>> Get(AppsInstanceGetRequest request, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        ValidationErrorBuilder errors = default;
+
+        // Fetch rights valid for delegation
+        ServiceResource resource = (await _resourceRegistryClient.GetResourceList(cancellationToken)).Find(r => r.Identifier == request.ResourceId);
+        List<Right> delegableRights = null;
+
+        if (resource == null)
+        {
+            errors.Add(ValidationErrors.InvalidResource, "request.Resource");
+        }
+        else
+        {
+            RightsQuery rightsQueryForApp = new RightsQuery
+            {
+                Type = RightsQueryType.AltinnApp,
+                To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformingResourceId.ValueSpan.ToString() }.SingleToList(),
+                From = resource.AuthorizationReference,
+                Resource = resource
+            };
+
+            try
+            {
+                delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
+            }
+            catch (ValidationException)
+            {
+                errors.Add(ValidationErrors.MissingPolicy, "request.Resource");
+            }
+
+            // The app must be able to do at least one delegation to be able to do GET call
+            if (delegableRights == null || !delegableRights.Exists(r => r.CanDelegate.HasValue && r.CanDelegate.Value))
+            {
+                errors.Add(ValidationErrors.MissingDelegableRights, "request.Resource");
+            }
+        }
+
+        if (errors.TryBuild(out var errorResult))
+        {
+            return errorResult;
+        }
+
+        List<AppsInstanceDelegationResponse> result = await _pip.GetInstanceDelegations(request, cancellationToken);
+        result = RemoveInstanceIdFromResourceForResponseList(result);
+        return result;
     }
-    
-    /// <inheritdoc/>
-    public Task<Result<bool>> Revoke(CancellationToken cancellationToken = default)
+
+    private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
     {
-        throw new NotImplementedException();
+        foreach (AppsInstanceDelegationResponse item in input)
+        {
+            RemoveInstanceIdFromResourceForResponse(item);            
+        }
+
+        return input;
+    }
+
+    private static AppsInstanceDelegationResponse RemoveInstanceIdFromResourceForResponse(AppsInstanceDelegationResponse input)
+    {
+        foreach (var right in input.Rights)
+        {
+            right.Resource.RemoveAll(r => r.HasValue && r.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute);
+        }
+
+        return input;
     }
 }

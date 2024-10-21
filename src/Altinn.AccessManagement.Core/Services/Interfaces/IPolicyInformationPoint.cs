@@ -1,7 +1,4 @@
 ﻿using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.Authorization.ProblemDetails;
-using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -46,6 +43,14 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
         Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Finds all InstanceDelegations for a given Resource/Instance combination
+        /// </summary>
+        /// <param name="request">The request to descripe what delegations to fetch</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns>all delegations for a given Resource/Instance combination</returns>
+        Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(AppsInstanceGetRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds all active received delegations (not including maskinporten schema) from db, both directly delegated to the party or through key roles if the party is a person

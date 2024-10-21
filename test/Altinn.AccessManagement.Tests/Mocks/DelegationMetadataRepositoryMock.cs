@@ -96,14 +96,14 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
                     ToUuid = request.ToUuid,
                     PerformedBy = request.Resource,
                     PerformedByType = UuidType.Resource,
-                    BlobStoragePolicyPath = $"Instance/{request.Resource}/{request.Instance.AsFileName(false)}/{request.InstanceDelegationMode}/delegationpolicy.xml",
+                    BlobStoragePolicyPath = BuildPolicyPath(request.ToUuid, request.InstanceDelegationMode, request.Resource, request.Instance),
                     BlobStorageVersionId = "2024-09-13T16:59:13.123Z",
                     Created = new DateTime(2024, 9, 13, 16, 59, 13, 347, DateTimeKind.Utc),
-                    Instance = request.Instance,
+                    InstanceId = request.Instance,
                     DelegationChangeType = DelegationChangeType.Grant,
                     InstanceDelegationChangeId = random.Next(1, 1000),
                     InstanceDelegationMode = InstanceDelegationMode.ParallelSigning,
-                    Resource = request.Resource
+                    ResourceId = request.Resource
                 });
             default:
                 return Task.FromResult((InstanceDelegationChange)null);
@@ -114,7 +114,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         Random random = new();
         string path = GetDelegationPolicyPathFromInstanceRule(instanceDelegationChange);
-        InstanceDelegationChange result = instanceDelegationChange.Instance switch
+        InstanceDelegationChange result = instanceDelegationChange.InstanceId switch
         {
             "00000000-0000-0000-0000-000000000002" => null,
             _ => new InstanceDelegationChange
@@ -122,8 +122,8 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
                 InstanceDelegationChangeId = random.Next(0, 1000),
                 DelegationChangeType = instanceDelegationChange.DelegationChangeType,
                 InstanceDelegationMode = instanceDelegationChange.InstanceDelegationMode,
-                Resource = instanceDelegationChange.Resource,
-                Instance = instanceDelegationChange.Instance,
+                ResourceId = instanceDelegationChange.ResourceId,
+                InstanceId = instanceDelegationChange.InstanceId,
                 FromUuid = instanceDelegationChange.FromUuid,
                 FromUuidType = instanceDelegationChange.FromUuidType,
                 ToUuid = instanceDelegationChange.ToUuid,
@@ -143,7 +143,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         StringBuilder sb = new StringBuilder();
 
-        sb.Append(change.Resource);
+        sb.Append(change.ResourceId);
 
         sb.Append('/');
 
@@ -157,7 +157,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         sb.Append(change.ToUuid);
         sb.Append('/');
 
-        sb.Append(change.Instance.AsFileName(false));
+        sb.Append(change.InstanceId.AsFileName(false));
         
         sb.Append('/');
         sb.Append(change.InstanceDelegationMode);
@@ -542,5 +542,57 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");
+    }
+
+    private static InstanceDelegationChange CreateInstanceDelegationChange(InstanceDelegationSource source, string resourceId, string instanceId, Guid toUuid)
+    {
+        Random random = new Random();
+        InstanceDelegationChange result = new InstanceDelegationChange
+        {
+            FromUuidType = UuidType.Organization,
+            FromUuid = Guid.Parse("B537C953-03C4-4822-B028-C15182ADC356"),
+            ToUuidType = UuidType.Person,
+            ToUuid = toUuid,
+            PerformedBy = "app_ttd_am-devtest-instancedelegation",
+            PerformedByType = UuidType.Resource,
+            BlobStoragePolicyPath = BuildPolicyPath(toUuid, InstanceDelegationMode.Normal, resourceId, instanceId),
+            BlobStorageVersionId = "2024-09-13T16:59:13.123Z",
+            Created = new DateTime(2024, 9, 13, 16, 59, 13, 347, DateTimeKind.Utc),
+            InstanceId = instanceId,
+            DelegationChangeType = DelegationChangeType.Grant,
+            InstanceDelegationChangeId = random.Next(1, 1000),
+            InstanceDelegationMode = InstanceDelegationMode.Normal,
+            ResourceId = resourceId
+        };
+
+        return result;
+    }
+
+    private static string BuildPolicyPath(Guid to, InstanceDelegationMode mode, string resourceId, string instanceId)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append($"Instance/{resourceId}");
+        sb.Append('/');
+        sb.Append(instanceId.ToUpper().AsSpan(24));
+        sb.Append('/');
+        sb.Append(mode.ToString().ToUpper().AsSpan(0, 1));
+        sb.Append('/');
+        sb.Append(to.ToString().ToUpper().AsSpan(24));
+        sb.Append("/delegationpolicy.xml");
+        return sb.ToString();
+    }
+
+    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
+    {
+        List<InstanceDelegationChange> result = new List<InstanceDelegationChange>();
+        switch (instanceID)
+        {
+            case "00000000-0000-0000-0000-000000000008":
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("CE4BA72B-D111-404F-95B5-313FB3847FA1")));
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("0268B99A-5817-4BBF-9B62-D90B16D527EA")));
+                return Task.FromResult(result);
+            default:
+                return Task.FromResult(result);
+        }
     }
 }

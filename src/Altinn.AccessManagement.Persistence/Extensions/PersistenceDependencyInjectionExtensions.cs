@@ -137,6 +137,7 @@ public static class PersistenceDependencyInjectionExtensions
             .MapEnum<DelegationChangeType>("delegation.delegationchangetype")
             .MapEnum<UuidType>("delegation.uuidtype")
             .MapEnum<InstanceDelegationMode>("delegation.instancedelegationmode")
+            .MapEnum<InstanceDelegationSource>("delegation.instancedelegationsource")
             .AddYuniqlMigrations(cfg =>
             {
                 cfg.Workspace = "/";

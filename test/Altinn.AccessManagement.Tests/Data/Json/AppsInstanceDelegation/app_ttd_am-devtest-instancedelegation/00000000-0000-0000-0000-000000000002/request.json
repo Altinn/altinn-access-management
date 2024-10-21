@@ -1,0 +1,33 @@
+{
+  "from": {
+    "type": "urn:altinn:party:uuid",
+    "value": "0268B99A-5817-4BBF-9B62-D90B16D527EA"
+  },
+  "to": {
+    "type": "urn:altinn:party:uuid",
+    "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
+  },
+  "instanceDelegationMode": "Normal",
+  "rights": [
+    {
+      "resource": [
+        {
+          "type": "urn:altinn:org",
+          "value": "ttd"
+        },
+        {
+          "type": "urn:altinn:app",
+          "value": "am-devtest-instancedelegation"
+        },
+        {
+          "type": "urn:altinn:task",
+          "value": "task_1"
+        }
+      ],
+      "action": {
+        "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+        "value": "read"
+      }
+    }
+  ]
+}

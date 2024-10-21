@@ -1,6 +1,5 @@
-using System.Net.Http.Headers;
 using System.Text.Json;
-using Altinn.AccessManagement.SystemIntegrationTests.Clients;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Utils;

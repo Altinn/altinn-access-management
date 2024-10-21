@@ -1,6 +1,7 @@
 using System.Net;
 using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;
@@ -22,6 +23,7 @@ public class SystemRegisterTests
     public SystemRegisterTests(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;
+        _outputHelper.WriteLine("System register tests started");
         _teststate = new Teststate();
         _platformAuthenticationClient = new PlatformAuthenticationClient();
     }

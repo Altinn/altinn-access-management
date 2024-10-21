@@ -2,6 +2,7 @@ using System.Text.Json;
 using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;

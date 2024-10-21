@@ -17,7 +17,7 @@ public class SystemUserTests
     private readonly ITestOutputHelper _outputHelper;
     private readonly SystemRegisterClient _systemRegisterClient;
     private readonly PlatformAuthenticationClient _platformAuthenticationClient;
-    private MaskinPortenTokenGenerator _maskinPortenTokenGenerator;
+    private readonly MaskinPortenTokenGenerator _maskinPortenTokenGenerator;
 
     /// <summary>
     /// Testing System user endpoints
@@ -37,7 +37,7 @@ public class SystemUserTests
     public async Task CreateSystemUser()
     {
         var maskinportenBearerToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
-        var response = await _systemRegisterClient.CreateNewSystem(maskinportenBearerToken);
+        await _systemRegisterClient.CreateNewSystem(maskinportenBearerToken);
 
         // Todo - bug? Doesn't verify scopes
         const string scopes = "altinn:authentication/systemuser.request.read";

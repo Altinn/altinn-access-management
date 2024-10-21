@@ -544,7 +544,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Path.Combine(unitTestFolder, "Data", "ResourceRegistryDelegationChanges", $"{resourceRegistryId}", $"{offeredByPartyId}", $"u{coveredByUserId}", "delegationchange.json");
     }
 
-    private InstanceDelegationChange CreateInstanceDelegationChange(InstanceDelegationSource source, string resourceId, string instanceId, Guid toUuid)
+    private static InstanceDelegationChange CreateInstanceDelegationChange(InstanceDelegationSource source, string resourceId, string instanceId, Guid toUuid)
     {
         Random random = new Random();
         InstanceDelegationChange result = new InstanceDelegationChange

@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId/delegationcheck
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationcheck/resource/:resourceId/instance/:instanceId
   body: json
   auth: none
 }
@@ -18,7 +18,7 @@ params:path {
 headers {
   Accept: application/json
   PlatformAccessToken: {{platformAccessToken}}
-  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
+  ~Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
 }
 
 script:pre-request {

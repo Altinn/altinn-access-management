@@ -267,7 +267,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             Right right = delegation.Rights.First();
-            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string _, out string _, out string _, out string _);
+            DelegationHelper.TryGetResourceFromAttributeMatch(right.Resource, out ResourceAttributeMatchType resourceMatchType, out string resourceRegistryId, out string org, out string app, out string serviceCode, out string serviceEditionCode);
 
             if (resourceMatchType != ResourceAttributeMatchType.ResourceRegistry)
             {
@@ -276,7 +276,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Verify resource registry id is a valid MaskinportenSchema
-            ServiceResource resource = await _contextRetrievalService.GetResource(resourceRegistryId);
+            ServiceResource resource = await _contextRetrievalService.GetResourceFromResourceList(resourceRegistryId, org, app, serviceCode, serviceEditionCode);
             if (resource == null || (delegationAction == DelegationActionType.Delegation && !resource.Delegable))
             {
                 result.Errors.Add("right[0].Resource", $"The resource: {resourceRegistryId}, does not exist or is not available for delegation");

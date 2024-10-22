@@ -2,8 +2,6 @@ using System.Net;
 using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
-using Altinn.AccessManagement.SystemIntegrationTests.Utils.TestUsers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -46,16 +44,12 @@ public class SystemUserTests
         var response =
             await _platformAuthenticationClient.GetAsync(
                 $"/authentication/api/v1/systemregister/{vendorId}_{randomName}/", maskinportenToken);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _outputHelper.WriteLine(responseContent);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var requestBody = await Helper.ReadFile("Resources/Testdata/SystemUser/RequestSystemUser.json");
         requestBody = requestBody
             .Replace("{systemId}", $"{vendorId}_{randomName}")
             .Replace("{randomIntegrationTitle}", $"{randomName}");
-
-        const string party = "50692553";
-        const string endpoint = "authentication/api/v1/systemuser/" + party;
 
         var manager = new AltinnUser
         {
@@ -65,7 +59,9 @@ public class SystemUserTests
         var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager);
 
         //Act
-        var respons = await _platformAuthenticationClient.PostAsync(endpoint, requestBody, token);
+        var respons =
+            await _platformAuthenticationClient.PostAsync("authentication/api/v1/systemuser/50692553", requestBody,
+                token);
 
         //Assert
         Assert.Equal(HttpStatusCode.Created, respons.StatusCode);
@@ -92,7 +88,6 @@ public class SystemUserTests
         const string endpoint = "authentication/api/v1/systemuser/" + party;
 
         var respons = await _platformAuthenticationClient.GetAsync(endpoint, token);
-        _outputHelper.WriteLine($"respons: {await respons.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.OK, respons.StatusCode);
     }
 
@@ -110,14 +105,18 @@ public class SystemUserTests
             userId = "20012772", partyId = "51670464", pid = "64837001585",
             scopes = "altinn:authentication/systemuser.request.read"
         };
-        
-        var jsonObject = JObject.Parse(await (await CreateSystemUserTestdata(party,manager)).Content.ReadAsStringAsync());
-        var id = jsonObject["id"]; //SystemId -//Todo: Why is "id" the same as systemuserid in Swagger? Confusing to mix with "systemid"
-        
+
+        var jsonObject =
+            JObject.Parse(await (await CreateSystemUserTestdata(party, manager)).Content.ReadAsStringAsync());
+        var
+            id = jsonObject[
+                "id"]; //SystemId -//Todo: Why is "id" the same as systemuserid in Swagger? Confusing to mix with "systemid"
+
         var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager);
 
         // Act
-        var respons = await _platformAuthenticationClient.Delete($"authentication/api/v1/systemuser/{party}/{id}", token);
+        var respons =
+            await _platformAuthenticationClient.Delete($"authentication/api/v1/systemuser/{party}/{id}", token);
         Assert.Equal(HttpStatusCode.Accepted, respons.StatusCode);
     }
 
@@ -140,7 +139,7 @@ public class SystemUserTests
             .Replace("{randomIntegrationTitle}", $"{randomName}");
 
         var endpoint = "authentication/api/v1/systemuser/" + party;
-        
+
         var token = await _platformAuthenticationClient.GetPersonalAltinnToken(user);
         //Act
         var respons = await _platformAuthenticationClient.PostAsync(endpoint, requestBody, token);

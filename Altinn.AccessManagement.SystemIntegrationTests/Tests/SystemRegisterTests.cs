@@ -77,8 +77,6 @@ public class SystemRegisterTests
         // Assert
         Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        _outputHelper.WriteLine(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]

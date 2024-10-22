@@ -133,11 +133,8 @@ public class PlatformAuthenticationClient
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response Content: " + content);
                 return content;
             }
-
-            Console.WriteLine("Error: " + response.StatusCode + " " + await response.Content.ReadAsStringAsync());
         }
         catch (Exception ex)
         {

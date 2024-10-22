@@ -5,20 +5,20 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/:resourceId/instance/:instanceId
   body: json
   auth: none
 }
 
 params:path {
-  resourceId: app_{{org}}_{{app}}
   instanceId: {{instanceId}}
+  resourceId: app_{{org}}_{{app}}
 }
 
 headers {
   Accept: application/json
   PlatformAccessToken: {{platformAccessToken}}
-  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
+  ~Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
 }
 
 body:json {
@@ -31,7 +31,6 @@ body:json {
       "type": "urn:altinn:party:uuid",
       "value": "c632a24e-910a-4332-a087-076bc98d600f"
     },
-    "instanceDelegationMode": "Normal",
     "rights": [
       {
         "resource": [

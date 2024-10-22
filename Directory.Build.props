@@ -1,11 +1,12 @@
 <Project>
 
     <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>12.0</LangVersion>
         <!-- <Nullable>enable</Nullable> -->
-        <EnableStyleCop>true</EnableStyleCop>
+        <EnableStyleCop>false</EnableStyleCop>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Authors>Altinn Platform Contributors</Authors>

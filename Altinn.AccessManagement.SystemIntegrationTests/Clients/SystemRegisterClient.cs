@@ -1,4 +1,6 @@
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Altinn.Platform.Authentication.Core.SystemRegister.Models;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,19 +31,15 @@ public class SystemRegisterClient : PlatformAuthenticationClient
     /// <param name="name">Name</param>
     /// <param name="vendorId">The vendor creating the system. Defaults to a user created in Selvbetjeningsportalen</param>
     /// <returns></returns>
-    public async Task<HttpResponseMessage> CreateNewSystem(string token, string name, string vendorId = "312605031")
+    public async Task<HttpResponseMessage> CreateNewSystem(RegisterSystemRequest system, string token, string name, string vendorId = "312605031")
     {
         const string endpoint = "authentication/api/v1/systemregister/vendor";
-        var testfile = await Helper.ReadFile("Resources/Testdata/Systemregister/CreateNewSystem.json");
-
-        testfile = testfile
-            .Replace("{vendorId}", vendorId)
-            .Replace("{randomName}", name)
-            .Replace("{clientId}", Guid.NewGuid().ToString());
-        
         //Assert 
         //return await PostAsync(endpoint, testfile, token);
-        var response = await PostAsync(endpoint, testfile, token);
+        // mob here
+        
+        HttpContent content = new StringContent(JsonSerializer.Serialize(system, new JsonSerializerOptions() { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }), System.Text.Encoding.UTF8, "application/json");
+        var response = await PostAsync(endpoint, token, content);
         Assert.NotNull(response);
         Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
         return response;

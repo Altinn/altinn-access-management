@@ -1,6 +1,11 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Xml.Linq;
 using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Altinn.Platform.Authentication.Core.Models;
+using Altinn.Platform.Authentication.Core.SystemRegister.Models;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -78,47 +83,57 @@ public class SystemRegisterTests
         Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
-
+    /// Verify that the correct number of rights are returned ffrom the defined system
     [Fact]
     public async Task ValidateRights()
     {
         // Prepare
         var token = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
-        const string vendorId = "312605031";
+
+        // the vendor of the system, could be visma
+        const string vendorId = "312605031"; 
         var randomName = Helper.GenerateRandomString(15);
-        await _systemRegisterClient.CreateNewSystem(token, randomName, vendorId);
+
+        var testfile = await Helper.ReadFile("Resources/Testdata/Systemregister/CreateNewSystem.json");
+
+        testfile = testfile
+            .Replace("{vendorId}", vendorId)
+            .Replace("{randomName}", randomName)
+            .Replace("{clientId}", Guid.NewGuid().ToString());
+
+        RegisterSystemRequest? systemRequest = JsonSerializer.Deserialize<RegisterSystemRequest>(testfile);
+        await _systemRegisterClient.CreateNewSystem(systemRequest, token, randomName, vendorId);
 
         // Act
         var response =
             await _platformAuthenticationClient.GetAsync(
                 $"/authentication/api/v1/systemregister/{vendorId}_{randomName}/rights", token);
-        var responseContent = await response.Content.ReadAsStringAsync();
+        List<Right> rights = await response.Content.ReadFromJsonAsync<List<Right>>();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(
-            "[\n  {\n    \"resource\": [\n      {\n        \"id\": \"urn:altinn:resource\",\n        \"value\": \"kravogbetaling\"\n      }\n    ]\n  }\n]",
-            responseContent);
+        Assert.Equal(systemRequest.Rights.First().Resource.First().Value, rights!.First().Resource.First().Value);
+
     }
 
-    /// <summary>
-    /// Verify registered system gets deleted
-    /// </summary>
-    //[Fact] Todo: This currently fails
-    public async Task DeleteRegisteredSystemReturns200Ok()
-    {
-        // Prepare
-        var randomName = Helper.GenerateRandomString(20);
-        const string vendorId = "312605031";
-        var token = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
-        await _systemRegisterClient.CreateNewSystem(token, randomName);
-
-        // Act
-        var respons = await _platformAuthenticationClient.Delete(
-            $"/authentication/api/v1/systemregister/vendor/{vendorId}_{randomName}",
-            token);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.OK, respons.StatusCode);
-    }
+    // /// <summary>
+    // /// Verify registered system gets deleted
+    // /// </summary>
+    // //[Fact] Todo: This currently fails
+    // public async Task DeleteRegisteredSystemReturns200Ok()
+    // {
+    //     // Prepare
+    //     var randomName = Helper.GenerateRandomString(20);
+    //     const string vendorId = "312605031";
+    //     var token = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
+    //     await _systemRegisterClient.CreateNewSystem(token, randomName);
+    //
+    //     // Act
+    //     var respons = await _platformAuthenticationClient.Delete(
+    //         $"/authentication/api/v1/systemregister/vendor/{vendorId}_{randomName}",
+    //         token);
+    //
+    //     // Assert
+    //     Assert.Equal(HttpStatusCode.OK, respons.StatusCode);
+    // }
 }

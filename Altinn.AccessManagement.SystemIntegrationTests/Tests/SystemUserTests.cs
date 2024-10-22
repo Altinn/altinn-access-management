@@ -2,6 +2,7 @@ using System.Net;
 using Altinn.AccessManagement.SystemIntegrationTests.Clients;
 using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Altinn.Platform.Authentication.Core.SystemRegister.Models;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -37,9 +38,21 @@ public class SystemUserTests
     {
         // Prepare
         var maskinportenToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
+
+        // the vendor of the system, could be visma
         const string vendorId = "312605031";
         var randomName = Helper.GenerateRandomString(15);
-        await _systemRegisterClient.CreateNewSystem(maskinportenToken, randomName, vendorId);
+
+        var testfile = await Helper.ReadFile("Resources/Testdata/Systemregister/CreateNewSystem.json");
+
+        testfile = testfile
+            .Replace("{vendorId}", vendorId)
+            .Replace("{randomName}", randomName)
+            .Replace("{clientId}", Guid.NewGuid().ToString());
+
+        RegisterSystemRequest? systemRequest =
+            System.Text.Json.JsonSerializer.Deserialize<RegisterSystemRequest>(testfile);
+        await _systemRegisterClient.CreateNewSystem(systemRequest!, maskinportenToken, randomName, vendorId);
 
         var response =
             await _platformAuthenticationClient.GetAsync(
@@ -123,10 +136,23 @@ public class SystemUserTests
     public async Task<HttpResponseMessage> CreateSystemUserTestdata(string party, AltinnUser user)
     {
         // Prepare
+        // Prepare
         var maskinportenToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
+
+        // the vendor of the system, could be visma
         const string vendorId = "312605031";
         var randomName = Helper.GenerateRandomString(15);
-        await _systemRegisterClient.CreateNewSystem(maskinportenToken, randomName, vendorId);
+
+        var testfile = await Helper.ReadFile("Resources/Testdata/Systemregister/CreateNewSystem.json");
+
+        testfile = testfile
+            .Replace("{vendorId}", vendorId)
+            .Replace("{randomName}", randomName)
+            .Replace("{clientId}", Guid.NewGuid().ToString());
+
+        RegisterSystemRequest? systemRequest =
+            System.Text.Json.JsonSerializer.Deserialize<RegisterSystemRequest>(testfile);
+        await _systemRegisterClient.CreateNewSystem(systemRequest!, maskinportenToken, randomName, vendorId);
 
         var response =
             await _platformAuthenticationClient.GetAsync(

@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
 using Xunit.Abstractions;
@@ -39,11 +40,27 @@ public class PlatformAuthenticationClient
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-
+ 
         HttpContent content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
-
+ 
         var response = await client.PostAsync($"{BaseUrl}/{endpoint}", content);
         return response;
+    }
+
+    /// <summary>
+    /// Post a request 
+    /// </summary>
+    /// <param name="endpoint">Endpoint for api</param>
+    /// <param name="token">Bearer token</param>
+    /// <param name="content">Request content</param>
+    /// <returns></returns>
+    public async Task<HttpResponseMessage> PostAsync(string endpoint, string token, HttpContent content)
+    {
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        return await client.PostAsync($"{BaseUrl}/{endpoint}", content);
     }
 
     /// <summary>

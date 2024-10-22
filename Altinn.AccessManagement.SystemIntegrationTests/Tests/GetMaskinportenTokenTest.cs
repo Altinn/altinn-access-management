@@ -12,14 +12,16 @@ namespace Altinn.AccessManagement.SystemIntegrationTests.Tests;
 /// </summary>
 public class GetMaskinportenTokenTest
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly MaskinPortenTokenGenerator _maskinPortenTokenGenerator = new();
     private readonly PlatformAuthenticationClient _platformAuthenticationClient;
 
     /// <summary>
     /// Test machine porten functionality
     /// </summary>
-    public GetMaskinportenTokenTest()
+    public GetMaskinportenTokenTest(ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         _platformAuthenticationClient = new PlatformAuthenticationClient();
     }
 
@@ -31,6 +33,7 @@ public class GetMaskinportenTokenTest
     public async Task ReadJwkFile()
     {
         var jsonString = await Helper.ReadFile("Resources/JwksUnitTest/UnitTestJwks.json");
+        _testOutputHelper.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
 
         var test =
             JsonSerializer.Deserialize<Jwk>(jsonString);

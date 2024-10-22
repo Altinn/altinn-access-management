@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/:resourceId/instance/:instanceId/revoke
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationrevoke/resource/:resourceId/instance/:instanceId/
   body: json
   auth: none
 }
@@ -31,18 +31,12 @@ body:json {
       "type": "urn:altinn:party:uuid",
       "value": "c632a24e-910a-4332-a087-076bc98d600f"
     },
-    "resourceId": "app_ttd_am-devtest-instancedelegation",
-    "instanceId": "d615bf53-dfda-44af-89c1-a2ccfbfd8db8",
     "rights": [
       {
         "resource": [
           {
-            "type": "urn:altinn:org",
-            "value": "ttd"
-          },
-          {
-            "type": "urn:altinn:app",
-            "value": "am-devtest-instancedelegation"
+            "type": "urn:altinn:resource",
+            "value": "app_{{org}}_{{app}}"
           },
           {
             "type": "urn:altinn:task",
@@ -52,8 +46,7 @@ body:json {
         "action": {
           "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
           "value": "read"
-        },
-        "status": "Delegated"
+        }
       }
     ]
   }

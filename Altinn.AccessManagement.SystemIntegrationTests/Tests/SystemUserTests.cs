@@ -4,6 +4,7 @@ using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils.TestUsers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,46 +37,113 @@ public class SystemUserTests
     [Fact]
     public async Task CreateSystemUser()
     {
-        var maskinportenBearerToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
-        await _systemRegisterClient.CreateNewSystem(maskinportenBearerToken);
+        // Prepare
+        var maskinportenToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
+        const string vendorId = "312605031";
+        var randomName = Helper.GenerateRandomString(15);
+        await _systemRegisterClient.CreateNewSystem(maskinportenToken, randomName, vendorId);
 
-        // Todo - bug? Doesn't verify scopes
-        const string scopes = "altinn:authentication/systemuser.request.read";
-        const string userId = "20012772";
-        const string partyId = "51670464";
-        const string pid = "64837001585";
+        var response =
+            await _platformAuthenticationClient.GetAsync(
+                $"/authentication/api/v1/systemregister/{vendorId}_{randomName}/", maskinportenToken);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        _outputHelper.WriteLine(responseContent);
 
-        // Create system user for this party??
-        const string party = "50692553";
-
-        var manager = new AltinnUser
-            { userId = userId, partyId = partyId, pid = pid };
-
-        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager.partyId, scopes, manager.pid, manager.userId);
         var requestBody = await Helper.ReadFile("Resources/Testdata/SystemUser/RequestSystemUser.json");
+        requestBody = requestBody
+            .Replace("{systemId}", $"{vendorId}_{randomName}")
+            .Replace("{randomIntegrationTitle}", $"{randomName}");
+
+        const string party = "50692553";
         const string endpoint = "authentication/api/v1/systemuser/" + party;
 
+        var manager = new AltinnUser
+        {
+            userId = "20012772", partyId = "51670464", pid = "64837001585",
+            scopes = "altinn:authentication/systemuser.request.read"
+        };
+        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager);
+
+        //Act
         var respons = await _platformAuthenticationClient.PostAsync(endpoint, requestBody, token);
 
+        //Assert
         Assert.Equal(HttpStatusCode.Created, respons.StatusCode);
     }
 
     /// <summary>
     /// Test Get endpoint for System User
+    /// Github: #765
     /// </summary>
     [Fact]
     public async Task GetCreatedSystemUser()
     {
+        const string alternativeParty = "50891151";
+
+        var manager = new AltinnUser
+        {
+            userId = "20012772", partyId = alternativeParty, pid = "04855195742",
+            scopes = "altinn:authentication" //What use does this even have
+        };
+
+        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager);
+
         const string party = "50692553";
         const string endpoint = "authentication/api/v1/systemuser/" + party;
-        const string userId = "20012772";
-        const string scopes = "altinn:authentication/systemuser.request.read";
-        const string pid = "04855195742";
-
-        const string partyId = "50822874";
-        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(partyId, scopes, pid, userId);
 
         var respons = await _platformAuthenticationClient.GetAsync(endpoint, token);
+        _outputHelper.WriteLine($"respons: {await respons.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.OK, respons.StatusCode);
+    }
+
+    /// <summary>
+    /// Test Delete for System User
+    /// Github: Todo
+    /// </summary>
+    [Fact]
+    public async Task DeleteCreatedSystemUser()
+    {
+        //Prepare
+        const string party = "50692553";
+        var manager = new AltinnUser
+        {
+            userId = "20012772", partyId = "51670464", pid = "64837001585",
+            scopes = "altinn:authentication/systemuser.request.read"
+        };
+        
+        var jsonObject = JObject.Parse(await (await CreateSystemUserTestdata(party,manager)).Content.ReadAsStringAsync());
+        var id = jsonObject["id"]; //SystemId -//Todo: Why is "id" the same as systemuserid in Swagger? Confusing to mix with "systemid"
+        
+        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(manager);
+
+        // Act
+        var respons = await _platformAuthenticationClient.Delete($"authentication/api/v1/systemuser/{party}/{id}", token);
+        Assert.Equal(HttpStatusCode.Accepted, respons.StatusCode);
+    }
+
+    public async Task<HttpResponseMessage> CreateSystemUserTestdata(string party, AltinnUser user)
+    {
+        // Prepare
+        var maskinportenToken = await _maskinPortenTokenGenerator.GetMaskinportenBearerToken();
+        const string vendorId = "312605031";
+        var randomName = Helper.GenerateRandomString(15);
+        await _systemRegisterClient.CreateNewSystem(maskinportenToken, randomName, vendorId);
+
+        var response =
+            await _platformAuthenticationClient.GetAsync(
+                $"/authentication/api/v1/systemregister/{vendorId}_{randomName}/", maskinportenToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var requestBody = await Helper.ReadFile("Resources/Testdata/SystemUser/RequestSystemUser.json");
+        requestBody = requestBody
+            .Replace("{systemId}", $"{vendorId}_{randomName}")
+            .Replace("{randomIntegrationTitle}", $"{randomName}");
+
+        var endpoint = "authentication/api/v1/systemuser/" + party;
+        
+        var token = await _platformAuthenticationClient.GetPersonalAltinnToken(user);
+        //Act
+        var respons = await _platformAuthenticationClient.PostAsync(endpoint, requestBody, token);
+        return respons;
     }
 }

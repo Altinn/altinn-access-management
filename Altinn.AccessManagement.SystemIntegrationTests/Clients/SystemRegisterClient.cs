@@ -1,4 +1,5 @@
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Altinn.AccessManagement.SystemIntegrationTests.Clients;
@@ -25,20 +26,24 @@ public class SystemRegisterClient : PlatformAuthenticationClient
     /// Creates a new system in Systmeregister. Requires Bearer token from Maskinporten
     /// </summary>
     /// <param name="token">A maskinporten token</param>
+    /// <param name="name">Name</param>
     /// <param name="vendorId">The vendor creating the system. Defaults to a user created in Selvbetjeningsportalen</param>
     /// <returns></returns>
-    public async Task<HttpResponseMessage> CreateNewSystem(string token, string vendorId = "312605031")
+    public async Task<HttpResponseMessage> CreateNewSystem(string token, string name, string vendorId = "312605031")
     {
         const string endpoint = "authentication/api/v1/systemregister/vendor";
-
-        var randomName = Helper.GenerateRandomString(15);
         var testfile = await Helper.ReadFile("Resources/Testdata/Systemregister/CreateNewSystem.json");
 
         testfile = testfile
             .Replace("{vendorId}", vendorId)
-            .Replace("{randomName}", randomName)
+            .Replace("{randomName}", name)
             .Replace("{clientId}", Guid.NewGuid().ToString());
-
-        return await PostAsync(endpoint, testfile, token);
+        
+        //Assert 
+        //return await PostAsync(endpoint, testfile, token);
+        var response = await PostAsync(endpoint, testfile, token);
+        Assert.NotNull(response);
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        return response;
     }
 }

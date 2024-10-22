@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Altinn.AccessManagement.SystemIntegrationTests.Domain;
 using Altinn.AccessManagement.SystemIntegrationTests.Utils;
 using Xunit.Abstractions;
 
@@ -23,8 +24,7 @@ public class PlatformAuthenticationClient
     {
         EnvironmentHelper = Helper.LoadEnvironment("Resources/Environment/environment.json") ??
                             throw new Exception("Unable to read environment file");
-        BaseUrl = "https://platform.{environment}.altinn.cloud".Replace("{environment}",
-            EnvironmentHelper.Testenvironment);
+        BaseUrl = $"https://platform.{EnvironmentHelper.Testenvironment}.altinn.cloud";
     }
 
     /// <summary>
@@ -59,6 +59,20 @@ public class PlatformAuthenticationClient
             new AuthenticationHeaderValue("Bearer", token);
         return await client.GetAsync($"{BaseUrl}/{endpoint}");
     }
+    
+    /// <summary>
+    /// Delete
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public async Task<HttpResponseMessage> Delete(string endpoint, string token)
+    {
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        return await client.DeleteAsync($"{BaseUrl}/{endpoint}");
+    }
 
     /// <summary>
     /// Endpoint that converts a maskinporten token into an Altinn Token
@@ -85,19 +99,16 @@ public class PlatformAuthenticationClient
     /// <summary>
     /// Used for fetching an Altinn test token
     /// </summary>
-    /// <param name="partyId">PartyId for token</param>
-    /// <param name="scopes">rights / privileges needed. Example: altinn:authentication/systemuser.request.read</param>
-    /// <param name="pid">Personal id, </param>
-    /// <param name="userId">Summary</param>
+    /// <param name="user"></param>
     /// <returns></returns>
-    public async Task<string> GetPersonalAltinnToken(string partyId, string scopes, string pid, string userId)
+    public async Task<string> GetPersonalAltinnToken(AltinnUser user)
     {
         var url =
             $"https://altinn-testtools-token-generator.azurewebsites.net/api/GetPersonalToken?env={EnvironmentHelper.Testenvironment}" +
-            $"&scopes={scopes}" +
-            $"&pid={pid}" +
-            $"&userid={userId}" +
-            $"&partyid={partyId}" +
+            $"&scopes={user.scopes}" +
+            $"&pid={user.pid}" +
+            $"&userid={user.userId}" +
+            $"&partyid={user.partyId}" +
             $"&authLvl=3&ttl=3000";
 
         var token = GetAltinnToken(url);

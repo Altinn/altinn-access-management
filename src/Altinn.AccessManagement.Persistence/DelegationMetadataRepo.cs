@@ -1477,10 +1477,5 @@ namespace Altinn.AccessManagement.Persistence
                 return await new ValueTask<DelegationChange>(Task.FromException<DelegationChange>(ex));
             }
         }
-
-        public Task<List<DelegationChange>> GetAllDelegationChangesForAuthorizedParties(List<int> coveredByUserIds, List<int> coveredByPartyIds, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

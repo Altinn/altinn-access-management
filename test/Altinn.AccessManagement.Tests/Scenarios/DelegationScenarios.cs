@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -129,6 +130,28 @@ public static class DelegationScenarios
                     DelegationChangeComposer.WithToUser(person),
                     DelegationChangeComposer.WithResource(resource),
                     DelegationChangeComposer.WithDelegationChangeRevokeLast))
+        ]);
+    };
+
+    public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => async mock =>
+    {
+        resource ??= ResourceSeeds.AltinnApp.Defaults;
+
+        mock.DbSeeds.AddRange([
+            async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(
+                new()
+                {
+                    DelegationChangeType = DelegationChangeType.Grant,
+                    BlobStoragePolicyPath = "https://blob.storage.no",
+                    BlobStorageVersionId = "v1",
+                    ResourceId = resource.Resource.Identifier,
+                    InstanceId = instanceId,
+                    FromUuid = (Guid)from.Party.PartyUuid,
+                    FromUuidType = string.IsNullOrEmpty(from.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+                    ToUuid = (Guid)to.Party.PartyUuid,
+                    ToUuidType = string.IsNullOrEmpty(to.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+                    InstanceDelegationMode = InstanceDelegationMode.Normal,
+                }),
         ]);
     };
 

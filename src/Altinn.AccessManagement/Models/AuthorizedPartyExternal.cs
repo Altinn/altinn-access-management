@@ -66,7 +66,7 @@ public class AuthorizedPartyExternal
     /// <summary>
     /// Gets or sets a collection of all Authorized Instances 
     /// </summary>
-    public List<string> AuthorizedInstances { get; set; } = [];
+    public List<Resource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a set of subunits of this party, which the authorized subject also has some access to.

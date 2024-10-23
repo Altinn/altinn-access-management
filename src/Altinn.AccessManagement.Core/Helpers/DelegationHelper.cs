@@ -529,6 +529,62 @@ namespace Altinn.AccessManagement.Core.Helpers
             return false;
         }
 
+        /// <summary>
+        /// Returns Xacml rule in the provided XacmlPolicy that contains a rule having an identical Resource signature and contains the Action from the InstanceRule null if no match,
+        /// to be used for finding rules to revoke.
+        /// </summary>
+        /// <returns>A bool</returns>
+        public static XacmlRule GetXamlRuleContainsMatchingInstanceRule(XacmlPolicy policy, InstanceRule rule)
+        {
+            string ruleResourceKey = GetAttributeMatchKey(rule.Resource.ToList());
+
+            foreach (XacmlRule policyRule in policy.Rules)
+            {
+                if (!policyRule.Effect.Equals(XacmlEffectType.Permit) || policyRule.Target == null)
+                {
+                    continue;
+                }
+
+                bool matchingActionFound = MatchingActionFound(policyRule.Target.AnyOf, rule, out List<List<AttributeMatch>> policyResourceMatches);
+
+                if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
+                {
+                    rule.RuleId = policyRule.RuleId;
+                    return policyRule;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Checks whether the provided XacmlRule having an identical Resource signature and contains the Action from any rules in the instanceRight,
+        /// to be used for checking for rules to revoke.
+        /// </summary>
+        /// <returns>A bool</returns>
+        public static bool InstanceRightContainsMatchingPolicyRule(InstanceRight instanceRight, XacmlRule policyRule)
+        {
+            if (!policyRule.Effect.Equals(XacmlEffectType.Permit) || policyRule.Target == null)
+            {
+                return false;
+            }
+
+            foreach (InstanceRule instanceRule in instanceRight.InstanceRules)
+            {
+                string ruleResourceKey = GetAttributeMatchKey(instanceRule.Resource.ToList());
+
+                bool matchingActionFound = MatchingActionFound(policyRule.Target.AnyOf, instanceRule, out List<List<AttributeMatch>> policyResourceMatches);
+
+                if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
+                {
+                    instanceRule.RuleId = policyRule.RuleId;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static bool MatchingActionFound(ICollection<XacmlAnyOf> input, InstanceRule rule, out List<List<AttributeMatch>> policyResourceMatches)
         {
             policyResourceMatches = [];
@@ -838,6 +894,21 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Gets the list of Rules as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rules">The rules output from a delegation to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static IEnumerable<InstanceRightRevokeResult> GetRightRevokeResultsFromInstanceRules(InstanceRight rules)
+        {
+            return rules.InstanceRules.Select(rule => new InstanceRightRevokeResult
+            {
+                Resource = rule.Resource,
+                Action = rule.Action,
+                Status = rule.CreatedSuccessfully ? RevokeStatus.Revoked : RevokeStatus.NotRevoked
+            });
+        }
+
+        /// <summary>
         /// Gets the list of Rights as a list of RightDelegationResult
         /// </summary>
         /// <param name="rights">The rights to convert</param>
@@ -864,6 +935,21 @@ namespace Altinn.AccessManagement.Core.Helpers
                 Resource = right.Resource,
                 Action = right.Action,
                 Status = DelegationStatus.NotDelegated
+            });
+        }
+
+        /// <summary>
+        /// Gets the list of Rights as a list of RightDelegationResult
+        /// </summary>
+        /// <param name="rights">The rights to convert</param>
+        /// <returns>List of RightDelegationResult</returns>
+        public static IEnumerable<InstanceRightRevokeResult> GetRightRevokeResultsFromFailedInternalRights(List<RightInternal> rights)
+        {
+            return rights.Select(right => new InstanceRightRevokeResult
+            {
+                Resource = right.Resource,
+                Action = right.Action,
+                Status = RevokeStatus.NotRevoked
             });
         }
 

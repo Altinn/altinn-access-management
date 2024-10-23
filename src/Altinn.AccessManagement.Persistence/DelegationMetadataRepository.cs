@@ -755,4 +755,10 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         throw new NotImplementedException();
     }
+
+    /// <inheritdoc />
+    public Task<List<InstanceDelegationChange>> GetInstanceDelegationForAuthorizedParties(List<Guid> toUuid, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

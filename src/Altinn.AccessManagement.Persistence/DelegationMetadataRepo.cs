@@ -341,7 +341,7 @@ namespace Altinn.AccessManagement.Persistence
         /// <param name="toUuid"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<List<InstanceDelegationChange>> GetAllCurrentReceviedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
+        public async Task<List<InstanceDelegationChange>> GetInstanceDelegationForAuthorizedParties(List<Guid> toUuid, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -564,7 +564,7 @@ namespace Altinn.AccessManagement.Persistence
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetInstanceDelegationChange)
-                    .ToListAsync(cancellationToken);                
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -572,7 +572,7 @@ namespace Altinn.AccessManagement.Persistence
                 throw;
             }
         }
-        
+
         private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChange(NpgsqlDataReader reader)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity();
@@ -1340,29 +1340,7 @@ namespace Altinn.AccessManagement.Persistence
                 FROM delegation.delegationchanges
                 WHERE coveredByUserId = ANY (@coveredByUserIds) OR coveredByPartyId = ANY (@coveredByPartyIds)
                 GROUP BY altinnAppId, offeredByPartyId, coveredByUserId, coveredByPartyId
-            ),
-            latestInstanceChanges AS (
-                SELECT MAX(instancedelegationchangeid) as latestId
-                FROM delegation.instancedelegationchanges
-                WHERE touuid = ANY(@touuid)
-                GROUP BY resourcid, fromuuid, touuid
             )
-            SELECT
-                instancedelegationchangeid,
-                delegationchangetype,
-                instanceDelegationMode,
-                resourceid,
-                instanceid,
-                fromuuid,
-                fromtype,
-                touuid,
-                totype,
-                performedby,
-                performedbytype,
-                blobstoragepolicypath,
-                blobstorageversionid,
-                created,
-
             SELECT
                 resourceRegistryDelegationChangeId,
                 null AS delegationChangeId,

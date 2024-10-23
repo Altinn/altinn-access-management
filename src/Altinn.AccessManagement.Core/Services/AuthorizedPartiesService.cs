@@ -308,7 +308,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             }
 
             authorizedParty = new AuthorizedParty(instanceParty);
-            authorizedParty.AuthorizedInstances.Add(delegation.Instance);
+            authorizedParty.AuthorizedInstances.Add(delegation.InstanceId);
             authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
             a3AuthParties.Add(authorizedParty);
         }

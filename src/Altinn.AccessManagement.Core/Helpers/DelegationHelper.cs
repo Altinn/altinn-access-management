@@ -557,34 +557,6 @@ namespace Altinn.AccessManagement.Core.Helpers
             return null;
         }
 
-        /// <summary>
-        /// Checks whether the provided XacmlRule having an identical Resource signature and contains the Action from any rules in the instanceRight,
-        /// to be used for checking for rules to revoke.
-        /// </summary>
-        /// <returns>A bool</returns>
-        public static bool InstanceRightContainsMatchingPolicyRule(InstanceRight instanceRight, XacmlRule policyRule)
-        {
-            if (!policyRule.Effect.Equals(XacmlEffectType.Permit) || policyRule.Target == null)
-            {
-                return false;
-            }
-
-            foreach (InstanceRule instanceRule in instanceRight.InstanceRules)
-            {
-                string ruleResourceKey = GetAttributeMatchKey(instanceRule.Resource.ToList());
-
-                bool matchingActionFound = MatchingActionFound(policyRule.Target.AnyOf, instanceRule, out List<List<AttributeMatch>> policyResourceMatches);
-
-                if (policyResourceMatches.Exists(resourceMatch => GetAttributeMatchKey(resourceMatch) == ruleResourceKey) && matchingActionFound)
-                {
-                    instanceRule.RuleId = policyRule.RuleId;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private static bool MatchingActionFound(ICollection<XacmlAnyOf> input, InstanceRule rule, out List<List<AttributeMatch>> policyResourceMatches)
         {
             policyResourceMatches = [];

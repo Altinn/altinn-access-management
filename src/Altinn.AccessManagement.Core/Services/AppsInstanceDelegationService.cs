@@ -414,12 +414,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return result;
     }
 
-<<<<<<< HEAD
     private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
-=======
-    /// <inheritdoc/>
-    public Task<Result<bool>> Revoke(CancellationToken cancellationToken = default)
->>>>>>> 25f21d6 (extend authorized parties with instance delegations)
     {
         foreach (AppsInstanceDelegationResponse item in input)
         {

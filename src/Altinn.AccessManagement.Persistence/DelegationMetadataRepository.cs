@@ -757,7 +757,7 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     }
 
     /// <inheritdoc />
-    public Task<List<InstanceDelegationChange>> GetInstanceDelegationForAuthorizedParties(List<Guid> toUuid, CancellationToken cancellationToken = default)
+    public Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

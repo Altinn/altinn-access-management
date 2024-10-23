@@ -169,7 +169,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         var userId = subjectUserId != 0 ? subjectUserId.SingleToList() : [];
         userId.AddRange(subjectPartyIds);
         var parties = await _contextRetrievalService.GetPartiesAsync(userId, false, cancellationToken);
-        return await _delegations.GetInstanceDelegationForAuthorizedParties(parties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
+        return await _delegations.GetAllCurrentReceivedInstanceDelegations(parties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
     }
 
     private async Task<List<AuthorizedParty>> BuildAuthorizedParties(int subjectUserId, List<int> subjectPartyIds, bool includeAltinn2AuthorizedParties, bool includeResourcesThroughRoles, CancellationToken cancellationToken)
@@ -308,7 +308,11 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             }
 
             authorizedParty = new AuthorizedParty(instanceParty);
-            authorizedParty.AuthorizedInstances.Add(delegation.InstanceId);
+            authorizedParty.AuthorizedInstances.Add(new()
+            {
+                InstanceId = delegation.InstanceId,
+                ResourceId = delegation.ResourceId,
+            });
             authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
             a3AuthParties.Add(authorizedParty);
         }

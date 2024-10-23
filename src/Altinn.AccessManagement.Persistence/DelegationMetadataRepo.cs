@@ -338,31 +338,32 @@ namespace Altinn.AccessManagement.Persistence
         /// <summary>
         ///  Fetches all instance delegated to given param
         /// </summary>
-        /// <param name="toUuid"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="toUuid">list of parties that has received an instance delegation</param>
+        /// <param name="cancellationToken">cancellation token</param>
         /// <returns></returns>
-        public async Task<List<InstanceDelegationChange>> GetInstanceDelegationForAuthorizedParties(List<Guid> toUuid, CancellationToken cancellationToken = default)
+        public async Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
             var query = /*strpsql*/ @"
                 SELECT
                     instancedelegationchangeid,
-                    delegationchangetype,
-                    instanceDelegationMode,
-                    resourceid,
-                    instanceid,
-                    fromuuid,
-                    fromtype,
-                    touuid,
-                    totype,
-                    performedby,
-                    performedbytype,
-                    blobstoragepolicypath,
-                    blobstorageversionid,
-                    created
+                    ,delegationchangetype,
+                    ,instanceDelegationMode,
+                    ,resourceid,
+                    ,instanceid,
+                    ,fromuuid,
+                    ,fromtype,
+                    ,touuid,
+                    ,totype,
+                    ,performedby,
+                    ,performedbytype,
+                    ,blobstoragepolicypath,
+                    ,blobstorageversionid,
+                    ,created
                 FROM 
                     delegation.instancedelegationchanges
+                    AND delegationchangetype != 'revoke_last'
                 WHERE
                     touuid = ANY(@toUuid)
                 GROUP BY

@@ -35,7 +35,7 @@ public interface IDelegationMetadataRepository
     /// <param name="toUuid">party uuid that received the delegation</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns></returns>
-    Task<List<InstanceDelegationChange>> GetInstanceDelegationForAuthorizedParties(List<Guid> toUuid, CancellationToken cancellationToken = default);
+    Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns the last change from db to fetch the current policy version and path to policy file

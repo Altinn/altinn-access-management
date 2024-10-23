@@ -117,7 +117,7 @@ public class AuthorizedParty
     /// <summary>
     /// Gets or sets a collection of all Authorized Instances 
     /// </summary>
-    public List<string> AuthorizedInstances { get; set; } = [];
+    public List<Resource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized subject has some access to on behalf of this party
@@ -162,5 +162,21 @@ public class AuthorizedParty
         }
 
         return altinnAppId;
+    }
+
+    /// <summary>
+    /// Composite Key instances
+    /// </summary>
+    public class Resource
+    {
+        /// <summary>
+        /// Resource ID
+        /// </summary>
+        public string ResourceId { get; set; }
+
+        /// <summary>
+        /// Instance ID
+        /// </summary>
+        public string InstanceId { get; set; }
     }
 }

@@ -230,7 +230,51 @@ public class AppsInstanceDelegationController : ControllerBase
 
         return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceRevokeResponseDto>(serviceResult.Value));
     }
-    
+
+    /// <summary>
+    /// Revokes access to an app instance
+    /// </summary>
+    /// <param name="appInstanceDelegationRequestDto">The request model</param>
+    /// <param name="resourceId">The resource identifier</param>
+    /// <param name="instanceId">The instance identifier</param>
+    /// <param name="token">the platformToken to use for Authorization</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>Result</returns>
+    [HttpDelete]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Route("v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult?> RevokeAll([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
+    {
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+
+        if (performer == null)
+        {
+            return Forbid();
+        }
+
+        AppsInstanceRevokeAllRequest request = new();
+        request.ResourceId = resourceId;
+        request.InstanceId = instanceId;
+        request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
+        request.PerformedBy = performer;
+
+        Result<List<AppsInstanceRevokeResponse>> serviceResult = await _appInstanceDelegationService.RevokeAll(request, cancellationToken);
+
+        if (serviceResult.IsProblem)
+        {
+            return serviceResult.Problem?.ToActionResult();
+        }
+
+        // Check result
+        return Ok(_mapper.Map<List<AppsInstanceRevokeResponseDto>>(serviceResult.Value));        
+    }
+
     /// <summary>
     /// delegating app from the platform token
     /// </summary>

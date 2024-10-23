@@ -1,5 +1,7 @@
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Services.Implementation;
 using Altinn.Authorization.ProblemDetails;
+using System.Threading;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces;
 
@@ -31,6 +33,14 @@ public interface IAppsInstanceDelegationService
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Boolean whether the app instance delegation was revoked</returns>
     public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<Result<List<AppsInstanceRevokeResponse>>> RevokeAll(AppsInstanceRevokeAllRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets app instance delegation

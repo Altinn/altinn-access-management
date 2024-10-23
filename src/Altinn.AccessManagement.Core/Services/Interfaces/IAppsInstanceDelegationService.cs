@@ -35,14 +35,6 @@ public interface IAppsInstanceDelegationService
     public Task<Result<AppsInstanceRevokeResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="request"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task<Result<List<AppsInstanceRevokeResponse>>> RevokeAll(AppsInstanceRevokeAllRequest request, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Gets app instance delegation
     /// </summary>
     /// <param name="request">the request data collected in a dto</param>

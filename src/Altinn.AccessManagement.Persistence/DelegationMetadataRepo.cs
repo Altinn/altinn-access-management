@@ -347,19 +347,19 @@ namespace Altinn.AccessManagement.Persistence
 
             var query = /*strpsql*/ @"
                 SELECT
-                    instancedelegationchangeid,
-                    ,delegationchangetype,
-                    ,instanceDelegationMode,
-                    ,resourceid,
-                    ,instanceid,
-                    ,fromuuid,
-                    ,fromtype,
-                    ,touuid,
-                    ,totype,
-                    ,performedby,
-                    ,performedbytype,
-                    ,blobstoragepolicypath,
-                    ,blobstorageversionid,
+                    instancedelegationchangeid
+                    ,delegationchangetype
+                    ,instanceDelegationMode
+                    ,resourceid
+                    ,instanceid
+                    ,fromuuid
+                    ,fromtype
+                    ,touuid
+                    ,totype
+                    ,performedby
+                    ,performedbytype
+                    ,blobstoragepolicypath
+                    ,blobstorageversionid
                     ,created
                 FROM 
                     delegation.instancedelegationchanges

@@ -101,7 +101,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     private static bool ValidateAndGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
     {
         resource = new List<UrnJsonTypeValue>();
-        
+
         if (input == null || !input.Any())
         {
             return false;
@@ -307,7 +307,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
         List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
-        
+
         foreach (RightInternal rightToDelegate in request.Rights)
         {
             if (CheckIfInstanceIsDelegable(delegableRights, rightToDelegate))
@@ -414,11 +414,16 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return result;
     }
 
+<<<<<<< HEAD
     private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
+=======
+    /// <inheritdoc/>
+    public Task<Result<bool>> Revoke(CancellationToken cancellationToken = default)
+>>>>>>> 25f21d6 (extend authorized parties with instance delegations)
     {
         foreach (AppsInstanceDelegationResponse item in input)
         {
-            RemoveInstanceIdFromResourceForResponse(item);            
+            RemoveInstanceIdFromResourceForResponse(item);
         }
 
         return input;

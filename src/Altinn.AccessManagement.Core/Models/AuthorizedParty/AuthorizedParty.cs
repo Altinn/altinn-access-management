@@ -21,7 +21,8 @@ public class AuthorizedParty
     /// </summary>
     /// <param name="party">Party model from registry</param>
     /// <param name="includeSubunits">Whether model should also build list of subunits if any exists</param>
-    public AuthorizedParty(Party party, bool includeSubunits = true)
+    /// <param name="isInstanceDelegation"></param>
+    public AuthorizedParty(Party party, bool includeSubunits = true, bool isInstanceDelegation = true)
     {
         PartyId = party.PartyId;
         PartyUuid = party.PartyUuid.Value;
@@ -113,6 +114,11 @@ public class AuthorizedParty
     /// Gets or sets a value indicating whether the party is only included as a hierarchy element without any access. Meaning a main unit where the authorized subject only have access to one or more of the subunits.
     /// </summary>
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
+
+    /// <summary>
+    /// Gets or sets a collection of all Authorized Instances 
+    /// </summary>
+    public List<string> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized subject has some access to on behalf of this party

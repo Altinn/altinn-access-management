@@ -104,7 +104,7 @@ internal static class AccessManagementHost
                 while (t != null);
                 chain.Reverse();
                 return string.Join(".", chain);
-            };        
+            };
         });
 
         builder.Services.AddUrnSwaggerSupport();

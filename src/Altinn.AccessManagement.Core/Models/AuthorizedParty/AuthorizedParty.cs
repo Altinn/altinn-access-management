@@ -115,6 +115,11 @@ public class AuthorizedParty
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a collection of all Authorized Instances 
+    /// </summary>
+    public List<Resource> AuthorizedInstances { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized subject has some access to on behalf of this party
     /// </summary>
     public List<string> AuthorizedResources { get; set; } = [];
@@ -157,5 +162,21 @@ public class AuthorizedParty
         }
 
         return altinnAppId;
+    }
+
+    /// <summary>
+    /// Composite Key instances
+    /// </summary>
+    public class Resource
+    {
+        /// <summary>
+        /// Resource ID
+        /// </summary>
+        public string ResourceId { get; set; }
+
+        /// <summary>
+        /// Instance ID
+        /// </summary>
+        public string InstanceId { get; set; }
     }
 }

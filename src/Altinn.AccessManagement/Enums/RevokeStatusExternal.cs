@@ -3,18 +3,18 @@
 namespace Altinn.AccessManagement.Enums;
 
 /// <summary>
-/// Enum for different right delegation status responses
+/// Enum for different right revoke status responses
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum DelegationStatusExternal
+public enum RevokeStatusExternal
 {
     /// <summary>
-    /// Right was not delegated
+    /// Right was not revoked
     /// </summary>
-    NotDelegated = 0,
+    NotRevoked = 0,
 
     /// <summary>
-    /// Right was delegated
+    /// Right was revoked
     /// </summary>
-    Delegated = 1
+    Revoked = 1
 }

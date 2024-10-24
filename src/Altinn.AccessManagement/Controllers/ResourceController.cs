@@ -36,7 +36,7 @@ namespace Altinn.AccessManagement.Controllers
         [HttpPost]
         [HttpPut]
         [Route("accessmanagement/api/v1/internal/resources")]
-        [Authorize(Policy = "PlatformAccess")]
+        ////[Authorize(Policy = "PlatformAccess")]
         [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<ActionResult> Post([FromBody] List<AccessManagementResource> resources)
         {

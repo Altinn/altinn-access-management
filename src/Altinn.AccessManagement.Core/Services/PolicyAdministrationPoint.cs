@@ -420,7 +420,7 @@ namespace Altinn.AccessManagement.Core.Services
                         return false;
                     }
 
-                    Guid? performedUuid = null;
+                    string performedUuid = null;
                     UuidType performedUuidType = UuidType.NotSpecified;
 
                     // Write delegation change to postgresql

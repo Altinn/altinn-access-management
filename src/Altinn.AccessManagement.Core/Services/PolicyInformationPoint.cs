@@ -5,6 +5,7 @@ using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Profile;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Models.Rights;
@@ -15,7 +16,9 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
+using Altinn.Platform.Register.Models;
 using Altinn.Urn;
 using Altinn.Urn.Json;
 using Authorization.Platform.Authorization.Models;
@@ -134,7 +137,7 @@ namespace Altinn.AccessManagement.Core.Services
             }
 
             // Delegation Policy Rights
-            List<DelegationChange> delegations = await FindAllDelegations(coveredByUserId, 0, Guid.Empty, UuidType.NotSpecified, offeredByPartyId, resourceId, resourceMatchType, cancellationToken);
+            List<DelegationChange> delegations = await FindAllDelegations(coveredByUserId, 0, Guid.Empty, UuidType.NotSpecified, offeredByPartyId, resourceId, resourceMatchType, cancellationToken: cancellationToken);
 
             foreach (DelegationChange delegation in delegations)
             {
@@ -249,7 +252,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default)
+        public async Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, bool includeInstanceDelegations = false, CancellationToken cancellationToken = default)
         {
             DelegationChangeList result = new DelegationChangeList();
             bool validSubjectUser = DelegationHelper.TryGetUserIdFromAttributeMatch(request.Subject.SingleToList(), out int subjectUserId);
@@ -276,7 +279,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return result;
             }
 
-            result.DelegationChanges = await FindAllDelegations(subjectUserId, subjectPartyId, subjectUuid, subjectUuidType, partyId, resourceId, resourceMatchType, cancellationToken);
+            result.DelegationChanges = await FindAllDelegations(subjectUserId, subjectPartyId, subjectUuid, subjectUuidType, partyId, resourceId, resourceMatchType, includeInstanceDelegations, cancellationToken);
             return result;
         }
 
@@ -362,7 +365,7 @@ namespace Altinn.AccessManagement.Core.Services
             return validParty ? result : null;
         }
 
-        private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int subjectPartyId, Guid subjectUuid, UuidType subjectUuidType, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType, CancellationToken cancellationToken = default)
+        private async Task<List<DelegationChange>> FindAllDelegations(int subjectUserId, int subjectPartyId, Guid subjectUuid, UuidType subjectUuidType, int reporteePartyId, string resourceId, ResourceAttributeMatchType resourceMatchType, bool includeInstanceDelegations = false, CancellationToken cancellationToken = default)
         {
             if (resourceMatchType == ResourceAttributeMatchType.None)
             {
@@ -378,6 +381,16 @@ namespace Altinn.AccessManagement.Core.Services
             List<int> offeredByPartyIds = reporteePartyId.SingleToList();
             List<string> resourceIds = resourceId.SingleToList();
 
+            // Check if request should include instance delegations, which will require lookup of reportee party uuid
+            Guid? fromParty = null;
+            List<Guid> toParties = null;
+            if (includeInstanceDelegations)
+            {
+                Party reporteeParty = await _contextRetrievalService.GetPartyAsync(reporteePartyId, cancellationToken);
+                fromParty = reporteeParty?.PartyUuid;
+                toParties = new List<Guid>();
+            }
+
             // Check if mainunit exists
             MainUnit mainunit = await _contextRetrievalService.GetMainUnit(reporteePartyId, cancellationToken);
             if (mainunit?.PartyId > 0)
@@ -391,6 +404,15 @@ namespace Altinn.AccessManagement.Core.Services
                 delegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
                 ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserIds: subjectUserId.SingleToList(), cancellationToken: cancellationToken)
                 : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByUserId: subjectUserId, cancellationToken: cancellationToken);
+
+                if (includeInstanceDelegations)
+                {
+                    UserProfile subjectUserProfile = await _profile.GetUser(new UserProfileLookup { UserId = subjectUserId }, cancellationToken: cancellationToken);
+                    if (subjectUserProfile != null)
+                    {
+                        toParties.Add(subjectUserProfile.Party.PartyUuid.Value);
+                    }
+                }
             }
             else if (subjectUuidType == UuidType.SystemUser)
             {
@@ -407,15 +429,52 @@ namespace Altinn.AccessManagement.Core.Services
                 coveredByPartyIds = await _contextRetrievalService.GetKeyRolePartyIds(subjectUserId, cancellationToken);
             }
 
-            if (coveredByPartyIds.Any())
+            if (coveredByPartyIds.Count > 0)
             {
                 List<DelegationChange> partyDelegations = resourceMatchType == ResourceAttributeMatchType.AltinnAppId
                     ? await _delegationRepository.GetAllCurrentAppDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: coveredByPartyIds, cancellationToken: cancellationToken)
                     : await _delegationRepository.GetAllCurrentResourceRegistryDelegationChanges(offeredByPartyIds, resourceIds, coveredByPartyIds: coveredByPartyIds, cancellationToken: cancellationToken);
                 delegations.AddRange(partyDelegations);
+
+                if (includeInstanceDelegations)
+                {
+                    List<Party> coveredByPartys = await _contextRetrievalService.GetPartiesAsync(coveredByPartyIds, cancellationToken: cancellationToken);
+                    if (coveredByPartys.Count > 0)
+                    {
+                        toParties.AddRange(coveredByPartys.Select(p => p.PartyUuid.Value));
+                    }
+                }
+            }
+
+            // 3. Get all instance delegations of the resource both directly delegated to user and indirectly through keyrole units
+            if (includeInstanceDelegations && fromParty.HasValue && toParties.Count > 0)
+            {
+                delegations.AddRange(await GetInstanceDelegations(fromParty.Value, toParties, cancellationToken));
             }
 
             return delegations;
+        }
+
+        private async Task<IEnumerable<DelegationChange>> GetInstanceDelegations(Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        {
+            IEnumerable<InstanceDelegationChange> instanceDelegations = await _delegationRepository.GetActiveInstanceDelegations(from, to, cancellationToken);
+            return from InstanceDelegationChange instanceDelegation in instanceDelegations
+                    let delegationChange = new DelegationChange
+                    {
+                        ResourceId = instanceDelegation.ResourceId,
+                        InstanceId = instanceDelegation.InstanceId,
+                        FromUuidType = instanceDelegation.FromUuidType,
+                        FromUuid = instanceDelegation.FromUuid,
+                        ToUuidType = instanceDelegation.ToUuidType,
+                        ToUuid = instanceDelegation.ToUuid,
+                        PerformedByUuidType = instanceDelegation.PerformedByType,
+                        PerformedByUuid = instanceDelegation.PerformedBy,
+                        DelegationChangeType = instanceDelegation.DelegationChangeType,
+                        BlobStoragePolicyPath = instanceDelegation.BlobStoragePolicyPath,
+                        BlobStorageVersionId = instanceDelegation.BlobStorageVersionId,
+                        Created = instanceDelegation.Created
+                    }
+                    select delegationChange;
         }
 
         private static List<Rule> GetRulesFromPolicyAndDelegationChange(ICollection<XacmlRule> xacmlRules, DelegationChange delegationChange)

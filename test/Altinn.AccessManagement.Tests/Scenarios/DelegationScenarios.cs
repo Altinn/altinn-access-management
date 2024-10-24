@@ -133,7 +133,7 @@ public static class DelegationScenarios
         ]);
     };
 
-    public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => async mock =>
+    public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => mock =>
     {
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(

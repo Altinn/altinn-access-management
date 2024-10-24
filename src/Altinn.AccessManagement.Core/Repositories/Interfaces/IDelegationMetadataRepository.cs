@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 
@@ -44,6 +45,15 @@ public interface IDelegationMetadataRepository
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>The complete InstanceDelegationChange record stored in the database</returns>
     Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all the currently active instance delegations existing between the from and to parties
+    /// </summary>
+    /// <param name="from">The From party to use for lookup</param>
+    /// <param name="to">All To parties to use for lookup</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>The complete InstanceDelegationChange record stored in the database</returns>
+    Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(Guid from, List<Guid> to, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the latest delegation change matching the filter values

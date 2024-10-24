@@ -85,8 +85,8 @@ public class ContextRetrievalService : IContextRetrievalService
     /// <inheritdoc/>
     public async Task<Party> GetPartyAsync(int partyId, CancellationToken cancellationToken = default)
     {
-        Party result = await _partiesClient.GetPartyAsync(partyId, cancellationToken);
-        return result;
+        List<Party> result = await GetPartiesAsync(partyId.SingleToList(), cancellationToken: cancellationToken);
+        return result.FirstOrDefault();
     }
 
     /// <inheritdoc/>

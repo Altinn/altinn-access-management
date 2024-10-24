@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
@@ -8,6 +9,7 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Register.Models;
 using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -865,6 +867,25 @@ namespace Altinn.AccessManagement.Core.Helpers
                 Action = right.Action,
                 Status = DelegationStatus.NotDelegated
             });
+        }
+
+        /// <summary>
+        /// Evaluates the party type in order to return the correct uuid type and value for a party
+        /// </summary>
+        /// <param name="party">The party to get uuid info from</param>
+        /// <returns>UuidType and Uuid</returns>
+        public static (UuidType DelegationType, Guid Uuid) GetUuidTypeAndValueFromParty(Party party)
+        {
+            if (party?.Organization != null)
+            {
+                return (UuidType.Organization, party.PartyUuid.Value);
+            }
+            else if (party?.Person != null)
+            {
+                return (UuidType.Person, party.PartyUuid.Value);
+            }
+
+            return (UuidType.NotSpecified, Guid.Empty);
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

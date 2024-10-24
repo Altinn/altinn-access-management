@@ -50,6 +50,7 @@ public class PolicyInformationPointControllerTest : IClassFixture<CustomWebAppli
             {
                 services.AddSingleton(delegationMetadataRepositoryMock);
                 services.AddSingleton<IPartiesClient, PartiesClientMock>();
+                services.AddSingleton<IProfileClient, ProfileClientMock>();
             });
         }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 

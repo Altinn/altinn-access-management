@@ -87,7 +87,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         switch (request.Instance)
         {
             case "00000000-0000-0000-0000-000000000001":
-                
+
                 return Task.FromResult(new InstanceDelegationChange
                 {
                     FromUuidType = request.FromType,
@@ -158,7 +158,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         sb.Append('/');
 
         sb.Append(change.InstanceId.AsFileName(false));
-        
+
         sb.Append('/');
         sb.Append(change.InstanceDelegationMode);
 
@@ -594,5 +594,10 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
             default:
                 return Task.FromResult(result);
         }
+    }
+
+    public Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new List<InstanceDelegationChange>());
     }
 }

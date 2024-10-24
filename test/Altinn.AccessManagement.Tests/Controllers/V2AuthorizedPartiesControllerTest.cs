@@ -66,7 +66,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
                 WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Defaults.Identifier, "1337")),
+                WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "1337")),
         ];
     }
 

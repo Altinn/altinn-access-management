@@ -135,8 +135,6 @@ public static class DelegationScenarios
 
     public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => async mock =>
     {
-        resource ??= ResourceSeeds.AltinnApp.Defaults;
-
         mock.DbSeeds.AddRange([
             async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(
                 new()

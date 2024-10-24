@@ -26,7 +26,7 @@ public static class ResourceSeeds
 
         public new static readonly string Identifier = "chalkboard";
 
-        public static ChalkboardResource Defaults { get; } = new MaskinportenSchema();
+        public static ChalkboardResource Defaults { get; } = new ChalkboardResource();
 
         public ChalkboardResource(params Action<ServiceResource>[] modifiers)
         {

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Models.SblBridge;
+using Altinn.AccessManagement.Tests.Seeds;
 using Altinn.Platform.Register.Models;
 
 namespace Altinn.AccessManagement.Tests.Mocks;
@@ -16,14 +17,31 @@ namespace Altinn.AccessManagement.Tests.Mocks;
 /// </summary>
 public class PartiesClientMock : IPartiesClient
 {
+    private Dictionary<int, Party> AdditionalParties { get; set; } = new Dictionary<int, Party>()
+    {
+        { PersonSeeds.Paula.PartyId, PersonSeeds.Paula.Party },
+        { PersonSeeds.Kasper.PartyId, PersonSeeds.Kasper.Party },
+        { PersonSeeds.Olav.PartyId, PersonSeeds.Olav.Party },
+    };
+
     /// <inheritdoc/>
     public Task<List<Party>> GetPartiesAsync(List<int> partyIds, bool includeSubunits = false, CancellationToken cancellationToken = default)
     {
+        var result = new List<Party>();
+        foreach (var partyId in partyIds)
+        {
+            if (AdditionalParties.ContainsKey(partyId))
+            {
+                result.Add(AdditionalParties[partyId]);
+            }
+        }
+
         List<Party> partyList = GetTestDataParties();
         List<Party> filteredList = (from int partyId in partyIds.Distinct()
                                     let party = partyList.Find(p => p.PartyId == partyId)
                                     where party != null
                                     select party).ToList();
+        result.AddRange(filteredList);
         return Task.FromResult(filteredList);
     }
 
@@ -48,7 +66,7 @@ public class PartiesClientMock : IPartiesClient
     {
         List<Party> partyList = GetTestDataParties();
         Party party = null;
-        
+
         if (!string.IsNullOrWhiteSpace(partyLookup.OrgNo))
         {
             party = partyList.Find(p => p.Organization?.OrgNumber == partyLookup.OrgNo);

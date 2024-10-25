@@ -166,10 +166,27 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
 
     private async Task<List<InstanceDelegationChange>> GetInstanceDelegations(int subjectUserId, List<int> subjectPartyIds, CancellationToken cancellationToken)
     {
-        var userId = subjectUserId != 0 ? subjectUserId.SingleToList() : [];
-        userId.AddRange(subjectPartyIds);
-        var parties = await _contextRetrievalService.GetPartiesAsync(userId, false, cancellationToken);
-        return await _delegations.GetAllCurrentReceivedInstanceDelegations(parties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
+        var parties = new List<Party>();
+        if (subjectPartyIds?.Count > 0)
+        {
+            parties.AddRange(await _contextRetrievalService.GetPartiesAsync(subjectPartyIds, false, cancellationToken) ?? []);
+        }
+
+        if (subjectUserId != 0)
+        {
+            var userProfile = await _profile.GetUser(new() { UserId = subjectUserId }, cancellationToken);
+            if (userProfile != null)
+            {
+                parties.Add(userProfile.Party);
+            }
+        }
+
+        if (parties.Count > 0)
+        {
+            return await _delegations.GetAllCurrentReceivedInstanceDelegations(parties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
+        }
+
+        return [];
     }
 
     private async Task<List<AuthorizedParty>> BuildAuthorizedParties(int subjectUserId, List<int> subjectPartyIds, bool includeAltinn2AuthorizedParties, bool includeResourcesThroughRoles, CancellationToken cancellationToken)
@@ -297,24 +314,30 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         var instanceParties = await _contextRetrievalService.GetPartiesByUuids(instanceDelegations.Select(i => i.FromUuid), false, cancellationToken);
         foreach (var delegation in instanceDelegations)
         {
-            if (instanceParties.TryGetValue(delegation.FromUuid.ToString(), out var instanceParty))
+            if (!instanceParties.TryGetValue(delegation.FromUuid.ToString(), out var instanceParty))
             {
                 throw new UnreachableException($"Get AuthorizedParties failed to lookup party with uuid {delegation.FromUuid} while building instance delegations list");
             }
 
-            if (authorizedPartyDict.TryGetValue(instanceParty.PartyId, out var authorizedParty))
+            // Found existing party. Need to just append instances 
+            if (!authorizedPartyDict.TryGetValue(instanceParty.PartyId, out var authorizedParty))
+            {
+                authorizedParty = new AuthorizedParty(instanceParty);
+                authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
+                a3AuthParties.Add(authorizedParty);
+            }
+
+            // Ensure that we dont't add duplicates
+            if (authorizedParty.AuthorizedInstances.Any(instance => instance.InstanceId == instance.InstanceId && instance.ResourceId == instance.ResourceId))
             {
                 continue;
             }
 
-            authorizedParty = new AuthorizedParty(instanceParty);
             authorizedParty.AuthorizedInstances.Add(new()
             {
                 InstanceId = delegation.InstanceId,
                 ResourceId = delegation.ResourceId,
             });
-            authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
-            a3AuthParties.Add(authorizedParty);
         }
 
         result.AddRange(a3AuthParties);

@@ -2,11 +2,9 @@ using System.Net.Http.Json;
 using Altinn.AccessManagement.Controllers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Models;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Scenarios;
 using Altinn.AccessManagement.Tests.Seeds;
-using Docker.DotNet.Models;
 
 namespace Altinn.AccessManagement.Tests.Controllers;
 
@@ -32,7 +30,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
     {
         test.ResponseAssertions.Add(async response =>
         {
-            var delegations = await response.Content.ReadFromJsonAsync<IEnumerable<AuthorizedPartyExternal>>();
+            var delegations = await response.Content.ReadFromJsonAsync<List<AuthorizedPartyExternal>>();
             var result = delegations.Any(delegation => delegation.AuthorizedInstances.Any(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId));
             Assert.True(result, $"Response don't contains instance delegations with resource Id {resourceId} and instance id {instanceId}");
         });
@@ -58,15 +56,15 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                 GIVEN that organization Voss has shared an instance with DAGL Olav for Orstad Accounting
                 WHEN DAGL Olav for Orstad Accounting requests authorized parties
                 THEN Organization should be in the list of authorized parties
-                AND the instance and resource iod should be included in list containing instances",
+                AND the instance and resource id should be included in list containing instances",
 
                 WithScenarios(
                     DelegationScenarios.Defaults,
                     DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "1337"),
                     TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "1337")),
+                WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "1337"),
+                WithAssertResponseStatusCodeSuccessful),
         ];
     }
 

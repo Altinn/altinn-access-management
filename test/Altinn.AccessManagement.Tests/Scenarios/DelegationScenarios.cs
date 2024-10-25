@@ -36,6 +36,21 @@ public static class DelegationScenarios
             ResourceSeeds.MaskinportenSchema.Defaults,
         ]);
 
+        mock.Parties.AddRange([
+            PersonSeeds.Paula.Party,
+            PersonSeeds.Kasper.Party,
+            PersonSeeds.Olav.Party,
+            OrganizationSeeds.Voss.Defaults,
+            OrganizationSeeds.VossAccounting.Defaults,
+            OrganizationSeeds.VossConsulting.Defaults,
+        ]);
+
+        mock.UserProfiles.AddRange([
+            PersonSeeds.Paula.Defaults,
+            PersonSeeds.Kasper.Defaults,
+            PersonSeeds.Olav.Defaults,
+        ]);
+
         // Seed databases resources
         mock.DbSeeds.AddRange([
             async postgres => await postgres.ResourceMetadataRepository.InsertAccessManagementResource(ResourceSeeds.AltinnApp.Defaults.DbResource),
@@ -135,21 +150,24 @@ public static class DelegationScenarios
 
     public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => mock =>
     {
+        var insert = new InstanceDelegationChange()
+        {
+            DelegationChangeType = DelegationChangeType.Grant,
+            BlobStoragePolicyPath = "https://blob.storage.no",
+            BlobStorageVersionId = "v1",
+            ResourceId = resource.Resource.Identifier,
+            InstanceId = instanceId,
+            FromUuid = (Guid)from.Party.PartyUuid,
+            FromUuidType = string.IsNullOrEmpty(from.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+            ToUuid = (Guid)to.Party.PartyUuid,
+            ToUuidType = string.IsNullOrEmpty(to.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+            InstanceDelegationMode = InstanceDelegationMode.Normal,
+            PerformedBy = from.Party.PartyId.ToString(),
+            PerformedByType = Enums.UuidType.Person
+        };
+
         mock.DbSeeds.AddRange([
-            async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(
-                new()
-                {
-                    DelegationChangeType = DelegationChangeType.Grant,
-                    BlobStoragePolicyPath = "https://blob.storage.no",
-                    BlobStorageVersionId = "v1",
-                    ResourceId = resource.Resource.Identifier,
-                    InstanceId = instanceId,
-                    FromUuid = (Guid)from.Party.PartyUuid,
-                    FromUuidType = string.IsNullOrEmpty(from.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
-                    ToUuid = (Guid)to.Party.PartyUuid,
-                    ToUuidType = string.IsNullOrEmpty(to.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
-                    InstanceDelegationMode = InstanceDelegationMode.Normal,
-                }),
+            async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(insert),
         ]);
     };
 

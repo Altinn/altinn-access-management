@@ -347,27 +347,24 @@ namespace Altinn.AccessManagement.Persistence
 
             var query = /*strpsql*/ @"
                 SELECT
-                    instancedelegationchangeid
-                    ,delegationchangetype
-                    ,instanceDelegationMode
-                    ,resourceid
+                    resourceid
                     ,instanceid
                     ,fromuuid
                     ,fromtype
                     ,touuid
                     ,totype
-                    ,performedby
-                    ,performedbytype
-                    ,blobstoragepolicypath
-                    ,blobstorageversionid
-                    ,created
                 FROM 
                     delegation.instancedelegationchanges
-                    AND delegationchangetype != 'revoke_last'
                 WHERE
                     touuid = ANY(@toUuid)
+                    AND delegationchangetype != 'revoke_last'
                 GROUP BY
-                    resourceid, touuid, fromuuid;
+                    resourceid
+                    ,instanceid
+                    ,fromuuid
+                    ,fromtype
+                    ,touuid
+                    ,totype;
             ";
 
             try
@@ -375,7 +372,7 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Array | NpgsqlDbType.Uuid, toUuid);
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
-                    .SelectAwait(GetInstanceDelegationChange)
+                    .SelectAwait(GetInstanceDelegationChangeForAuthorizedParties)
                     .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -571,6 +568,30 @@ namespace Altinn.AccessManagement.Persistence
             {
                 activity?.StopWithError(ex);
                 throw;
+            }
+        }
+
+        private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChangeForAuthorizedParties(NpgsqlDataReader reader)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity();
+            try
+            {
+                InstanceDelegationChange result = new()
+                {
+                    ResourceId = await reader.GetFieldValueAsync<string>(ResourceId),
+                    InstanceId = await reader.GetFieldValueAsync<string>(InstanceId),
+                    FromUuid = await reader.GetFieldValueAsync<Guid>(FromUuid),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
+                    ToUuid = await reader.GetFieldValueAsync<Guid>(ToUuid),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>(ToType) ?? UuidType.NotSpecified,
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return await new ValueTask<InstanceDelegationChange>(Task.FromException<InstanceDelegationChange>(ex));
             }
         }
 

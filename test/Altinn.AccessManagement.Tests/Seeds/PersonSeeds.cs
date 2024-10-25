@@ -28,6 +28,7 @@ public static class PersonSeeds
             Name = "PAULA RIMSTAD",
             IsDeleted = false,
             OnlyHierarchyElementWithNoAccess = false,
+            PartyUuid = UserUuid,
             Person = new()
             {
                 SSN = "02056260016",
@@ -78,6 +79,7 @@ public static class PersonSeeds
         {
             PartyTypeName = PartyType.Person,
             SSN = "27099450067",
+            PartyUuid = UserUuid,
             PartyId = PartyId,
             Name = "ØRJAN RAVNÅS",
             IsDeleted = false,
@@ -133,6 +135,7 @@ public static class PersonSeeds
             PartyTypeName = PartyType.Person,
             SSN = "07124912037",
             PartyId = PartyId,
+            PartyUuid = UserUuid,
             Name = "KASPER BØRSTAD",
             IsDeleted = false,
             OnlyHierarchyElementWithNoAccess = false,

@@ -115,11 +115,6 @@ public class AuthorizedParty
     public bool OnlyHierarchyElementWithNoAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets a collection of all Authorized Instances 
-    /// </summary>
-    public List<Resource> AuthorizedInstances { get; set; } = [];
-
-    /// <summary>
     /// Gets or sets a collection of all resource identifier the authorized subject has some access to on behalf of this party
     /// </summary>
     public List<string> AuthorizedResources { get; set; } = [];
@@ -133,6 +128,11 @@ public class AuthorizedParty
     /// Gets or sets a set of subunits of this party, which the authorized subject also has some access to.
     /// </summary>
     public List<AuthorizedParty> Subunits { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets a collection of all Authorized Instances 
+    /// </summary>
+    public List<Resource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Enriches this authorized party and any subunits with the list of authorized resources

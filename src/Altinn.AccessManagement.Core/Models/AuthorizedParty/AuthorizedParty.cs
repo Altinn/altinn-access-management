@@ -132,7 +132,7 @@ public class AuthorizedParty
     /// <summary>
     /// Gets or sets a collection of all Authorized Instances 
     /// </summary>
-    public List<Resource> AuthorizedInstances { get; set; } = [];
+    public List<AuthorizedResource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Enriches this authorized party and any subunits with the list of authorized resources
@@ -167,7 +167,7 @@ public class AuthorizedParty
     /// <summary>
     /// Composite Key instances
     /// </summary>
-    public class Resource
+    public class AuthorizedResource
     {
         /// <summary>
         /// Resource ID

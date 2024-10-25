@@ -66,7 +66,7 @@ public class AuthorizedPartyExternal
     /// <summary>
     /// Gets or sets a collection of all Authorized Instances 
     /// </summary>
-    public List<Resource> AuthorizedInstances { get; set; } = [];
+    public List<AuthorizedResource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a set of subunits of this party, which the authorized subject also has some access to.
@@ -76,7 +76,7 @@ public class AuthorizedPartyExternal
     /// <summary>
     /// Composite Key instances
     /// </summary>
-    public class Resource
+    public class AuthorizedResource
     {
         /// <summary>
         /// Resource ID

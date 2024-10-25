@@ -80,7 +80,7 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<DelegationChangeType, DelegationChangeTypeExternal>();
 
             CreateMap<AuthorizedParty, AuthorizedPartyExternal>();
-            CreateMap<AuthorizedParty.Resource, AuthorizedPartyExternal.Resource>();
+            CreateMap<AuthorizedParty.AuthorizedResource, AuthorizedPartyExternal.AuthorizedResource>();
             CreateMap<AuthorizedPartyType, AuthorizedPartyTypeExternal>();
             CreateMap<AppsInstanceDelegationRequestDto, AppsInstanceDelegationRequest>()
                 .ForMember(dest => dest.From, act => act.MapFrom(src => src.From.Value))

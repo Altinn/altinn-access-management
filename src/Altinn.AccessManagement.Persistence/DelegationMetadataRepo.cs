@@ -345,26 +345,41 @@ namespace Altinn.AccessManagement.Persistence
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
-            var query = /*strpsql*/ @"
+            var query = /* strpsql */ @"
+                WITH latestChanges AS (
+                    SELECT
+                        MAX(instancedelegationchangeid) as latestId
+                    FROM
+                        delegation.instancedelegationchanges
+                    WHERE
+                        touuid = ANY(@toUuid)
+                    GROUP BY
+                        touuid,
+                        fromuuid,
+                        resourceid,
+                        instanceid
+                )
                 SELECT
-                    resourceid
-                    ,instanceid
-                    ,fromuuid
-                    ,fromtype
-                    ,touuid
-                    ,totype
-                FROM 
+                    instancedelegationchangeid,
+                    delegationchangetype,
+                    instanceDelegationMode,
+                    resourceid,
+                    instanceid,
+                    fromuuid,
+                    fromtype,
+                    touuid,
+                    totype,
+                    performedby,
+                    performedbytype,
+                    blobstoragepolicypath,
+                    blobstorageversionid,
+                    created
+                FROM
                     delegation.instancedelegationchanges
+                INNER JOIN latestChanges
+                    ON instancedelegationchangeid = latestChanges.latestId
                 WHERE
-                    touuid = ANY(@toUuid)
-                    AND delegationchangetype != 'revoke_last'
-                GROUP BY
-                    resourceid
-                    ,instanceid
-                    ,fromuuid
-                    ,fromtype
-                    ,touuid
-                    ,totype;
+                    delegationchangetype != 'revoke_last'
             ";
 
             try
@@ -372,7 +387,7 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Array | NpgsqlDbType.Uuid, toUuid);
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
-                    .SelectAwait(GetInstanceDelegationChangeForAuthorizedParties)
+                    .SelectAwait(GetInstanceDelegationChange)
                     .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
@@ -568,30 +583,6 @@ namespace Altinn.AccessManagement.Persistence
             {
                 activity?.StopWithError(ex);
                 throw;
-            }
-        }
-
-        private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChangeForAuthorizedParties(NpgsqlDataReader reader)
-        {
-            using var activity = TelemetryConfig.ActivitySource.StartActivity();
-            try
-            {
-                InstanceDelegationChange result = new()
-                {
-                    ResourceId = await reader.GetFieldValueAsync<string>(ResourceId),
-                    InstanceId = await reader.GetFieldValueAsync<string>(InstanceId),
-                    FromUuid = await reader.GetFieldValueAsync<Guid>(FromUuid),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
-                    ToUuid = await reader.GetFieldValueAsync<Guid>(ToUuid),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>(ToType) ?? UuidType.NotSpecified,
-                };
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                activity?.StopWithError(ex);
-                return await new ValueTask<InstanceDelegationChange>(Task.FromException<InstanceDelegationChange>(ex));
             }
         }
 

@@ -1,7 +1,5 @@
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Services.Implementation;
 using Altinn.Authorization.ProblemDetails;
-using System.Threading;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces;
 

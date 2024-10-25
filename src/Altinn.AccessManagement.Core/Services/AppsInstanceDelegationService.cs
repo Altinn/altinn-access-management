@@ -285,7 +285,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
     private async Task<(ValidationErrorBuilder Errors, InstanceRight RulesToHandle, List<RightInternal> RightsAppCantHandle)> SetUpDelegationOrRevokeRequest(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
-
         ValidationErrorBuilder errors = default;
         List<RightInternal> rightsAppCantHandle = null;
         InstanceRight rulesToHandle = null;
@@ -467,17 +466,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         result = RemoveInstanceIdFromResourceForDelegationResponseList(result);
         return result;
     }
-
-    private static List<AppsInstanceRevokeResponse> RemoveInstanceIdFromResourceForRevokeResponseList(List<AppsInstanceRevokeResponse> input)
-    {
-        foreach (AppsInstanceRevokeResponse item in input)
-        {
-            RemoveInstanceIdFromResourceForRevokeResponse(item);
-        }
-
-        return input;
-    }
-
+    
     private static AppsInstanceRevokeResponse RemoveInstanceIdFromResourceForRevokeResponse(AppsInstanceRevokeResponse input)
     {
         foreach (var right in input.Rights)

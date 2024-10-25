@@ -60,6 +60,7 @@ namespace Altinn.AccessManagement.Core.Services
         {
             // Check for a current delegation change from postgresql
             (XacmlPolicy ExistingDelegationPolicy, string PolicyPath) policyData = await GetExistingPolicy(null, rules, cancellationToken);
+            string policyPath = policyData.PolicyPath;
 
             // if no delegations exist all revoke must already be performed
             if (policyData.ExistingDelegationPolicy == null)
@@ -67,7 +68,7 @@ namespace Altinn.AccessManagement.Core.Services
                 return true;
             }
 
-            var policyClient = _policyFactory.Create(policyData.PolicyPath);
+            var policyClient = _policyFactory.Create(policyPath);
 
             if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
@@ -93,7 +94,7 @@ namespace Altinn.AccessManagement.Core.Services
                         string reasonPhrase = httpResponse.ReasonPhrase;
                         _logger.LogError(
                             "Writing of delegation policy at path: {policyPath} failed. Response Status Code:\n{status}. Response Reason Phrase:\n{reasonPhrase}",
-                            policyData.PolicyPath,
+                            policyPath,
                             status,
                             reasonPhrase);
                         return false;
@@ -111,7 +112,7 @@ namespace Altinn.AccessManagement.Core.Services
                     }
 
                     // Update db and use new version from latest update
-                    return await WritePolicyUpdateToDB(policyData.PolicyPath, blobResponse.Value.VersionId, changeType, rules, cancellationToken);
+                    return await WritePolicyUpdateToDB(policyPath, blobResponse.Value.VersionId, changeType, rules, cancellationToken);
                 }
                 finally
                 {
@@ -119,7 +120,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyData.PolicyPath);
+            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
             return false;
         }
 
@@ -272,8 +273,6 @@ namespace Altinn.AccessManagement.Core.Services
         private static XacmlPolicy BuildInstanceRevokePolicy(XacmlPolicy delegationPolicy, InstanceRight rules)
         {
             // Build delegation XacmlPolicy by removing the rules revoked
-            PolicyParameters policyData = PolicyHelper.GetPolicyDataFromInstanceRight(rules);
-
             foreach (InstanceRule rule in rules.InstanceRules)
             {
                 XacmlRule xacmlRule = DelegationHelper.GetXamlRuleContainsMatchingInstanceRule(delegationPolicy, rule);
@@ -350,7 +349,6 @@ namespace Altinn.AccessManagement.Core.Services
                     string unsortablesJson = JsonSerializer.Serialize(rules);
                     _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
                 }
-                
             }
 
             foreach (InstanceRule rule in rules.InstanceRules)

@@ -46,7 +46,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <returns>Result</returns>
     [HttpGet]
     [Route("v1/app/delegationcheck/resource/{resourceId}/instance/{instanceId}")]
-    //[Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(IEnumerable<ResourceRightDelegationCheckResultDto>), StatusCodes.Status200OK)]
@@ -84,7 +84,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <returns>Result</returns>
     [HttpPost]
     [Route("v1/app/delegations/resource/{resourceId}/instance/{instanceId}")]
-    //[Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
@@ -138,7 +138,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Result</returns>
     [HttpGet]
-    //[Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Route("v1/app/delegations/resource/{resourceId}/instance/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]

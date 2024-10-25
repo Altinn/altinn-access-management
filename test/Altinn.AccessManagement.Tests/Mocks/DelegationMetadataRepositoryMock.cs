@@ -87,7 +87,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         switch (request.Instance)
         {
             case "00000000-0000-0000-0000-000000000001":
-                
+            case "00000000-0000-0000-0000-000000000009":
                 return Task.FromResult(new InstanceDelegationChange
                 {
                     FromUuidType = request.FromType,

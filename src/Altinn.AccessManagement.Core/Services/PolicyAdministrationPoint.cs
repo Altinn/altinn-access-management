@@ -56,12 +56,18 @@ namespace Altinn.AccessManagement.Core.Services
             return response?.GetRawResponse()?.Status == (int)HttpStatusCode.Created;
         }
 
-        private async Task<bool> WriteInstanceRevokePolicyInternal(string policyPath, InstanceRight rules, CancellationToken cancellationToken = default)
+        private async Task<bool> WriteInstanceRevokePolicyInternal(InstanceRight rules, CancellationToken cancellationToken = default)
         {
             // Check for a current delegation change from postgresql
-            (XacmlPolicy ExistingDelegationPolicy, string PolicyPath) policyData = await GetExistingPolicy(policyPath, rules, cancellationToken);
-            policyPath = policyData.PolicyPath;
-            var policyClient = _policyFactory.Create(policyPath);
+            (XacmlPolicy ExistingDelegationPolicy, string PolicyPath) policyData = await GetExistingPolicy(null, rules, cancellationToken);
+
+            // if no delegations exist all revoke must already be performed
+            if (policyData.ExistingDelegationPolicy == null)
+            {
+                return true;
+            }
+
+            var policyClient = _policyFactory.Create(policyData.PolicyPath);
 
             if (!await policyClient.PolicyExistsAsync(cancellationToken))
             {
@@ -87,7 +93,7 @@ namespace Altinn.AccessManagement.Core.Services
                         string reasonPhrase = httpResponse.ReasonPhrase;
                         _logger.LogError(
                             "Writing of delegation policy at path: {policyPath} failed. Response Status Code:\n{status}. Response Reason Phrase:\n{reasonPhrase}",
-                            policyPath,
+                            policyData.PolicyPath,
                             status,
                             reasonPhrase);
                         return false;
@@ -105,7 +111,7 @@ namespace Altinn.AccessManagement.Core.Services
                     }
 
                     // Update db and use new version from latest update
-                    return await WritePolicyUpdateToDB(policyPath, blobResponse.Value.VersionId, changeType, rules, cancellationToken);
+                    return await WritePolicyUpdateToDB(policyData.PolicyPath, blobResponse.Value.VersionId, changeType, rules, cancellationToken);
                 }
                 finally
                 {
@@ -113,7 +119,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyData.PolicyPath);
             return false;
         }
 
@@ -326,43 +332,40 @@ namespace Altinn.AccessManagement.Core.Services
         /// <inheritdoc />
         public async Task<InstanceRight> TryWriteInstanceRevokePolicyRules(InstanceRight rules, CancellationToken cancellationToken = default)
         {
-            bool validPath = DelegationHelper.TryGetDelegationPolicyPathFromInstanceRule(rules, out string path);
+            bool writePolicySuccess = false;
 
-            if (validPath)
+            try
             {
-                bool writePolicySuccess = false;
-
-                try
-                {
-                    writePolicySuccess = await WriteInstanceRevokePolicyInternal(path, rules, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "An exception occured while processing authorization rules for delegation on delegation policy path: {path}",
-                        path);
-                }
-
-                foreach (InstanceRule rule in rules.InstanceRules)
-                {
-                    if (writePolicySuccess)
-                    {
-                        rule.CreatedSuccessfully = true;
-                    }
-                    else
-                    {
-                        rule.RuleId = string.Empty;
-                        rule.CreatedSuccessfully = false;
-                    }
-                }
+                writePolicySuccess = await WriteInstanceRevokePolicyInternal(rules, cancellationToken);
             }
-            else
+            catch (Exception ex)
             {
-                string unsortablesJson = JsonSerializer.Serialize(rules);
-                _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
+                bool validPath = DelegationHelper.TryGetDelegationPolicyPathFromInstanceRule(rules, out string path);
+                if (validPath)
+                {
+                    _logger.LogError(ex, "An exception occured while processing authorization rules for delegation on delegation policy path: {path}", path);
+                }
+                else
+                {
+                    string unsortablesJson = JsonSerializer.Serialize(rules);
+                    _logger.LogError("One or more rules could not be processed because of incomplete input:\n{unsortablesJson}", unsortablesJson);
+                }
+                
             }
 
+            foreach (InstanceRule rule in rules.InstanceRules)
+            {
+                if (writePolicySuccess)
+                {
+                    rule.CreatedSuccessfully = true;
+                }
+                else
+                {
+                    rule.RuleId = string.Empty;
+                    rule.CreatedSuccessfully = false;
+                }
+            }
+        
             return rules;
         }
 

@@ -591,7 +591,19 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.To.Value, actual.To.Value);
             Assert.Equal(expected.ResourceId, actual.ResourceId);
             Assert.Equal(expected.InstanceId, actual.InstanceId);
-            AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRights);
+            AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertDelegationRights);
+        }
+
+        public static void AssertAppsInstanceRevokeResponseDto(AppsInstanceRevokeResponseDto expected, AppsInstanceRevokeResponseDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertPartyUrn(expected.From, actual.From);
+            Assert.Equal(expected.To.Value, actual.To.Value);
+            Assert.Equal(expected.ResourceId, actual.ResourceId);
+            Assert.Equal(expected.InstanceId, actual.InstanceId);
+            AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRevokeRights);
         }
 
         /// <summary>
@@ -599,7 +611,22 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertRights(RightDelegationResultDto expected, RightDelegationResultDto actual)
+        public static void AssertDelegationRights(RightDelegationResultDto expected, RightDelegationResultDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertActionUrn(expected.Action, actual.Action);
+            Assert.Equal(expected.Status, actual.Status);
+            AssertionUtil.AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertResource);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="RightDelegationResultDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRevokeRights(RightRevokeResultDto expected, RightRevokeResultDto actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);

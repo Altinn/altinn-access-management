@@ -525,7 +525,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -536,7 +536,8 @@ namespace Altinn.AccessManagement.Persistence
 		    FROM
 			    delegation.instancedelegationchanges
 		    WHERE
-			    fromuuid = @fromUuid
+                resourceid = ANY(@resourceIds)
+			    AND fromuuid = @fromUuid
                 AND touuid = ANY(@toUuids)
 		    GROUP BY
 			    instancedelegationmode
@@ -569,6 +570,7 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
                 cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, from);
                 cmd.Parameters.AddWithValue("toUuids", NpgsqlDbType.Array | NpgsqlDbType.Uuid, to);
 

@@ -449,15 +449,21 @@ namespace Altinn.AccessManagement.Core.Services
             // 3. Get all instance delegations of the resource both directly delegated to user and indirectly through keyrole units
             if (includeInstanceDelegations && fromParty.HasValue && toParties.Count > 0)
             {
-                delegations.AddRange(await GetInstanceDelegations(fromParty.Value, toParties, cancellationToken));
+                if (resourceMatchType == ResourceAttributeMatchType.AltinnAppId)
+                {
+                    string[] resourceOrgApp = resourceId.Split('/');
+                    resourceIds = $"app_{resourceOrgApp[0]}_{resourceOrgApp[1]}".SingleToList();
+                }
+
+                delegations.AddRange(await GetInstanceDelegations(resourceIds, fromParty.Value, toParties, cancellationToken));
             }
 
             return delegations;
         }
 
-        private async Task<IEnumerable<DelegationChange>> GetInstanceDelegations(Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<DelegationChange>> GetInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
         {
-            IEnumerable<InstanceDelegationChange> instanceDelegations = await _delegationRepository.GetActiveInstanceDelegations(from, to, cancellationToken);
+            IEnumerable<InstanceDelegationChange> instanceDelegations = await _delegationRepository.GetActiveInstanceDelegations(resourceIds, from, to, cancellationToken);
             return from InstanceDelegationChange instanceDelegation in instanceDelegations
                     let delegationChange = new DelegationChange
                     {

@@ -533,7 +533,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
     {
         return Task.FromResult<IEnumerable<InstanceDelegationChange>>(new List<InstanceDelegationChange>());
     }

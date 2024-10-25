@@ -30,9 +30,9 @@ public class PartiesClientMock : IPartiesClient
         var result = new List<Party>();
         foreach (var partyId in partyIds)
         {
-            if (AdditionalParties.ContainsKey(partyId))
+            if (AdditionalParties.TryGetValue(partyId, out var party))
             {
-                result.Add(AdditionalParties[partyId]);
+                result.Add(party);
             }
         }
 

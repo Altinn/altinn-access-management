@@ -328,7 +328,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             }
 
             // Ensure that we dont't add duplicates
-            if (authorizedParty.AuthorizedInstances.Any(instance => instance.InstanceId == instance.InstanceId && instance.ResourceId == instance.ResourceId))
+            if (authorizedParty.AuthorizedInstances.Exists(instance => instance.InstanceId == delegation.InstanceId && instance.ResourceId == delegation.ResourceId))
             {
                 continue;
             }

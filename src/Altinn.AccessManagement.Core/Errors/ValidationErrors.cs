@@ -28,11 +28,11 @@ public static class ValidationErrors
     /// Gets a validation error descriptor for when a resource is missing policy file
     /// </summary>
     public static ValidationErrorDescriptor MissingPolicy { get; }
-        = _factory.Create(3, $"Resource must have policy.");
+        = _factory.Create(3, $"Resource must have a policy.");
 
     /// <summary>
     /// Gets a validation error descriptor for when a Resource not has any delegable rights for the app
     /// </summary>
     public static ValidationErrorDescriptor MissingDelegableRights { get; }
-        = _factory.Create(4, $"Resource must have policy including delegable rights.");
+        = _factory.Create(4, $"The Resource must have policy giving tha app rights to delegate at least one right.");
 }

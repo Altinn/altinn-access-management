@@ -56,7 +56,14 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DelegationCheck([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token)
     {
-        AppsInstanceDelegationRequest request = new() { ResourceId = resourceId, InstanceId = instanceId, PerformedBy = GetOrgAppFromToken(token) };
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+
+        if (performer == null)
+        {
+            return Forbid();
+        }
+
+        AppsInstanceDelegationRequest request = new() { ResourceId = resourceId, InstanceId = instanceId, PerformedBy = performer };
 
         Result<ResourceDelegationCheckResponse> serviceResult = await _appInstanceDelegationService.DelegationCheck(request);
 
@@ -145,7 +152,7 @@ public class AppsInstanceDelegationController : ControllerBase
         ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
         
         if (performer == null) 
-    {
+        {
             return Forbid();
         }
 
@@ -226,14 +233,11 @@ public class AppsInstanceDelegationController : ControllerBase
     /// </summary>
     private static ResourceIdUrn.ResourceId? GetOrgAppFromToken(string token)
     {
-        List<AttributeMatch> performedBy = new List<AttributeMatch>();
-
         if (!string.IsNullOrEmpty(token))
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
             var appidentifier = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute);
-            performedBy.Add(new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = jwtSecurityToken.Issuer });
             if (appidentifier != null)
             {
                 return ResourceIdUrn.ResourceId.Create(ResourceIdentifier.CreateUnchecked($"app_{jwtSecurityToken.Issuer}_{appidentifier.Value}"));

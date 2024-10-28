@@ -204,17 +204,17 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             catch (ValidationException)
             {
                 errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
-            }
-
-            if (delegableRights == null || delegableRights.Count == 0)
-            {
-                errors.Add(ValidationErrors.MissingDelegableRights, "appInstanceDelegationRequest.Resource");
-            }
+            }            
         }
 
         if (errors.TryBuild(out var errorResult))
         {
             return errorResult;
+        }
+
+        if (delegableRights == null || delegableRights.Count == 0)
+        {
+            return result;
         }
 
         foreach (Right right in delegableRights)

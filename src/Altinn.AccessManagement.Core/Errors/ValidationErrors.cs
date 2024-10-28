@@ -34,5 +34,5 @@ public static class ValidationErrors
     /// Gets a validation error descriptor for when a Resource not has any delegable rights for the app
     /// </summary>
     public static ValidationErrorDescriptor MissingDelegableRights { get; }
-        = _factory.Create(4, $"The Resource must have policy giving tha app rights to delegate at least one right.");
+        = _factory.Create(4, $"The Resource must have a policy giving the app rights to delegate at least one right.");
 }

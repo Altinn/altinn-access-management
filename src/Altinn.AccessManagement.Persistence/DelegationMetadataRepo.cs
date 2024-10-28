@@ -523,7 +523,68 @@ namespace Altinn.AccessManagement.Persistence
                 throw;
             }
         }
-        
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            string query = /*strpsql*/@"
+            WITH LatestChanges AS(
+		    SELECT 
+			    MAX(instancedelegationchangeid) instancedelegationchangeid
+		    FROM
+			    delegation.instancedelegationchanges
+		    WHERE
+                resourceid = ANY(@resourceIds)
+			    AND fromuuid = @fromUuid
+                AND touuid = ANY(@toUuids)
+		    GROUP BY
+			    instancedelegationmode
+			    ,resourceid
+			    ,instanceid
+			    ,fromuuid
+			    ,fromtype
+			    ,touuid
+			    ,totype)
+            SELECT
+	            dc.instancedelegationchangeid
+	            ,delegationchangetype
+	            ,instancedelegationmode
+	            ,resourceid
+	            ,instanceid
+	            ,fromuuid
+	            ,fromtype
+	            ,touuid
+	            ,totype
+	            ,performedby
+	            ,performedbytype
+	            ,blobstoragepolicypath
+	            ,blobstorageversionid
+	            ,created
+            FROM
+	            LatestChanges lc
+	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid
+            WHERE delegationchangetype != 'revoke_last';";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
+                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, from);
+                cmd.Parameters.AddWithValue("toUuids", NpgsqlDbType.Array | NpgsqlDbType.Uuid, to);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetInstanceDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
         private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChange(NpgsqlDataReader reader)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity();

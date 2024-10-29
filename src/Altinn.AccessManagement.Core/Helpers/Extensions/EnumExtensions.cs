@@ -40,13 +40,12 @@ namespace Altinn.AccessManagement.Core.Helpers.Extensions
         public static bool EnumValue<T>(string value, out T enumValue)
         {
             string[] names = Enum.GetNames(typeof(T));
-            foreach (string name in names)
+            string name = Array.Find(names, name => EnumMemberAttributeValueOrName((Enum)Enum.Parse(typeof(T), name)).Equals(value));
+            
+            if (name != null)
             {
-                if (EnumMemberAttributeValueOrName((Enum)Enum.Parse(typeof(T), name)).Equals(value))
-                {
-                    enumValue = (T)Enum.Parse(typeof(T), name);
-                    return true;
-                }
+                enumValue = (T)Enum.Parse(typeof(T), name);
+                return true;
             }
 
             enumValue = default;

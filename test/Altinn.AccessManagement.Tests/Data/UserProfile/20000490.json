@@ -1,0 +1,48 @@
+{
+  "UserId": 20000490,
+  "UserUuid": "00000000-0000-0000-0005-000000002598",
+  "UserType": 1,
+  "UserName": "kasper",
+  "ExternalIdentity": "",
+  "PhoneNumber": null,
+  "Email": null,
+  "PartyId": 50002598,
+  "Party": {
+    "PartyTypeName": 1,
+    "SSN": "07124912037",
+    "OrgNumber": "",
+    "Person": {
+      "SSN": "07124912037",
+      "Name": "KASPER BØRSTAD",
+      "FirstName": "KASPER",
+      "MiddleName": "",
+      "LastName": "BØRSTAD",
+      "TelephoneNumber": "",
+      "MobileNumber": "",
+      "MailingAddress": " Skålevikstølen 7 5178 LODDEFJORD",
+      "MailingPostalCode": "5178",
+      "MailingPostalCity": "LODDEFJORD",
+      "AddressMunicipalNumber": "",
+      "AddressMunicipalName": "",
+      "AddressStreetName": "",
+      "AddressHouseNumber": "",
+      "AddressHouseLetter": "",
+      "AddressPostalCode": "5178",
+      "AddressCity": "LODDEFJORD",
+      "DateOfDeath": null
+    },
+    "Organization": null,
+    "PartyId": 50002598,
+    "PartyUuid": "00000000-0000-0000-0005-000000002598",
+    "UnitType": null,
+    "Name": "KASPER BØRSTAD",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
+  },
+  "ProfileSettingPreference": {
+    "Language": "nb",
+    "PreSelectedPartyId": 0,
+    "DoNotPromptForParty": false
+  }
+}

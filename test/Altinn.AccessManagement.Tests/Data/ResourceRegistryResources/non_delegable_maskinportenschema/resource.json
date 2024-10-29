@@ -40,5 +40,11 @@
       "nb-no": "DIGITALISERINGSDIREKTORATET",
       "nn-no": "DIGITALISERINGSDIREKTORATET"
     }
-  }
+  },
+  "authorizationReference": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "non_delegable_maskinportenschema"
+    }
+  ]
 }

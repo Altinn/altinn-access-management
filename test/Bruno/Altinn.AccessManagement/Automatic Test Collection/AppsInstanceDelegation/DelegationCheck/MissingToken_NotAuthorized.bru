@@ -1,0 +1,37 @@
+meta {
+  name: MissingToken_NotAuthorized
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationcheck/resource/:resourceId/instance/:instanceId
+  body: json
+  auth: none
+}
+
+params:path {
+  resourceId: app_ttd_authz-bruno-instancedelegation
+  instanceId: {{instanceId}}
+}
+
+headers {
+  Accept: application/json
+  PlatformAccessToken: {{platformAccessToken}}
+  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  
+  bru.setVar("instanceId",  "b39a2326-9fff-4414-a209-61e6f9835564");
+  bru.setVar("platformAccessToken",  "");
+}
+
+tests {
+  test("AppsInstanceDelegation DelegationCheck GET MissingToken_NotAuthorized", function() {
+    var body = res.getBody();  
+    expect(res.status).to.equal(401);
+  });
+}

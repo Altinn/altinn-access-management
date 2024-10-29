@@ -24,22 +24,16 @@ public class AppsInstanceDelegationResponseDto
     public UrnJsonTypeValue<PartyUrn> To { get; set; }
 
     /// <summary>
-    /// Gets or sets the urn identifying the resource of the instance
+    /// Gets or sets a value identifying the resource of the instance
     /// </summary>
     [Required]
-    public string Resource { get; set; }
+    public string ResourceId { get; set; }
 
     /// <summary>
-    /// Gets or sets the urn identifying the instance id
+    /// Gets or sets a value identifying the instance id
     /// </summary>
     [Required]
-    public string Instance { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the instance delegation is for a parallel task
-    /// </summary>
-    [Required]
-    public InstanceDelegationModeExternal InstanceDelegationMode { get; set; }
+    public string InstanceId { get; set; }
 
     /// <summary>
     /// Gets or sets the rights to delegate

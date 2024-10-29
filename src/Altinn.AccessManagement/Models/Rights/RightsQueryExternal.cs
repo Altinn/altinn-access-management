@@ -1,4 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using AutoMapper;
 
 namespace Altinn.AccessManagement.Models
 {
@@ -26,5 +31,31 @@ namespace Altinn.AccessManagement.Models
         /// </summary>
         [Required]
         public List<AttributeMatchExternal> Resource { get; set; }
+
+        /// <summary>
+        /// Method to convert the external rights query to internal rights query
+        /// </summary>
+        /// <param name="mapper">mapper to use for subtypes</param>
+        /// <returns>RightsQuery</returns>
+        public RightsQuery ToRightsQueryInternal(IMapper mapper)
+        {
+            return new RightsQuery
+            {
+                Type = RightsQueryType.User,
+                From = mapper.Map<List<AttributeMatch>>(From),
+                To = mapper.Map<List<AttributeMatch>>(To),
+                Resource = new ServiceResource
+                {
+                    Identifier = GetResourceIdentifier(Resource),
+                    AuthorizationReference = mapper.Map<List<AttributeMatch>>(Resource)
+                }
+            };
+        }
+
+        private static string GetResourceIdentifier(List<AttributeMatchExternal> resource)
+        {
+            return resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute)?.Value ??
+                $"app_{resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute)?.Value}_{resource.Find(r => r.Id == AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute)?.Value}";
+        }
     }
 }

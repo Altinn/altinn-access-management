@@ -1,17 +1,11 @@
-﻿using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.AccessManagement.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models
 {
     /// <summary>
-    /// 
+    /// InstanceDelegationChange
     /// </summary>
     public class InstanceDelegationChange
     {
@@ -35,13 +29,13 @@ namespace Altinn.AccessManagement.Core.Models
         /// Gets or sets the resource.
         /// </summary>
         [JsonPropertyName("resource")]
-        public string Resource { get; set; }
+        public string ResourceId { get; set; }
 
         /// <summary>
         /// Gets or sets the instance.
         /// </summary>
         [JsonPropertyName("instance")]
-        public string Instance { get; set; }
+        public string InstanceId { get; set; }
 
         /// <summary>
         /// The uuid of the party the right is on behalf of

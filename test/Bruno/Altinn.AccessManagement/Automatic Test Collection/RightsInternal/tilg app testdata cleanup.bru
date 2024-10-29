@@ -1,0 +1,72 @@
+meta {
+  name: tilg app testdata cleanup
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received/revoke
+  body: json
+  auth: inherit
+}
+
+body:json {
+  
+    {
+      "from": [
+        {
+          "id": "urn:altinn:partyid",
+          "value": "{{fromPartyId}}" 
+        }
+      ],
+      "rights": [
+      {
+        "resource": [
+          {
+            "id": "urn:altinn:org",
+            "value": "ttd"
+          },
+          {
+            "id": "urn:altinn:app",
+            "value": "apps-test-tba"
+          }
+        ] 
+      }
+    ]
+  }
+  
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.randomUser.partyid);
+  bru.setVar("fromPartyId", testdata.org3.partyid);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.randomUser.userid,
+    auth_partyId: testdata.randomUser.partyid,
+    auth_ssn: testdata.randomUser.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}

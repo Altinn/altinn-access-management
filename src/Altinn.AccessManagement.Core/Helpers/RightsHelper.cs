@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Altinn.AccessManagement.Core.Constants;
+﻿using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.AccessList;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Authorization.Platform.Authorization.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -58,23 +57,14 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a RightsQuery request model for lookup of a users rights for a given service resource on behalf of the given reportee party
         /// </summary>
-        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, string resourceRegistryId = null, string org = null, string app = null)
+        public static RightsQuery GetRightsQuery(int userId, int fromPartyId, ServiceResource resource)
         {
-            if (!string.IsNullOrEmpty(org) && !string.IsNullOrEmpty(app))
+            return new RightsQuery()
             {
-                return new RightsQuery
-                {
-                    To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
-                    From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
-                    Resource = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute, Value = org }, new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute, Value = app } }
-                };
-            }
-
-            return new RightsQuery
-            {
+                Type = RightsQueryType.User,
                 To = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.UserAttribute, Value = userId.ToString() } },
                 From = new List<AttributeMatch> { new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.PartyAttribute, Value = fromPartyId.ToString() } },
-                Resource = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute, Value = resourceRegistryId }.SingleToList()
+                Resource = resource
             };
         }
 
@@ -85,7 +75,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <returns>the decision</returns>
         public static bool CheckIfRuleIsAnEndUserRule(Right right)
         {
-            List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();
+            List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != RightSourceType.DelegationPolicy).ToList();
             if (roleAccessSources.Any())
             {
                 List<AttributeMatch> roles = GetAttributeMatches(roleAccessSources.SelectMany(roleAccessSource => roleAccessSource.PolicySubjects)).FindAll(policySubject => policySubject.Id.Equals(AltinnXacmlConstants.MatchAttributeIdentifiers.RoleAttribute, StringComparison.OrdinalIgnoreCase));

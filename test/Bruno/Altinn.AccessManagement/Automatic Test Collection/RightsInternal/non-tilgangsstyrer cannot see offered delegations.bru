@@ -1,0 +1,46 @@
+meta {
+  name: non-tilgangsstyrer cannot see offered delegations
+  type: http
+  seq: 41
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  body: json
+  auth: inherit
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org1.partyid);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org1.meda.userid,
+    auth_partyId: testdata.org1.meda.partyid,
+    auth_ssn: testdata.org1.meda.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("non-tilgangsstyrer cannot see offered delegations", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(403);
+    expect(data).to.be.empty;
+  });
+  
+}

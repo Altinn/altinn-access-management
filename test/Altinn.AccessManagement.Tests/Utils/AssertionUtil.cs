@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Authorization.ABAC.Xacml.JsonProfile;
+using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
 
 namespace Altinn.AccessManagement.Tests.Utils
 {
@@ -54,6 +53,19 @@ namespace Altinn.AccessManagement.Tests.Utils
             {
                 assertMethod(expectedDict[key], actualDict[key]);
             }
+        }
+
+        /// <summary>
+        /// Asserts that two paginations of object lists have the same property values in the same positions and have egal link to next pagination.
+        /// </summary>
+        /// <typeparam name="T">The Type</typeparam>
+        /// <param name="expected">A pagination of expected instances</param>
+        /// <param name="actual">The pagination of actual instances</param>
+        /// <param name="assertMethod">The assertion method to be used</param>
+        public static void AssertPagination<T>(Paginated<T> expected, Paginated<T> actual, Action<T, T> assertMethod)
+        {
+            Assert.Equal(expected.Links, actual.Links);
+            AssertCollections(expected.Items.ToList(), actual.Items.ToList(), assertMethod);
         }
 
         /// <summary>
@@ -504,7 +516,7 @@ namespace Altinn.AccessManagement.Tests.Utils
 
             Assert.Equal(expected.Code, actual.Code);
             Assert.Equal(expected.Description, actual.Description);
-            AssertDetailParametersExternalEqual(expected.Parameters, actual.Parameters);
+            AssertDetailParametersExternal(expected.Parameters, actual.Parameters);
         }
 
         /// <summary>
@@ -512,7 +524,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertDetailParametersExternalEqual(Dictionary<string, List<AttributeMatchExternal>> expected, Dictionary<string, List<AttributeMatchExternal>> actual)
+        public static void AssertDetailParametersExternal(Dictionary<string, List<AttributeMatchExternal>> expected, Dictionary<string, List<AttributeMatchExternal>> actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -530,7 +542,7 @@ namespace Altinn.AccessManagement.Tests.Utils
         /// </summary>
         /// <param name="expected">An instance with the expected values.</param>
         /// <param name="actual">The instance to verify.</param>
-        public static void AssertAuthorizedPartyEqual(AuthorizedParty expected, AuthorizedParty actual)
+        public static void AssertAuthorizedParty(AuthorizedParty expected, AuthorizedParty actual)
         {
             Assert.NotNull(actual);
             Assert.NotNull(expected);
@@ -546,7 +558,94 @@ namespace Altinn.AccessManagement.Tests.Utils
             Assert.Equal(expected.OnlyHierarchyElementWithNoAccess, actual.OnlyHierarchyElementWithNoAccess);
             Assert.Equal(expected.AuthorizedResources, actual.AuthorizedResources);
             Assert.Equal(expected.AuthorizedRoles, actual.AuthorizedRoles);
-            AssertCollections(expected.Subunits, actual.Subunits, AssertAuthorizedPartyEqual);
+            AssertCollections(expected.Subunits, actual.Subunits, AssertAuthorizedParty);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="ResourceRightDelegationCheckResultDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertResourceRightDelegationCheckResultDto(ResourceRightDelegationCheckResultDto expected, ResourceRightDelegationCheckResultDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            Assert.Equal(expected.RightKey, actual.RightKey);
+            Assert.Equal(expected.Status, actual.Status);
+            Assert.Equal(expected.Action.Value, actual.Action.Value);
+            AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertUrnJsonTypeValue);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="AppsInstanceDelegationResponseDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertAppsInstanceDelegationResponseDto(AppsInstanceDelegationResponseDto expected, AppsInstanceDelegationResponseDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertPartyUrn(expected.From, actual.From);
+            Assert.Equal(expected.To.Value, actual.To.Value);
+            Assert.Equal(expected.ResourceId, actual.ResourceId);
+            Assert.Equal(expected.InstanceId, actual.InstanceId);
+            AssertionUtil.AssertCollections(expected.Rights.ToList(), actual.Rights.ToList(), AssertRights);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="RightDelegationResultDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertRights(RightDelegationResultDto expected, RightDelegationResultDto actual)
+        {
+            Assert.NotNull(actual);
+            Assert.NotNull(expected);
+
+            AssertActionUrn(expected.Action, actual.Action);
+            Assert.Equal(expected.Status, actual.Status);
+            AssertionUtil.AssertCollections(expected.Resource.ToList(), actual.Resource.ToList(), AssertResource);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="RightDelegationResultDto"/> have the same property in the same positions.
+        /// </summary>
+        /// <param name="expected">An instance with the expected values.</param>
+        /// <param name="actual">The instance to verify.</param>
+        public static void AssertResource(UrnJsonTypeValue expected, UrnJsonTypeValue actual)
+        {
+            Assert.True(actual.HasValue);
+            Assert.True(expected.HasValue);
+
+            Assert.Equal(expected.Value, actual.Value);
+        }
+
+        /// <summary>
+        /// Assert that two <see cref="AssertActionUrn"/> have equal value.
+        /// </summary>
+        /// <param name="expected">the expected value</param>
+        /// <param name="actual">the actual value</param>
+        public static void AssertActionUrn(UrnJsonTypeValue<ActionUrn> expected, UrnJsonTypeValue<ActionUrn> actual)
+        {
+            Assert.True(actual.HasValue);
+            Assert.True(expected.HasValue);
+
+            Assert.Equal(expected.Value.Urn, actual.Value.Urn);
+        }
+
+        public static void AssertPartyUrn(UrnJsonTypeValue<PartyUrn> expected, UrnJsonTypeValue<PartyUrn> actual)
+        {
+            Assert.True(actual.HasValue);
+            Assert.True(expected.HasValue);
+
+            Assert.Equal(expected.Value.Urn, actual.Value.Urn);
+        }
+
+        private static void AssertUrnJsonTypeValue(UrnJsonTypeValue expected, UrnJsonTypeValue actual)
+        {
+            Assert.Equal(expected.Value, actual.Value);
         }
 
         private static void AssertPolicySubjects(List<PolicyAttributeMatchExternal> expected, List<PolicyAttributeMatchExternal> actual)

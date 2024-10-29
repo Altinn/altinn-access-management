@@ -1,0 +1,43 @@
+{
+	"links": {
+		"next": null
+	},
+	"data": [
+		{
+			"rightKey": "app_ttd_am-devtest-instancedelegation,task_1:read",
+			"resource": [
+				{
+					"type": "urn:altinn:resource",
+					"value": "app_ttd_am-devtest-instancedelegation"
+				},
+				{
+					"type": "urn:altinn:task",
+					"value": "task_1"
+				}
+			],
+			"action": {
+				"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+				"value": "read"
+			},
+			"status": "Delegable"
+		},
+		{
+			"rightKey": "app_ttd_am-devtest-instancedelegation,task_1:sign",
+			"resource": [
+				{
+					"type": "urn:altinn:resource",
+					"value": "app_ttd_am-devtest-instancedelegation"
+				},
+				{
+					"type": "urn:altinn:task",
+					"value": "task_1"
+				}
+			],
+			"action": {
+				"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+				"value": "sign"
+			},
+			"status": "Delegable"
+		}
+	]
+}

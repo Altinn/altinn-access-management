@@ -62,7 +62,5 @@ namespace Altinn.AccessManagement.Core.Enums
         ///  The receiver does not have the right based on Access List delegation
         /// </summary>
         AccessListValidationFail = 10,
-
-
     }
 }

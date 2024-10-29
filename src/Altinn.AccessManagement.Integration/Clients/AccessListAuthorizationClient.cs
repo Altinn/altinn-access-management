@@ -54,6 +54,7 @@ namespace Altinn.AccessManagement.Integration.Clients
             httpClient.BaseAddress = new Uri(platformSettings.Value.ApiAuthorizationEndpoint);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client = httpClient;
+            _httpContextAccessor = httpContextAccessor;
             _accessTokenGenerator = accessTokenGenerator;
         }
 

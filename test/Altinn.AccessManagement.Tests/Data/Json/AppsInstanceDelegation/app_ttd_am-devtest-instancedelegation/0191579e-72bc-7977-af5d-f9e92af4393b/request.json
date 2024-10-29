@@ -7,7 +7,7 @@
     "type": "urn:altinn:party:uuid",
     "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
   },
-  "instanceDelegationType": "Paralell",
+  "instanceDelegationMode": "ParallelSigning",
   "rights": [
     {
       "resource": [

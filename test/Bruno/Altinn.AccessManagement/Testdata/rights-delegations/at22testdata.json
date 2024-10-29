@@ -12,6 +12,12 @@
             "lastname": "LARM",
             "userid": 20012043,
             "partyid": 50717658
+        },
+        "meda": {
+            "pid":"18868496661",
+            "lastname": "BALL",
+            "userid": 20012682,
+            "partyid": 50861065
         }
     },
     "org2": {
@@ -23,5 +29,27 @@
             "userid": 20012044,
             "partyid": 51138305
         }
+    },
+    "org3": {
+        "orgno": "312822881",
+        "partyid": 51423446,
+        "dagl": {
+            "pid": "47827602783",
+            "lastname": "ELEV",
+            "userid": 20012697,
+            "partyid": 51024762
+        },
+        "tilg": {
+            "pid":"05859399586",
+            "lastname": "DESIMETER",
+            "userid": 20012650,
+            "partyid": 50592431
+        }
+    },
+    "randomUser": {
+        "pid": "12896198376",
+        "lastname": "KLOSETT",
+        "userid": 20012655,
+        "partyid": 50146491
     }
 }

@@ -1,9 +1,9 @@
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Core.Repositories.Interfaces;
 using Altinn.AccessManagement.Enums;
@@ -11,7 +11,6 @@ using Altinn.AccessManagement.Persistence.Configuration;
 using Altinn.AccessManagement.Persistence.Extensions;
 using Npgsql;
 using NpgsqlTypes;
-using OpenTelemetry.Trace;
 
 namespace Altinn.AccessManagement.Persistence;
 
@@ -59,11 +58,13 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
         return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
     }
 
+    /// <inheritdoc/>
     public Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    /// <inheritdoc/>
     public Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
@@ -748,5 +749,17 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
             activity?.StopWithError(ex);
             throw;
         }
+    }
+
+    /// <inheritdoc />
+    public Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

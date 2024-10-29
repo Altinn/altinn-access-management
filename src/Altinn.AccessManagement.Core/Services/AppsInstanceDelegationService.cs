@@ -1,28 +1,20 @@
+using System.ComponentModel.DataAnnotations;
+using Altinn.AccessManagement.Core.Clients.Interfaces;
+using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
+using Altinn.AccessManagement.Core.Errors;
+using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
+using Altinn.AccessManagement.Core.Models.Register;
+using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Models.Rights;
+using Altinn.AccessManagement.Core.Services.Interfaces;
 using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ProblemDetails;
-using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
-using Altinn.AccessManagement.Core.Clients.Interfaces;
-using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.Platform.Register.Models;
-using System;
-using System.Net;
-using Altinn.AccessManagement.Core.Constants;
-using Altinn.AccessManagement.Core.Errors;
-using Altinn.AccessManagement.Core.Services.Interfaces;
-using Altinn.AccessManagement.Core.Helpers;
-using System.Threading;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using System.ComponentModel.DataAnnotations;
-using Altinn.Urn.Json;
-using static Altinn.AccessManagement.Core.Resolvers.BaseUrn.Altinn;
-using System.Linq;
 using Altinn.Urn;
-using System.Text.Json;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Services.Implementation;
 
@@ -31,8 +23,6 @@ namespace Altinn.AccessManagement.Core.Services.Implementation;
 /// </summary>
 public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 {
-    private readonly ILogger<AppsInstanceDelegationService> _logger;
-    private readonly IDelegationMetadataRepository _delegationRepository;
     private readonly IPartiesClient _partiesClient;
     private readonly IPolicyInformationPoint _pip;
     private readonly IPolicyAdministrationPoint _pap;
@@ -41,10 +31,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     /// <summary>
     /// Initializes a new instance of the <see cref="AppsInstanceDelegationService"/> class.
     /// </summary>
-    public AppsInstanceDelegationService(ILogger<AppsInstanceDelegationService> logger, IDelegationMetadataRepository delegationRepository, IPartiesClient partiesClient, IResourceRegistryClient resourceRegistryClient, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
+    public AppsInstanceDelegationService(IPartiesClient partiesClient, IResourceRegistryClient resourceRegistryClient, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap)
     {
-        _logger = logger;
-        _delegationRepository = delegationRepository;
         _partiesClient = partiesClient;
         _pip = pip;
         _resourceRegistryClient = resourceRegistryClient;
@@ -53,8 +41,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
     private async Task<(UuidType DelegationType, Guid? Uuid)> TranslatePartyUuidToPersonOrganizationUuid(PartyUrn partyId)
     {
-        UuidType delegationType = UuidType.NotSpecified;
-        Guid? uuid = null;
         Party party = null;
 
         if (partyId.IsOrganizationIdentifier(out OrganizationNumber orgNumber))
@@ -71,30 +57,24 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             party = (await _partiesClient.GetPartiesAsync(partyUuid.SingleToList())).FirstOrDefault();
         }
 
-        if (party?.Organization != null)
-        {
-            delegationType = UuidType.Organization;
-            uuid = party.PartyUuid;
-        }
-        else if (party?.Person != null)
-        {
-            delegationType = UuidType.Person;
-            uuid = party.PartyUuid;
-        }
-
-        return (delegationType, uuid);
+        return DelegationHelper.GetUuidTypeAndValueFromParty(party);
     }
 
-    private bool CheckIfInstanceIsDelegable(List<Right> delegableRights, RightV2 rightToDelegate)
+    private static bool CheckIfInstanceIsDelegable(List<Right> delegableRights, RightInternal rightToDelegate)
     {
-        return delegableRights.Any(delegableRight => InstanceRightComparesEqualToDelegableRight(delegableRight, rightToDelegate));
+        return delegableRights.Exists(delegableRight => InstanceRightComparesEqualToDelegableRight(delegableRight, rightToDelegate));
     }
 
-    private bool InstanceRightComparesEqualToDelegableRight(Right right, RightV2 instanceRight)
+    private static bool InstanceRightComparesEqualToDelegableRight(Right right, RightInternal instanceRight)
     {
+        if (right.Action.Value != instanceRight.Action.ValueSpan.ToString())
+        {
+            return false;
+        }
+
         foreach (var resourcePart in right.Resource)
         {
-            bool valid = instanceRight.Resource.Any(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
+            bool valid = instanceRight.Resource.Exists(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
 
             if (!valid)
             {
@@ -105,7 +85,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return true;
     }
 
-    private bool TryGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
+    private static bool ValidateAndGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
     {
         resource = new List<UrnJsonTypeValue>();
         
@@ -114,8 +94,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             return false;
         }
 
-        bool hasOrg = false, hasApp = false, hasResource = false;
-        
+        string org = null, app = null, resourceRegistryId = null;
+        int significantParts = 0;
         foreach (UrnJsonTypeValue urnJsonTypeValue in input)
         {
             if (urnJsonTypeValue.HasValue)
@@ -124,43 +104,46 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
                 {
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.OrgAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasOrg = true;
+                        org = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.AppAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasApp = true;
+                        app = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                     case AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceRegistryAttribute:
                         resource.Add(urnJsonTypeValue);
-                        hasResource = true;
+                        resourceRegistryId = urnJsonTypeValue.Value.ValueSpan.ToString();
+                        significantParts++;
                         break;
                 }
             }
         }
 
-        if (hasOrg && hasApp && !hasResource)
+        if (org != null && app != null && resourceRegistryId == null && significantParts == 2)
         {
-            return DelegationHelper.GetResourceStringFromUrnJsonTypeEnumerable(resource) == resourceTag;
+            return $"app_{org}_{app}" == resourceTag;
         }
 
-        if (!hasOrg && !hasApp && hasResource)
+        if (org == null && app == null && resourceRegistryId != null && significantParts == 1)
         {
-            return resource[0].Value.ValueSpan.ToString() == resourceTag;
+            return resourceRegistryId == resourceTag;
         }
 
         return false;
     }
 
-    private void AddValidationErrorsForResourceInstance(ref ValidationErrorBuilder errors, IEnumerable<RightV2> rights, string resourceid)
+    private static void AddValidationErrorsForResourceInstance(ref ValidationErrorBuilder errors, IEnumerable<RightInternal> rights, string resourceid)
     {
-        TryGetSignificantResourcePartsFromResource(rights.FirstOrDefault()?.Resource, out List<UrnJsonTypeValue> firstResource, resourceid);
+        ValidateAndGetSignificantResourcePartsFromResource(rights.FirstOrDefault()?.Resource, out List<UrnJsonTypeValue> firstResource, resourceid);
         int counter = -1;
 
-        foreach (RightV2 rightV2 in rights)
+        foreach (RightInternal rightV2 in rights)
         {
             counter++;
 
-            bool valid = TryGetSignificantResourcePartsFromResource(rightV2.Resource, out List<UrnJsonTypeValue> currentResource, resourceid);
+            bool valid = ValidateAndGetSignificantResourcePartsFromResource(rightV2.Resource, out List<UrnJsonTypeValue> currentResource, resourceid);
             if (!valid)
             {
                 errors.Add(ValidationErrors.InvalidResource, $"Rights[{counter}]/Resource");
@@ -178,31 +161,13 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
-    public async Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest appInstanceDelegationRequest, CancellationToken cancellationToken = default)
+    public async Task<Result<ResourceDelegationCheckResponse>> DelegationCheck(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
-        AppsInstanceDelegationResponse result = new AppsInstanceDelegationResponse();
+        ResourceDelegationCheckResponse result = new ResourceDelegationCheckResponse() { From = null, ResourceRightDelegationCheckResults = new List<ResourceRightDelegationCheckResult>() };
 
         ValidationErrorBuilder errors = default;
 
-        // Fetch from and to from partyuuid
-        (UuidType Type, Guid? Uuid) from = await TranslatePartyUuidToPersonOrganizationUuid(appInstanceDelegationRequest.From);
-        (UuidType Type, Guid? Uuid) to = await TranslatePartyUuidToPersonOrganizationUuid(appInstanceDelegationRequest.To);
-
-        if (from.Type == UuidType.NotSpecified)
-        {
-            errors.Add(ValidationErrors.InvalidPartyUrn, "From");
-        }
-
-        if (to.Type == UuidType.NotSpecified)
-        {
-            errors.Add(ValidationErrors.InvalidPartyUrn, "To");
-        }
-
-        // Validate Resource and instance 1. All rights include resource 2. All rights resource is identical to central value
-        AddValidationErrorsForResourceInstance(ref errors, appInstanceDelegationRequest.Rights, appInstanceDelegationRequest.ResourceId);
-
-        // Fetch rights valid for delegation
-        ServiceResource resource = (await _resourceRegistryClient.GetResourceList()).Find(r => r.Identifier == appInstanceDelegationRequest.ResourceId);
+        ServiceResource resource = (await _resourceRegistryClient.GetResourceList(cancellationToken)).Find(r => r.Identifier == request.ResourceId);
         List<Right> delegableRights = null;
 
         if (resource == null)
@@ -211,11 +176,17 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
         else
         {
-            RightQueryForApp resourceQuery = new RightQueryForApp { OwnerApp = appInstanceDelegationRequest.PerformedBy, Resource = resource.AuthorizationReference };
+            RightsQuery rightsQueryForApp = new RightsQuery
+            {
+                Type = RightsQueryType.AltinnApp,
+                To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformedBy.ValueSpan.ToString() }.SingleToList(),
+                From = resource.AuthorizationReference,
+                Resource = resource
+            };
 
             try
             {
-                delegableRights = await _pip.GetDelegableRigtsForApp(resourceQuery, cancellationToken);
+                delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
             }
             catch (ValidationException)
             {
@@ -233,30 +204,98 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             return errorResult;
         }
 
-        result.From = appInstanceDelegationRequest.From;
-        result.To = appInstanceDelegationRequest.To;
-        result.Resource = appInstanceDelegationRequest.ResourceId;
-        result.Instance = appInstanceDelegationRequest.InstanceId;
+        foreach (Right right in delegableRights)
+        {
+            result.ResourceRightDelegationCheckResults.Add(new()
+            {
+                RightKey = right.RightKey,
+                Resource = right.Resource.Select(r => r.ToKeyValueUrn()).ToList(),
+                Action = ActionUrn.ActionId.Create(ActionIdentifier.CreateUnchecked(right.Action.Value)),
+                Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable
+            });
+        }
+
+        return await Task.FromResult(result);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Result<AppsInstanceDelegationResponse>> Delegate(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
+    {
+        ValidationErrorBuilder errors = default;
+
+        // Fetch from and to from partyuuid
+        (UuidType Type, Guid? Uuid) from = await TranslatePartyUuidToPersonOrganizationUuid(request.From);
+        (UuidType Type, Guid? Uuid) to = await TranslatePartyUuidToPersonOrganizationUuid(request.To);
+
+        if (from.Type == UuidType.NotSpecified)
+        {
+            errors.Add(ValidationErrors.InvalidPartyUrn, "From");
+        }
+
+        if (to.Type == UuidType.NotSpecified)
+        {
+            errors.Add(ValidationErrors.InvalidPartyUrn, "To");
+        }
+
+        // Validate Resource and instance 1. All rights include resource 2. All rights resource is identical to central value
+        AddValidationErrorsForResourceInstance(ref errors, request.Rights, request.ResourceId);
+
+        // Fetch rights valid for delegation
+        ServiceResource resource = (await _resourceRegistryClient.GetResourceList(cancellationToken)).Find(r => r.Identifier == request.ResourceId);
+        List<Right> delegableRights = null;
+
+        if (resource == null)
+        {
+            errors.Add(ValidationErrors.InvalidResource, "appInstanceDelegationRequest.Resource");
+        }
+        else
+        {
+            RightsQuery rightsQueryForApp = new RightsQuery
+            {
+                Type = RightsQueryType.AltinnApp,
+                To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformedBy.ValueSpan.ToString() }.SingleToList(),
+                From = resource.AuthorizationReference,
+                Resource = resource
+            };
+
+            try
+            {
+                delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
+            }
+            catch (ValidationException)
+            {
+                errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
+            }
+
+            if (delegableRights == null || delegableRights.Count == 0)
+            {
+                errors.Add(ValidationErrors.MissingDelegableRights, "appInstanceDelegationRequest.Resource");
+            }
+        }
+
+        if (errors.TryBuild(out var errorResult))
+        {
+            return errorResult;
+        }
 
         // Perform delegation
-        DelegationHelper.TryGetPerformerFromAttributeMatches(appInstanceDelegationRequest.PerformedBy, out string performedById, out UuidType performedByType);
         InstanceRight rulesToDelegate = new InstanceRight
         {
             FromUuid = (Guid)from.Uuid,
             FromType = from.Type,
             ToUuid = (Guid)to.Uuid,
             ToType = to.Type,
-            PerformedBy = performedById,
-            PerformedByType = performedByType,
-            ResourceId = appInstanceDelegationRequest.ResourceId,
-            Instance = appInstanceDelegationRequest.InstanceId,
-            InstanceDelegationMode = appInstanceDelegationRequest.InstanceDelegationMode
+            PerformedBy = request.PerformedBy.ValueSpan.ToString(),
+            PerformedByType = UuidType.Resource,
+            ResourceId = request.ResourceId,
+            InstanceId = request.InstanceId,
+            InstanceDelegationMode = request.InstanceDelegationMode,
+            InstanceDelegationSource = request.InstanceDelegationSource,
         };
-        List<RightV2> rightsAppCantDelegate = new List<RightV2>();
-        List<RightV2DelegationResult> rights = new List<RightV2DelegationResult>();
-        UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{appInstanceDelegationRequest.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
+        List<RightInternal> rightsAppCantDelegate = new List<RightInternal>();
+        UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
         
-        foreach (RightV2 rightToDelegate in appInstanceDelegationRequest.Rights)
+        foreach (RightInternal rightToDelegate in request.Rights)
         {
             if (CheckIfInstanceIsDelegable(delegableRights, rightToDelegate))
             {
@@ -273,28 +312,112 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
         }
 
-        InstanceRight delegationResult = await _pap.TryWriteInstanceDelegationPolicyRules(rulesToDelegate, cancellationToken);
-        rights.AddRange(DelegationHelper.GetRightDelegationResultsFromInstanceRules(delegationResult));
-
-        if (rightsAppCantDelegate.Any())
+        AppsInstanceDelegationResponse result = new()
         {
-            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromFailedRightV2s(rightsAppCantDelegate));
-        }
+            From = request.From,
+            To = request.To,
+            ResourceId = request.ResourceId,
+            InstanceId = request.InstanceId,
+            InstanceDelegationMode = request.InstanceDelegationMode
+        };
 
+        List<InstanceRightDelegationResult> rights = await DelegateRights(rulesToDelegate, rightsAppCantDelegate, cancellationToken);
         result.Rights = rights;
-        
+        result = RemoveInstanceIdFromResourceForResponse(result);
+
         return result;
     }
 
     /// <inheritdoc/>
-    public Task<Result<bool>> Get()
+    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
-    
-    /// <inheritdoc/>
-    public Task<Result<bool>> Revoke()
+
+    private async Task<List<InstanceRightDelegationResult>> DelegateRights(InstanceRight rulesToDelegate, List<RightInternal> rightsAppCantDelegate, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        List<InstanceRightDelegationResult> rights = new List<InstanceRightDelegationResult>();
+
+        if (rulesToDelegate.InstanceRules.Count > 0)
+        {
+            InstanceRight delegationResult = await _pap.TryWriteInstanceDelegationPolicyRules(rulesToDelegate, cancellationToken);
+            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromInstanceRules(delegationResult));
+        }
+
+        if (rightsAppCantDelegate.Count > 0)
+        {
+            rights.AddRange(DelegationHelper.GetRightDelegationResultsFromFailedInternalRights(rightsAppCantDelegate));
+        }
+
+        return rights;
+    }
+
+    /// <inheritdoc/>
+    public async Task<Result<List<AppsInstanceDelegationResponse>>> Get(AppsInstanceGetRequest request, CancellationToken cancellationToken = default)
+    {
+        ValidationErrorBuilder errors = default;
+
+        // Fetch rights valid for delegation
+        ServiceResource resource = (await _resourceRegistryClient.GetResourceList(cancellationToken)).Find(r => r.Identifier == request.ResourceId);
+        List<Right> delegableRights = null;
+
+        if (resource == null)
+        {
+            errors.Add(ValidationErrors.InvalidResource, "request.Resource");
+        }
+        else
+        {
+            RightsQuery rightsQueryForApp = new RightsQuery
+            {
+                Type = RightsQueryType.AltinnApp,
+                To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformingResourceId.ValueSpan.ToString() }.SingleToList(),
+                From = resource.AuthorizationReference,
+                Resource = resource
+            };
+
+            try
+            {
+                delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
+            }
+            catch (ValidationException)
+            {
+                errors.Add(ValidationErrors.MissingPolicy, "request.Resource");
+            }
+
+            // The app must be able to do at least one delegation to be able to do GET call
+            if (delegableRights == null || !delegableRights.Exists(r => r.CanDelegate.HasValue && r.CanDelegate.Value))
+            {
+                errors.Add(ValidationErrors.MissingDelegableRights, "request.Resource");
+            }
+        }
+
+        if (errors.TryBuild(out var errorResult))
+        {
+            return errorResult;
+        }
+
+        List<AppsInstanceDelegationResponse> result = await _pip.GetInstanceDelegations(request, cancellationToken);
+        result = RemoveInstanceIdFromResourceForResponseList(result);
+        return result;
+    }
+
+    private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForResponseList(List<AppsInstanceDelegationResponse> input)
+    {
+        foreach (AppsInstanceDelegationResponse item in input)
+        {
+            RemoveInstanceIdFromResourceForResponse(item);            
+        }
+
+        return input;
+    }
+
+    private static AppsInstanceDelegationResponse RemoveInstanceIdFromResourceForResponse(AppsInstanceDelegationResponse input)
+    {
+        foreach (var right in input.Rights)
+        {
+            right.Resource.RemoveAll(r => r.HasValue && r.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute);
+        }
+
+        return input;
     }
 }

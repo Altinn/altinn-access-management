@@ -1,0 +1,86 @@
+meta {
+  name: tilg cannot delegate app they don't have access to
+  type: http
+  seq: 39
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/offered
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+      "to": [
+          {
+              "id": "urn:altinn:person:identifier-no",
+              "value": "{{toSsn}}"
+          },
+          {
+              "id": "urn:altinn:person:lastname",
+              "value": "{{toLastName}}"
+          }
+      ],
+      "rights": [
+          {
+              "resource": [
+                  {
+                      "id": "urn:altinn:org",
+                      "value": "ttd"
+                  },
+                  {
+                      "id": "urn:altinn:app",
+                      "value": "spraak-test"
+                  }
+              ],
+              "action": "read"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  toSsn: 
+  toLastName: 
+  org: ttd
+  app: spraak-test
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org3.partyid);
+  bru.setVar("toSsn", testdata.randomUser.pid);
+  bru.setVar("toLastName", testdata.randomUser.lastname);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org3.tilg.userid,
+    auth_partyId: testdata.org3.tilg.partyid,
+    auth_ssn: testdata.org3.tilg.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("person can't delegate app they don't have access to", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(400);
+  });
+  
+}

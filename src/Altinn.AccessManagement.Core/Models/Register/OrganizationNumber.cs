@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,10 +12,7 @@ namespace Altinn.AccessManagement.Core.Models.Register;
 /// A organization number (a string of 9 digits).
 /// </summary>
 [JsonConverter(typeof(OrganizationNumber.JsonConverter))]
-public class OrganizationNumber
-    : IParsable<OrganizationNumber>,
-    ISpanParsable<OrganizationNumber>,
-    IFormattable,
+public class OrganizationNumber : ISpanParsable<OrganizationNumber>,
     ISpanFormattable,
     IExampleDataProvider<OrganizationNumber>
 {

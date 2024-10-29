@@ -13,6 +13,8 @@ namespace Altinn.AccessManagement.Models;
 [SwaggerExampleFromExampleProvider]
 public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResultDto>
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+
     /// <summary>
     /// Gets or sets the list of resource matches which uniquely identifies the resource this right applies to.
     /// </summary>
@@ -59,6 +61,6 @@ public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResu
               "status": "Delegated"
             }
             """;
-        yield return JsonSerializer.Deserialize<RightDelegationResultDto>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        yield return JsonSerializer.Deserialize<RightDelegationResultDto>(json, SerializerOptions);
     }
 }

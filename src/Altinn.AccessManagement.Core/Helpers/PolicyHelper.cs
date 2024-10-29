@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Text;
 using System.Xml;
 using Altinn.AccessManagement.Core.Constants;
@@ -349,6 +348,50 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
+        /// Extracts policy data from InstanceRight
+        /// </summary>
+        /// <param name="rules">The rules that is delegated</param>
+        public static PolicyParameters GetPolicyDataFromInstanceRight(InstanceRight rules)
+        {
+            PolicyParameters result = new PolicyParameters
+            {
+                ResourceId = rules.ResourceId,
+                InstanceId = rules.InstanceId,
+                FromType = rules.FromType.EnumMemberAttributeValueOrName(),
+                FromId = rules.FromUuid.ToString().ToLowerInvariant(),
+                ToType = rules.ToType.EnumMemberAttributeValueOrName(),
+                ToId = rules.ToUuid.ToString().ToLowerInvariant(),
+                PerformedById = rules.PerformedBy,
+                PerformedByType = rules.PerformedByType.EnumMemberAttributeValueOrName()
+            };
+            
+            return result;
+        }
+
+        /// <summary>
+        /// Builds a XacmlPolicy <see cref="XacmlPolicy"/> representation based on the DelegationPolicy input
+        /// </summary>
+        /// <param name="rules">The set of rules to be delegated</param>
+        public static XacmlPolicy BuildInstanceDelegationPolicy(InstanceRight rules)
+        {
+            XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyPermidOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
+            delegationPolicy.Version = "1.0";
+            PolicyParameters policydata = GetPolicyDataFromInstanceRight(rules);
+
+            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {policydata.FromType}:{policydata.FromId} to {policydata.ToType}:{policydata.ToId}, for the resource: {policydata.ResourceId} and InstanceId: {policydata.InstanceId}";
+
+            foreach (InstanceRule rule in rules.InstanceRules)
+            {
+                if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
+                {
+                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(policydata, rule));
+                }
+            }
+
+            return delegationPolicy;
+        }
+
+        /// <summary>
         /// Extracts policy data from 
         /// </summary>
         /// <param name="rules">The rules that is delegated</param>
@@ -371,26 +414,20 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Builds a XacmlPolicy <see cref="XacmlPolicy"/> representation based on the DelegationPolicy input
+        /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
         /// </summary>
-        /// <param name="rules">The set of rules to be delegated</param>
-        public static XacmlPolicy BuildInstanceDelegationPolicy(InstanceRight rules)
+        /// <param name="policyData">container with data to inclue in policy</param>
+        /// <param name="rule">The rule to be delegated</param>
+        public static XacmlRule BuildDelegationInstanceRule(PolicyParameters policyData, InstanceRule rule)
         {
-            XacmlPolicy delegationPolicy = new XacmlPolicy(new Uri($"{AltinnXacmlConstants.Prefixes.PolicyId}{1}"), new Uri(XacmlConstants.CombiningAlgorithms.PolicyDenyOverrides), new XacmlTarget(new List<XacmlAnyOf>()));
-            delegationPolicy.Version = "1.0";
-            GetPolicyDataFromInstanceRight(rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType);
-
-            delegationPolicy.Description = $"Delegation policy containing all delegated rights/actions from {fromType}:{fromId} to {toType}:{toId}, for the resource; {resourceId}";
-
-            foreach (InstanceRule rule in rules.InstanceRules)
+            rule.RuleId = Guid.NewGuid().ToString();
+            
+            XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
             {
-                if (!DelegationHelper.PolicyContainsMatchingInstanceRule(delegationPolicy, rule))
-                {
-                    delegationPolicy.Rules.Add(BuildDelegationInstanceRule(resourceId, fromId, fromType, toId, toType, performedById, performedByType, rule));
-                }
-            }
-
-            return delegationPolicy;
+                Description = $"Delegation of a right/action from {policyData.FromType}:{policyData.FromId} to {policyData.ToType}:{policyData.ToId}, for the resourceId: {policyData.ResourceId} instanceId: {policyData.InstanceId}, by: {policyData.PerformedByType}:{policyData.PerformedById}",
+                Target = BuildInstanceDelegationRuleTarget(policyData.ToId, policyData.ToType, rule)
+            };
+            return delegationRule;
         }
 
         /// <summary>
@@ -490,7 +527,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Builds a XacmlTarget <see cref="XacmlTarget"/> representation based on the Rule input
         /// </summary>
-        /// <param name="coveredBy">The the entity having received the delegated policy</param>
+        /// <param name="toId">The the entity having received the delegated policy</param>
         /// <param name="toType">The type of identifier received the delegated policy user, party or system user</param>
         /// <param name="rule">The rule to be delegated</param>
         public static XacmlTarget BuildInstanceDelegationRuleTarget(string toId, string toType, InstanceRule rule)
@@ -509,16 +546,11 @@ namespace Altinn.AccessManagement.Core.Helpers
             }));
 
             // Build Resource
-            List<XacmlMatch> resourceMatches = new List<XacmlMatch>();
-            foreach (UrnJsonTypeValue resourceMatch in rule.Resource)
-            {
-                resourceMatches.Add(
-                    new XacmlMatch(
-                        new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
-                        new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value.ValueSpan.ToString()),
-                        new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Resource), new Uri(resourceMatch.Value.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false)));
-            }
-
+            List<XacmlMatch> resourceMatches = [];
+            resourceMatches.AddRange(rule.Resource.Select(resourceMatch => new XacmlMatch(
+                    new Uri(XacmlConstants.AttributeMatchFunction.StringEqualIgnoreCase),
+                    new XacmlAttributeValue(new Uri(XacmlConstants.DataTypes.XMLString), resourceMatch.Value.ValueSpan.ToString()),
+                    new XacmlAttributeDesignator(new Uri(XacmlConstants.MatchAttributeCategory.Resource), new Uri(resourceMatch.Value.PrefixSpan.ToString()), new Uri(XacmlConstants.DataTypes.XMLString), false))));
             List<XacmlAllOf> resourceAllOfs = new List<XacmlAllOf> { new XacmlAllOf(resourceMatches) };
 
             // Build Action
@@ -830,7 +862,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                 result = true;
                 foreach (var match in delegaterApp)
                 {
-                    if (subject.Any(s => s.Id == match.Id && s.Value == match.Value))
+                    if (subject.Exists(s => s.Id == match.Id && s.Value == match.Value))
                     {
                         continue;
                     }

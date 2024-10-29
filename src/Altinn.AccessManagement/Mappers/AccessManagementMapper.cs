@@ -1,11 +1,11 @@
-﻿using Altinn.AccessManagement.Core.Enums;
+﻿using Altinn.AccessManagement.Core.Constants;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 using Altinn.AccessManagement.Models;
 using Altinn.Authorization.ABAC.Constants;
-using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
 using Altinn.Urn;
 using Altinn.Urn.Json;
@@ -49,7 +49,6 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<PolicyAttributeMatchExternal, PolicyAttributeMatch>();
 
             // Rights
-            CreateMap<RightsQueryExternal, RightsQuery>();
             CreateMap<RightSource, RightSourceExternal>();
             CreateMap<RightSourceExternal, RightSource>();
             CreateMap<RightsDelegationCheckRequestExternal, RightsDelegationCheckRequest>();
@@ -85,10 +84,12 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<AppsInstanceDelegationRequestDto, AppsInstanceDelegationRequest>()
                 .ForMember(dest => dest.From, act => act.MapFrom(src => src.From.Value))
                 .ForMember(dest => dest.To, act => act.MapFrom(src => src.To.Value));
-            CreateMap<RightDto, RightV2>()
-                .ForMember(dest => dest.Action, act => act.MapFrom( src => src.Action.Value));
+            CreateMap<RightDto, RightInternal>()
+                .ForMember(dest => dest.Action, act => act.MapFrom(src => src.Action.Value));
             CreateMap<AppsInstanceDelegationResponse, AppsInstanceDelegationResponseDto>();
-            CreateMap<RightV2DelegationResult, RightDelegationResultDto>();
+            CreateMap<InstanceRightDelegationResult, RightDelegationResultDto>();
+            CreateMap<InstanceDelegationModeExternal, InstanceDelegationMode>();
+            CreateMap<ResourceRightDelegationCheckResult, ResourceRightDelegationCheckResultDto>();
         }
     }
 }

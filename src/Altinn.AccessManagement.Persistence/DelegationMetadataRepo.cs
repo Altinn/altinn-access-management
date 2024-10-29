@@ -21,7 +21,14 @@ namespace Altinn.AccessManagement.Persistence
     {
         private readonly NpgsqlDataSource _conn;
         private readonly string defaultAppColumns = "delegationChangeId, delegationChangeType, altinnAppId, offeredByPartyId, fromUuid, fromType, coveredByUserId, coveredByPartyId, toUuid, toType, performedByUserId, performedByUuid, performedByType, blobStoragePolicyPath, blobStorageVersionId, created";
-        
+        private const string FromUuid = "fromUuid";
+        private const string FromType = "fromType";
+        private const string ToUuid = "toUuid";
+        private const string ToType = "toType";
+        private const string InstanceId = "instanceId";
+        private const string ResourceId = "resourceId";
+        private const string DelegationChangeType = "delegationChangeType";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegationMetadataRepo"/> class
         /// </summary>
@@ -107,7 +114,7 @@ namespace Altinn.AccessManagement.Persistence
             }
 
             string query = string.Empty;
-            if (coveredByPartyIds?.Count != 0)
+            if (coveredByPartyIds?.Count > 0)
             {
                 query = /*strpsql*/@$"
                 WITH latestChanges AS (
@@ -123,7 +130,7 @@ namespace Altinn.AccessManagement.Persistence
                     INNER JOIN latestChanges ON delegationchangeid = latestChanges.latestId
                 ";
             }
-            else if (coveredByUserIds?.Count != 0)
+            else if (coveredByUserIds?.Count > 0)
             {
                 query = /*strpsql*/@$"
                 WITH latestChanges AS (
@@ -208,8 +215,8 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.AddWithValue("altinnAppIds", NpgsqlDbType.Array | NpgsqlDbType.Text, altinnAppIds);
                 cmd.Parameters.AddWithValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, fromPartyIds);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
-                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, toUuid);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
+                cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, toUuid);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetAppDelegationChange)
@@ -299,8 +306,8 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("altinnAppId", NpgsqlDbType.Text, resourceId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
-                cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithNullableValue(ToUuid, NpgsqlDbType.Uuid, toUuid);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -366,13 +373,13 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, request.Resource);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, request.Instance);
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, request.Resource);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, request.Instance);
                 cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", request.InstanceDelegationMode));
-                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, request.FromUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType>("fromType", request.FromType));
-                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, request.ToUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType>("toType", request.ToType));
+                cmd.Parameters.AddWithValue(FromUuid, NpgsqlDbType.Uuid, request.FromUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType>(FromType, request.FromType));
+                cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, request.ToUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType>(ToType, request.ToType));
 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -390,7 +397,7 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
-        public async Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange delegationChange, CancellationToken cancellationToken = default)
+        public async Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -427,18 +434,18 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.Add(new NpgsqlParameter<DelegationChangeType>("delegationchangetype", delegationChange.DelegationChangeType));
-                cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", delegationChange.InstanceDelegationMode));
-                cmd.Parameters.AddWithValue("resourceId", NpgsqlDbType.Text, delegationChange.Resource);
-                cmd.Parameters.AddWithValue("instanceId", NpgsqlDbType.Text, delegationChange.Instance);
-                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, delegationChange.FromUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("fromType", delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
-                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("toType", delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
-                cmd.Parameters.AddWithValue("performedBy", NpgsqlDbType.Text, delegationChange.PerformedBy);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("performedByType", delegationChange.PerformedByType != UuidType.NotSpecified ? delegationChange.PerformedByType : null));
-                cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
-                cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
+                cmd.Parameters.Add(new NpgsqlParameter<DelegationChangeType>(DelegationChangeType, instanceDelegationChange.DelegationChangeType));
+                cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationMode>("instancedelegationmode", instanceDelegationChange.InstanceDelegationMode));
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, instanceDelegationChange.ResourceId);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, instanceDelegationChange.InstanceId);
+                cmd.Parameters.AddWithValue(FromUuid, NpgsqlDbType.Uuid, instanceDelegationChange.FromUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(FromType, instanceDelegationChange.FromUuidType != UuidType.NotSpecified ? instanceDelegationChange.FromUuidType : null));
+                cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, instanceDelegationChange.ToUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(ToType, instanceDelegationChange.ToUuidType != UuidType.NotSpecified ? instanceDelegationChange.ToUuidType : null));
+                cmd.Parameters.AddWithValue("performedBy", NpgsqlDbType.Text, instanceDelegationChange.PerformedBy);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("performedByType", instanceDelegationChange.PerformedByType != UuidType.NotSpecified ? instanceDelegationChange.PerformedByType : null));
+                cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, instanceDelegationChange.BlobStoragePolicyPath);
+                cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, instanceDelegationChange.BlobStorageVersionId);
 
                 using NpgsqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -455,6 +462,129 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
+        /// <inheritdoc />
+        public async Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            string query = /*strpsql*/@"
+            WITH LatestChanges AS(
+		    SELECT 
+			    MAX(instancedelegationchangeid) instancedelegationchangeid
+		    FROM
+			    delegation.instancedelegationchanges
+		    WHERE
+			    instancedelegationsource = @source
+                AND resourceid = @resourceId
+			    AND instanceid = @instanceId
+		    GROUP BY
+			    instancedelegationmode
+			    ,resourceid
+			    ,instanceid
+			    ,fromuuid
+			    ,fromtype
+			    ,touuid
+			    ,totype)
+            SELECT
+	            dc.instancedelegationchangeid
+	            ,delegationchangetype
+	            ,instancedelegationmode
+	            ,resourceid
+	            ,instanceid
+	            ,fromuuid
+	            ,fromtype
+	            ,touuid
+	            ,totype
+	            ,performedby
+	            ,performedbytype
+	            ,blobstoragepolicypath
+	            ,blobstorageversionid
+	            ,created
+            FROM
+	            LatestChanges lc
+	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid
+            WHERE
+                delegationchangetype != 'revoke_last';";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.Add(new NpgsqlParameter<InstanceDelegationSource>("source", source));
+                cmd.Parameters.AddWithValue(ResourceId, NpgsqlDbType.Text, resourceID);
+                cmd.Parameters.AddWithValue(InstanceId, NpgsqlDbType.Text, instanceID);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetInstanceDelegationChange)
+                    .ToListAsync(cancellationToken);                
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            string query = /*strpsql*/@"
+            WITH LatestChanges AS(
+		    SELECT 
+			    MAX(instancedelegationchangeid) instancedelegationchangeid
+		    FROM
+			    delegation.instancedelegationchanges
+		    WHERE
+                resourceid = ANY(@resourceIds)
+			    AND fromuuid = @fromUuid
+                AND touuid = ANY(@toUuids)
+		    GROUP BY
+			    instancedelegationmode
+			    ,resourceid
+			    ,instanceid
+			    ,fromuuid
+			    ,fromtype
+			    ,touuid
+			    ,totype)
+            SELECT
+	            dc.instancedelegationchangeid
+	            ,delegationchangetype
+	            ,instancedelegationmode
+	            ,resourceid
+	            ,instanceid
+	            ,fromuuid
+	            ,fromtype
+	            ,touuid
+	            ,totype
+	            ,performedby
+	            ,performedbytype
+	            ,blobstoragepolicypath
+	            ,blobstorageversionid
+	            ,created
+            FROM
+	            LatestChanges lc
+	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid
+            WHERE delegationchangetype != 'revoke_last';";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
+                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, from);
+                cmd.Parameters.AddWithValue("toUuids", NpgsqlDbType.Array | NpgsqlDbType.Uuid, to);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetInstanceDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
         private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChange(NpgsqlDataReader reader)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity();
@@ -463,14 +593,14 @@ namespace Altinn.AccessManagement.Persistence
                 InstanceDelegationChange result = new()
                 {
                     InstanceDelegationChangeId = await reader.GetFieldValueAsync<int>("instancedelegationchangeid"),
-                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>(DelegationChangeType),
                     InstanceDelegationMode = await reader.GetFieldValueAsync<InstanceDelegationMode>("instancedelegationmode"),
-                    Resource = await reader.GetFieldValueAsync<string>("resourceId"),
-                    Instance = await reader.GetFieldValueAsync<string>("instanceId"),
-                    FromUuid = await reader.GetFieldValueAsync<Guid>("fromuuid"),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
-                    ToUuid = await reader.GetFieldValueAsync<Guid>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
+                    ResourceId = await reader.GetFieldValueAsync<string>(ResourceId),
+                    InstanceId = await reader.GetFieldValueAsync<string>(InstanceId),
+                    FromUuid = await reader.GetFieldValueAsync<Guid>(FromUuid),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
+                    ToUuid = await reader.GetFieldValueAsync<Guid>(ToUuid),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>(ToType) ?? UuidType.NotSpecified,
                     PerformedBy = await reader.GetFieldValueAsync<string>("performedBy"),
                     PerformedByType = await reader.GetFieldValueAsync<UuidType?>("performedByType") ?? UuidType.NotSpecified,
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
@@ -500,15 +630,15 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.AddWithValue("delegationChangeType", delegationChange.DelegationChangeType);
+                cmd.Parameters.AddWithValue(DelegationChangeType, delegationChange.DelegationChangeType);
                 cmd.Parameters.AddWithValue("altinnAppId", NpgsqlDbType.Text, delegationChange.ResourceId);
                 cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, delegationChange.OfferedByPartyId);
-                cmd.Parameters.AddWithNullableValue("fromUuid", NpgsqlDbType.Uuid, delegationChange.FromUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("fromType", delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
+                cmd.Parameters.AddWithNullableValue(FromUuid, NpgsqlDbType.Uuid, delegationChange.FromUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(FromType, delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
-                cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("toType", delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
+                cmd.Parameters.AddWithNullableValue(ToUuid, NpgsqlDbType.Uuid, delegationChange.ToUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(ToType, delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
                 cmd.Parameters.AddWithValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
                 cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
                 cmd.Parameters.AddWithValue("blobStorageVersionId", NpgsqlDbType.Text, delegationChange.BlobStorageVersionId);
@@ -583,15 +713,15 @@ namespace Altinn.AccessManagement.Persistence
             try
             {
                 await using var cmd = _conn.CreateCommand(query);
-                cmd.Parameters.AddWithValue("delegationChangeType", delegationChange.DelegationChangeType);
+                cmd.Parameters.AddWithValue(DelegationChangeType, delegationChange.DelegationChangeType);
                 cmd.Parameters.AddWithValue("resourceregistryid", delegationChange.ResourceId);
                 cmd.Parameters.AddWithValue("offeredByPartyId", NpgsqlDbType.Integer, delegationChange.OfferedByPartyId);
-                cmd.Parameters.AddWithNullableValue("fromUuid", NpgsqlDbType.Uuid, delegationChange.FromUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("fromType", delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
+                cmd.Parameters.AddWithNullableValue(FromUuid, NpgsqlDbType.Uuid, delegationChange.FromUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(FromType, delegationChange.FromUuidType != UuidType.NotSpecified ? delegationChange.FromUuidType : null));
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, delegationChange.CoveredByUserId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, delegationChange.CoveredByPartyId);
-                cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, delegationChange.ToUuid);
-                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>("toType", delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
+                cmd.Parameters.AddWithNullableValue(ToUuid, NpgsqlDbType.Uuid, delegationChange.ToUuid);
+                cmd.Parameters.Add(new NpgsqlParameter<UuidType?>(ToType, delegationChange.ToUuidType != UuidType.NotSpecified ? delegationChange.ToUuidType : null));
                 cmd.Parameters.AddWithNullableValue("performedByUserId", NpgsqlDbType.Integer, delegationChange.PerformedByUserId);
                 cmd.Parameters.AddWithNullableValue("performedByPartyId", NpgsqlDbType.Integer, delegationChange.PerformedByPartyId);
                 cmd.Parameters.AddWithValue("blobStoragePolicyPath", NpgsqlDbType.Text, delegationChange.BlobStoragePolicyPath);
@@ -683,8 +813,8 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithValue("resourceRegistryId", NpgsqlDbType.Text, resourceId);
                 cmd.Parameters.AddWithNullableValue("coveredByPartyId", NpgsqlDbType.Integer, coveredByPartyId);
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
-                cmd.Parameters.AddWithNullableValue("toUuid", NpgsqlDbType.Uuid, toUuid);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
+                cmd.Parameters.AddWithNullableValue(ToUuid, NpgsqlDbType.Uuid, toUuid);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
                 
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
@@ -797,8 +927,8 @@ namespace Altinn.AccessManagement.Persistence
                 await using var cmd = _conn.CreateCommand(query);
                 cmd.Parameters.AddWithValue("resourceRegistryIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceRegistryIds);
                 cmd.Parameters.AddWithValue("offeredByPartyIds", NpgsqlDbType.Array | NpgsqlDbType.Integer, fromPartyIds);
-                cmd.Parameters.AddWithValue("toType", toUuidType);
-                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Uuid, toUuid);
+                cmd.Parameters.AddWithValue(ToType, toUuidType);
+                cmd.Parameters.AddWithValue(ToUuid, NpgsqlDbType.Uuid, toUuid);
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetResourceRegistryDelegationChange)
@@ -1303,16 +1433,16 @@ namespace Altinn.AccessManagement.Persistence
                 return new DelegationChange
                 {
                     DelegationChangeId = await reader.GetFieldValueAsync<int>("delegationchangeid"),
-                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>(DelegationChangeType),
                     ResourceId = await reader.GetFieldValueAsync<string>("altinnappid"),
                     ResourceType = ResourceAttributeMatchType.AltinnAppId.ToString(),
                     OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
-                    FromUuid = await reader.GetFieldValueAsync<Guid?>("fromuuid"),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
+                    FromUuid = await reader.GetFieldValueAsync<Guid?>(FromUuid),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
-                    ToUuid = await reader.GetFieldValueAsync<Guid?>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
+                    ToUuid = await reader.GetFieldValueAsync<Guid?>(ToUuid),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>(ToType) ?? UuidType.NotSpecified,
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),
                     BlobStorageVersionId = await reader.GetFieldValueAsync<string>("blobstorageversionid"),
@@ -1334,16 +1464,16 @@ namespace Altinn.AccessManagement.Persistence
                 return new DelegationChange
                 {
                     ResourceRegistryDelegationChangeId = await reader.GetFieldValueAsync<int>("resourceregistrydelegationchangeid"),
-                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>("delegationchangetype"),
+                    DelegationChangeType = await reader.GetFieldValueAsync<DelegationChangeType>(DelegationChangeType),
                     ResourceId = await reader.GetFieldValueAsync<string>("resourceregistryid"),
                     ResourceType = await reader.GetFieldValueAsync<string>("resourcetype"),
                     OfferedByPartyId = await reader.GetFieldValueAsync<int>("offeredbypartyid"),
-                    FromUuid = await reader.GetFieldValueAsync<Guid?>("fromuuid"),
-                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>("fromtype") ?? UuidType.NotSpecified,
+                    FromUuid = await reader.GetFieldValueAsync<Guid?>(FromUuid),
+                    FromUuidType = await reader.GetFieldValueAsync<UuidType?>(FromType) ?? UuidType.NotSpecified,
                     CoveredByPartyId = await reader.GetFieldValueAsync<int?>("coveredbypartyid"),
                     CoveredByUserId = await reader.GetFieldValueAsync<int?>("coveredbyuserid"),
-                    ToUuid = await reader.GetFieldValueAsync<Guid?>("touuid"),
-                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>("totype") ?? UuidType.NotSpecified,
+                    ToUuid = await reader.GetFieldValueAsync<Guid?>(ToUuid),
+                    ToUuidType = await reader.GetFieldValueAsync<UuidType?>(ToType) ?? UuidType.NotSpecified,
                     PerformedByUserId = await reader.GetFieldValueAsync<int?>("performedbyuserid"),
                     PerformedByPartyId = await reader.GetFieldValueAsync<int?>("performedbypartyid"),
                     BlobStoragePolicyPath = await reader.GetFieldValueAsync<string>("blobstoragepolicypath"),

@@ -1,0 +1,30 @@
+meta {
+  name: Karlstad for Ørsta
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/policyinformation/getdelegationchanges
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "subject": {
+      "id": "urn:altinn:partyid",
+      "value": "50004222"
+    },
+    "party": {
+      "id": "urn:altinn:partyid",
+      "value": "50005545"
+    },
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "test-ressurs-rf-1086-altinn-autorisasjon"
+      }
+    ]
+  }
+}

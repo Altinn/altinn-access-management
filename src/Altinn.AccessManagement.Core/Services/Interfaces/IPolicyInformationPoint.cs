@@ -1,7 +1,4 @@
 ﻿using Altinn.AccessManagement.Core.Models;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
-using Altinn.Authorization.ProblemDetails;
-using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Services.Interfaces
 {
@@ -34,18 +31,27 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// <summary>
         /// Gets the all rights an app have right to delegate
         /// </summary>
-        /// <param name="resource">the resource to query for</param>
+        /// <param name="rightsQuery">The query model</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of rights</returns>
-        Task<List<Right>> GetDelegableRigtsForApp(RightQueryForApp resourceQuery, CancellationToken cancellationToken = default);
+        Task<List<Right>> GetDelegableRightsByApp(RightsQuery rightsQuery, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all delegation changes for a given user, reportee and app/resource context
         /// </summary>
         /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
+        /// <param name="includeInstanceDelegations">Whether instance delegations should be included in the lookup</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
-        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default);
+        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, bool includeInstanceDelegations = false, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Finds all InstanceDelegations for a given Resource/Instance combination
+        /// </summary>
+        /// <param name="request">The request to descripe what delegations to fetch</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+        /// <returns>all delegations for a given Resource/Instance combination</returns>
+        Task<List<AppsInstanceDelegationResponse>> GetInstanceDelegations(AppsInstanceGetRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds all active received delegations (not including maskinporten schema) from db, both directly delegated to the party or through key roles if the party is a person

@@ -1,0 +1,46 @@
+meta {
+  name: o2o cannot delegate to itself
+  type: http
+  seq: 36
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/received
+  body: json
+  auth: inherit
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org2.partyid);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org2.dagl.userid,
+    auth_partyId: testdata.org2.dagl.partyid,
+    auth_ssn: testdata.org2.dagl.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("no new delegations appear when an org attempts to delegate to itself", function() {
+    const data = res.getBody();  
+    expect(res.status).to.equal(200);
+    expect(data).to.be.empty;
+  });
+  
+}

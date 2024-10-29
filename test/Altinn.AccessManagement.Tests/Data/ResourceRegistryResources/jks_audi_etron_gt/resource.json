@@ -12,8 +12,8 @@
   },
   "rightDescription": {
     "en": "Permission to borrow the car",
-    "nb-no": "Gir mottaker lov til å låne bilen",
-    "nn-no": "Løyve til å ta ei rånerunde ned i vik"
+    "nb-no": "Gir mottaker lov til ï¿½ lï¿½ne bilen",
+    "nn-no": "Lï¿½yve til ï¿½ ta ei rï¿½nerunde ned i vik"
   },
   "homepage": "https://www.jksaudi.no/",
   "status": "Active",
@@ -43,5 +43,11 @@
   "sector": [
     "privat"
   ],
-  "resourceType": "MaskinportenSchema"
+  "resourceType": "MaskinportenSchema",
+  "authorizationReference": [
+    {
+      "id": "urn:altinn:resource",
+      "value": "jks_audi_etron_gt"
+    }
+  ]
 }

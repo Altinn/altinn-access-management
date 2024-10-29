@@ -16,10 +16,7 @@ namespace Altinn.AccessManagement.Core.Models.Rights;
 /// </summary>
 [JsonConverter(typeof(ActionIdentifier.JsonConverter))]
 [SwaggerString]
-public class ActionIdentifier
-    : IParsable<ActionIdentifier>,
-    ISpanParsable<ActionIdentifier>,
-    IFormattable,
+public class ActionIdentifier : ISpanParsable<ActionIdentifier>,
     ISpanFormattable,
     IExampleDataProvider<ActionIdentifier>
 {
@@ -37,7 +34,6 @@ public class ActionIdentifier
     /// <returns>A <see cref="ActionIdentifier"/>.</returns>
     public static ActionIdentifier CreateUnchecked(string value)
         => new(value);
-
 
     /// <inheritdoc/>
     public static IEnumerable<ActionIdentifier>? GetExamples(ExampleDataOptions options)

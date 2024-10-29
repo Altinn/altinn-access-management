@@ -1,5 +1,6 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 
@@ -20,10 +21,20 @@ public interface IDelegationMetadataRepository
     Task<DelegationChange> InsertDelegation(ResourceAttributeMatchType resourceMatchType, DelegationChange delegationChange, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Fetch all the latest Instance delegations for a given instance
+    /// </summary>
+    /// <param name="source">The source to fetch delegations for</param>
+    /// <param name="resourceID">The resource to fetch delegations for</param>
+    /// <param name="instanceID">The instance to fetch delegations for </param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>All the last InstanceDelegationChange records stored in the database corresponding to the request</returns>
+    Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns the last change from db to fetch the current policy version and path to policy file
     /// </summary>
     /// <param name="request">The parameters to request the latest change for</param>
-    /// /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>The last InstanceDelegationChange record stored in the database corresponding to the request</returns>
     Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default);
 
@@ -34,6 +45,16 @@ public interface IDelegationMetadataRepository
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>The complete InstanceDelegationChange record stored in the database</returns>
     Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all the currently active instance delegations existing between the from and to parties
+    /// </summary>
+    /// <param name="resourceIds">Collection of all resourceIds to lookup</param>
+    /// <param name="from">The From party to use for lookup</param>
+    /// <param name="to">All To parties to use for lookup</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>The complete InstanceDelegationChange record stored in the database</returns>
+    Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the latest delegation change matching the filter values

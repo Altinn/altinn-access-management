@@ -1,10 +1,12 @@
-﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Enums;
-using System.Text.Json.Serialization;
 
 namespace Altinn.AccessManagement.Core.Models;
 
+/// <summary>
+/// DTO for sending a instance delegation request internaly 
+/// </summary>
 public class InstanceDelegationChangeRequest
 {
     /// <summary>

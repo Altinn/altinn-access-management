@@ -90,7 +90,6 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// </summary>
         public List<Keyword> Keywords { get; set; }
 
-
         /// <summary>
         /// Sets the access list mode for the resource
         /// </summary>

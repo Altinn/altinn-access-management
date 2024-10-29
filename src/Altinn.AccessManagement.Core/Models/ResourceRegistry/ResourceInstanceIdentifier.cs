@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Altinn.Authorization.Helpers;
 using Altinn.Swashbuckle.Examples;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry;
@@ -17,9 +16,7 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry;
 [JsonConverter(typeof(JsonConverter))]
 [DebuggerDisplay("{_value}")]
 public sealed record ResourceInstanceIdentifier
-    : IParsable<ResourceInstanceIdentifier>,
-    ISpanParsable<ResourceInstanceIdentifier>,
-    IFormattable,
+    : ISpanParsable<ResourceInstanceIdentifier>,
     ISpanFormattable,
     IExampleDataProvider<ResourceInstanceIdentifier>
 {

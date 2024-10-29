@@ -1,8 +1,5 @@
 ﻿#nullable enable
 
-using System;
-using System.Globalization;
-using Altinn.Swashbuckle.Examples;
 using Altinn.Urn;
 
 namespace Altinn.AccessManagement.Core.Models.Register;
@@ -27,9 +24,5 @@ public abstract partial record PartyUrn
     /// <param name="organizationNumber">The resulting organization number.</param>
     /// <returns><see langword="true"/> if this party reference is an organization number, otherwise <see langword="false"/>.</returns>
     [UrnKey("altinn:organization:identifier-no")]
-    public partial bool IsOrganizationIdentifier(out OrganizationNumber organizationNumber);
-    
-    // Manually overridden to disallow negative party ids
-    private static bool TryParsePartyId(ReadOnlySpan<char> segment, IFormatProvider? provider, out int value)
-        => int.TryParse(segment, NumberStyles.None, provider, out value);
+    public partial bool IsOrganizationIdentifier(out OrganizationNumber organizationNumber);        
 }

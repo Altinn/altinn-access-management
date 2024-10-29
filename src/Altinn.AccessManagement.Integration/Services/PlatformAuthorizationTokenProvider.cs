@@ -1,10 +1,10 @@
 using System.Security.Cryptography.X509Certificates;
 using Altinn.AccessManagement.Integration.Services.Interfaces;
-using Altinn.Common.AccessTokenClient.Configuration;
+using Altinn.Common.AccessToken.Configuration;
 using Altinn.Common.AccessTokenClient.Services;
 using Altinn.Common.Authentication.Configuration;
-using AltinnCore.Authentication.Constants;
 using Microsoft.Extensions.Options;
+using AccessTokenSettings = Altinn.Common.AccessTokenClient.Configuration.AccessTokenSettings;
 
 namespace Altinn.AccessManagement.Integration.Services;
 

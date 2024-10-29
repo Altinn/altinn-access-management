@@ -41,8 +41,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
     private async Task<(UuidType DelegationType, Guid? Uuid)> TranslatePartyUuidToPersonOrganizationUuid(PartyUrn partyId)
     {
-        UuidType delegationType = UuidType.NotSpecified;
-        Guid? uuid = null;
         Party party = null;
 
         if (partyId.IsOrganizationIdentifier(out OrganizationNumber orgNumber))
@@ -59,18 +57,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             party = (await _partiesClient.GetPartiesAsync(partyUuid.SingleToList())).FirstOrDefault();
         }
 
-        if (party?.Organization != null)
-        {
-            delegationType = UuidType.Organization;
-            uuid = party.PartyUuid;
-        }
-        else if (party?.Person != null)
-        {
-            delegationType = UuidType.Person;
-            uuid = party.PartyUuid;
-        }
-
-        return (delegationType, uuid);
+        return DelegationHelper.GetUuidTypeAndValueFromParty(party);
     }
 
     private static bool CheckIfInstanceIsDelegable(List<Right> delegableRights, RightInternal rightToDelegate)

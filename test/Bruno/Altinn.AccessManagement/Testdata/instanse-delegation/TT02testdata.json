@@ -1,0 +1,32 @@
+{
+  "env": "tt02",
+  "app": "authz-bruno-instancedelegation",
+  "instanceid": "1cc971b6-c518-43ab-9345-21daab7e919e",
+  "org1": {
+    "orgno": "310438707",
+    "partyid": 51563583,
+    "partyuuid": "7df033f9-9d72-42c7-a2d8-9533d925ddc5",
+    "dagl": {
+      "pid": "22855296954",
+      "lastname": "LARM",
+      "userid": 1278314,
+      "partyid": 50783137,
+      "partyuuid": "a39359de-f1d2-4dc7-b2ba-f9841ea1a799"
+    }
+  },
+  "org2": {
+    "orgno": "405002701",
+    "partyuuid": "60610979-39fe-4997-90da-03069736d75d"
+  },
+  "person1": {
+    "pid": "23862849957",
+    "userid": 91561,
+    "lastname": "FAKTURA",
+    "partyid": 50041694,
+    "partyuuid": "9e5eeb84-dd37-4d74-8862-27e96f58f29b"
+  },
+  "person2": {
+    "pid": "29917329042",
+    "partyuuid": "b35ba3e9-6c73-410c-abd8-4e0205837f88"
+  }
+}

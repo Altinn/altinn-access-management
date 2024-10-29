@@ -82,7 +82,7 @@ script:pre-request {
 }
 
 tests {
-  test("post InstanceDelegationReadSign", function() {
+  test("post InstanceDelegation ReadSign", function() {
       const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
       const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
       const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;

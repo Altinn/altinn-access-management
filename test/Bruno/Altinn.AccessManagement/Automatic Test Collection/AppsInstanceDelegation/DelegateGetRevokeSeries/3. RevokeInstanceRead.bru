@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/accessmanagement/api/v1/app/revokedelegation/resource/{{resourceId}}/instance/{{instanceId}}
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationrevoke/resource/{{resourceId}}/instance/{{instanceId}}
   body: json
   auth: none
 }
@@ -18,18 +18,18 @@ body:json {
   {
     "from": {
       "type": "urn:altinn:party:uuid",
-      "value": "0268B99A-5817-4BBF-9B62-D90B16D527EA"
+      "value": "{{fromUuid}}"
     },
     "to": {
       "type": "urn:altinn:party:uuid",
-      "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
+      "value": "{{toUuid}}"
     },
     "rights": [
       {
         "resource": [
           {
             "type": "urn:altinn:resource",
-            "value": "app_ttd_authz-bruno-instancedelegation"
+            "value": "{{resourceId}}"
           },
           {
             "type": "urn:altinn:task",
@@ -47,22 +47,40 @@ body:json {
 
 script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  const { v4: uuidv4 } = require('uuid');
-  const org = sharedtestdata.serviceOwners.ttd.org;
-  bru.setVar("org",  org);
-  const app = "authz-bruno-instancedelegation";
-  bru.setVar("app",  app);
-  const uuid = "1CC971B6-C518-43AB-9345-21DAAB7E919E";
-  const resource = "app_" + org + "_" + app;
+  const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+  
   bru.setVar("resourceId", resource);
-  bru.setVar("instanceId",  uuid);
+  bru.setVar("instanceId", testdata.instanceid);
   
   var getTokenParameters = {
-      auth_org: org,
-      auth_app: app,
+      auth_org: sharedtestdata.serviceOwners.ttd.org,
+      auth_app: testdata.app,
       auth_tokenType: sharedtestdata.authTokenType.platformAccess
     }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
   bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("post InstanceDelegation RevokeRead", function() {
+      const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+      const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+      const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+    
+      const data = res.getBody();
+      expect(res.status).to.equal(200);
+    
+      expect(data.resourceId).to.equal(resource);
+      expect(data.instanceId).to.equal(testdata.instanceid);
+  
+      expect(data.from.value).to.equal(testdata.org1.partyuuid);
+      expect(data.to.value).to.equal(testdata.person1.partyuuid);
+    
+      expect(data.rights[0].status).to.equal('Revoked');
+      expect(data.rights[0].action.value).to.equal('read');  
+      expect(data.rights[0].resource[0].value).to.equal(resource);
+      expect(data.rights[0].resource[1].value).to.equal('task_1');
+    });
 }

@@ -107,7 +107,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                         reasons.Add(new Detail
                         {
                             Code = DetailCode.RoleAccess,
-                            Description = $"Delegator has access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                            Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
                             Parameters = new Dictionary<string, List<AttributeMatch>>()
                             {
                                 {

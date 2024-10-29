@@ -30,7 +30,7 @@ public interface IAppsInstanceDelegationService
     /// <param name="request">the request data collected in a dto</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Boolean whether the app instance delegation was revoked</returns>
-    public Task<Result<AppsInstanceDelegationResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
+    public Task<Result<AppsInstanceRevokeResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets app instance delegation

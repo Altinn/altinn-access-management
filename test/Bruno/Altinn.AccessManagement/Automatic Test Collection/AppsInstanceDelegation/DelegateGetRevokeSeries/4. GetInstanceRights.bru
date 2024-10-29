@@ -1,0 +1,37 @@
+meta {
+  name: 4. GetInstanceRights
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/{{resourceId}}/instance/{{instanceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const org = sharedtestdata.serviceOwners.ttd.org;
+  bru.setVar("org",  org);
+  const app = "authz-bruno-instancedelegation";
+  bru.setVar("app",  app);
+  const uuid = "1CC971B6-C518-43AB-9345-21DAAB7E919E";
+  const resource = "app_" + org + "_" + app;
+  bru.setVar("resourceId", resource);
+  
+  bru.setVar("instanceId", uuid);
+  
+  var getTokenParameters = {
+      auth_org: org,
+      auth_app: app,
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}

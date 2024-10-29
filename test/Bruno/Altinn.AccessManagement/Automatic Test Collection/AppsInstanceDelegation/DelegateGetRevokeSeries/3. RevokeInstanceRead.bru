@@ -1,0 +1,68 @@
+meta {
+  name: 3. RevokeInstanceRead
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/revokedelegation/resource/{{resourceId}}/instance/{{instanceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+body:json {
+  {
+    "from": {
+      "type": "urn:altinn:party:uuid",
+      "value": "0268B99A-5817-4BBF-9B62-D90B16D527EA"
+    },
+    "to": {
+      "type": "urn:altinn:party:uuid",
+      "value": "CE4BA72B-D111-404F-95B5-313FB3847FA1"
+    },
+    "rights": [
+      {
+        "resource": [
+          {
+            "type": "urn:altinn:resource",
+            "value": "app_ttd_authz-bruno-instancedelegation"
+          },
+          {
+            "type": "urn:altinn:task",
+            "value": "task_1"
+          }
+        ],
+        "action": {
+          "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "value": "read"
+        }
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const { v4: uuidv4 } = require('uuid');
+  const org = sharedtestdata.serviceOwners.ttd.org;
+  bru.setVar("org",  org);
+  const app = "authz-bruno-instancedelegation";
+  bru.setVar("app",  app);
+  const uuid = "1CC971B6-C518-43AB-9345-21DAAB7E919E";
+  const resource = "app_" + org + "_" + app;
+  bru.setVar("resourceId", resource);
+  bru.setVar("instanceId",  uuid);
+  
+  var getTokenParameters = {
+      auth_org: org,
+      auth_app: app,
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}

@@ -95,11 +95,18 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Delegation([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+
+        if (performer == null)
+        {
+            return Forbid();
+        }
+
         AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
         
         request.ResourceId = resourceId;
         request.InstanceId = instanceId;
-        request.PerformedBy = GetOrgAppFromToken(token);
+        request.PerformedBy = performer;
         request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
         request.InstanceDelegationMode = Core.Enums.InstanceDelegationMode.Normal;
 
@@ -145,7 +152,7 @@ public class AppsInstanceDelegationController : ControllerBase
         ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
         
         if (performer == null) 
-    {
+        {
             return Forbid();
         }
 
@@ -171,7 +178,6 @@ public class AppsInstanceDelegationController : ControllerBase
         return Ok(result);
     }
 
-    /*
     /// <summary>
     /// Revokes access to an app instance
     /// </summary>
@@ -183,26 +189,31 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <returns>Result</returns>
     [HttpPost]
     [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
-    [Route("v1/apps/instancedelegation/{resourceId}/{instanceId}/revoke")]
+    [Route("v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Revoke([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
+    public async Task<ActionResult?> Revoke([FromBody] AppsInstanceDelegationRequestDto appInstanceDelegationRequestDto, [FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
         AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
+
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+
+        if (performer == null)
+        {
+            return Forbid();
+        }
 
         request.ResourceId = resourceId;
         request.InstanceId = instanceId;
         request.InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App;
+        request.PerformedBy = performer;
 
-        List<AttributeMatch> performedBy = GetOrgAppFromToken(token);
-        request.PerformedBy = performedBy;
-
-        Result<AppsInstanceDelegationResponse> serviceResult = await _appInstanceDelegationService.Revoke(request, cancellationToken);
-
+        Result<AppsInstanceRevokeResponse> serviceResult = await _appInstanceDelegationService.Revoke(request, cancellationToken);
+                
         if (serviceResult.IsProblem)
     {
             return serviceResult.Problem?.ToActionResult();
@@ -210,16 +221,15 @@ public class AppsInstanceDelegationController : ControllerBase
 
         // Check result
         int totalDelegations = request.Rights.Count();
-        int validDelegations = serviceResult.Value.Rights.Count(r => r.Status == Core.Enums.DelegationStatus.Delegated);
+        int validDelegations = serviceResult.Value.Rights.Count(r => r.Status == Core.Enums.RevokeStatus.Revoked);
 
         if (validDelegations == totalDelegations)
         {
-            return Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+            return Ok(_mapper.Map<AppsInstanceRevokeResponseDto>(serviceResult.Value));
         }
 
-        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceRevokeResponseDto>(serviceResult.Value));
     }
-    */
 
     /// <summary>
     /// delegating app from the platform token

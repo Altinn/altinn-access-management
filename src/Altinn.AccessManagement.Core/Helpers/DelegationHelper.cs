@@ -8,6 +8,8 @@ using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Platform.Register.Enums;
+using Altinn.Platform.Register.Models;
 using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -23,7 +25,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="resource">The list of parts for building resource</param>
         /// <returns></returns>
         public static string GetResourceStringFromUrnJsonTypeEnumerable(IEnumerable<UrnJsonTypeValue> resource)
-        { 
+        {
             ReadOnlySpan<char> org = null, app = null, resourceString = null;
 
             foreach (UrnJsonTypeValue urnJsonTypeValue in resource)
@@ -705,21 +707,21 @@ namespace Altinn.AccessManagement.Core.Helpers
                 type = UuidType.Person;
                 return true;
             }
-            
+
             if (org == null && app == null && person == null && organization != null && enterpriseUser == null && systemUser == null)
             {
                 id = organization;
                 type = UuidType.Organization;
                 return true;
             }
-            
+
             if (org == null && app == null && person == null && organization == null && enterpriseUser != null && systemUser == null)
             {
                 id = enterpriseUser;
                 type = UuidType.EnterpriseUser;
                 return true;
             }
-            
+
             if (org == null && app == null && person == null && organization == null && enterpriseUser == null && systemUser != null)
             {
                 id = systemUser;
@@ -874,6 +876,25 @@ namespace Altinn.AccessManagement.Core.Helpers
                 Action = right.Action,
                 Status = DelegationStatus.NotDelegated
             });
+        }
+
+        /// <summary>
+        /// Checks if AccessList feature is enabled and applicable for the given right, resource, and fromParty. The AccessListMode feature is currently enabled only for orgs.
+        /// </summary>
+        /// <param name="right">The right to be delegated</param>
+        /// <param name="resource">The resource we are making delegations for</param>
+        /// <param name="fromParty">The party we are making delegations on behalf of</param>
+        /// <returns>True if Access List authorization mode is enabled and applicable</returns>
+        public static bool IsAccessListModeEnabledAndApplicable(Right right, ServiceResource resource, Party fromParty)
+        {
+            if (right.CanDelegate.HasValue && right.CanDelegate.Value
+                && resource.AccessListMode == Enums.ResourceRegistry.ResourceAccessListMode.Enabled
+                && fromParty.PartyTypeName == PartyType.Organisation)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static void SetTypeForSingleRule(List<int> keyRolePartyIds, int offeredByPartyId, List<AttributeMatch> coveredBy, int parentPartyId, Rule rule, int? coveredByPartyId, int? coveredByUserId)

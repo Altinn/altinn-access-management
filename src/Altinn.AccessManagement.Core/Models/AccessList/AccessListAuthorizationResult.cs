@@ -10,6 +10,12 @@ namespace Altinn.AccessManagement.Core.Models.AccessList;
 public enum AccessListAuthorizationResult
 {
     /// <summary>
+    /// If PartyType is not Organization then access lists are not applicable
+    /// </summary>
+    [EnumMember(Value = "NotApplicable")]
+    NotApplicable,
+
+    /// <summary>
     /// Result is not yet determined
     /// </summary>
     [EnumMember(Value = "NotDetermined")]

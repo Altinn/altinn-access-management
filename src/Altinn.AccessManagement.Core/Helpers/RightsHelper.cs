@@ -3,6 +3,7 @@ using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.AccessList;
 using Authorization.Platform.Authorization.Models;
 
 namespace Altinn.AccessManagement.Core.Helpers
@@ -97,7 +98,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Analyzes a Right model for a reason for the rights delegation access status
         /// </summary>
-        public static List<Detail> AnalyzeDelegationAccessReason(Right right)
+        public static List<Detail> AnalyzeDelegationAccessReason(Right right, AccessListAuthorizationResult accessListAuthorizationResult = AccessListAuthorizationResult.NotApplicable)
         {
             List<Detail> reasons = new();
 
@@ -116,7 +117,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                         reasons.Add(new Detail
                         {
                             Code = DetailCode.RoleAccess,
-                            Description = $"Delegator have access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+                            Description = $"Delegator has access through having one of the following role(s) for the reportee party: {requiredRoles}. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
                             Parameters = new Dictionary<string, List<AttributeMatch>>()
                             {
                                 {
@@ -136,9 +137,32 @@ namespace Altinn.AccessManagement.Core.Helpers
                     reasons.Add(new Detail
                     {
                         Code = DetailCode.DelegationAccess,
-                        Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
+                        Description = $"The user has access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
                         Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(delegationPolicySources.SelectMany(delegationAccessSource => delegationAccessSource.PolicySubjects)) } }
                     });
+                }
+
+                // Analyze accessListAuthorizationResult
+                if (accessListAuthorizationResult != AccessListAuthorizationResult.NotApplicable)
+                {
+                    if (accessListAuthorizationResult == AccessListAuthorizationResult.Authorized)
+                    {
+                        reasons.Add(new Detail
+                        {
+                            Code = DetailCode.AccessListValidationPass,
+                            Description = "The fromParty has the right based on Access List delegation",
+                        });
+                    }
+                    else if (accessListAuthorizationResult == AccessListAuthorizationResult.NotAuthorized)
+                    {
+                        right.CanDelegate = false;
+
+                        reasons.Add(new Detail
+                        {
+                            Code = DetailCode.AccessListValidationFail,
+                            Description = "The fromParty does not have the right based on Access List delegation"
+                        });
+                    }
                 }
             }
 

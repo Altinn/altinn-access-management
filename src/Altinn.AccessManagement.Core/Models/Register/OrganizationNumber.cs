@@ -30,6 +30,14 @@ public class OrganizationNumber
         _value = value;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="OrganizationNumber"/> from the specified value without validation.
+    /// </summary>
+    /// <param name="value">The organization identifier.</param>
+    /// <returns>A <see cref="OrganizationNumber"/>.</returns>
+    public static OrganizationNumber CreateUnchecked(string value)
+        => new(value);
+
     /// <inheritdoc/>
     public static IEnumerable<OrganizationNumber>? GetExamples(ExampleDataOptions options)
     {

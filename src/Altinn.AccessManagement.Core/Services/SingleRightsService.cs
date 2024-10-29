@@ -1,13 +1,17 @@
-﻿using Altinn.AccessManagement.Core.Asserters;
+﻿using System.Reflection;
+using Altinn.AccessManagement.Core.Asserters;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Helpers;
 using Altinn.AccessManagement.Core.Helpers.Extensions;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.AccessList;
 using Altinn.AccessManagement.Core.Models.Authentication;
 using Altinn.AccessManagement.Core.Models.Profile;
+using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
+using Altinn.AccessManagement.Core.Models.Rights;
 using Altinn.AccessManagement.Core.Resolvers;
 using Altinn.AccessManagement.Core.Resolvers.Extensions;
 using Altinn.AccessManagement.Core.Services.Interfaces;
@@ -16,6 +20,7 @@ using Altinn.Platform.Profile.Enums;
 using Altinn.Platform.Profile.Models;
 using Altinn.Platform.Register.Enums;
 using Altinn.Platform.Register.Models;
+using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -27,6 +32,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IPolicyInformationPoint _pip;
         private readonly IPolicyAdministrationPoint _pap;
         private readonly IAltinn2RightsClient _altinn2RightsClient;
+        private readonly IAccessListsAuthorizationClient _accessListsAuthorizationClient;
         private readonly IProfileClient _profile;
         private readonly IUserProfileLookupService _profileLookup;
         private readonly IAttributeResolver _resolver;
@@ -41,9 +47,10 @@ namespace Altinn.AccessManagement.Core.Services
         /// <param name="pip">Service implementation for policy information point</param>
         /// <param name="pap">Service implementation for policy administration point</param>
         /// <param name="altinn2RightsClient">SBL Bridge client implementation for rights operations on Altinn 2 services</param>
+        /// <param name="accessListsAuthorizationClient">A client for access list authorization actions.</param>
         /// <param name="profile">Client implementation for getting user profile</param>
         /// <param name="profileLookup">Service implementation for lookup of userprofile with lastname verification</param>
-        public SingleRightsService(IAttributeResolver resolver, IAssert<AttributeMatch> asserter, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IProfileClient profile, IUserProfileLookupService profileLookup)
+        public SingleRightsService(IAttributeResolver resolver, IAssert<AttributeMatch> asserter, IContextRetrievalService contextRetrievalService, IPolicyInformationPoint pip, IPolicyAdministrationPoint pap, IAltinn2RightsClient altinn2RightsClient, IAccessListsAuthorizationClient accessListsAuthorizationClient, IProfileClient profile, IUserProfileLookupService profileLookup)
         {
             _resolver = resolver;
             _asserter = asserter;
@@ -51,6 +58,7 @@ namespace Altinn.AccessManagement.Core.Services
             _pip = pip;
             _pap = pap;
             _altinn2RightsClient = altinn2RightsClient;
+            _accessListsAuthorizationClient = accessListsAuthorizationClient;
             _profile = profile;
             _profileLookup = profileLookup;
         }
@@ -88,13 +96,28 @@ namespace Altinn.AccessManagement.Core.Services
                     continue;
                 }
 
+                AccessListAuthorizationResult accessListAuthorizationResult = AccessListAuthorizationResult.NotApplicable;
+
+                if (DelegationHelper.IsAccessListModeEnabledAndApplicable(right, resource, fromParty))
+                {
+                    AccessListAuthorizationRequest accessListAuthorizationRequest = new AccessListAuthorizationRequest
+                    {
+                        Subject = PartyUrn.OrganizationIdentifier.Create(OrganizationNumber.CreateUnchecked(fromParty.OrgNumber)),
+                        Resource = ResourceIdUrn.ResourceId.Create(ResourceIdentifier.CreateUnchecked(resource.Identifier)),
+                        Action = ActionUrn.ActionId.Create(ActionIdentifier.CreateUnchecked(right.Action.Value))
+                    };
+
+                    AccessListAuthorizationResponse accessListAuthorizationResponse = await _accessListsAuthorizationClient.AuthorizePartyForAccessList(accessListAuthorizationRequest);
+                    accessListAuthorizationResult = accessListAuthorizationResponse.Result;
+                }
+
                 RightDelegationCheckResult rightDelegationStatus = new()
                 {
                     RightKey = right.RightKey,
                     Resource = right.Resource,
                     Action = right.Action,
                     Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable,
-                    Details = RightsHelper.AnalyzeDelegationAccessReason(right)
+                    Details = RightsHelper.AnalyzeDelegationAccessReason(right, accessListAuthorizationResult)
                 };
 
                 result.RightDelegationCheckResults.Add(rightDelegationStatus);
@@ -139,16 +162,39 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 if (usersDelegableRights.Contains(rightToDelegate))
                 {
-                    rulesToDelegate.Add(new Rule
+                    // If delegable and serviceResource.AccessListMode is enabled, call accessListAuthorizationClient
+                    AccessListAuthorizationResult accessListAuthorizationResult = AccessListAuthorizationResult.NotApplicable;
+                    if (DelegationHelper.IsAccessListModeEnabledAndApplicable(rightToDelegate, resource, fromParty))
                     {
-                        DelegatedByUserId = authenticatedUserId,
-                        OfferedByPartyId = fromParty.PartyId,
-                        OfferedByPartyUuid = fromParty.PartyUuid,
-                        OfferedByPartyType = fromParty.Person != null ? UuidType.Person : UuidType.Organization,
-                        CoveredBy = to,
-                        Resource = rightToDelegate.Resource,
-                        Action = rightToDelegate.Action
-                    });
+                        AccessListAuthorizationRequest accessListAuthorizationRequest = new AccessListAuthorizationRequest
+                        {
+                            Subject = PartyUrn.OrganizationIdentifier.Create(OrganizationNumber.CreateUnchecked(fromParty.OrgNumber)),
+                            Resource = ResourceIdUrn.ResourceId.Create(ResourceIdentifier.CreateUnchecked(resource.Identifier)),
+                            Action = ActionUrn.ActionId.Create(ActionIdentifier.CreateUnchecked(rightToDelegate.Action.Value))
+                        };
+
+                        AccessListAuthorizationResponse accessListAuthorizationResponse = await _accessListsAuthorizationClient.AuthorizePartyForAccessList(accessListAuthorizationRequest);
+                        accessListAuthorizationResult = accessListAuthorizationResponse.Result;
+                    }
+
+                    if (resource.AccessListMode == Enums.ResourceRegistry.ResourceAccessListMode.Enabled && accessListAuthorizationResult != AccessListAuthorizationResult.Authorized)
+                    {
+                        rightToDelegate.CanDelegate = false;
+                        rightsUserCantDelegate.Add(rightToDelegate);
+                    }
+                    else
+                    {
+                        rulesToDelegate.Add(new Rule
+                        {
+                            DelegatedByUserId = authenticatedUserId,
+                            OfferedByPartyId = fromParty.PartyId,
+                            OfferedByPartyUuid = fromParty.PartyUuid,
+                            OfferedByPartyType = fromParty.Person != null ? UuidType.Person : UuidType.Organization,
+                            CoveredBy = to,
+                            Resource = rightToDelegate.Resource,
+                            Action = rightToDelegate.Action
+                        });
+                    }
                 }
                 else
                 {

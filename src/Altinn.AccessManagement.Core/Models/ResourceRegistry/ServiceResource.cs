@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Enums.ResourceRegistry;
 
 namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
@@ -89,10 +90,12 @@ namespace Altinn.AccessManagement.Core.Models.ResourceRegistry
         /// </summary>
         public List<Keyword> Keywords { get; set; }
 
+
         /// <summary>
-        /// Defines if the resource is limited by Resource Rights Registry
+        /// Sets the access list mode for the resource
         /// </summary>
-        public bool LimitedByRRR { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ResourceAccessListMode AccessListMode { get; set; }
 
         /// <summary>
         /// The user acting on behalf of party can be a selfidentifed users

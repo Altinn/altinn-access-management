@@ -90,6 +90,8 @@ namespace Altinn.AccessManagement.Mappers
             CreateMap<AppsInstanceDelegationResponse, AppsInstanceDelegationResponseDto>();
             CreateMap<InstanceRightDelegationResult, RightDelegationResultDto>();
             CreateMap<InstanceDelegationModeExternal, InstanceDelegationMode>();
+            CreateMap<AppsInstanceRevokeResponse, AppsInstanceRevokeResponseDto>();
+            CreateMap<InstanceRightRevokeResult, RightRevokeResultDto>();
             CreateMap<ResourceRightDelegationCheckResult, ResourceRightDelegationCheckResultDto>();
         }
     }

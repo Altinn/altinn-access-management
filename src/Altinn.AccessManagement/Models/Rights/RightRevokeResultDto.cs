@@ -11,7 +11,7 @@ namespace Altinn.AccessManagement.Models;
 /// This model describes a single right
 /// </summary>
 [SwaggerExampleFromExampleProvider]
-public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResultDto>
+public class RightRevokeResultDto : IExampleDataProvider<RightRevokeResultDto>
 {
     private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
 
@@ -28,14 +28,14 @@ public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResu
     /// <summary>
     /// Gets or sets a value indicating whether the right was successfully delegated or not
     /// </summary>
-    public DelegationStatusExternal Status { get; set; }
+    public RevokeStatusExternal Status { get; set; }
 
     /// <summary>
     /// Example data provider for RightV2
     /// </summary>
     /// <param name="options">Options</param>
     /// <returns></returns>
-    public static IEnumerable<RightDelegationResultDto> GetExamples(ExampleDataOptions options)
+    public static IEnumerable<RightRevokeResultDto> GetExamples(ExampleDataOptions options)
     {
         var json = """
             {
@@ -43,7 +43,7 @@ public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResu
                 {
                   "type": "urn:altinn:resource",
                   "value": "app_ttd_apps-test"
-                },                
+                },
                 {
                   "type": "urn:altinn:resource:task",
                   "value": "task_1"
@@ -54,9 +54,9 @@ public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResu
                 "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
                 "value": "read"
               },
-              "status": "Delegated"
+              "status": "Revoked"
             }
             """;
-        yield return JsonSerializer.Deserialize<RightDelegationResultDto>(json, SerializerOptions);
+        yield return JsonSerializer.Deserialize<RightRevokeResultDto>(json, SerializerOptions);
     }
 }

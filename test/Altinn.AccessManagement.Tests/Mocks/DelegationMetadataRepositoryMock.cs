@@ -87,7 +87,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         switch (request.Instance)
         {
             case "00000000-0000-0000-0000-000000000001":
-
+            case "00000000-0000-0000-0000-000000000009":
                 return Task.FromResult(new InstanceDelegationChange
                 {
                     FromUuidType = request.FromType,
@@ -530,6 +530,12 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         }
 
         return Task.FromResult(result);
+    }
+
+    /// <inheritdoc />
+    public Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IEnumerable<InstanceDelegationChange>>(new List<InstanceDelegationChange>());
     }
 
     private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId, CancellationToken cancellationToken = default)

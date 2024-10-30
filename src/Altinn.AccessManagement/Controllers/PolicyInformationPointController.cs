@@ -38,7 +38,7 @@ namespace Altinn.AccessManagement.Controllers
         [Route("getdelegationchanges")]
         public async Task<ActionResult<List<DelegationChangeExternal>>> GetAllDelegationChanges([FromBody] DelegationChangeInput request, CancellationToken cancellationToken)
         {
-            DelegationChangeList response = await _pip.GetAllDelegations(request, cancellationToken);
+            DelegationChangeList response = await _pip.GetAllDelegations(request, includeInstanceDelegations: true, cancellationToken);
 
             if (!response.IsValid)
             {

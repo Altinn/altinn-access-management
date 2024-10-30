@@ -92,6 +92,30 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
     /// Reason:     See testdat cases for details
     /// </summary>
     [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppOnlyExistingPolicyRevokeLast), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppMultipleExistingPolicyRevoke), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppNoExistingPolicyRevokeLast), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_Revoke_OK(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceRevokeResponseDto expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        AppsInstanceRevokeResponseDto actual = JsonSerializer.Deserialize<AppsInstanceRevokeResponseDto>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertAppsInstanceRevokeResponseDto(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with a valid delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdat cases for details
+    /// </summary>
+    [Theory]
     [MemberData(nameof(TestDataAppsInstanceDelegation.DelegateReadForAppNoExistingPolicyNoResponceDBWrite), MemberType = typeof(TestDataAppsInstanceDelegation))]
     public async Task AppsInstanceDelegationController_ValidToken_Delegate_DBWriteFails(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceDelegationResponseDto expected)
     {

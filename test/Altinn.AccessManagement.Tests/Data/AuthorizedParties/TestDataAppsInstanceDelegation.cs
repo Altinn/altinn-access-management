@@ -29,6 +29,8 @@ public static class TestDataAppsInstanceDelegation
 
     private static readonly string ListOfDelegationsForAnInstance = "00000000-0000-0000-0000-000000000008";
 
+    private static readonly string RevokeOneOfExistingDelegations = "00000000-0000-0000-0000-000000000009";
+
     /// <summary>
     /// Test case:  GET v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck
     ///             with: 
@@ -93,6 +95,39 @@ public static class TestDataAppsInstanceDelegation
         }
     };
 
+    public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceRevokeResponseDto> RevokeReadForAppOnlyExistingPolicyRevokeLast() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            GetRequest<AppsInstanceDelegationRequestDto>("Revoke", AppId, InstanceIdParallelExistingPolicy),
+            AppId,
+            InstanceIdParallelExistingPolicy,
+            GetExpectedResponse<AppsInstanceRevokeResponseDto>("Revoke", AppId, InstanceIdParallelExistingPolicy)
+        }
+    };
+
+    public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceRevokeResponseDto> RevokeReadForAppMultipleExistingPolicyRevoke() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            GetRequest<AppsInstanceDelegationRequestDto>("Revoke", AppId, RevokeOneOfExistingDelegations),
+            AppId,
+            RevokeOneOfExistingDelegations,
+            GetExpectedResponse<AppsInstanceRevokeResponseDto>("Revoke", AppId, RevokeOneOfExistingDelegations)
+        }
+    };
+
+    public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceRevokeResponseDto> RevokeReadForAppNoExistingPolicyRevokeLast() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            GetRequest<AppsInstanceDelegationRequestDto>("Revoke", AppId, InstanceIdNewPolicyNoResponceOnWrite),
+            AppId,
+            InstanceIdNewPolicyNoResponceOnWrite,
+            GetExpectedResponse<AppsInstanceRevokeResponseDto>("Revoke", AppId, InstanceIdNewPolicyNoResponceOnWrite)
+        }
+    };
+    
     /// <summary>
     /// Test case:  POST v1/apps/instancedelegation/{resourceId}/{instanceId}
     ///             with: 

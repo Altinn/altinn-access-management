@@ -104,7 +104,7 @@ public class DelegationChangeExternal
     /// The uuid of the party that performed the delegation
     /// </summary>
     [JsonPropertyName("performedbyuuid")]
-    public string PerformedByUuid { get; set; }
+    public string? PerformedByUuid { get; set; }
 
     /// <summary>
     /// The type of the party that performed the delegation

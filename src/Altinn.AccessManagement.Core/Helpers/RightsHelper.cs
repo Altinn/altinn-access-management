@@ -127,7 +127,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     reasons.Add(new Detail
                     {
                         Code = DetailCode.DelegationAccess,
-                        Description = $"The user has access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
+                        Description = $"The user have access through delegation(s) of the right to the following recipient(s): {delegationRecipients}",
                         Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(delegationPolicySources.SelectMany(delegationAccessSource => delegationAccessSource.PolicySubjects)) } }
                     });
                 }

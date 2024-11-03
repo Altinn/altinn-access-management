@@ -164,12 +164,12 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         return await Task.FromResult(new List<AuthorizedParty>());
     }
 
-    private async Task<List<InstanceDelegationChange>> GetInstanceDelegations(int subjectUserId, List<int> subjectPartyIds, CancellationToken cancellationToken)
+    private async Task AddInstanceDelegations(List<DelegationChange> delegations, int subjectUserId, List<int> subjectPartyIds, CancellationToken cancellationToken)
     {
-        var parties = new List<Party>();
+        var toParties = new List<Party>();
         if (subjectPartyIds?.Count > 0)
         {
-            parties.AddRange(await _contextRetrievalService.GetPartiesAsync(subjectPartyIds, false, cancellationToken) ?? []);
+            toParties.AddRange(await _contextRetrievalService.GetPartiesAsync(subjectPartyIds, false, cancellationToken) ?? []);
         }
 
         if (subjectUserId != 0)
@@ -177,16 +177,38 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             var userProfile = await _profile.GetUser(new() { UserId = subjectUserId }, cancellationToken);
             if (userProfile != null)
             {
-                parties.Add(userProfile.Party);
+                toParties.Add(userProfile.Party);
             }
         }
 
-        if (parties.Count > 0)
+        if (toParties.Count > 0)
         {
-            return await _delegations.GetAllCurrentReceivedInstanceDelegations(parties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
-        }
+            IEnumerable<InstanceDelegationChange> instanceDelegations = await _delegations.GetAllCurrentReceivedInstanceDelegations(toParties.Select(p => (Guid)p.PartyUuid).ToList(), cancellationToken);
+            var fromParties = await _contextRetrievalService.GetPartiesByUuids(instanceDelegations.Select(i => i.FromUuid), false, cancellationToken);
 
-        return [];
+            foreach (var instanceDelegation in instanceDelegations)
+            {
+                if (fromParties.TryGetValue(instanceDelegation.FromUuid.ToString(), out Party fromParty))
+                {
+                    delegations.Add(new DelegationChange
+                    {
+                        ResourceId = instanceDelegation.ResourceId,
+                        InstanceId = instanceDelegation.InstanceId,
+                        FromUuidType = instanceDelegation.FromUuidType,
+                        FromUuid = instanceDelegation.FromUuid,
+                        OfferedByPartyId = fromParty.PartyId,
+                        ToUuidType = instanceDelegation.ToUuidType,
+                        ToUuid = instanceDelegation.ToUuid,
+                        PerformedByUuidType = instanceDelegation.PerformedByType,
+                        PerformedByUuid = instanceDelegation.PerformedBy,
+                        DelegationChangeType = instanceDelegation.DelegationChangeType,
+                        BlobStoragePolicyPath = instanceDelegation.BlobStoragePolicyPath,
+                        BlobStorageVersionId = instanceDelegation.BlobStorageVersionId,
+                        Created = instanceDelegation.Created
+                    });
+                }
+            }
+        }
     }
 
     private async Task<List<AuthorizedParty>> BuildAuthorizedParties(int subjectUserId, List<int> subjectPartyIds, bool includeAltinn2AuthorizedParties, bool includeResourcesThroughRoles, CancellationToken cancellationToken)
@@ -219,6 +241,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
         }
 
         List<DelegationChange> delegations = await _delegations.GetAllDelegationChangesForAuthorizedParties(subjectUserId != 0 ? subjectUserId.SingleToList() : null, subjectPartyIds, cancellationToken: cancellationToken);
+        await AddInstanceDelegations(delegations, subjectUserId, subjectPartyIds, cancellationToken);
 
         List<int> fromPartyIds = delegations.Select(dc => dc.OfferedByPartyId).Distinct().ToList();
         List<MainUnit> mainUnits = await _contextRetrievalService.GetMainUnits(fromPartyIds, cancellationToken);
@@ -307,37 +330,14 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                 }
             }
 
-            authorizedParty.EnrichWithResourceAccess(delegation.ResourceId);
-        }
-
-        var instanceDelegations = await GetInstanceDelegations(subjectUserId, subjectPartyIds, cancellationToken);
-        var instanceParties = await _contextRetrievalService.GetPartiesByUuids(instanceDelegations.Select(i => i.FromUuid), false, cancellationToken);
-        foreach (var delegation in instanceDelegations)
-        {
-            if (!instanceParties.TryGetValue(delegation.FromUuid.ToString(), out var instanceParty))
+            if (!string.IsNullOrWhiteSpace(delegation.InstanceId))
             {
-                throw new UnreachableException($"Get AuthorizedParties failed to lookup party with uuid {delegation.FromUuid} while building instance delegations list");
+                authorizedParty.EnrichWithResourceInstanceAccess(delegation.ResourceId, delegation.InstanceId);
             }
-
-            // Found existing party. Need to just append instances 
-            if (!authorizedPartyDict.TryGetValue(instanceParty.PartyId, out var authorizedParty))
+            else
             {
-                authorizedParty = new AuthorizedParty(instanceParty);
-                authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
-                a3AuthParties.Add(authorizedParty);
+                authorizedParty.EnrichWithResourceAccess(delegation.ResourceId);
             }
-
-            // Ensure that we dont't add duplicates
-            if (authorizedParty.AuthorizedInstances.Exists(instance => instance.InstanceId == delegation.InstanceId && instance.ResourceId == delegation.ResourceId))
-            {
-                continue;
-            }
-
-            authorizedParty.AuthorizedInstances.Add(new()
-            {
-                InstanceId = delegation.InstanceId,
-                ResourceId = delegation.ResourceId,
-            });
         }
 
         result.AddRange(a3AuthParties);

@@ -135,9 +135,9 @@ public class AuthorizedParty
     public List<AuthorizedResource> AuthorizedInstances { get; set; } = [];
 
     /// <summary>
-    /// Enriches this authorized party and any subunits with the list of authorized resources
+    /// Enriches this authorized party and any subunits with a resource access
     /// </summary>
-    /// <param name="resourceId">The list of resource IDs to add to the authorized party (and any subunits) list of authorized resources</param>
+    /// <param name="resourceId">The resource ID to add to the authorized party (and any subunits) list of authorized resources</param>
     public void EnrichWithResourceAccess(string resourceId)
     {
         resourceId = MapAppIdToResourceId(resourceId);
@@ -151,6 +151,27 @@ public class AuthorizedParty
                 subunit.EnrichWithResourceAccess(resourceId);
             }
         }
+    }
+
+    /// <summary>
+    /// Enriches this authorized party with a resource instance access
+    /// </summary>
+    /// <param name="resourceId">The resource ID of the instance delegation to add to the authorized party</param>
+    /// <param name="instanceId">The instance ID of the instance delegation to add to the authorized party</param>
+    public void EnrichWithResourceInstanceAccess(string resourceId, string instanceId)
+    {
+        // Ensure that we dont't add duplicates
+        if (AuthorizedInstances.Exists(instance => instance.InstanceId == instanceId && instance.ResourceId == resourceId))
+        {
+            return;
+        }
+
+        OnlyHierarchyElementWithNoAccess = false;
+        AuthorizedInstances.Add(new()
+        {
+            ResourceId = resourceId,
+            InstanceId = instanceId
+        });
     }
 
     private static string MapAppIdToResourceId(string altinnAppId)

@@ -33,11 +33,11 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
         {
             if (response.IsSuccessStatusCode)
             {
-                var delegations = await response.Content.ReadFromJsonAsync<List<AuthorizedPartyExternal>>();
+                var authorizedParties = await response.Content.ReadFromJsonAsync<List<AuthorizedPartyExternal>>();
                 var result = new List<string>();
                 foreach (var assert in asserts)
                 {
-                    if (assert(delegations) is var msg && !string.IsNullOrEmpty(msg))
+                    if (assert(authorizedParties) is var msg && !string.IsNullOrEmpty(msg))
                     {
                         result.Add(msg);
                     }
@@ -48,20 +48,31 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
         });
     };
 
-    private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsInstance(string resourceId, string instanceId) => response =>
+    private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsPartyWithInstance(string resourceId, string instanceId) => response =>
     {
-        var result = response.Exists(delegation => delegation.AuthorizedInstances.Exists(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId));
+        var result = response.Exists(authorizedParty => authorizedParty.AuthorizedInstances.Exists(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId));
         if (result)
         {
             return null;
         }
 
-        return $"Response don't contain instance delegations with resource Id {resourceId} and instance id {instanceId}";
+        return $"Response don't contain authorized party with instance delegations with resource Id {resourceId} and instance id {instanceId}";
+    };
+
+    private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsSubUnitWithInstance(string resourceId, string instanceId) => response =>
+    {
+        var result = response.Exists(authorizedParty => authorizedParty.Subunits.Exists(authorizedSubUnit => authorizedSubUnit.AuthorizedInstances.Exists(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId)));
+        if (result)
+        {
+            return null;
+        }
+
+        return $"Response don't contain authorized party with subunit having instance delegations with resource Id {resourceId} and instance id {instanceId}";
     };
 
     private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsParty(IParty party) => response =>
     {
-        var result = response.Exists(delegation => delegation.PartyId == party.Party.PartyId);
+        var result = response.Exists(authorizedParty => authorizedParty.PartyId == party.Party.PartyId);
         if (result)
         {
             return null;
@@ -72,7 +83,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
 
     private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsNotParty(IParty party) => response =>
     {
-        var result = response.Exists(delegation => delegation.PartyId == party.Party.PartyId);
+        var result = response.Exists(authorizedParty => authorizedParty.PartyId == party.Party.PartyId);
         if (result)
         {
             return $"Response should not contain reportees with party ID {party.Party.PartyId} ({party.Party.Name})";
@@ -83,7 +94,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
 
     private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsNotInstance(string resourceId, string instanceId) => response =>
     {
-        var result = response.Exists(delegation => delegation.AuthorizedInstances.Any(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId));
+        var result = response.Exists(authorizedParty => authorizedParty.AuthorizedInstances.Any(instance => instance.ResourceId == resourceId && instance.InstanceId == instanceId));
         if (result)
         {
             return $"Response should not contain any instance delegations with resource Id {resourceId} and instance id {instanceId}";
@@ -123,7 +134,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertSuccessfulResponse(
                     WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "chalk"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "chalk"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2"),
                     WithAssertResponseContainsParty(PersonSeeds.Kasper.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
@@ -152,7 +163,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
                     WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "sponge"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "sponge"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_3")
@@ -177,11 +188,11 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                 ),
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertSuccessfulResponse(
-                    WithAssertResponseContainsParty(OrganizationSeeds.VossAccounting.Defaults),
+                    WithAssertResponseContainsParty(OrganizationSeeds.VossConsulting.Defaults),
+                    WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
-                    WithAssertResponseContainsNotParty(OrganizationSeeds.VossConsulting.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "water"),
+                    WithAssertResponseContainsSubUnitWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "water"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_3")
@@ -237,8 +248,8 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     WithAssertResponseContainsParty(PersonSeeds.Kasper.Defaults),
                     WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
                     WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_1"),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_2"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_1"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_2"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2")
                 )
@@ -266,8 +277,8 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     WithAssertResponseContainsParty(PersonSeeds.Kasper.Defaults),
                     WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
                     WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_1"),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_2"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_1"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "frame_2"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2")
                 )
@@ -295,7 +306,7 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     WithAssertResponseContainsParty(OrganizationSeeds.VossAccounting.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
-                    WithAssertResponseContainsInstance(ResourceSeeds.ChalkboardResource.Identifier, "color_1"),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "color_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2")
                 )

@@ -117,13 +117,6 @@ public static class DelegationScenarios
             OrganizationNumber = mainunit?.Party?.Organization?.OrgNumber ?? string.Empty,
             SubunitPartyId = subunit.Party.PartyId,
         };
-
-        if (mainunit.Party.ChildParties == null)
-        {
-            mainunit.Party.ChildParties = new List<Party>();
-        }
-
-        mainunit.Party.ChildParties.Add(subunit.Party);
     };
 
     /// <summary>

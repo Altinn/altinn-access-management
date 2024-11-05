@@ -88,7 +88,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     private static bool ValidateAndGetSignificantResourcePartsFromResource(IEnumerable<UrnJsonTypeValue> input, out List<UrnJsonTypeValue> resource, string resourceTag)
     {
         resource = new List<UrnJsonTypeValue>();
-        
+
         if (input == null || !input.Any())
         {
             return false;
@@ -248,7 +248,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     public async Task<Result<AppsInstanceRevokeResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
         (ValidationErrorBuilder Errors, InstanceRight RulesToHandle, List<RightInternal> RightsAppCantHandle) input = await SetUpDelegationOrRevokeRequest(request, cancellationToken);
-        
+
         if (input.Errors.TryBuild(out var errorResult))
         {
             return errorResult;
@@ -327,12 +327,12 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         }
 
         if (!errors.IsEmpty)
-        { 
+        {
             return (errors, rulesToHandle, rightsAppCantHandle);
         }
 
         rightsAppCantHandle = [];
-        
+
         rulesToHandle = new InstanceRight
         {
             FromUuid = (Guid)from.Uuid,
@@ -346,7 +346,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             InstanceDelegationMode = request.InstanceDelegationMode,
             InstanceDelegationSource = request.InstanceDelegationSource,
         };
-        
+
         UrnJsonTypeValue instanceId = KeyValueUrn.CreateUnchecked($"{AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute}:{request.InstanceId}", AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute.Length + 1);
 
         foreach (RightInternal rightToHandle in request.Rights)
@@ -453,7 +453,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         result = RemoveInstanceIdFromResourceForDelegationResponseList(result);
         return result;
     }
-    
+
     private static AppsInstanceRevokeResponse RemoveInstanceIdFromResourceForRevokeResponse(AppsInstanceRevokeResponse input)
     {
         foreach (var right in input.Rights)
@@ -468,7 +468,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     {
         foreach (AppsInstanceDelegationResponse item in input)
         {
-            RemoveInstanceIdFromResourceForDelegationResponse(item);            
+            RemoveInstanceIdFromResourceForDelegationResponse(item);
         }
 
         return input;

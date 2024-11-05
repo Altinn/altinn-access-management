@@ -31,6 +31,14 @@ public interface IDelegationMetadataRepository
     Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns all received instance delegations from db  
+    /// </summary>
+    /// <param name="toUuid">party uuid that received the delegation</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns></returns>
+    Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns the last change from db to fetch the current policy version and path to policy file
     /// </summary>
     /// <param name="request">The parameters to request the latest change for</param>

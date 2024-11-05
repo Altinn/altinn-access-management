@@ -20,6 +20,26 @@ public static class ResourceSeeds
         };
     }
 
+    public class ChalkboardResource : ResourceBase
+    {
+        public new static readonly ResourceType ResourceType = ResourceType.GenericAccessResource;
+
+        public new static readonly string Identifier = "chalkboard";
+
+        public static ChalkboardResource Defaults { get; } = new ChalkboardResource();
+
+        public ChalkboardResource(params Action<ServiceResource>[] modifiers)
+        {
+            base.ResourceType = ResourceType.Systemresource;
+            base.Identifier = Identifier;
+
+            foreach (var modifer in modifiers)
+            {
+                modifer(this);
+            }
+        }
+    }
+
     public class MaskinportenSchema : ResourceBase
     {
         public new static readonly string Identifier = "maskinportenschema";

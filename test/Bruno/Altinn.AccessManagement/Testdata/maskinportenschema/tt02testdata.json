@@ -30,6 +30,16 @@
             "partyid": 50096367
         }
     },
+    "org3": {
+        "orgno": "312822881",
+        "partyid": 51636963,
+        "dagl": {
+            "pid": "47827602783",
+            "lastname": "ELEV",
+            "userid": 1420963,
+            "partyid": 51275190
+        }
+    },
     "digdir": {
         "orgno": "991825827",
         "partyid": 50167512

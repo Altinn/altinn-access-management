@@ -1,7 +1,7 @@
 {
     "env": "tt02",
     "org": "ttd",
-    "app": "apps-test",
+    "app": "apps-test-undeploy",
     "servicecode": "2802",
     "serviceeditioncode": "2203",
     "org1": {
@@ -12,6 +12,12 @@
             "lastname": "LARM",
             "userid": 1278314,
             "partyid": 50783137
+        },
+        "meda": {
+            "pid":"18868496661",
+            "lastname": "BALL",
+            "userid": 1420961,
+            "partyid": 51054789
         }
     },
     "org2": {
@@ -23,5 +29,27 @@
             "userid": 1278315,
             "partyid": 51386822
         }
+    },
+    "org3": {
+        "orgno": "312822881",
+        "partyid": 51636963,
+        "dagl": {
+            "pid": "47827602783",
+            "lastname": "ELEV",
+            "userid": 1420963,
+            "partyid": 51275190
+        },
+        "tilg": {
+            "pid":"05859399586",
+            "lastname": "DESIMETER",
+            "userid": 1420959,
+            "partyid": 50553001
+        }
+    },
+    "randomUser": {
+        "pid": "12896198376",
+        "lastname": "KLOSETT",
+        "userid": 1420960,
+        "partyid": 51032967
     }
 }

@@ -5,7 +5,7 @@ using Altinn.AccessManagement.Core.Models.Register;
 namespace Altinn.AccessManagement.Core.Models;
 
 /// <summary>
-/// Responce model for performing revoke of access to a respource from Apps
+/// Response model for performing revoke of access to a respource from Apps
 /// </summary>
 public class AppsInstanceRevokeResponse
 {

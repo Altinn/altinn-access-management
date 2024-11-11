@@ -158,7 +158,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         sb.Append('/');
 
         sb.Append(change.InstanceId.AsFileName(false));
-        
+
         sb.Append('/');
         sb.Append(change.InstanceDelegationMode);
 
@@ -532,6 +532,12 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         return Task.FromResult(result);
     }
 
+    /// <inheritdoc />
+    public Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IEnumerable<InstanceDelegationChange>>(new List<InstanceDelegationChange>());
+    }
+
     private static string GetResourceRegistryDelegationPath_ForCoveredByPartyId(string resourceRegistryId, int offeredByPartyId, int coveredByPartyId, CancellationToken cancellationToken = default)
     {
         string unitTestFolder = Path.GetDirectoryName(new Uri(typeof(DelegationMetadataRepositoryMock).Assembly.Location).LocalPath);
@@ -594,5 +600,10 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
             default:
                 return Task.FromResult(result);
         }
+    }
+
+    public Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new List<InstanceDelegationChange>());
     }
 }

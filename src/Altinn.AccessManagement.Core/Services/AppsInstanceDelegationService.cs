@@ -464,16 +464,6 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return input;
     }
 
-    private static AppsInstanceRevokeResponse RemoveInstanceIdFromResourceForRevokeResponse(AppsInstanceRevokeResponse input)
-    {
-        foreach (var right in input.Rights)
-        {
-            right.Resource.RemoveAll(r => r.HasValue && r.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute);
-        }
-
-        return input;
-    }
-
     private static List<AppsInstanceDelegationResponse> RemoveInstanceIdFromResourceForDelegationResponseList(List<AppsInstanceDelegationResponse> input)
     {
         foreach (AppsInstanceDelegationResponse item in input)

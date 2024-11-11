@@ -453,7 +453,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         result = RemoveInstanceIdFromResourceForDelegationResponseList(result);
         return result;
     }
-    
+
     private static AppsInstanceRevokeResponse RemoveInstanceIdFromResourceForRevokeResponse(AppsInstanceRevokeResponse input)
     {
         foreach (var right in input.Rights)

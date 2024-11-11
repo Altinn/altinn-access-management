@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Formats.Asn1;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -15,6 +16,7 @@ using Altinn.Authorization.ProblemDetails;
 using Altinn.Platform.Register.Models;
 using Altinn.Urn;
 using Altinn.Urn.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Altinn.AccessManagement.Core.Services.Implementation;
 
@@ -245,6 +247,170 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     }
 
     /// <inheritdoc/>
+    public async Task<Result<List<AppsInstanceRevokeResponse>>> RevokeAll(AppsInstanceGetRequest request, CancellationToken cancellationToken = default)
+    {
+        ValidationErrorBuilder errors = default;
+        
+        // Fetch rights valid for delegation
+        ServiceResource resource = (await _resourceRegistryClient.GetResourceList(cancellationToken)).Find(r => r.Identifier == request.ResourceId);
+        List<Right> delegableRights = null;
+
+        if (resource == null)
+        {
+            errors.Add(ValidationErrors.InvalidResource, "ResourceId");
+        }
+        
+        RightsQuery rightsQueryForApp = new RightsQuery
+        {
+            Type = RightsQueryType.AltinnApp,
+            To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformingResourceId.ValueSpan.ToString() }.SingleToList(),
+            From = resource.AuthorizationReference,
+            Resource = resource
+        };
+
+        try
+        {
+            delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
+        }
+        catch (ValidationException)
+        {
+            errors.Add(ValidationErrors.MissingPolicy, "ResourceId");
+        }
+
+        if (errors.TryBuild(out var errorResult))
+        {
+            return errorResult;
+        }
+
+        // Fetch all existing delegations
+        List<AppsInstanceDelegationResponse> delegations = await _pip.GetInstanceDelegations(request, cancellationToken);
+
+        // If nothing to delete just return with empty result set and no errors
+        if (delegations.Count == 0)
+        {
+            return new List<AppsInstanceRevokeResponse>();
+        }
+
+        List<InstanceRight> rightsToRevoke = [];
+
+        // Loop over delegations to deside wich to revoke
+        foreach (AppsInstanceDelegationResponse rules in delegations)
+        {
+            InstanceRight currentRightSetToRevoke = new()
+            {
+                InstanceRules = []
+            };
+
+            foreach (InstanceRightDelegationResult right in rules.Rights)
+            {
+                // Check if the current right is delegable/revokable by the app and add it to the right list to revoke
+                if (delegableRights.Exists(r => r.Action.Value == right.Action.Value.ValueSpan.ToString() && ResourceMatch(r.Resource, right.Resource)))
+                {
+                    currentRightSetToRevoke.InstanceRules.Add(new InstanceRule { Action = ActionUrn.Parse(right.Action.Value.ToString()), Resource = right.Resource });
+                }
+            }
+
+            // If anything can be revoked add the rightSet to the list to revoke
+            if (currentRightSetToRevoke.InstanceRules.Count > 0)
+            {
+                (UuidType Type, Guid? Uuid) from = await TranslatePartyUuidToPersonOrganizationUuid(rules.From);
+                currentRightSetToRevoke.FromUuid = from.Uuid.Value;
+                currentRightSetToRevoke.FromType = from.Type;
+                (UuidType Type, Guid? Uuid) to = await TranslatePartyUuidToPersonOrganizationUuid(rules.To);
+                currentRightSetToRevoke.ToUuid = to.Uuid.Value;
+                currentRightSetToRevoke.ToType = to.Type;
+                currentRightSetToRevoke.ResourceId = rules.ResourceId;
+                currentRightSetToRevoke.InstanceId = rules.InstanceId;
+                currentRightSetToRevoke.InstanceDelegationSource = request.InstanceDelegationSource;
+                currentRightSetToRevoke.InstanceDelegationMode = InstanceDelegationMode.Normal;
+                currentRightSetToRevoke.PerformedBy = request.PerformingResourceId.ValueSpan.ToString();
+                currentRightSetToRevoke.PerformedByType = UuidType.Resource;
+
+                // Add data to current rule and add it to the list
+                rightsToRevoke.Add(currentRightSetToRevoke);
+            }
+        }
+
+        if (rightsToRevoke.Count == 0)
+        {
+            errors.Add(ValidationErrors.MissingDelegableRights, "ResourceId");
+        
+            if (errors.TryBuild(out errorResult))
+            {
+                return errorResult;
+            }
+        }
+
+        // Perform Revoke
+        List<InstanceRight> revokedResult = await _pap.TryWriteInstanceRevokeAllPolicyRules(rightsToRevoke, cancellationToken);
+        List<AppsInstanceRevokeResponse> result = TransformInstanceRightListToAppsInstanceDelegationResponseList(revokedResult);
+        result = RemoveInstanceIdFromResourceForRevokeResponseList(result);
+        
+        return result;
+    }
+
+    private List<AppsInstanceRevokeResponse> TransformInstanceRightListToAppsInstanceDelegationResponseList(List<InstanceRight> input)
+    {
+        List<AppsInstanceRevokeResponse> result = [];
+
+        foreach (InstanceRight instanceRight in input)
+        {
+            result.Add(TransformInstanceRightToAppsInstanceDelegationResponse(instanceRight));
+        }
+
+        return result;
+    }
+
+    private AppsInstanceRevokeResponse TransformInstanceRightToAppsInstanceDelegationResponse(InstanceRight input)
+    {
+        return new AppsInstanceRevokeResponse
+        {
+            From = PartyUrn.Parse(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyUuidAttribute + ":" + input.FromUuid.ToString()),
+            To = PartyUrn.Parse(AltinnXacmlConstants.MatchAttributeIdentifiers.PartyUuidAttribute + ":" + input.ToUuid.ToString()),
+            ResourceId = input.ResourceId,
+            InstanceId = input.InstanceId,
+            InstanceDelegationMode = input.InstanceDelegationMode,
+            Rights = TransformInstanceRuleListToInstanceRightRevokeResultList(input.InstanceRules)
+        };
+    }
+
+    private List<InstanceRightRevokeResult> TransformInstanceRuleListToInstanceRightRevokeResultList(List<InstanceRule> input)
+    {
+        List<InstanceRightRevokeResult> result = [];
+
+        foreach (InstanceRule instanceRule in input)
+        {
+            result.Add(TransformInstanceRuleToInstanceRightRevokeResult(instanceRule));
+        }
+
+        return result;
+    }
+
+    private InstanceRightRevokeResult TransformInstanceRuleToInstanceRightRevokeResult(InstanceRule input)
+    {
+        return new InstanceRightRevokeResult
+        {
+            Action = ActionUrn.Parse(input.Action.ToString()),
+            Resource = input.Resource
+        };
+    }
+
+    private bool ResourceMatch(List<AttributeMatch> resourceAlowed, List<UrnJsonTypeValue> resourceToRevoke)
+    {
+        foreach (var resourcePart in resourceAlowed)
+        {
+            bool valid = resourceToRevoke.Exists(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
+
+            if (!valid)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc/>
     public async Task<Result<AppsInstanceRevokeResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default)
     {
         (ValidationErrorBuilder Errors, InstanceRight RulesToHandle, List<RightInternal> RightsAppCantHandle) input = await SetUpDelegationOrRevokeRequest(request, cancellationToken);
@@ -459,6 +625,16 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         foreach (var right in input.Rights)
         {
             right.Resource.RemoveAll(r => r.HasValue && r.Value.PrefixSpan.ToString() == AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceInstanceAttribute);
+        }
+
+        return input;
+    }
+
+    private static List<AppsInstanceRevokeResponse> RemoveInstanceIdFromResourceForRevokeResponseList(List<AppsInstanceRevokeResponse> input)
+    {
+        foreach (AppsInstanceRevokeResponse item in input)
+        {
+            RemoveInstanceIdFromResourceForRevokeResponse(item);
         }
 
         return input;

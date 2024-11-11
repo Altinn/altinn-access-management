@@ -158,7 +158,7 @@ public class AppsInstanceDelegationController : ControllerBase
 
         AppsInstanceGetRequest request = new()
         {
-            InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App,
+            InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App,            
             PerformingResourceId = performer,
             ResourceId = resourceId,
             InstanceId = instanceId,
@@ -229,6 +229,56 @@ public class AppsInstanceDelegationController : ControllerBase
         }
 
         return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceRevokeResponseDto>(serviceResult.Value));
+    }
+
+    /// <summary>
+    /// Revokes all access to an app instance
+    /// </summary>
+    /// <param name="appInstanceDelegationRequestDto">The request model</param>
+    /// <param name="resourceId">The resource identifier</param>
+    /// <param name="instanceId">The instance identifier</param>
+    /// <param name="token">the platformToken to use for Authorization</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>Result</returns>
+    [HttpDelete]
+    //[Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Route("v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(AppsInstanceDelegationResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult?> RevokeAll([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
+    {
+        ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
+
+        if (performer == null)
+        {
+            return Forbid();
+        }
+
+        AppsInstanceGetRequest request = new AppsInstanceGetRequest 
+        { 
+            ResourceId = resourceId,
+            InstanceId = instanceId,
+            PerformingResourceId = performer,
+            InstanceDelegationSource = Core.Enums.InstanceDelegationSource.App
+        };
+
+        Result<List<AppsInstanceRevokeResponse>> serviceResult = await _appInstanceDelegationService.RevokeAll(request, cancellationToken);
+
+        if (serviceResult.IsProblem)
+        {
+            return serviceResult.Problem?.ToActionResult();
+        }
+
+        List<AppsInstanceRevokeResponseDto> items = _mapper.Map<List<AppsInstanceRevokeResponseDto>>(serviceResult.Value);
+        PaginatedLinks links = new PaginatedLinks(null);
+
+        Paginated<AppsInstanceRevokeResponseDto> result = new(links, items);
+
+        return Ok(result);        
     }
 
     /// <summary>

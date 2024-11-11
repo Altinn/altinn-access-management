@@ -463,6 +463,55 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
+        public async Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+            NpgsqlConnection connection = null;
+
+            try
+            {
+                connection = _conn.OpenConnection();
+
+                using (var writer = await connection.BeginBinaryImportAsync("copy delegation.instancedelegationchanges (delegationchangetype, instancedelegationmode, resourceid, instanceid, fromuuid, fromtype, touuid, totype, performedby, performedbytype, blobstoragepolicypath, blobstorageversionid, instancedelegationsource) from STDIN (FORMAT BINARY)", cancellationToken))
+                {
+                    foreach (var record in policyWriteOutputs)
+                    {
+                        writer.StartRow();
+                        writer.Write(record.ChangeType);
+                        writer.Write(record.Rules.InstanceDelegationMode);
+                        writer.Write(record.Rules.ResourceId, NpgsqlDbType.Text);
+                        writer.Write(record.Rules.InstanceId, NpgsqlDbType.Text);
+                        writer.Write(record.Rules.FromUuid, NpgsqlDbType.Uuid);
+                        writer.Write(record.Rules.FromType);
+                        writer.Write(record.Rules.ToUuid, NpgsqlDbType.Uuid);
+                        writer.Write(record.Rules.ToType);
+                        writer.Write(record.Rules.PerformedBy, NpgsqlDbType.Text);
+                        writer.Write(record.Rules.PerformedByType);
+                        writer.Write(record.PolicyPath, NpgsqlDbType.Text);
+                        writer.Write(record.VersionId, NpgsqlDbType.Text);
+                        writer.Write(record.Rules.InstanceDelegationSource);
+                    }
+
+                    writer.Complete();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return false;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);

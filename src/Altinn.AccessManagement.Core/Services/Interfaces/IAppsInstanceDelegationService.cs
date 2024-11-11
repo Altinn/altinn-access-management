@@ -29,8 +29,16 @@ public interface IAppsInstanceDelegationService
     /// </summary>
     /// <param name="request">the request data collected in a dto</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
-    /// <returns>Boolean whether the app instance delegation was revoked</returns>
+    /// <returns>An entity containing the list of instance delegation rights that was revoked</returns>
     public Task<Result<AppsInstanceRevokeResponse>> Revoke(AppsInstanceDelegationRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Revokes all access to an app instance tha app is authorized to handle
+    /// </summary>
+    /// <param name="request">the request data</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns>A list of entities containing a list of instance delegation rights that was revoked</returns>
+    public Task<Result<List<AppsInstanceRevokeResponse>>> RevokeAll(AppsInstanceGetRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets app instance delegation

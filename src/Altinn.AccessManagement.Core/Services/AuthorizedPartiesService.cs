@@ -306,7 +306,7 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
                         throw new UnreachableException($"Get AuthorizedParties failed to find party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
                     }
 
-                    authorizedParty = new AuthorizedParty(party);
+                    authorizedParty = new AuthorizedParty(party, includeSubunits: string.IsNullOrEmpty(delegation.InstanceId));
                     authorizedPartyDict.Add(authorizedParty.PartyId, authorizedParty);
                     a3AuthParties.Add(authorizedParty);
                 }

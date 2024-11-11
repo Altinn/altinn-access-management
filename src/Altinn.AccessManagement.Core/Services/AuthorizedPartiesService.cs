@@ -336,6 +336,17 @@ public class AuthorizedPartiesService : IAuthorizedPartiesService
             }
             else
             {
+                MainUnit mainUnit = await _contextRetrievalService.GetMainUnit(delegation.OfferedByPartyId, cancellationToken); // Since all mainunits were retrieved earlier results are in cache.
+                if (mainUnit?.PartyId <= 0)
+                {
+                    if (!delegationParties.TryGetValue(delegation.OfferedByPartyId, out Party party))
+                    {
+                        throw new UnreachableException($"Get AuthorizedParties failed to find party for an existing active delegation from OfferedByPartyId: {delegation.OfferedByPartyId}");
+                    }
+
+                    authorizedParty.Subunits.AddRange(party.ChildParties?.Select(subunit => new AuthorizedParty(subunit)).ToList() ?? []);
+                }
+
                 authorizedParty.EnrichWithResourceAccess(delegation.ResourceId);
             }
         }

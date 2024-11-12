@@ -19,7 +19,7 @@ namespace Altinn.AccessManagement.Tests.Scenarios
         /// <returns></returns>
         public static Scenario PersonToken(PersonSeeds.PersonBase person, int authenticationLevel = 2) => mock =>
         {
-            mock.HttpHeaders.Add("Authorization", $"Bearer {PrincipalUtil.GetToken(person.UserId, person.PartyId, authenticationLevel)}");
+            mock.HttpHeaders.TryAdd("Authorization", $"Bearer {PrincipalUtil.GetToken(person.UserId, person.PartyId, authenticationLevel)}");
         };
 
         /// <summary>

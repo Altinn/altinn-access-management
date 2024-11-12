@@ -74,6 +74,8 @@ public static class OrganizationSeeds
             EMailAddress = "hello@consulting.voss.no",
         };
 
+        public new static readonly List<Party> ChildParties = new() { VossAccounting.Defaults };
+
         public VossConsulting(params Action<Party>[] modifiers)
         {
             base.PartyId = PartyId;
@@ -83,6 +85,7 @@ public static class OrganizationSeeds
             base.Name = Name;
             base.UnitType = UnitType;
             base.Organization = Organization;
+            base.ChildParties = ChildParties;
 
             foreach (var modifer in modifiers)
             {

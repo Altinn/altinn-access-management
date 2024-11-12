@@ -225,8 +225,8 @@
     "isPartOf": "jk_ressurser",
     "isPublicService": true,
     "resourceReferences": [],
-    "delegable": true,
-    "visible": true,
+    "delegable": false,
+    "visible": false,
     "hasCompetentAuthority": {
       "organization": "991825827",
       "orgcode": "DIGDIR",
@@ -249,7 +249,7 @@
     "authorizationReference": [
       {
         "id": "urn:altinn:resource",
-        "value": "jks_audi_a3"
+        "value": "jks_undelegable"
       }
     ]
   },

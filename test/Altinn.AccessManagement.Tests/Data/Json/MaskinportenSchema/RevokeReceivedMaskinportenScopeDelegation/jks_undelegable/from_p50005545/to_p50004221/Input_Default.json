@@ -1,0 +1,18 @@
+{
+  "from": [
+    {
+      "id": "urn:altinn:partyid",
+      "value": "50005545"
+    }
+  ],
+  "rights": [
+    {
+      "resource": [
+        {
+          "id": "urn:altinn:resource",
+          "value": "jks_undelegable"
+        }
+      ]
+    }
+  ]
+}

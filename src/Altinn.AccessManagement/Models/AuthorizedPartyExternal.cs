@@ -64,7 +64,28 @@ public class AuthorizedPartyExternal
     public List<string> AuthorizedRoles { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets a collection of all Authorized Instances 
+    /// </summary>
+    public List<AuthorizedResource> AuthorizedInstances { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets a set of subunits of this party, which the authorized subject also has some access to.
     /// </summary>
     public List<AuthorizedPartyExternal> Subunits { get; set; } = [];
+
+    /// <summary>
+    /// Composite Key instances
+    /// </summary>
+    public class AuthorizedResource
+    {
+        /// <summary>
+        /// Resource ID
+        /// </summary>
+        public string ResourceId { get; set; }
+
+        /// <summary>
+        /// Instance ID
+        /// </summary>
+        public string InstanceId { get; set; }
+    }
 }

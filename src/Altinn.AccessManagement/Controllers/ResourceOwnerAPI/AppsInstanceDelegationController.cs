@@ -126,8 +126,8 @@ public class AppsInstanceDelegationController : ControllerBase
             return Ok(_mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
         }
 
-        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));        
-    }    
+        return StatusCode(StatusCodes.Status206PartialContent, _mapper.Map<AppsInstanceDelegationResponseDto>(serviceResult.Value));
+    }
 
     /// <summary>
     /// Gets app instance delegation

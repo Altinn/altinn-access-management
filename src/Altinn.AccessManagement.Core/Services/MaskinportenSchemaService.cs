@@ -289,12 +289,6 @@ namespace Altinn.AccessManagement.Core.Services
                 return (result, null, null, null);
             }
 
-            if (!resource.Delegable)
-            {
-                result.Errors.Add("right[0].Resource", $"The resource: {resource}, is not available for delegation");
-                return (result, null, null, null);
-            }
-
             // Verify and get From reportee party of the delegation
             Party fromParty = null;
             if (DelegationHelper.TryGetOrganizationNumberFromAttributeMatch(delegation.From, out string fromOrgNo))

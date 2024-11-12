@@ -606,4 +606,9 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     {
         return Task.FromResult(new List<InstanceDelegationChange>());
     }
+
+    public Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

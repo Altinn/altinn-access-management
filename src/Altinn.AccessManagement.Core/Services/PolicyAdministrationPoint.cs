@@ -28,8 +28,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly int delegationChangeEventQueueErrorId = 911;
-        private readonly string policyFileLeaseErrorMessage = "Could not acquire blob lease lock on delegation policy at path: {policyPath}";
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyAdministrationPoint"/> class.
         /// </summary>
@@ -125,8 +124,13 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
+            LogLeaseLockError(policyPath);
             return false;
+        }
+
+        private void LogLeaseLockError(string policyPath)
+        {
+            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
         }
 
         private async Task<bool> WriteInstanceDelegationPolicyInternal(string policyPath, InstanceRight rules, CancellationToken cancellationToken = default)
@@ -176,7 +180,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
+            LogLeaseLockError(policyPath);
             return false;
         }
         
@@ -470,7 +474,7 @@ namespace Altinn.AccessManagement.Core.Services
                     else
                     {
                         string policyPath = currentPolicyWrite.PolicyPath;
-                        _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
+                        LogLeaseLockError(policyPath);
                         return false;
                     }
                 }
@@ -716,7 +720,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
+            LogLeaseLockError(policyPath);
             return false;
         }
 
@@ -728,7 +732,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (leaseId == null)
             {
-                _logger.LogError(policyFileLeaseErrorMessage, policyPath);
+                LogLeaseLockError(policyPath);
                 return null;
             }
 

@@ -234,7 +234,6 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <summary>
     /// Revokes all access to an app instance
     /// </summary>
-    /// <param name="appInstanceDelegationRequestDto">The request model</param>
     /// <param name="resourceId">The resource identifier</param>
     /// <param name="instanceId">The instance identifier</param>
     /// <param name="token">the platformToken to use for Authorization</param>

@@ -329,7 +329,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             foreach (InstanceRightDelegationResult right in rules.Rights)
             {
                 // Check if the current right is delegable/revokable by the app and add it to the right list to revoke
-                if (delegableRights.Exists(r => r.Action.Value == right.Action.Value.ValueSpan.ToString() && ResourceMatch(r.Resource, right.Resource)))
+                if (delegableRights.Exists(r => RightMatch(r, right)))
                 {
                     currentRightSetToRevoke.InstanceRules.Add(new InstanceRule { Action = ActionUrn.Parse(right.Action.Value.ToString()), Resource = right.Resource });
                 }
@@ -359,7 +359,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return rightsToRevoke;
     }
 
-    private List<AppsInstanceRevokeResponse> TransformInstanceRightListToAppsInstanceDelegationResponseList(List<InstanceRight> input)
+    private static List<AppsInstanceRevokeResponse> TransformInstanceRightListToAppsInstanceDelegationResponseList(List<InstanceRight> input)
     {
         List<AppsInstanceRevokeResponse> result = [];
 
@@ -371,7 +371,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return result;
     }
 
-    private AppsInstanceRevokeResponse TransformInstanceRightToAppsInstanceDelegationResponse(InstanceRight input)
+    private static AppsInstanceRevokeResponse TransformInstanceRightToAppsInstanceDelegationResponse(InstanceRight input)
     {
         return new AppsInstanceRevokeResponse
         {
@@ -405,11 +405,16 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
     }
 
-    private static bool ResourceMatch(List<AttributeMatch> resourceAlowed, List<UrnJsonTypeValue> resourceToRevoke)
+    private static bool RightMatch(Right rightAlowed, InstanceRightDelegationResult rightToRevoke)
     {
-        foreach (var resourcePart in resourceAlowed)
+        if (rightAlowed.Action.Value != rightToRevoke.Action.Value.ValueSpan.ToString())
         {
-            bool valid = resourceToRevoke.Exists(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
+            return false;
+        }
+
+        foreach (var resourcePart in rightAlowed.Resource)
+        {
+            bool valid = rightToRevoke.Resource.Exists(r => r.Value.PrefixSpan.ToString() == resourcePart.Id && r.Value.ValueSpan.ToString() == resourcePart.Value);
 
             if (!valid)
             {

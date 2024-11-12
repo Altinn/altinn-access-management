@@ -29,6 +29,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
     private readonly IPolicyInformationPoint _pip;
     private readonly IPolicyAdministrationPoint _pap;
     private readonly IResourceRegistryClient _resourceRegistryClient;
+    private readonly string appInstanceResourcePath = "appInstanceDelegationRequest.Resource";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppsInstanceDelegationService"/> class.
@@ -174,7 +175,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
         if (resource == null)
         {
-            errors.Add(ValidationErrors.InvalidResource, "appInstanceDelegationRequest.Resource");
+            errors.Add(ValidationErrors.InvalidResource, appInstanceResourcePath);
         }
         else
         {
@@ -192,12 +193,12 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
             catch (ValidationException)
             {
-                errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
+                errors.Add(ValidationErrors.MissingPolicy, appInstanceResourcePath);
             }
 
             if (delegableRights == null || delegableRights.Count == 0)
             {
-                errors.Add(ValidationErrors.MissingDelegableRights, "appInstanceDelegationRequest.Resource");
+                errors.Add(ValidationErrors.MissingDelegableRights, appInstanceResourcePath);
             }
         }
 
@@ -217,7 +218,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             });
         }
 
-        return await Task.FromResult(result);
+        return await Task.FromResult(result);        
     }
 
     /// <inheritdoc/>
@@ -259,22 +260,24 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         {
             errors.Add(ValidationErrors.InvalidResource, "ResourceId");
         }
-        
-        RightsQuery rightsQueryForApp = new RightsQuery
-        {
-            Type = RightsQueryType.AltinnApp,
-            To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformingResourceId.ValueSpan.ToString() }.SingleToList(),
-            From = resource.AuthorizationReference,
-            Resource = resource
-        };
+        else
+        {        
+            RightsQuery rightsQueryForApp = new RightsQuery
+            {
+                Type = RightsQueryType.AltinnApp,
+                To = new AttributeMatch { Id = AltinnXacmlConstants.MatchAttributeIdentifiers.ResourceDelegationAttribute, Value = request.PerformingResourceId.ValueSpan.ToString() }.SingleToList(),
+                From = resource.AuthorizationReference,
+                Resource = resource
+            };
 
-        try
-        {
-            delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
-        }
-        catch (ValidationException)
-        {
-            errors.Add(ValidationErrors.MissingPolicy, "ResourceId");
+            try
+            {
+                delegableRights = await _pip.GetDelegableRightsByApp(rightsQueryForApp, cancellationToken);
+            }
+            catch (ValidationException)
+            {
+                errors.Add(ValidationErrors.MissingPolicy, "ResourceId");
+            }
         }
 
         if (errors.TryBuild(out var errorResult))
@@ -291,6 +294,28 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             return new List<AppsInstanceRevokeResponse>();
         }
 
+        List<InstanceRight> rightsToRevoke = await GetDelegationsToRevoke(delegations, delegableRights, request.InstanceDelegationSource, request.PerformingResourceId);
+
+        if (rightsToRevoke.Count == 0)
+        {
+            errors.Add(ValidationErrors.MissingDelegableRights, "ResourceId");
+        
+            if (errors.TryBuild(out errorResult))
+            {
+                return errorResult;
+            }
+        }
+
+        // Perform Revoke
+        List<InstanceRight> revokedResult = await _pap.TryWriteInstanceRevokeAllPolicyRules(rightsToRevoke, cancellationToken);
+        List<AppsInstanceRevokeResponse> result = TransformInstanceRightListToAppsInstanceDelegationResponseList(revokedResult);
+        result = RemoveInstanceIdFromResourceForRevokeResponseList(result);
+        
+        return result;
+    }
+
+    private async Task<List<InstanceRight>> GetDelegationsToRevoke(List<AppsInstanceDelegationResponse> delegations, List<Right> delegableRights, InstanceDelegationSource instanceDelegationSource, ResourceIdUrn.ResourceId performingResourceId)
+    {
         List<InstanceRight> rightsToRevoke = [];
 
         // Loop over delegations to deside wich to revoke
@@ -321,9 +346,9 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
                 currentRightSetToRevoke.ToType = to.Type;
                 currentRightSetToRevoke.ResourceId = rules.ResourceId;
                 currentRightSetToRevoke.InstanceId = rules.InstanceId;
-                currentRightSetToRevoke.InstanceDelegationSource = request.InstanceDelegationSource;
+                currentRightSetToRevoke.InstanceDelegationSource = instanceDelegationSource;
                 currentRightSetToRevoke.InstanceDelegationMode = InstanceDelegationMode.Normal;
-                currentRightSetToRevoke.PerformedBy = request.PerformingResourceId.ValueSpan.ToString();
+                currentRightSetToRevoke.PerformedBy = performingResourceId.ValueSpan.ToString();
                 currentRightSetToRevoke.PerformedByType = UuidType.Resource;
 
                 // Add data to current rule and add it to the list
@@ -331,22 +356,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
         }
 
-        if (rightsToRevoke.Count == 0)
-        {
-            errors.Add(ValidationErrors.MissingDelegableRights, "ResourceId");
-        
-            if (errors.TryBuild(out errorResult))
-            {
-                return errorResult;
-            }
-        }
-
-        // Perform Revoke
-        List<InstanceRight> revokedResult = await _pap.TryWriteInstanceRevokeAllPolicyRules(rightsToRevoke, cancellationToken);
-        List<AppsInstanceRevokeResponse> result = TransformInstanceRightListToAppsInstanceDelegationResponseList(revokedResult);
-        result = RemoveInstanceIdFromResourceForRevokeResponseList(result);
-        
-        return result;
+        return rightsToRevoke;
     }
 
     private List<AppsInstanceRevokeResponse> TransformInstanceRightListToAppsInstanceDelegationResponseList(List<InstanceRight> input)
@@ -374,7 +384,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
     }
 
-    private List<InstanceRightRevokeResult> TransformInstanceRuleListToInstanceRightRevokeResultList(List<InstanceRule> input)
+    private static List<InstanceRightRevokeResult> TransformInstanceRuleListToInstanceRightRevokeResultList(List<InstanceRule> input)
     {
         List<InstanceRightRevokeResult> result = [];
 
@@ -386,7 +396,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return result;
     }
 
-    private InstanceRightRevokeResult TransformInstanceRuleToInstanceRightRevokeResult(InstanceRule input)
+    private static InstanceRightRevokeResult TransformInstanceRuleToInstanceRightRevokeResult(InstanceRule input)
     {
         return new InstanceRightRevokeResult
         {
@@ -395,7 +405,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         };
     }
 
-    private bool ResourceMatch(List<AttributeMatch> resourceAlowed, List<UrnJsonTypeValue> resourceToRevoke)
+    private static bool ResourceMatch(List<AttributeMatch> resourceAlowed, List<UrnJsonTypeValue> resourceToRevoke)
     {
         foreach (var resourcePart in resourceAlowed)
         {
@@ -465,7 +475,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
 
         if (resource == null)
         {
-            errors.Add(ValidationErrors.InvalidResource, "appInstanceDelegationRequest.Resource");
+            errors.Add(ValidationErrors.InvalidResource, appInstanceResourcePath);
         }
         else
         {
@@ -483,12 +493,12 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
             catch (ValidationException)
             {
-                errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
+                errors.Add(ValidationErrors.MissingPolicy, appInstanceResourcePath);
             }
 
             if (delegableRights == null || delegableRights.Count == 0)
             {
-                errors.Add(ValidationErrors.MissingDelegableRights, "appInstanceDelegationRequest.Resource");
+                errors.Add(ValidationErrors.MissingDelegableRights, appInstanceResourcePath);
             }
         }
 

@@ -1,10 +1,4 @@
-﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Altinn.AccessManagement.Core.Repositories.Interfaces;
 
 namespace Altinn.AccessManagement.Core.Models
 {

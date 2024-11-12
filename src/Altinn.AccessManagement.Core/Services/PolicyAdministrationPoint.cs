@@ -28,6 +28,7 @@ namespace Altinn.AccessManagement.Core.Services
         private readonly IDelegationMetadataRepository _delegationRepository;
         private readonly IDelegationChangeEventQueue _eventQueue;
         private readonly int delegationChangeEventQueueErrorId = 911;
+        private readonly string policyFileLeaseErrorMessage = "Could not acquire blob lease lock on delegation policy at path: {policyPath}";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PolicyAdministrationPoint"/> class.
@@ -124,7 +125,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
             return false;
         }
 
@@ -175,7 +176,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
             return false;
         }
         
@@ -372,7 +373,7 @@ namespace Altinn.AccessManagement.Core.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<InstanceRight>> TryWriteInstanceRevokeAllPolicyRules(List<InstanceRight> rights, CancellationToken cancellationToken)
+        public async Task<List<InstanceRight>> TryWriteInstanceRevokeAllPolicyRules(List<InstanceRight> rights, CancellationToken cancellationToken = default)
         {
             bool writePolicySuccess = false;
 
@@ -380,11 +381,11 @@ namespace Altinn.AccessManagement.Core.Services
             {
                 writePolicySuccess = await WriteInstanceRevokeAllPolicyInternal(rights, cancellationToken);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 string resourceId = rights[0].ResourceId;
                 string instanceId = rights[0].InstanceId;
-                _logger.LogError("One or more rules could not be processed when writing policy files ResourceId: {resourceId}, InstanceId: {instanceId}", resourceId, instanceId);
+                _logger.LogError(e, "One or more rules could not be processed when writing policy files ResourceId: {resourceId}, InstanceId: {instanceId}", resourceId, instanceId);
             }
 
             foreach (InstanceRight rules in rights)
@@ -469,7 +470,7 @@ namespace Altinn.AccessManagement.Core.Services
                     else
                     {
                         string policyPath = currentPolicyWrite.PolicyPath;
-                        _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+                        _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
                         return false;
                     }
                 }
@@ -715,7 +716,7 @@ namespace Altinn.AccessManagement.Core.Services
                 }
             }
 
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            _logger.LogInformation(policyFileLeaseErrorMessage, policyPath);
             return false;
         }
 
@@ -727,7 +728,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (leaseId == null)
             {
-                _logger.LogError("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+                _logger.LogError(policyFileLeaseErrorMessage, policyPath);
                 return null;
             }
 

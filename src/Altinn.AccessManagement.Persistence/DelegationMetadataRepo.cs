@@ -538,20 +538,20 @@ namespace Altinn.AccessManagement.Persistence
                 {
                     foreach (var record in policyWriteOutputs)
                     {
-                        writer.StartRow();
-                        writer.Write(record.ChangeType);
-                        writer.Write(record.Rules.InstanceDelegationMode);
-                        writer.Write(record.Rules.ResourceId, NpgsqlDbType.Text);
-                        writer.Write(record.Rules.InstanceId, NpgsqlDbType.Text);
-                        writer.Write(record.Rules.FromUuid, NpgsqlDbType.Uuid);
-                        writer.Write(record.Rules.FromType);
-                        writer.Write(record.Rules.ToUuid, NpgsqlDbType.Uuid);
-                        writer.Write(record.Rules.ToType);
-                        writer.Write(record.Rules.PerformedBy, NpgsqlDbType.Text);
-                        writer.Write(record.Rules.PerformedByType);
-                        writer.Write(record.PolicyPath, NpgsqlDbType.Text);
-                        writer.Write(record.VersionId, NpgsqlDbType.Text);
-                        writer.Write(record.Rules.InstanceDelegationSource);
+                        await writer.StartRowAsync(cancellationToken);
+                        await writer.WriteAsync(record.ChangeType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceDelegationMode, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ResourceId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.FromUuid, NpgsqlDbType.Uuid, cancellationToken);
+                        await writer.WriteAsync(record.Rules.FromType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ToUuid, NpgsqlDbType.Uuid, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ToType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.PerformedBy, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.PerformedByType, cancellationToken);
+                        await writer.WriteAsync(record.PolicyPath, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.VersionId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceDelegationSource, cancellationToken);
                     }
 
                     writer.Complete();

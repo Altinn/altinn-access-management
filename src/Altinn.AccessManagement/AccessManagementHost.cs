@@ -131,29 +131,27 @@ internal static class AccessManagementHost
         PlatformSettings platformSettings = builder.Configuration.GetSection("PlatformSettings").Get<PlatformSettings>();
         OidcProviderSettings oidcProviders = builder.Configuration.GetSection("OidcProviders").Get<OidcProviderSettings>();
 
-        builder.Services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
         if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
         {
             builder.Services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
-            .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
-            {
-                options.JwtCookieName = platformSettings.JwtCookieName;
-                options.MetadataAddress = altinnOidcProvder.Issuer;
-                options.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-
-                if (builder.Environment.IsDevelopment())
-                {
-                    options.RequireHttpsMetadata = false;
-                }
-            });
+                    options.JwtCookieName = platformSettings.JwtCookieName;
+                    options.MetadataAddress = altinnOidcProvder.Issuer;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        RequireExpirationTime = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                    if (builder.Environment.IsDevelopment())
+                    {
+                        options.RequireHttpsMetadata = false;
+                    }
+                });
         }
 
         builder.Services.AddAuthorizationBuilder()
@@ -167,10 +165,10 @@ internal static class AccessManagementHost
             .AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")))
             .AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy => policy.Requirements.Add(new ScopeAccessRequirement([AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN])));
 
-        builder.Services.AddTransient<IAuthorizationHandler, AccessTokenHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, AccessTokenHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ClaimAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ResourceAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ScopeAccessHandler>();
     }
 
     private static void ConfigurePostgreSqlConfiguration(this WebApplicationBuilder builder)

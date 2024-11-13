@@ -103,7 +103,7 @@ public class AppsInstanceDelegationController : ControllerBase
         }
 
         AppsInstanceDelegationRequest request = _mapper.Map<AppsInstanceDelegationRequest>(appInstanceDelegationRequestDto);
-        
+
         request.ResourceId = resourceId;
         request.InstanceId = instanceId;
         request.PerformedBy = performer;
@@ -150,8 +150,8 @@ public class AppsInstanceDelegationController : ControllerBase
     public async Task<ActionResult> Get([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token, CancellationToken cancellationToken = default)
     {
         ResourceIdUrn.ResourceId? performer = GetOrgAppFromToken(token);
-        
-        if (performer == null) 
+
+        if (performer == null)
         {
             return Forbid();
         }
@@ -174,7 +174,7 @@ public class AppsInstanceDelegationController : ControllerBase
         List<AppsInstanceDelegationResponseDto> list = _mapper.Map<List<AppsInstanceDelegationResponseDto>>(serviceResult.Value);
         PaginatedLinks links = new PaginatedLinks(null);
         Paginated<AppsInstanceDelegationResponseDto> result = new Paginated<AppsInstanceDelegationResponseDto>(links, list);
-        
+
         return Ok(result);
     }
 
@@ -213,9 +213,9 @@ public class AppsInstanceDelegationController : ControllerBase
         request.PerformedBy = performer;
 
         Result<AppsInstanceRevokeResponse> serviceResult = await _appInstanceDelegationService.Revoke(request, cancellationToken);
-                
+
         if (serviceResult.IsProblem)
-    {
+        {
             return serviceResult.Problem?.ToActionResult();
         }
 

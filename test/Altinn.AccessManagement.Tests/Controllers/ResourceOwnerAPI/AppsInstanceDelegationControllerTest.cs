@@ -55,7 +55,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Paginated<ResourceRightDelegationCheckResultDto> actual = JsonSerializer.Deserialize<Paginated<ResourceRightDelegationCheckResultDto>>(await response.Content.ReadAsStringAsync(), options);
-        
+
         AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertResourceRightDelegationCheckResultDto);
     }
 
@@ -166,7 +166,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Paginated<AppsInstanceDelegationResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceDelegationResponseDto>>(await response.Content.ReadAsStringAsync(), options);
-        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceDelegationResponseDto);        
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceDelegationResponseDto);
     }
 
     private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());

@@ -13,6 +13,7 @@ using Altinn.Authorization.ABAC.Xacml;
 using Altinn.Platform.Register.Models;
 using Azure;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 namespace Altinn.AccessManagement.Core.Services
@@ -429,7 +430,7 @@ namespace Altinn.AccessManagement.Core.Services
                     // if no delegations exist all revoke must already be performed
                     if (policyData.ExistingDelegationPolicy == null)
                     {
-                        return true;
+                        continue;
                     }
 
                     currentPolicyWrite.PolicyClient = _policyFactory.Create(currentPolicyWrite.PolicyPath);
@@ -462,14 +463,7 @@ namespace Altinn.AccessManagement.Core.Services
                             return false;
                         }
 
-                        if (delegationPolicy.Rules.Count > 0)
-                        {
-                            currentPolicyWrite.ChangeType = DelegationChangeType.Revoke;
-                        }
-                        else
-                        {
-                            currentPolicyWrite.ChangeType = DelegationChangeType.RevokeLast;
-                        }                        
+                        currentPolicyWrite.ChangeType = (delegationPolicy.Rules.Count > 0) ? DelegationChangeType.Revoke : currentPolicyWrite.ChangeType = DelegationChangeType.RevokeLast;
                     }
                     else
                     {

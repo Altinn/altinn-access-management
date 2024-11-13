@@ -532,7 +532,7 @@ namespace Altinn.AccessManagement.Persistence
 
             try
             {
-                connection = _conn.OpenConnection();
+                connection = await _conn.OpenConnectionAsync(cancellationToken);
 
                 using (var writer = await connection.BeginBinaryImportAsync("copy delegation.instancedelegationchanges (delegationchangetype, instancedelegationmode, resourceid, instanceid, fromuuid, fromtype, touuid, totype, performedby, performedbytype, blobstoragepolicypath, blobstorageversionid, instancedelegationsource) from STDIN (FORMAT BINARY)", cancellationToken))
                 {
@@ -554,7 +554,7 @@ namespace Altinn.AccessManagement.Persistence
                         await writer.WriteAsync(record.Rules.InstanceDelegationSource, cancellationToken);
                     }
 
-                    writer.Complete();
+                    await writer.CompleteAsync(cancellationToken);
                 }
 
                 return true;
@@ -568,7 +568,7 @@ namespace Altinn.AccessManagement.Persistence
             {
                 if (connection != null)
                 {
-                    connection.Close();
+                    await connection.CloseAsync();
                 }
             }
         }

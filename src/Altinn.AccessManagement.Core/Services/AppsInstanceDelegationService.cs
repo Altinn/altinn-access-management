@@ -326,13 +326,10 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
                 InstanceRules = []
             };
 
-            foreach (InstanceRightDelegationResult right in rules.Rights)
+            // Check if the current right is delegable/revokable by the app and add it to the right list to revoke
+            foreach (InstanceRightDelegationResult right in rules.Rights.Where(r => delegableRights.Exists(d => RightMatch(d, r))))
             {
-                // Check if the current right is delegable/revokable by the app and add it to the right list to revoke
-                if (delegableRights.Exists(r => RightMatch(r, right)))
-                {
-                    currentRightSetToRevoke.InstanceRules.Add(new InstanceRule { Action = ActionUrn.Parse(right.Action.Value.ToString()), Resource = right.Resource });
-                }
+                currentRightSetToRevoke.InstanceRules.Add(new InstanceRule { Action = ActionUrn.Parse(right.Action.Value.ToString()), Resource = right.Resource });
             }
 
             // If anything can be revoked add the rightSet to the list to revoke

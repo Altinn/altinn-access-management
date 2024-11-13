@@ -478,9 +478,9 @@ namespace Altinn.AccessManagement.Core.Services
             }
             finally
             {
-                foreach (var policy in policyWriteOutputs)
+                foreach (var policy in policyWriteOutputs.Where(p => p.LeaseId != null))
                 {
-                    policy.PolicyClient.ReleaseBlobLease(policy.LeaseId, CancellationToken.None);
+                    policy.PolicyClient.ReleaseBlobLease(policy.LeaseId, CancellationToken.None);                    
                 }
             }
         }

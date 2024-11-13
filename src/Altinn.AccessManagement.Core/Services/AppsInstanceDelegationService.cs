@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net.Http.Headers;
 using Altinn.AccessManagement.Core.Clients.Interfaces;
 using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
@@ -190,12 +191,12 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
             catch (ValidationException)
             {
-                errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
+                return result;
             }
 
             if (delegableRights == null || delegableRights.Count == 0)
             {
-                errors.Add(ValidationErrors.MissingDelegableRights, "appInstanceDelegationRequest.Resource");
+                return result;
             }
         }
 

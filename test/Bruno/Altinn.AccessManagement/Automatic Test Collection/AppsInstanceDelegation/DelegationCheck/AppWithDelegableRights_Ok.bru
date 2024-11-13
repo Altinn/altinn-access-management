@@ -46,7 +46,6 @@ tests {
   test("AppsInstanceDelegation DelegationCheck GET AppWithDelegableRights_Ok", function() {
     var body = res.getBody();
     var data = body.data;
-    console.log(data);
     expect(res.status).to.equal(200);
     expect(data[0]).to.have.property('rightKey', 'app_ttd_authz-bruno-instancedelegation,task_1:read')
     expect(data[0]).to.have.property('status', 'Delegable')

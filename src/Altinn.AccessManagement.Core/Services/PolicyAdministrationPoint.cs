@@ -463,7 +463,7 @@ namespace Altinn.AccessManagement.Core.Services
                             return false;
                         }
 
-                        currentPolicyWrite.ChangeType = (delegationPolicy.Rules.Count > 0) ? DelegationChangeType.Revoke : currentPolicyWrite.ChangeType = DelegationChangeType.RevokeLast;
+                        currentPolicyWrite.ChangeType = (delegationPolicy.Rules.Count > 0) ? DelegationChangeType.Revoke : DelegationChangeType.RevokeLast;
                     }
                     else
                     {

@@ -43,6 +43,12 @@
             "lastname": "ELEV",
             "userid": 20012697,
             "partyid": 510247625
+        },
+        "tilg": {
+            "pid":"05859399586",
+            "lastname": "DESIMETER",
+            "userid": 20012650,
+            "partyid": 50592431
         }
     },
     "digdir": {

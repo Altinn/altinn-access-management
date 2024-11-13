@@ -240,7 +240,7 @@ public class AppsInstanceDelegationController : ControllerBase
     /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
     /// <returns>Result</returns>
     [HttpDelete]
-    //[Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
+    [Authorize(Policy = AuthzConstants.PLATFORM_ACCESS_AUTHORIZATION)]
     [Route("v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]

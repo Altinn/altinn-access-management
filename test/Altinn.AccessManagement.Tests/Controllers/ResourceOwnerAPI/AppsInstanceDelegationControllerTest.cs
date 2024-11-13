@@ -109,6 +109,35 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         AssertionUtil.AssertAppsInstanceRevokeResponseDto(expected, actual);
     }
 
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeAll), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_RevokeAll_OK(string platformToken, string resourceId, string instanceId, Paginated<AppsInstanceRevokeResponseDto> expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.DeleteAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Paginated<AppsInstanceRevokeResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceRevokeResponseDto>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceRevokeResponseDto);        
+    }
+
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeAllUnathorized), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_NoToken_RevokeAll_Unauthorized(string resourceId, string instanceId)
+    {
+        var client = GetTestClient(null);
+
+        // Act
+        HttpResponseMessage response = await client.DeleteAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);                
+    }
+
     /// <summary>
     /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
     ///             with a valid delegation
@@ -197,7 +226,11 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (token != null)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
         client.DefaultRequestHeaders.Add("PlatformAccessToken", token);
         return client;
     }

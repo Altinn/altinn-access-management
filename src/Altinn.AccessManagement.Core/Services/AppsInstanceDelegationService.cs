@@ -401,7 +401,8 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
         return new InstanceRightRevokeResult
         {
             Action = ActionUrn.Parse(input.Action.ToString()),
-            Resource = input.Resource
+            Resource = input.Resource,
+            Status = input.CreatedSuccessfully ? RevokeStatus.Revoked : RevokeStatus.NotRevoked
         };
     }
 

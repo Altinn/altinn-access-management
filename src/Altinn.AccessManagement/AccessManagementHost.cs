@@ -134,24 +134,25 @@ internal static class AccessManagementHost
         if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
         {
             builder.Services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
-                .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
+            .AddJwtCookie(JwtCookieDefaults.AuthenticationScheme, options =>
+            {
+                options.JwtCookieName = platformSettings.JwtCookieName;
+                options.MetadataAddress = altinnOidcProvder.Issuer;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.JwtCookieName = platformSettings.JwtCookieName;
-                    options.MetadataAddress = altinnOidcProvder.Issuer;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        RequireExpirationTime = true,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    if (builder.Environment.IsDevelopment())
-                    {
-                        options.RequireHttpsMetadata = false;
-                    }
-                });
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.RequireHttpsMetadata = false;
+                }
+            });
         }
 
         builder.Services.AddAuthorizationBuilder()

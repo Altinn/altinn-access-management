@@ -36,18 +36,18 @@ script:pre-request {
   
   var getTokenParameters = {
     auth_org: "ttd",
-    auth_app: "apps-test",
+    auth_app: "app_with_no_policies",
     auth_tokenType: sharedtestdata.authTokenType.platformAccess
   }
   
   const token = await testTokenGenerator.getToken(getTokenParameters);
   bru.setVar("platformAccessToken", token);
-  
 }
 
 tests {
-  test("AppsInstanceDelegation DelegationCheck GET {InsertRequestName}", function() {
+  test("AppsInstanceDelegation Unauthorized DelegationCheck App perform GET {InsertRequestName}", function() {
     var body = res.getBody();  
     expect(res.status).to.equal(200);
+    expect
   });
 }

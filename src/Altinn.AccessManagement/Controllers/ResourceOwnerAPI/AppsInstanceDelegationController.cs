@@ -56,8 +56,15 @@ public class AppsInstanceDelegationController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DelegationCheck([FromRoute] string resourceId, [FromRoute] string instanceId, [FromHeader(Name = "PlatformAccessToken")] string token)
     {
-        AppsInstanceDelegationRequest request = new() { ResourceId = resourceId, InstanceId = instanceId, PerformedBy = GetOrgAppFromToken(token) };
+        var orgApp = GetOrgAppFromToken(token);
 
+        // Verify that platformAccessToken is issued by only service owners.
+        if (orgApp == null)
+        {
+            return Ok(new Paginated<ResourceRightDelegationCheckResultDto>(new PaginatedLinks(null), []));
+        }
+
+        AppsInstanceDelegationRequest request = new() { ResourceId = resourceId, InstanceId = instanceId, PerformedBy = orgApp };
         Result<ResourceDelegationCheckResponse> serviceResult = await _appInstanceDelegationService.DelegationCheck(request);
 
         if (serviceResult.IsProblem)

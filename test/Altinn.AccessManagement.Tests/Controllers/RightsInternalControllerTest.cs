@@ -586,6 +586,81 @@ namespace Altinn.AccessManagement.Tests.Controllers
             AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
         }
 
+        // Delegable, AccessLists fail
+        [Fact]
+        public async Task DelegationCheck_GenericAccessListsResource_DAGL_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50005545;
+            string resourceId = "generic-accesslist-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        // Tilgangsstyrer som ikke er dagl
+        [Fact]
+        public async Task DelegationCheck_GenericAccessListsResource_ADMAI_HasNotDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50004221;
+            string resourceId = "generic-accesslist-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
+        // On behalf of a privatperson ikke org så fail på helperfunction
+        [Fact]
+        public async Task DelegationCheck_GenericAccessListsResource_PRIV_HasDelegableRights()
+        {
+            // Arrange
+            int userId = 20000490;
+            int reporteePartyId = 50002598;
+            string resourceId = "generic-accesslist-resource";
+
+            var token = PrincipalUtil.GetToken(userId, 0, 3);
+
+            List<RightDelegationCheckResultExternal> expectedResponse = GetExpectedRightDelegationStatus($"u{userId}", $"p{reporteePartyId}", resourceId);
+            StreamContent requestContent = GetDelegationCheckContent(resourceId);
+
+            // Act
+            HttpResponseMessage response = await GetTestClient(token).PostAsync($"accessmanagement/api/v1/internal/{reporteePartyId}/rights/delegation/delegationcheck", requestContent);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            List<RightDelegationCheckResultExternal> actualResponse = JsonSerializer.Deserialize<List<RightDelegationCheckResultExternal>>(responseContent, options);
+            AssertionUtil.AssertCollections(expectedResponse, actualResponse, AssertionUtil.AssertRightDelegationCheckExternalEqual);
+        }
+
         /// <summary>
         /// Test case: DelegationCheck returns a list of rights the authenticated userid 20000490 is authorized to delegate on behalf of the reportee party 50005545 for the app ttd/apps-test.
         ///            In this case:
@@ -1557,6 +1632,7 @@ namespace Altinn.AccessManagement.Tests.Controllers
                     services.AddSingleton<IAltinn2RightsClient, Altinn2RightsClientMock>();
                     services.AddSingleton<IDelegationChangeEventQueue>(new DelegationChangeEventQueueMock());
                     services.AddSingleton<IAuthenticationClient>(new AuthenticationMock());
+                    services.AddSingleton<IAccessListsAuthorizationClient>(new AccessListsAuthorizationClientMock());
 
                     foreach (var action in actions)
                     {

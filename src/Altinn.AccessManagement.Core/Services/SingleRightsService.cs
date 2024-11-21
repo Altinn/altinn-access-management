@@ -116,9 +116,10 @@ namespace Altinn.AccessManagement.Core.Services
                     RightKey = right.RightKey,
                     Resource = right.Resource,
                     Action = right.Action,
-                    Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable,
                     Details = RightsHelper.AnalyzeDelegationAccessReason(right, accessListAuthorizationResult)
                 };
+
+                rightDelegationStatus.Status = (right.CanDelegate.HasValue && right.CanDelegate.Value) ? DelegableStatus.Delegable : DelegableStatus.NotDelegable;
 
                 result.RightDelegationCheckResults.Add(rightDelegationStatus);
             }

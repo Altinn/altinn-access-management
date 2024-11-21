@@ -155,9 +155,7 @@ namespace Altinn.AccessManagement.Core.Helpers
                     }
                 }
             }
-
-            // Analyze why not allowed to delegate
-            if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
+            else if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
             {
                 // Analyze for role access failure
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();

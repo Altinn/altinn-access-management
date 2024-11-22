@@ -63,7 +63,7 @@ body:json {
 
 script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
   const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_NonExistingApp";
   
   bru.setVar("resourceId", resource);
@@ -84,7 +84,7 @@ script:pre-request {
 tests {
   test("post InstanceDelegation NoResource", function() {
       const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-      const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
       const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_NonExistingApp";
     
       const data = res.getBody();

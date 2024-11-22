@@ -16,7 +16,7 @@ headers {
 
 script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
   const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
   
   bru.setVar("resourceId", resource);
@@ -35,7 +35,7 @@ script:pre-request {
 tests {
   test("get InstanceDelegation ReadSign", function() {
       const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-      const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
       const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
     
       const data = res.getBody();

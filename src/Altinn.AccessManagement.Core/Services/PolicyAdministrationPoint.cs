@@ -129,9 +129,16 @@ namespace Altinn.AccessManagement.Core.Services
             return false;
         }
 
-        private void LogLeaseLockError(string policyPath)
+        private void LogLeaseLockError(string policyPath, bool logAsError = false)
         {
-            _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            if (logAsError)
+            {
+                _logger.LogError("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            }
+            else
+            {
+                _logger.LogInformation("Could not acquire blob lease lock on delegation policy at path: {policyPath}", policyPath);
+            }
         }
 
         private async Task<bool> WriteInstanceDelegationPolicyInternal(string policyPath, InstanceRight rules, CancellationToken cancellationToken = default)
@@ -726,7 +733,7 @@ namespace Altinn.AccessManagement.Core.Services
 
             if (leaseId == null)
             {
-                LogLeaseLockError(policyPath);
+                LogLeaseLockError(policyPath, true);
                 return null;
             }
 

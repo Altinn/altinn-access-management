@@ -392,18 +392,6 @@ namespace Altinn.AccessManagement.Core.Helpers
         }
 
         /// <summary>
-        /// Extracts policy data from 
-        /// </summary>
-        /// <param name="rules">The rules that is delegated</param>
-        /// <param name="resourceId">ResourceId delegated</param>
-        /// <param name="fromType">The id receiving the rights</param>
-        /// <param name="fromId">The type receiving the rights</param>
-        /// <param name="toType">the id offering the rights</param>
-        /// <param name="toId">the type offering the rights</param>
-        /// <param name="performedById">the party performing the delegation</param>
-        /// <param name="performedByType">The type of the party performing the delegation</param>
-
-        /// <summary>
         /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
         /// </summary>
         /// <param name="policyData">container with data to inclue in policy</param>

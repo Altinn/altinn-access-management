@@ -1,0 +1,77 @@
+meta {
+  name: InstDelgParties_AsAuthnUser_ToPerson
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  body: json
+  auth: inherit
+}
+
+params:query {
+  includeAltinn2: false
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  
+  var getTokenParameters = {
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_ssn: testdata.persons.hakkeDyr.personId,
+    auth_userId: testdata.persons.hakkeDyr.userId,
+    auth_partyId: testdata.persons.hakkeDyr.partyId
+  }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  // Should be the same as the .bru request file. Used as prefix in test name which also shows in test result in pipeline.
+  const requestName = "InstDelgParties_AsAuthnUser_ToPerson";
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  const body = res.getBody();
+  
+  test(requestName + "|HttpStatus.OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test(requestName + "|Contains_P2P_PersonDelegatedFrom", function() {
+    const person = body.find(party => party.partyUuid === testdata.instances.p2p.from);
+    assert.isOk(person, `Person having delegated instance access was not found in AuthorizedParties for recipient`);
+    
+    const personDelegation = person.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.p2p.instanceId);
+    assert.isOk(personDelegation, `InstanceId ${testdata.instances.p2p.instanceId} not found in AuthorizedInstances on Person having delegated the instance`);
+  });
+  
+  test(requestName + "|Contains_Main2P_MainUnitDelegatedFrom", function() {
+    const mainUnit = body.find(party => party.partyUuid === testdata.instances.main2p.from);
+    assert.isOk(mainUnit, `MainUnit having delegated instance access was not found in AuthorizedParties for recipient`);
+    
+    const mainUnitDelegation = mainUnit.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.main2p.instanceId);
+    assert.isOk(mainUnitDelegation, `InstanceId ${testdata.instances.main2p.instanceId} not found in AuthorizedInstances on MainUnit having delegated the instance`);
+    
+    const subunit = mainUnit.subunits.find(subunit => subunit.partyUuid === testdata.organizations.legitimJusterbarTiger.subunits.legitimJusterbarTiger.partyUuid);
+    assert.isOk(subunit, `Expected MainUnit ${testdata.organizations.legitimJusterbarTiger.organizationNumber} to have Subunit ${testdata.organizations.legitimJusterbarTiger.subunits.legitimJusterbarTiger.organizationNumber}`);
+    
+    const subunitDelegation = subunit.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.main2p.instanceId);
+    assert.isNotOk(subunitDelegation, `InstanceId ${testdata.instances.main2p.instanceId} should not be found in AuthorizedInstances on Subunit`);
+  });
+  
+  test(requestName + "|Contains_Sub2P_SubUnitDelegatedFrom", function() {
+    const mainUnit = body.find(party => party.subunits.find(subunit => subunit.partyUuid === testdata.instances.sub2p.from));
+    assert.isOk(mainUnit, `Subunit was not found as a subunit on any party in AuthorizedParties for recipient`);
+    
+    const subunit = mainUnit.subunits.find(subunit => subunit.partyUuid === testdata.instances.sub2p.from);
+    const subunitDelegation = subunit.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.sub2p.instanceId);
+    assert.isOk(subunitDelegation, `InstanceId ${testdata.instances.sub2p.instanceId} not found in AuthorizedInstances on Subunit having delegated the instance`);
+  });
+}

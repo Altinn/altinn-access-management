@@ -1,0 +1,74 @@
+meta {
+  name: InstDelgParties_AsAuthnUser_ToOrg_Dagl
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/authorizedparties?includeAltinn2=false
+  body: json
+  auth: inherit
+}
+
+params:query {
+  includeAltinn2: false
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  
+  var getTokenParameters = {
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_ssn: testdata.organizations.legitimJusterbarTiger.dagl.personId,
+    auth_userId: testdata.organizations.legitimJusterbarTiger.dagl.userId,
+    auth_partyId: testdata.organizations.legitimJusterbarTiger.dagl.partyId
+  }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  // Should be the same as the .bru request file. Used as prefix in test name which also shows in test result in pipeline.
+  const requestName = "InstDelgParties_AsAuthnUser_ToOrg_Dagl";
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  const body = res.getBody();
+  
+  test(requestName + "|HttpStatus.OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test(requestName + "|Contains_O2O_MainUnitDelegatedFrom", function() {
+    const instanceId = testdata.instances.o2o.instanceId;
+    const mainUnit = body.find(party => party.partyUuid === testdata.instances.o2o.from);
+    assert.isOk(mainUnit, `MainUnit having delegated instance access was not found in AuthorizedParties for recipient`);
+    
+    const mainUnitDelegation = mainUnit.authorizedInstances.find(delegation => delegation.instanceId === instanceId);
+    assert.isOk(mainUnitDelegation, `InstanceId ${instanceId} not found in AuthorizedInstances on MainUnit having delegated the instance`);
+    
+    const subunit = mainUnit.subunits.find(subunit => subunit.partyUuid === testdata.organizations.mobilBeskjedenTiger.subunits.mobilBeskjedenTiger.partyUuid);
+    assert.isOk(subunit, `Expected MainUnit ${testdata.organizations.mobilBeskjedenTiger.organizationNumber} to have Subunit ${testdata.organizations.mobilBeskjedenTiger.subunits.mobilBeskjedenTiger.organizationNumber}. Maybe this bug has been fixed: https://github.com/Altinn/altinn-access-management/issues/873 ? If so update this test to not expect to find subunit.`);
+    
+    const subunitDelegation = subunit.authorizedInstances.find(delegation => delegation.instanceId === instanceId);
+    assert.isNotOk(subunitDelegation, `InstanceId ${instanceId} should not be found in AuthorizedInstances on Subunit`);
+  });
+  
+  test(requestName + "|Contains_P2O_PersonDelegatedFrom", function() {
+    const instanceId_1 = testdata.instances.p2o.instanceId_1;
+    const instanceId_2 = testdata.instances.p2o.instanceId_2;
+    const person = body.find(party => party.partyUuid === testdata.instances.p2o.from);
+    assert.isOk(person, `Person having delegated instance access was not found in AuthorizedParties for recipient`);
+    
+    const personDelegation_1 = person.authorizedInstances.find(delegation => delegation.instanceId === instanceId_1);
+    assert.isOk(personDelegation_1, `InstanceId ${instanceId_1} not found in AuthorizedInstances on Person having delegated the instance`);
+    
+    const personDelegation_2 = person.authorizedInstances.find(delegation => delegation.instanceId === instanceId_2);
+    assert.isOk(personDelegation_2, `InstanceId ${instanceId_1} not found in AuthorizedInstances on Person having delegated the instance`);
+  });
+}

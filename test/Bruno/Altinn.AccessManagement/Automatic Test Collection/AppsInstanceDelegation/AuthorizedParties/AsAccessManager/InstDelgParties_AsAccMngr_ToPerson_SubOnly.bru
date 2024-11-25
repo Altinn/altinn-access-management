@@ -1,0 +1,61 @@
+meta {
+  name: InstDelgParties_AsAccMngr_ToPerson_SubOnly
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/authorizedparties?includeAltinn2=false
+  body: json
+  auth: inherit
+}
+
+params:query {
+  includeAltinn2: false
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  
+  var getTokenParameters = {
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_ssn: testdata.persons.spesifikkSmaragd.personId,
+    auth_userId: testdata.persons.spesifikkSmaragd.userId,
+    auth_partyId: testdata.persons.spesifikkSmaragd.partyId
+  }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("bearerToken",  token);
+  bru.setVar("party", testdata.persons.spesifikkSmaragd.partyId);
+}
+
+tests {
+  // Should be the same as the .bru request file. Used as prefix in test name which also shows in test result in pipeline.
+  const requestName = "InstDelgParties_AsAccMngr_ToPerson_SubOnly";
+  const testdata = require(`./Testdata/instance-delegation-authorized-parties/${bru.getEnvVar("tokenEnv")}.json`);
+  const body = res.getBody();
+  
+  test(requestName + "|HttpStatus.OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test(requestName + "|Contains_SubOnly2P_MainUnitOnlyHierarchy_SubunitWithInstanceIds", function() {
+    const mainUnit = body.find(party => party.subunits.find(subunit => subunit.partyUuid === testdata.instances.subonly2p.from));
+    assert.isOk(mainUnit, `Subunit was not found as a subunit on any party in AuthorizedParties for recipient`);
+    assert.isOk(mainUnit.onlyHierarchyElementWithNoAccess, `Expected mainUnit.onlyHierarchyElementWithNoAccess to be true. Recipient should only have Subunit access.`);
+    
+    const subunit = mainUnit.subunits.find(subunit => subunit.partyUuid === testdata.instances.subonly2p.from);
+    
+    const subunitInstanceDelegation_1 = subunit.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.subonly2p.instanceId_1);
+    assert.isOk(subunitInstanceDelegation_1, `InstanceId ${testdata.instances.subonly2p.instanceId_1} not found in AuthorizedInstances on Subunit having delegated the instance`);
+    
+    const subunitInstanceDelegation_2 = subunit.authorizedInstances.find(delegation => delegation.instanceId === testdata.instances.subonly2p.instanceId_2);
+    assert.isOk(subunitInstanceDelegation_2, `InstanceId ${testdata.instances.subonly2p.instanceId_2} not found in AuthorizedInstances on Subunit having delegated the instance`);
+  });
+}

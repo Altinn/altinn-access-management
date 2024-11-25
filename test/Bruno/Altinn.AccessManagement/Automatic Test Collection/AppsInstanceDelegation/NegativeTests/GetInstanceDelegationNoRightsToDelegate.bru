@@ -16,7 +16,7 @@ headers {
 
 script:pre-request {
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-  const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
   const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + "authz-bruno-testapp1";
   
   bru.setVar("resourceId", resource);
@@ -37,7 +37,7 @@ script:pre-request {
 tests {
   test("get InstanceDelegation NoRihts", function() {
       const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
-      const testdata = require(`./Testdata/instanse-delegation/${bru.getEnvVar("tokenEnv")}testdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
       const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + "ttd/authz-bruno-testapp1";
     
       const data = res.getBody();

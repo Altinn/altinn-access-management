@@ -1,0 +1,113 @@
+{
+    "env": "at22",
+    "resources": {
+        "appInstanceDelegation": {
+            "resourceId": "app_ttd_authz-bruno-instancedelegation",
+            "org": "ttd",
+            "app":  "authz-bruno-instancedelegation"
+        }
+    },
+    "instances": {
+        "p2p": {
+            "instanceId": "93994414-07dc-4df3-b2c6-047722169b6c",
+            "from": "5daf2382-adee-4cd6-9995-3c5f3fc058af",
+            "to": "bd90e954-efe5-4b65-be8a-f9fccbb36342"
+        },
+        "main2p": {
+            "instanceId": "df333e75-5896-4254-a69f-146736eaf668",
+            "from": "01712d4f-cfb2-4d12-8aac-2eb7ad0d9c86",
+            "to": "bd90e954-efe5-4b65-be8a-f9fccbb36342"
+        },
+        "sub2p": {
+            "instanceId": "49513daa-beb1-4a83-a07e-83da1378c8a9",
+            "from": "e21a640b-9558-4d59-b47f-7b87d2cd9ee0",
+            "to": "bd90e954-efe5-4b65-be8a-f9fccbb36342"
+        },
+        "subonly2p": {
+            "instanceId_1": "a5215400-1de1-46eb-abff-54aac49745e2",
+            "instanceId_2": "6afa0a58-a6d1-4ff3-9973-7040cef0763a",
+            "from": "e21a640b-9558-4d59-b47f-7b87d2cd9ee0",
+            "to": "db684960-0b7d-4c11-b948-1ec9268c4a13"
+        },
+        "o2o": {
+            "instanceId": "0d55d70c-6e81-4728-b0e6-7ff1ede1a4fe",
+            "from": "f7e2eb77-6b5e-4aeb-9fe9-f261013401c9",
+            "to": "01712d4f-cfb2-4d12-8aac-2eb7ad0d9c86"
+        },
+        "p2o": {
+            "instanceId_1": "6ad65bea-59f4-462c-9077-04ac488322b6",
+            "instanceId_2": "23820c6b-4ba4-412d-8781-b92517cb3715",
+            "from": "db684960-0b7d-4c11-b948-1ec9268c4a13",
+            "to": "01712d4f-cfb2-4d12-8aac-2eb7ad0d9c86"
+        }
+    },
+    "organizations": {
+        "mobilBeskjedenTiger": {
+            "partyUuid": "f7e2eb77-6b5e-4aeb-9fe9-f261013401c9",
+            "name": "MOBIL BESKJEDEN TIGER AS",
+            "organizationNumber": "310705071",
+            "partyId": 51373625,
+            "subunits": {
+                "mobilBeskjedenTiger": {
+                    "partyUuid": "2177ee69-fd11-4b38-904a-e0e2f1958f86",
+                    "name": "MOBIL BESKJEDEN TIGER AS",
+                    "organizationNumber": "314410343",
+                    "partyId": 51690212,
+                    "dagl": null
+                }
+            },
+            "dagl": {
+                "name": "HAKKE DYR",
+                "personId": "29917997339",
+                "userId": 20012883,
+                "partyUuid": "bd90e954-efe5-4b65-be8a-f9fccbb36342",
+                "partyId": 50127680
+            }
+        },
+        "legitimJusterbarTiger": {
+            "partyUuid": "01712d4f-cfb2-4d12-8aac-2eb7ad0d9c86",
+            "name": "LEGITIM JUSTERBAR TIGER AS",
+            "organizationNumber": "311041371",
+            "partyId": 51403263,
+            "subunits": {
+                "legitimJusterbarTiger": {
+                    "partyUuid": "e21a640b-9558-4d59-b47f-7b87d2cd9ee0",
+                    "name": "LEGITIM JUSTERBAR TIGER AS",
+                    "organizationNumber": "315684617",
+                    "partyId": 51806076,
+                    "dagl": null
+                }
+            },
+            "dagl": {
+                "name": "ØVELSE EMPIRISK",
+                "personId": "25884699358",
+                "userId": 20012882,
+                "partyUuid": "5daf2382-adee-4cd6-9995-3c5f3fc058af",
+                "partyId": 51195601
+            }
+        }
+    },
+    "persons": {
+        "ovelseEmpirisk": {
+            "name": "ØVELSE EMPIRISK",
+            "personId": "25884699358",
+            "userId": 20012882,
+            "partyUuid": "5daf2382-adee-4cd6-9995-3c5f3fc058af",
+            "partyId": 51195601
+        },
+        "hakkeDyr": {
+            "name": "HAKKE DYR",
+            "personId": "29917997339",
+            "userId": 20012883,
+            "partyUuid": "bd90e954-efe5-4b65-be8a-f9fccbb36342",
+            "partyId": 50127680
+        },
+        "spesifikkSmaragd": {
+            "name": "SPESIFIKK SMARAGD",
+            "personId": "05869598129",
+            "userId": 20012925,
+            "partyUuid": "db684960-0b7d-4c11-b948-1ec9268c4a13",
+            "partyId": 50370250
+        }
+    }
+}

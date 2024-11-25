@@ -81,11 +81,6 @@
         public const string SCOPE_MASKINPORTEN_DELEGATIONS_ADMIN = "altinn:maskinporten/delegations.admin";
 
         /// <summary>
-        /// Scope giving access to getting authorized parties for any third party, for which the third party have access to one or more of the resource owners services, apps or resources.
-        /// </summary>
-        public const string SCOPE_APPS_INSTANCEDELEGATION = "altinn:accessmanagement/instancedelegation.apps";
-
-        /// <summary>
         /// Claim for scopes from maskinporten token
         /// </summary>
         public const string CLAIM_MASKINPORTEN_SCOPE = "scope";

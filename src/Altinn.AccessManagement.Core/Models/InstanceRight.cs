@@ -1,5 +1,4 @@
 ﻿using Altinn.AccessManagement.Core.Enums;
-using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;
 
 namespace Altinn.AccessManagement.Core.Models;

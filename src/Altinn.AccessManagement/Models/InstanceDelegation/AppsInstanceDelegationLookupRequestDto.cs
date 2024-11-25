@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models.Register;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Altinn.AccessManagement.Enums;

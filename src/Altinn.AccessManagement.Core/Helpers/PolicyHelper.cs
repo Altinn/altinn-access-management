@@ -402,16 +402,6 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <param name="toId">the type offering the rights</param>
         /// <param name="performedById">the party performing the delegation</param>
         /// <param name="performedByType">The type of the party performing the delegation</param>
-        public static void GetPolicyDataFromInstanceRight(InstanceRight rules, out string resourceId, out string fromType, out string fromId, out string toType, out string toId, out string performedById, out string performedByType)
-        {
-            resourceId = rules.ResourceId;
-            fromType = rules.FromType.EnumMemberAttributeValueOrName();
-            fromId = rules.FromUuid.ToString().ToLowerInvariant();
-            toType = rules.ToType.EnumMemberAttributeValueOrName();
-            toId = rules.ToUuid.ToString().ToLowerInvariant();
-            performedById = rules.PerformedBy;
-            performedByType = rules.PerformedByType.EnumMemberAttributeValueOrName();
-        }
 
         /// <summary>
         /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input

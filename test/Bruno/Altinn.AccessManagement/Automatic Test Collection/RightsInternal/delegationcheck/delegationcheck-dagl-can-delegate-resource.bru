@@ -1,0 +1,68 @@
+meta {
+  name: delegationcheck-dagl-can-delegate-resource
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/delegationcheck
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "{{resource}}"
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org3.partyid);
+  bru.setVar("resource", testdata.resource);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org3.dagl.userid,
+    auth_partyId: testdata.org3.dagl.partyid,
+    auth_ssn: testdata.org3.dagl.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("delegationcheck - dagl gets status is delegable for generic resource", function() {
+    const data = res.getBody();
+    expect(res.status).to.equal(200);
+    expect(data[0]).to.have.property('status', 'Delegable');
+  });
+}
+
+docs {
+  does a delegationcheck on a valid generic resource as dagl
+}

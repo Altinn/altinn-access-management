@@ -1,0 +1,72 @@
+meta {
+  name: delegationcheck-tilg-can-delegate-app
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/internal/{{party}}/rights/delegation/delegationcheck
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "resource": [
+      {
+        "id": "urn:altinn:org",
+        "value": "ttd"
+      },
+      {
+        "id": "urn:altinn:app",
+        "value": "{{app}}"
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+  org: ttd
+  app: apps-test-prod
+  fromPartyId: 
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/rights-delegations/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org3.partyid);
+  bru.setVar("app", testdata.app);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org3.tilg.userid,
+    auth_partyId: testdata.org3.tilg.partyid,
+    auth_ssn: testdata.org3.tilg.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("delegationcheck - tilg gets status is delegable for altinn app", function() {
+    const data = res.getBody();
+    expect(res.status).to.equal(200);
+    expect(data[0]).to.have.property('status', 'Delegable');
+  });
+}
+
+docs {
+  does a delegationcheck on a valid altinn app as dagl
+}

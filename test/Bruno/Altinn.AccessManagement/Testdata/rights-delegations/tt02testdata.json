@@ -4,6 +4,7 @@
     "app": "apps-test-undeploy",
     "servicecode": "2802",
     "serviceeditioncode": "2203",
+    "resource": "devtest_gar_bruno-gar",
     "org1": {
         "orgno": "310438707",
         "partyid": 51563583,

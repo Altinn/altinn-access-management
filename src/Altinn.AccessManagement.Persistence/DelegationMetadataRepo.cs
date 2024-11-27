@@ -42,7 +42,7 @@ namespace Altinn.AccessManagement.Persistence
         public async Task<List<DelegationChange>> GetAllAppDelegationChanges(string altinnAppId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
-            
+
             if (coveredByUserId == null && coveredByPartyId == null)
             {
                 activity?.StopWithError(new ArgumentException($"Both params: {nameof(coveredByUserId)}, {nameof(coveredByPartyId)} cannot be null."));
@@ -60,7 +60,7 @@ namespace Altinn.AccessManagement.Persistence
                     AND coveredByPartyId = @coveredByPartyId
                 ";
             }
-            
+
             if (coveredByUserId != null)
             {
                 query = /*strpsql*/@$"
@@ -335,6 +335,68 @@ namespace Altinn.AccessManagement.Persistence
             return await InsertResourceRegistryDelegation(delegationChange, cancellationToken);
         }
 
+        /// <summary>
+        ///  Fetches all instance delegated to given param
+        /// </summary>
+        /// <param name="toUuid">list of parties that has received an instance delegation</param>
+        /// <param name="cancellationToken">cancellation token</param>
+        /// <returns></returns>
+        public async Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            var query = /* strpsql */ @"
+                WITH latestChanges AS (
+                    SELECT
+                        MAX(instancedelegationchangeid) as latestId
+                    FROM
+                        delegation.instancedelegationchanges
+                    WHERE
+                        touuid = ANY(@toUuid)
+                    GROUP BY
+                        touuid,
+                        fromuuid,
+                        resourceid,
+                        instanceid
+                )
+                SELECT
+                    instancedelegationchangeid,
+                    delegationchangetype,
+                    instanceDelegationMode,
+                    resourceid,
+                    instanceid,
+                    fromuuid,
+                    fromtype,
+                    touuid,
+                    totype,
+                    performedby,
+                    performedbytype,
+                    blobstoragepolicypath,
+                    blobstorageversionid,
+                    created
+                FROM
+                    delegation.instancedelegationchanges
+                INNER JOIN latestChanges
+                    ON instancedelegationchangeid = latestChanges.latestId
+                WHERE
+                    delegationchangetype != 'revoke_last'
+            ";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("toUuid", NpgsqlDbType.Array | NpgsqlDbType.Uuid, toUuid);
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetInstanceDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
         /// <inheritdoc />
         public async Task<InstanceDelegationChange> GetLastInstanceDelegationChange(InstanceDelegationChangeRequest request, CancellationToken cancellationToken = default)
         {
@@ -463,6 +525,55 @@ namespace Altinn.AccessManagement.Persistence
         }
 
         /// <inheritdoc />
+        public async Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+            NpgsqlConnection connection = null;
+
+            try
+            {
+                connection = await _conn.OpenConnectionAsync(cancellationToken);
+
+                using (var writer = await connection.BeginBinaryImportAsync("copy delegation.instancedelegationchanges (delegationchangetype, instancedelegationmode, resourceid, instanceid, fromuuid, fromtype, touuid, totype, performedby, performedbytype, blobstoragepolicypath, blobstorageversionid, instancedelegationsource) from STDIN (FORMAT BINARY)", cancellationToken))
+                {
+                    foreach (var record in policyWriteOutputs)
+                    {
+                        await writer.StartRowAsync(cancellationToken);
+                        await writer.WriteAsync(record.ChangeType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceDelegationMode, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ResourceId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.FromUuid, NpgsqlDbType.Uuid, cancellationToken);
+                        await writer.WriteAsync(record.Rules.FromType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ToUuid, NpgsqlDbType.Uuid, cancellationToken);
+                        await writer.WriteAsync(record.Rules.ToType, cancellationToken);
+                        await writer.WriteAsync(record.Rules.PerformedBy, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.PerformedByType, cancellationToken);
+                        await writer.WriteAsync(record.PolicyPath, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.VersionId, NpgsqlDbType.Text, cancellationToken);
+                        await writer.WriteAsync(record.Rules.InstanceDelegationSource, cancellationToken);
+                    }
+
+                    await writer.CompleteAsync(cancellationToken);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                return false;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<List<InstanceDelegationChange>> GetAllLatestInstanceDelegationChanges(InstanceDelegationSource source, string resourceID, string instanceID, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
@@ -515,7 +626,7 @@ namespace Altinn.AccessManagement.Persistence
 
                 return await cmd.ExecuteEnumerableAsync(cancellationToken)
                     .SelectAwait(GetInstanceDelegationChange)
-                    .ToListAsync(cancellationToken);                
+                    .ToListAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -523,7 +634,68 @@ namespace Altinn.AccessManagement.Persistence
                 throw;
             }
         }
-        
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<InstanceDelegationChange>> GetActiveInstanceDelegations(List<string> resourceIds, Guid from, List<Guid> to, CancellationToken cancellationToken = default)
+        {
+            using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
+
+            string query = /*strpsql*/@"
+            WITH LatestChanges AS(
+		    SELECT 
+			    MAX(instancedelegationchangeid) instancedelegationchangeid
+		    FROM
+			    delegation.instancedelegationchanges
+		    WHERE
+                resourceid = ANY(@resourceIds)
+			    AND fromuuid = @fromUuid
+                AND touuid = ANY(@toUuids)
+		    GROUP BY
+			    instancedelegationmode
+			    ,resourceid
+			    ,instanceid
+			    ,fromuuid
+			    ,fromtype
+			    ,touuid
+			    ,totype)
+            SELECT
+	            dc.instancedelegationchangeid
+	            ,delegationchangetype
+	            ,instancedelegationmode
+	            ,resourceid
+	            ,instanceid
+	            ,fromuuid
+	            ,fromtype
+	            ,touuid
+	            ,totype
+	            ,performedby
+	            ,performedbytype
+	            ,blobstoragepolicypath
+	            ,blobstorageversionid
+	            ,created
+            FROM
+	            LatestChanges lc
+	            JOIN delegation.instancedelegationchanges dc ON lc.instancedelegationchangeid = dc.instancedelegationchangeid
+            WHERE delegationchangetype != 'revoke_last';";
+
+            try
+            {
+                await using var cmd = _conn.CreateCommand(query);
+                cmd.Parameters.AddWithValue("resourceIds", NpgsqlDbType.Array | NpgsqlDbType.Text, resourceIds);
+                cmd.Parameters.AddWithValue("fromUuid", NpgsqlDbType.Uuid, from);
+                cmd.Parameters.AddWithValue("toUuids", NpgsqlDbType.Array | NpgsqlDbType.Uuid, to);
+
+                return await cmd.ExecuteEnumerableAsync(cancellationToken)
+                    .SelectAwait(GetInstanceDelegationChange)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                activity?.StopWithError(ex);
+                throw;
+            }
+        }
+
         private static async ValueTask<InstanceDelegationChange> GetInstanceDelegationChange(NpgsqlDataReader reader)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity();
@@ -682,7 +854,7 @@ namespace Altinn.AccessManagement.Persistence
             }
         }
 
-        private async Task<DelegationChange> GetCurrentResourceRegistryDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toUuidType,  CancellationToken cancellationToken = default)
+        private async Task<DelegationChange> GetCurrentResourceRegistryDelegation(string resourceId, int offeredByPartyId, int? coveredByPartyId, int? coveredByUserId, Guid? toUuid, UuidType toUuidType, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -754,7 +926,7 @@ namespace Altinn.AccessManagement.Persistence
                 cmd.Parameters.AddWithNullableValue("coveredByUserId", NpgsqlDbType.Integer, coveredByUserId);
                 cmd.Parameters.AddWithNullableValue(ToUuid, NpgsqlDbType.Uuid, toUuid);
                 cmd.Parameters.AddWithValue(ToType, toUuidType);
-                
+
                 await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
                 if (await reader.ReadAsync(cancellationToken))
                 {
@@ -980,7 +1152,7 @@ namespace Altinn.AccessManagement.Persistence
                     INNER JOIN res ON rrdc.resourceId_fk = res.resourceid
                 WHERE coveredByPartyId = ANY (@coveredByPartyIds)
             ";
-            
+
             if (offeredByPartyIds != null && offeredByPartyIds.Count > 0)
             {
                 query += /*strpsql*/@"
@@ -1020,7 +1192,7 @@ namespace Altinn.AccessManagement.Persistence
         public async Task<List<DelegationChange>> GetReceivedResourceRegistryDelegationsForCoveredByUser(int coveredByUserId, List<int> offeredByPartyIds, List<string> resourceRegistryIds = null, List<ResourceType> resourceTypes = null, CancellationToken cancellationToken = default)
         {
             using var activity = TelemetryConfig.ActivitySource.StartActivity(ActivityKind.Client);
-            
+
             if (coveredByUserId < 1)
             {
                 throw new ArgumentException("CoveredByUserId is required");
@@ -1118,7 +1290,7 @@ namespace Altinn.AccessManagement.Persistence
                     AND offeredByPartyId = @offeredByPartyId";
             }
 
-            if (coveredByPartyId > 0) 
+            if (coveredByPartyId > 0)
             {
                 query += /*strpsql*/@"
                     AND coveredByPartyId = @coveredByPartyId";
@@ -1271,7 +1443,7 @@ namespace Altinn.AccessManagement.Persistence
 
             if (coveredByUserIds == null && coveredByPartyIds == null)
             {
-                return new List<DelegationChange>();
+                return [];
             }
 
             const string query = /*strpsql*/@"

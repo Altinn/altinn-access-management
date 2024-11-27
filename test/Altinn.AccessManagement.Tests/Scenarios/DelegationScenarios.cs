@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Linq;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
@@ -7,6 +8,7 @@ using Altinn.AccessManagement.Core.Models.SblBridge;
 using Altinn.AccessManagement.Tests.Contexts;
 using Altinn.AccessManagement.Tests.Fixtures;
 using Altinn.AccessManagement.Tests.Seeds;
+using Altinn.Platform.Register.Models;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Altinn.AccessManagement.Tests.Scenarios;
@@ -33,6 +35,21 @@ public static class DelegationScenarios
         mock.Resources.AddRange([
             ResourceSeeds.AltinnApp.Defaults,
             ResourceSeeds.MaskinportenSchema.Defaults,
+        ]);
+
+        mock.Parties.AddRange([
+            PersonSeeds.Paula.Party,
+            PersonSeeds.Kasper.Party,
+            PersonSeeds.Olav.Party,
+            OrganizationSeeds.Voss.Defaults,
+            OrganizationSeeds.VossAccounting.Defaults,
+            OrganizationSeeds.VossConsulting.Defaults,
+        ]);
+
+        mock.UserProfiles.AddRange([
+            PersonSeeds.Paula.Defaults,
+            PersonSeeds.Kasper.Defaults,
+            PersonSeeds.Olav.Defaults,
         ]);
 
         // Seed databases resources
@@ -129,6 +146,29 @@ public static class DelegationScenarios
                     DelegationChangeComposer.WithToUser(person),
                     DelegationChangeComposer.WithResource(resource),
                     DelegationChangeComposer.WithDelegationChangeRevokeLast))
+        ]);
+    };
+
+    public static Scenario WithInstanceDelegation(IParty from, IParty to, IAccessManagementResource resource, string instanceId) => mock =>
+    {
+        var insert = new InstanceDelegationChange()
+        {
+            DelegationChangeType = DelegationChangeType.Grant,
+            BlobStoragePolicyPath = "https://blob.storage.no",
+            BlobStorageVersionId = "v1",
+            ResourceId = resource.Resource.Identifier,
+            InstanceId = instanceId,
+            FromUuid = (Guid)from.Party.PartyUuid,
+            FromUuidType = string.IsNullOrEmpty(from.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+            ToUuid = (Guid)to.Party.PartyUuid,
+            ToUuidType = string.IsNullOrEmpty(to.Party.SSN) ? Enums.UuidType.Organization : Enums.UuidType.Person,
+            InstanceDelegationMode = InstanceDelegationMode.Normal,
+            PerformedBy = from.Party.PartyId.ToString(),
+            PerformedByType = Enums.UuidType.Person
+        };
+
+        mock.DbSeeds.AddRange([
+            async postgres => await postgres.DelegationMetadataRepository.InsertInstanceDelegation(insert),
         ]);
     };
 

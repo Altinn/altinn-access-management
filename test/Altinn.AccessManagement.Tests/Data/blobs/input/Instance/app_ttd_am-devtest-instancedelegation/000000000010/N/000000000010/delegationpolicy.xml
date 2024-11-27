@@ -8,7 +8,7 @@
 			<xacml:AnyOf>
 				<xacml:AllOf>
 					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ce4ba72b-d111-404f-95b5-313fb3847fa1</xacml:AttributeValue>
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">CE4BA72B-D111-404F-95B5-313FB3847FA1</xacml:AttributeValue>
 						<xacml:AttributeDesignator AttributeId="urn:altinn:person:uuid" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
 					</xacml:Match>
 				</xacml:AllOf>
@@ -16,19 +16,15 @@
 			<xacml:AnyOf>
 				<xacml:AllOf>
 					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ttd</xacml:AttributeValue>
-						<xacml:AttributeDesignator AttributeId="urn:altinn:org" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
-					</xacml:Match>
-					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">am-devtest-instancedelegation</xacml:AttributeValue>
-						<xacml:AttributeDesignator AttributeId="urn:altinn:app" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">app_ttd_am-devtest-instancedelegation</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:altinn:resource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
 					</xacml:Match>
 					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
 						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">task_1</xacml:AttributeValue>
 						<xacml:AttributeDesignator AttributeId="urn:altinn:task" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
 					</xacml:Match>
 					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
-						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">00000000-0000-0000-0000-000000000001</xacml:AttributeValue>
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">00000000-0000-0000-0000-000000000010</xacml:AttributeValue>
 						<xacml:AttributeDesignator AttributeId="urn:altinn:resource:instance-id" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
 					</xacml:Match>
 				</xacml:AllOf>

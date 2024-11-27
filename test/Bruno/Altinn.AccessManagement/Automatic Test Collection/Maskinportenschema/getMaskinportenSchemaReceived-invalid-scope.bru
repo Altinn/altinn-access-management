@@ -1,0 +1,62 @@
+meta {
+  name: getMaskinportenSchemaReceived-invalid-scope
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/received
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+vars:pre-request {
+  scope: altinn:instances.read
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_scopes: altinn:instances.read
+  auth_partyId: 
+  auth_ssn: 
+  party: 
+}
+
+assert {
+  ~res.status: eq 200
+  ~res.body: contains created
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org3.partyid)
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org3.tilg.userid,
+    auth_partyId: testdata.org3.tilg.partyid,
+    auth_ssn: testdata.org3.tilg.pid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  
+  test("get MaskinPortenSchema Received - invalid scope", function() {
+    const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+    const data = res.getBody();  
+    expect(res.status).to.equal(403);
+    expect(data).to.be.empty;
+  });5
+}
+
+docs {
+  Check that list of offered maschinportenschemas is correct
+}

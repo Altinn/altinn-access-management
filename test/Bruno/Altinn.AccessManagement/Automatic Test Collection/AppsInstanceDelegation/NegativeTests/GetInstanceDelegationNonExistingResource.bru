@@ -1,0 +1,52 @@
+meta {
+  name: GetInstanceDelegationNonExistingResource
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/{{resourceId}}/instance/{{instanceId}}
+  body: none
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+  const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_NonExistingApp";
+  
+  bru.setVar("resourceId", resource);
+  bru.setVar("instanceId", testdata.instanceid);
+  bru.setVar("fromUuid", testdata.org1.partyuuid);
+  bru.setVar("toUuid", testdata.person1.partyuuid);
+  
+  var getTokenParameters = {
+      auth_org: sharedtestdata.serviceOwners.ttd.org,
+      auth_app: "authz-bruno-testapp1",
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    };
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("get InstanceDelegation NoResource", function() {
+      const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+      const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + "authz-bruno-testapp1";
+    
+      const data = res.getBody();
+      expect(res.status).to.equal(400);
+    
+      expect(data.status).to.equal(400);
+    
+      expect(data.validationErrors[0].code).to.equal("AM.VLD-00002");
+      expect(data.validationErrors[0].paths[0]).to.equal("request.Resource");
+      
+    });
+}

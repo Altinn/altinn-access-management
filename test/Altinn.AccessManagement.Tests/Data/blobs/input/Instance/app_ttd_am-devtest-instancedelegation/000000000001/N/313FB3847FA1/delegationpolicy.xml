@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xacml:Policy PolicyId="urn:altinn:policyid:1" Version="1.0" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides" xmlns:xacml="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17">
+	<xacml:Description>Delegation policy containing all delegated rights/actions from urn:altinn:organization:uuid:0268b99a-5817-4bbf-9b62-d90b16d527ea to urn:altinn:person:uuid:ce4ba72b-d111-404f-95b5-313fb3847fa1, for the resource; app_ttd_am-devtest-instancedelegation</xacml:Description>
+	<xacml:Target />
+	<xacml:Rule RuleId="96b20b71-06fb-4d59-9538-38bfa72774fb" Effect="Permit">
+		<xacml:Description>Delegation of a right/action from urn:altinn:organization:uuid:0268b99a-5817-4bbf-9b62-d90b16d527ea to urn:altinn:person:uuid:ce4ba72b-d111-404f-95b5-313fb3847fa1, for the resource: app_ttd_am-devtest-instancedelegation, by: urn:altinn:resource:app_ttd_am-devtest-instancedelegation</xacml:Description>
+		<xacml:Target>
+			<xacml:AnyOf>
+				<xacml:AllOf>
+					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ce4ba72b-d111-404f-95b5-313fb3847fa1</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:altinn:person:uuid" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+					</xacml:Match>
+				</xacml:AllOf>
+			</xacml:AnyOf>
+			<xacml:AnyOf>
+				<xacml:AllOf>
+					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">app_ttd_am-devtest-instancedelegation</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:altinn:resource" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+					</xacml:Match>
+					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">task_1</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:altinn:task" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+					</xacml:Match>
+					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">00000000-0000-0000-0000-000000000001</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:altinn:resource:instance-id" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+					</xacml:Match>
+				</xacml:AllOf>
+			</xacml:AnyOf>
+			<xacml:AnyOf>
+				<xacml:AllOf>
+					<xacml:Match MatchId="urn:oasis:names:tc:xacml:3.0:function:string-equal-ignore-case">
+						<xacml:AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">read</xacml:AttributeValue>
+						<xacml:AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action" DataType="http://www.w3.org/2001/XMLSchema#string" MustBePresent="false" />
+					</xacml:Match>
+				</xacml:AllOf>
+			</xacml:AnyOf>
+		</xacml:Target>
+	</xacml:Rule>
+</xacml:Policy>

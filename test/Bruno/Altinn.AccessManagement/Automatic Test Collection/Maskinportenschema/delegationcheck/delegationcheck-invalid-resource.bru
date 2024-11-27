@@ -1,0 +1,71 @@
+meta {
+  name: delegationcheck-invalid-resource
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/{{party}}/maskinportenschema/delegationcheck
+  body: json
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+      "resource": [
+          {
+              "id": "urn:altinn:resource",
+              "value": "devtest_gar_bruno-gar"
+          }
+      ]
+  }
+}
+
+vars:pre-request {
+  scope: altinn:instances.read
+  auth_tokenType: Personal
+  auth_userId: 
+  auth_scopes: altinn:instances.read
+  auth_partyId: 
+  auth_ssn: 
+  party: 50067258
+  to_orgno: 
+}
+
+assert {
+  ~res.status: eq 201
+}
+
+script:pre-request {
+  const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  bru.setVar("party", testdata.org1.partyid);
+  
+  var getTokenParameters = {
+    auth_userId: testdata.org1.dagl.userid,
+    auth_partyId: testdata.org1.dagl.partyid,
+    auth_ssn: testdata.org1.dagl.pid,
+    party: testdata.org1.partyid,
+    scope: sharedtestdata.scopes.read,
+    auth_tokenType: sharedtestdata.authTokenType.personal,
+    auth_scopes: sharedtestdata.auth_scopes.read
+  }
+    const token = await testTokenGenerator.getToken(getTokenParameters);
+  
+  bru.setVar("bearerToken",  token);
+}
+
+tests {
+  test("post MaskinportenSchema - invalid resource", function() {
+    const data = res.getBody();
+    expect(res.status).to.equal(400);
+  });
+}
+
+docs {
+  does a delegationcheck on a generic resource and gets an error message saying that only MaskinportenSchema resources are supported.
+}

@@ -43,11 +43,7 @@ public class RightDelegationResultDto : IExampleDataProvider<RightDelegationResu
                 {
                   "type": "urn:altinn:resource",
                   "value": "app_ttd_apps-test"
-                },
-                {
-                  "type": "urn:altinn:resource:instance-id",
-                  "value": "0191579e-72bc-7977-af5d-f9e92af4393b"
-                },
+                },                
                 {
                   "type": "urn:altinn:resource:task",
                   "value": "task_1"

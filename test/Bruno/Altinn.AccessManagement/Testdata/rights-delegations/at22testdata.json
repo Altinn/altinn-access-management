@@ -1,9 +1,10 @@
 {
     "env": "at22",
     "org": "ttd",
-    "app": "apps-test-prod",
+    "app": "apps-test-tba",
     "servicecode": "2802",
     "serviceeditioncode": "3",
+    "resource": "devtest_gar_bruno-gar",
     "org1": {
         "orgno": "310438707",
         "partyid": 51350052,

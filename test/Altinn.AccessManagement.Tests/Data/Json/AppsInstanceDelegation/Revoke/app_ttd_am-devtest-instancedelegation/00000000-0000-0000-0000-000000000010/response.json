@@ -1,0 +1,165 @@
+{
+	"links": {
+		"next": null
+	},
+	"data": [
+		{
+			"from": {
+				"type": "urn:altinn:party:uuid",
+				"value": "b537c953-03c4-4822-b028-c15182adc356"
+			},
+			"to": {
+				"type": "urn:altinn:party:uuid",
+				"value": "ce4ba72b-d111-404f-95b5-313fb3847fa1"
+			},
+			"resourceId": "app_ttd_am-devtest-instancedelegation",
+			"instanceId": "00000000-0000-0000-0000-000000000010",
+			"rights": [
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "read"
+					},
+					"status": "Revoked"
+				}
+			]
+		},
+		{
+			"from": {
+				"type": "urn:altinn:party:uuid",
+				"value": "b537c953-03c4-4822-b028-c15182adc356"
+			},
+			"to": {
+				"type": "urn:altinn:party:uuid",
+				"value": "0268b99a-5817-4bbf-9b62-d90b16d527ea"
+			},
+			"resourceId": "app_ttd_am-devtest-instancedelegation",
+			"instanceId": "00000000-0000-0000-0000-000000000010",
+			"rights": [
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "read"
+					},
+					"status": "Revoked"
+				},
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "sign"
+					},
+					"status": "Revoked"
+				}
+			]
+		},
+		{
+			"from": {
+				"type": "urn:altinn:party:uuid",
+				"value": "b537c953-03c4-4822-b028-c15182adc356"
+			},
+			"to": {
+				"type": "urn:altinn:party:uuid",
+				"value": "00000000-0000-0000-0001-000000000012"
+			},
+			"resourceId": "app_ttd_am-devtest-instancedelegation",
+			"instanceId": "00000000-0000-0000-0000-000000000010",
+			"rights": [
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "read"
+					},
+					"status": "Revoked"
+				},
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "sign"
+					},
+					"status": "Revoked"
+				}
+			]
+		},
+		{
+			"from": {
+				"type": "urn:altinn:party:uuid",
+				"value": "b537c953-03c4-4822-b028-c15182adc356"
+			},
+			"to": {
+				"type": "urn:altinn:party:uuid",
+				"value": "00000000-0000-0000-0001-000000000010"
+			},
+			"resourceId": "app_ttd_am-devtest-instancedelegation",
+			"instanceId": "00000000-0000-0000-0000-000000000010",
+			"rights": [
+				{
+					"resource": [
+						{
+							"type": "urn:altinn:resource",
+							"value": "app_ttd_am-devtest-instancedelegation"
+						},
+						{
+							"type": "urn:altinn:task",
+							"value": "task_1"
+						}
+					],
+					"action": {
+						"type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+						"value": "read"
+					},
+					"status": "Revoked"
+				}
+			]
+		}
+	]
+}

@@ -1,7 +1,7 @@
 {
     "env": "tt02",
     "org": "ttd",
-    "app": "apps-test",
+    "app": "apps-test-undeploy",
     "org1": {
         "orgno": "810414782",
         "partyid": 50189353,
@@ -28,6 +28,22 @@
             "pid": "26013000394",
             "userid": 92630,
             "partyid": 50096367
+        }
+    },
+    "org3": {
+        "orgno": "312822881",
+        "partyid": 51636963,
+        "dagl": {
+            "pid": "47827602783",
+            "lastname": "ELEV",
+            "userid": 1420963,
+            "partyid": 51275190
+        },
+        "tilg": {
+            "pid":"05859399586",
+            "lastname": "DESIMETER",
+            "userid": 1420959,
+            "partyid": 50553001
         }
     },
     "digdir": {

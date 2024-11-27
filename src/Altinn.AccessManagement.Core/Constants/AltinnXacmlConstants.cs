@@ -72,6 +72,11 @@ namespace Altinn.AccessManagement.Core.Constants
             public const string PartyAttribute = "urn:altinn:partyid";
 
             /// <summary>
+            /// Party uuid attribute match indentifier 
+            /// </summary>
+            public const string PartyUuidAttribute = "urn:altinn:party:uuid";
+
+            /// <summary>
             /// User Id attribute match indentifier 
             /// </summary>>
             public const string UserAttribute = "urn:altinn:userid";

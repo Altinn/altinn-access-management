@@ -5,20 +5,20 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/:resourceId/instance/:instanceId
   body: none
   auth: none
 }
 
 params:path {
-  instanceId: {{instanceId}}
+  instanceId: d615bf53-dfda-44af-89c1-a2ccfbfd8db8
   resourceId: app_{{org}}_{{app}}
 }
 
 headers {
   Accept: application/json
   PlatformAccessToken: {{platformAccessToken}}
-  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
+  ~Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
 }
 
 script:pre-request {

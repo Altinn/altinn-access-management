@@ -36,7 +36,7 @@ body:json {
                   },
                   {
                       "id": "urn:altinn:app",
-                      "value": "apps-test-tba"
+                      "value": "{{app}}"
                   }
               ],
               "action": "read"
@@ -64,7 +64,7 @@ script:pre-request {
   bru.setVar("toSsn", testdata.randomUser.pid);
   bru.setVar("toLastName", testdata.randomUser.lastname);
   //bru.setVar("org", testdata.org);
-  bru.setVar("app", "apps-test-tba");
+  bru.setVar("app", testdata.app);
   
   var getTokenParameters = {
     auth_userId: testdata.org3.tilg.userid,

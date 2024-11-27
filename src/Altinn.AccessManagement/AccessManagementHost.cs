@@ -104,7 +104,7 @@ internal static class AccessManagementHost
                 while (t != null);
                 chain.Reverse();
                 return string.Join(".", chain);
-            };        
+            };
         });
 
         builder.Services.AddUrnSwaggerSupport();
@@ -131,7 +131,6 @@ internal static class AccessManagementHost
         PlatformSettings platformSettings = builder.Configuration.GetSection("PlatformSettings").Get<PlatformSettings>();
         OidcProviderSettings oidcProviders = builder.Configuration.GetSection("OidcProviders").Get<OidcProviderSettings>();
 
-        builder.Services.AddSingleton<IAuthorizationHandler, AccessTokenHandler>();
         if (oidcProviders.TryGetValue("altinn", out OidcProvider altinnOidcProvder))
         {
             builder.Services.AddAuthentication(JwtCookieDefaults.AuthenticationScheme)
@@ -167,10 +166,10 @@ internal static class AccessManagementHost
             .AddPolicy(AuthzConstants.POLICY_ACCESS_MANAGEMENT_WRITE, policy => policy.Requirements.Add(new ResourceAccessRequirement("write", "altinn_access_management")))
             .AddPolicy(AuthzConstants.POLICY_RESOURCEOWNER_AUTHORIZEDPARTIES, policy => policy.Requirements.Add(new ScopeAccessRequirement([AuthzConstants.SCOPE_AUTHORIZEDPARTIES_RESOURCEOWNER, AuthzConstants.SCOPE_AUTHORIZEDPARTIES_ADMIN])));
 
-        builder.Services.AddTransient<IAuthorizationHandler, AccessTokenHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ClaimAccessHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ResourceAccessHandler>();
-        builder.Services.AddTransient<IAuthorizationHandler, ScopeAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, AccessTokenHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ClaimAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ResourceAccessHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ScopeAccessHandler>();
     }
 
     private static void ConfigurePostgreSqlConfiguration(this WebApplicationBuilder builder)

@@ -1,0 +1,45 @@
+meta {
+  name: 6. GetInstanceRights
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/{{resourceId}}/instance/{{instanceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+  const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+  
+  bru.setVar("resourceId", resource);
+  bru.setVar("instanceId", testdata.instanceid);
+  
+  var getTokenParameters = {
+      auth_org: sharedtestdata.serviceOwners.ttd.org,
+      auth_app: testdata.app,
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("get InstanceDelegation EmptyResponce", function() {
+      const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+      const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+    
+      const data = res.getBody();
+      expect(res.status).to.equal(200);
+      expect(data.data.length).to.equal(0);
+    });
+}

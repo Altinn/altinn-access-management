@@ -1294,6 +1294,31 @@ namespace Altinn.AccessManagement.Tests.Controllers
         }
 
         /// <summary>
+        /// Test case: RevokeActiveMaskinportenScopeDelegation performed by authenticated user 20001337 for the reportee party 50004221 of the non-delegable altinn_access_management maskinporten schema resource from the resource registry,
+        ///            which have received delegation from the party 50005545
+        ///            In this case:
+        ///            - The user 20001337 is DAGL for the To unit 50004221
+        /// Expected: RevokeActiveMaskinportenScopeDelegation returns 204 No Content
+        /// </summary>
+        [Fact]
+        public async Task RevokeActiveMaskinportenScopeDelegation_ResourceDelegableFalse_Success()
+        {
+            // Arrange
+            string toParty = "50004221";
+            DelegationMetadataRepositoryMock delegationMetadataRepositoryMock = new DelegationMetadataRepositoryMock { MetadataChanges = new Dictionary<string, List<DelegationChange>>() };
+            HttpClient client = GetTestClient(delegationMetadataRepositoryMock: delegationMetadataRepositoryMock);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PrincipalUtil.GetToken(20001337, 50001337));
+
+            StreamContent requestContent = GetRequestContent("RevokeReceivedMaskinportenScopeDelegation", "jks_undelegable", $"p50005545", $"p{toParty}");
+
+            // Act
+            HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/{toParty}/maskinportenschema/received/revoke", requestContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
         /// Test case: RevokeReceivedMaskinportenScopeDelegation performed by authenticated user 20001337 for the reportee organization 810418532 of the jks_audi_etron_gt maskinporten schema resource from the resource registry,
         ///            which have received delegation from the party 50005545
         ///            In this case:

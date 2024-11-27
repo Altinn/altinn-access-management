@@ -1091,5 +1091,34 @@
     },
     "Organization": null,
     "ChildParties": null
+  },
+  {
+    "PartyTypeName": 2,
+    "SSN": "",
+    "OrgNumber": "810419512",
+    "Person": null,
+    "Organization": {
+      "OrgNumber": "810419512",
+      "Name": "NØSS OG GRAVBERGET REGNSKAP",
+      "UnitType": "AS",
+      "TelephoneNumber": null,
+      "MobileNumber": null,
+      "FaxNumber": null,
+      "EMailAddress": "test@test.test",
+      "InternetAddress": null,
+      "MailingAddress": null,
+      "MailingPostalCode": null,
+      "MailingPostalCity": null,
+      "BusinessAddress": null,
+      "BusinessPostalCode": null,
+      "BusinessPostalCity": null
+    },
+    "PartyId": 50004230,
+    "PartyUuid": "B537C953-03C4-4822-B028-C15182ADC356",
+    "UnitType": "AS",
+    "Name": "NØSS OG GRAVBERGET REGNSKAP",
+    "IsDeleted": false,
+    "OnlyHierarchyElementWithNoAccess": false,
+    "ChildParties": null
   }
 ]

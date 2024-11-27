@@ -1,0 +1,86 @@
+meta {
+  name: 3. RevokeInstanceRead
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationrevoke/resource/{{resourceId}}/instance/{{instanceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+body:json {
+  {
+    "from": {
+      "type": "urn:altinn:party:uuid",
+      "value": "{{fromUuid}}"
+    },
+    "to": {
+      "type": "urn:altinn:party:uuid",
+      "value": "{{toUuid}}"
+    },
+    "rights": [
+      {
+        "resource": [
+          {
+            "type": "urn:altinn:resource",
+            "value": "{{resourceId}}"
+          },
+          {
+            "type": "urn:altinn:task",
+            "value": "task_1"
+          }
+        ],
+        "action": {
+          "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "value": "read"
+        }
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+  const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+  
+  bru.setVar("resourceId", resource);
+  bru.setVar("instanceId", testdata.instanceid);
+  
+  var getTokenParameters = {
+      auth_org: sharedtestdata.serviceOwners.ttd.org,
+      auth_app: testdata.app,
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    }
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("post InstanceDelegation RevokeRead", function() {
+      const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+      const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+    
+      const data = res.getBody();
+      expect(res.status).to.equal(200);
+    
+      expect(data.resourceId).to.equal(resource);
+      expect(data.instanceId).to.equal(testdata.instanceid);
+  
+      expect(data.from.value).to.equal(testdata.org1.partyuuid);
+      expect(data.to.value).to.equal(testdata.person1.partyuuid);
+    
+      expect(data.rights[0].status).to.equal('Revoked');
+      expect(data.rights[0].action.value).to.equal('read');  
+      expect(data.rights[0].resource[0].value).to.equal(resource);
+      expect(data.rights[0].resource[1].value).to.equal('task_1');
+    });
+}

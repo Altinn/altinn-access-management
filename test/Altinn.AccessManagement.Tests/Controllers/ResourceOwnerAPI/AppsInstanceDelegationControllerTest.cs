@@ -55,7 +55,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Paginated<ResourceRightDelegationCheckResultDto> actual = JsonSerializer.Deserialize<Paginated<ResourceRightDelegationCheckResultDto>>(await response.Content.ReadAsStringAsync(), options);
-        
+
         AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertResourceRightDelegationCheckResultDto);
     }
 
@@ -83,6 +83,59 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
 
         AppsInstanceDelegationResponseDto actual = JsonSerializer.Deserialize<AppsInstanceDelegationResponseDto>(await response.Content.ReadAsStringAsync(), options);
         AssertionUtil.AssertAppsInstanceDelegationResponseDto(expected, actual);
+    }
+
+    /// <summary>
+    /// Test case:  POST apps/instancedelegation/{resourceId}/{instanceId}
+    ///             with a valid delegation
+    /// Expected:   - Should return 200 OK
+    /// Reason:     See testdat cases for details
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppOnlyExistingPolicyRevokeLast), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppMultipleExistingPolicyRevoke), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeReadForAppNoExistingPolicyRevokeLast), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_Revoke_OK(string platformToken, AppsInstanceDelegationRequestDto request, string resourceId, string instanceId, AppsInstanceRevokeResponseDto expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.PostAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        AppsInstanceRevokeResponseDto actual = JsonSerializer.Deserialize<AppsInstanceRevokeResponseDto>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertAppsInstanceRevokeResponseDto(expected, actual);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeAll), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_ValidToken_RevokeAll_OK(string platformToken, string resourceId, string instanceId, Paginated<AppsInstanceRevokeResponseDto> expected)
+    {
+        var client = GetTestClient(platformToken);
+
+        // Act
+        HttpResponseMessage response = await client.DeleteAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Paginated<AppsInstanceRevokeResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceRevokeResponseDto>>(await response.Content.ReadAsStringAsync(), options);
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceRevokeResponseDto);        
+    }
+
+    [Theory]
+    [MemberData(nameof(TestDataAppsInstanceDelegation.RevokeAllUnathorized), MemberType = typeof(TestDataAppsInstanceDelegation))]
+    public async Task AppsInstanceDelegationController_NoToken_RevokeAll_Unauthorized(string resourceId, string instanceId)
+    {
+        var client = GetTestClient(null);
+
+        // Act
+        HttpResponseMessage response = await client.DeleteAsync($"accessmanagement/api/v1/app/delegationrevoke/resource/{resourceId}/instance/{instanceId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);                
     }
 
     /// <summary>
@@ -142,7 +195,7 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         Paginated<AppsInstanceDelegationResponseDto> actual = JsonSerializer.Deserialize<Paginated<AppsInstanceDelegationResponseDto>>(await response.Content.ReadAsStringAsync(), options);
-        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceDelegationResponseDto);        
+        AssertionUtil.AssertPagination(expected, actual, AssertionUtil.AssertAppsInstanceDelegationResponseDto);
     }
 
     private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
@@ -173,7 +226,11 @@ public class AppsInstanceDelegationControllerTest : IClassFixture<CustomWebAppli
         }).CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (token != null)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
         client.DefaultRequestHeaders.Add("PlatformAccessToken", token);
         return client;
     }

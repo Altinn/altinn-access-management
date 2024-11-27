@@ -7,20 +7,20 @@
         "read": "altinn:instances:read",
         "maskinportenAdmin": "altinn:maskinporten/delegations.admin",
         "authorizedParties": "altinn:accessmanagement/authorizedparties",
-		    "authorizedPartiesResourceOwner": "altinn:accessmanagement/authorizedparties.resourceowner",
-		    "authorizedPartiesAdmin": "altinn:accessmanagement/authorizedparties.admin"
+        "authorizedPartiesResourceOwner": "altinn:accessmanagement/authorizedparties.resourceowner",
+        "authorizedPartiesAdmin": "altinn:accessmanagement/authorizedparties.admin"
     },
     "authTokenType": {
         "personal": "Personal",
         "enterprise": "Enterprise",
         "enterpriseUser": "EnterpriseUser",
-		"platformAccess": "PlatformAccess"
+        "platformAccess": "PlatformAccess"
     },
-	"serviceOwners": {
-		"ttd":
-		{
-			"org": "ttd",
-			"orgno": "991825827"
-		}
-	}
+  "serviceOwners": {
+    "ttd":
+    {
+      "org": "ttd",
+      "orgno": "991825827"
+    }
+  }
 }

@@ -1,0 +1,99 @@
+meta {
+  name: DelegateExistingAppNoRightsDelegable
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegations/resource/{{resourceId}}/instance/{{instanceId}}
+  body: json
+  auth: none
+}
+
+headers {
+  PlatformAccessToken: {{platformAccessToken}}
+}
+
+body:json {
+  {
+    "from": {
+      "type": "urn:altinn:party:uuid",
+      "value": "{{fromUuid}}"
+    },
+    "to": {
+      "type": "urn:altinn:party:uuid",
+      "value": "{{toUuid}}"
+    },
+    "rights": [
+      {
+        "resource": [
+          {
+            "type": "urn:altinn:resource",
+            "value": "{{resourceId}}"
+          },
+          {
+            "type": "urn:altinn:task",
+            "value": "task_1"
+          }
+        ],
+        "action": {
+          "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "value": "read"
+        }
+      },
+      {
+        "resource": [
+          {
+            "type": "urn:altinn:resource",
+            "value": "{{resourceId}}"
+          },
+          {
+            "type": "urn:altinn:task",
+            "value": "task_1"
+          }
+        ],
+        "action": {
+          "type": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+          "value": "sign"
+        }
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+  const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+  const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + "authz-bruno-testapp1";
+  
+  bru.setVar("resourceId", resource);
+  bru.setVar("instanceId", testdata.instanceid);
+  bru.setVar("fromUuid", testdata.org1.partyuuid);
+  bru.setVar("toUuid", testdata.person1.partyuuid);
+  
+  var getTokenParameters = {
+      auth_org: sharedtestdata.serviceOwners.ttd.org,
+      auth_app: "authz-bruno-testapp1",
+      auth_tokenType: sharedtestdata.authTokenType.platformAccess
+    };
+  
+  const token = await testTokenGenerator.getToken(getTokenParameters);
+  bru.setVar("platformAccessToken",  token);
+}
+
+tests {
+  test("post InstanceDelegation NoRights", function() {
+      const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
+      const testdata = require(`./Testdata/instance-delegation/${bru.getEnvVar("tokenEnv")}.json`);
+      const resource = "app_" + sharedtestdata.serviceOwners.ttd.org + "_" + testdata.app;
+    
+      const data = res.getBody();
+      expect(res.status).to.equal(400);
+    
+      expect(data.status).to.equal(400);
+    
+      expect(data.validationErrors[0].code).to.equal("AM.VLD-00004");
+      expect(data.validationErrors[0].paths[0]).to.equal("appInstanceDelegationRequest.Resource");
+      
+    });
+}

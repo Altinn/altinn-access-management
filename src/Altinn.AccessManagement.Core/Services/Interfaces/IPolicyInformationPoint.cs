@@ -40,9 +40,10 @@ namespace Altinn.AccessManagement.Core.Services.Interfaces
         /// Finds all delegation changes for a given user, reportee and app/resource context
         /// </summary>
         /// <param name="request">The object containing the resource/app that's checked for delegation changes</param>
+        /// <param name="includeInstanceDelegations">Whether instance delegations should be included in the lookup</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         /// <returns>A list of delegation changes that's stored in the database</returns>
-        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, CancellationToken cancellationToken = default);
+        Task<DelegationChangeList> GetAllDelegations(DelegationChangeInput request, bool includeInstanceDelegations = false, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Finds all InstanceDelegations for a given Resource/Instance combination

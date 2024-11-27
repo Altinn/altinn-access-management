@@ -768,4 +768,10 @@ public class DelegationMetadataRepository : IDelegationMetadataRepository
     {
         throw new NotImplementedException();
     }
+
+    /// <inheritdoc />
+    public Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

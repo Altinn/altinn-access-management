@@ -35,4 +35,10 @@ public static class ValidationErrors
     /// </summary>
     public static ValidationErrorDescriptor MissingDelegableRights { get; }
         = _factory.Create(4, $"Resource must have policy including delegable rights.");
+
+    /// <summary>
+    /// Gets a validation error descriptor for when a Resource not has any delegable rights for the app
+    /// </summary>
+    public static ValidationErrorDescriptor ToManyDelegationsToRevoke { get; }
+        = _factory.Create(5, $"There must be 10 or less policy files to update.");
 }

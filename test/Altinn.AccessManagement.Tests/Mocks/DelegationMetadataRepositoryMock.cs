@@ -88,6 +88,7 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
         {
             case "00000000-0000-0000-0000-000000000001":
             case "00000000-0000-0000-0000-000000000009":
+            case "00000000-0000-0000-0000-000000000010":
                 return Task.FromResult(new InstanceDelegationChange
                 {
                     FromUuidType = request.FromType,
@@ -597,6 +598,12 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
                 result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("CE4BA72B-D111-404F-95B5-313FB3847FA1")));
                 result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("0268B99A-5817-4BBF-9B62-D90B16D527EA")));
                 return Task.FromResult(result);
+            case "00000000-0000-0000-0000-000000000010":
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("CE4BA72B-D111-404F-95B5-313FB3847FA1")));
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("0268B99A-5817-4BBF-9B62-D90B16D527EA")));
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("00000000-0000-0000-0001-000000000012")));
+                result.Add(CreateInstanceDelegationChange(source, resourceID, instanceID, Guid.Parse("00000000-0000-0000-0001-000000000010")));
+                return Task.FromResult(result);
             default:
                 return Task.FromResult(result);
         }
@@ -605,5 +612,10 @@ public class DelegationMetadataRepositoryMock : IDelegationMetadataRepository
     public Task<List<InstanceDelegationChange>> GetAllCurrentReceivedInstanceDelegations(List<Guid> toUuid, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(new List<InstanceDelegationChange>());
+    }
+
+    public Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(true);
     }
 }

@@ -31,6 +31,8 @@ public static class TestDataAppsInstanceDelegation
 
     private static readonly string RevokeOneOfExistingDelegations = "00000000-0000-0000-0000-000000000009";
 
+    private static readonly string RevokeAllInstance = "00000000-0000-0000-0000-000000000010";
+
     /// <summary>
     /// Test case:  GET v1/apps/instancedelegation/{resourceId}/{instanceId}/delegationcheck
     ///             with: 
@@ -116,6 +118,24 @@ public static class TestDataAppsInstanceDelegation
             GetExpectedResponse<AppsInstanceRevokeResponseDto>("Revoke", AppId, RevokeOneOfExistingDelegations)
         }
     };
+
+    public static TheoryData<string, string, string, Paginated<AppsInstanceRevokeResponseDto>> RevokeAll() => new()
+    {
+        {
+            PrincipalUtil.GetAccessToken("ttd", "am-devtest-instancedelegation"),
+            AppId,
+            RevokeAllInstance,
+            GetExpectedResponse<Paginated<AppsInstanceRevokeResponseDto>>("Revoke", AppId, RevokeAllInstance)
+        }
+    };
+
+    public static TheoryData<string, string> RevokeAllUnathorized() => new()
+    {
+        {
+            AppId,
+            RevokeAllInstance
+        }
+    }; 
 
     public static TheoryData<string, AppsInstanceDelegationRequestDto, string, string, AppsInstanceRevokeResponseDto> RevokeReadForAppNoExistingPolicyRevokeLast() => new()
     {

@@ -55,6 +55,14 @@ public interface IDelegationMetadataRepository
     Task<InstanceDelegationChange> InsertInstanceDelegation(InstanceDelegationChange instanceDelegationChange, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Writes multiple delegation change metadata to the delegation database
+    /// </summary>
+    /// <param name="policyWriteOutputs">List of policies changed</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
+    /// <returns></returns>
+    Task<bool> InsertMultipleInstanceDelegations(List<PolicyWriteOutput> policyWriteOutputs, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets all the currently active instance delegations existing between the from and to parties
     /// </summary>
     /// <param name="resourceIds">Collection of all resourceIds to lookup</param>

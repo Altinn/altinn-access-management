@@ -1,11 +1,11 @@
 meta {
-  name: PlatformAccessToken_Forbidden
+  name: AppWithoutDelegableRights_BadRequest
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/accessmanagement/api/v1/apps/instancedelegation/:resourceId/:instanceId/delegationcheck
+  url: {{baseUrl}}/accessmanagement/api/v1/app/delegationcheck/resource/:resourceId/instance/:instanceId
   body: json
   auth: none
 }
@@ -18,16 +18,16 @@ params:path {
 headers {
   Accept: application/json
   PlatformAccessToken: {{platformAccessToken}}
-  Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
+  ~Ocp-Apim-Subscription-Key: {{apimSubscriptionKey}}
 }
 
 script:pre-request {
   const testdata = require(`./Testdata/maskinportenschema/${bru.getEnvVar("tokenEnv")}testdata.json`);
   const sharedtestdata = require(`./Testdata/sharedtestdata.json`);
   
-  const org = "platform";
+  const org = sharedtestdata.serviceOwners.ttd.org;
   bru.setVar("org",  org);
-  const app = "some-random-app";
+  const app = "apps-test";
   bru.setVar("app",  app);
   
   bru.setVar("instanceId",  "b39a2326-9fff-4414-a209-61e6f9835564");
@@ -43,8 +43,10 @@ script:pre-request {
 }
 
 tests {
-  test("AppsInstanceDelegation DelegationCheck GET PlatformAccessToken_Forbidden", function() {
+  test("AppsInstanceDelegation DelegationCheck GET AppWithoutDelegableRights_Forbidden", function() {
     var body = res.getBody();  
-    expect(res.status).to.equal(403);
+    expect(res.status).to.equal(400);
+    expect(body.validationErrors[0].code).to.equal("AM.VLD-00004");
+    expect(body.validationErrors[0].paths[0]).to.equal("appInstanceDelegationRequest.Resource");
   });
 }

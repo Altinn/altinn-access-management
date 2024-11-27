@@ -195,16 +195,16 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             {
                 errors.Add(ValidationErrors.MissingPolicy, appInstanceResourcePath);
             }
-
-            if (delegableRights == null || delegableRights.Count == 0)
-            {
-                errors.Add(ValidationErrors.MissingDelegableRights, appInstanceResourcePath);
-            }
         }
 
         if (errors.TryBuild(out var errorResult))
         {
             return errorResult;
+        }
+
+        if (delegableRights == null || delegableRights.Count == 0)
+        {
+            return result;
         }
 
         foreach (Right right in delegableRights)

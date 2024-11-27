@@ -193,7 +193,7 @@ public class AppsInstanceDelegationService : IAppsInstanceDelegationService
             }
             catch (ValidationException)
             {
-                errors.Add(ValidationErrors.MissingPolicy, "appInstanceDelegationRequest.Resource");
+                errors.Add(ValidationErrors.MissingPolicy, appInstanceResourcePath);
             }
         }
 

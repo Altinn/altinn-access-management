@@ -1,0 +1,62 @@
+[
+  {
+    "rightKey": "generic-accesslist-resource:read",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-accesslist-resource"
+      }
+    ],
+    "action": "read",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:DAGL), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-accesslist-resource:write",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-accesslist-resource"
+      }
+    ],
+    "action": "write",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "MissingRoleAccess",
+        "description": "Delegator does not have any required role(s) for the reportee party: (urn:altinn:rolecode:DAGL), which would give access to delegate the right.",
+        "parameters": {
+          "RequiredRoles": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      },
+      {
+        "code": "MissingDelegationAccess",
+        "description": "The user does not have access through delegation(s) of the right",
+        "parameters": {}
+      }
+    ]
+  }
+]

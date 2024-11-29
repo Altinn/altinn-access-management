@@ -16,11 +16,4 @@ public enum InstanceDelegationModeExternal
     [EnumMember(Value = "normal")]
     [PgName("normal")]
     Normal,
-
-    /// <summary>
-    /// Defining a instance delegation to be of type parallell task person this could also be identified with "Fødselsnummer"/"Dnummer"
-    /// </summary>
-    [EnumMember(Value = "parallelSigning")]
-    [PgName("parallelsigning")]
-    ParallelSigning
 }

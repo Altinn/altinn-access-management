@@ -9,6 +9,7 @@ using Altinn.AccessManagement.Enums;
 using Altinn.Authorization.ABAC.Constants;
 using Altinn.Authorization.ABAC.Utils;
 using Altinn.Authorization.ABAC.Xacml;
+using Altinn.Urn.Json;
 
 namespace Altinn.AccessManagement.Core.Helpers
 {
@@ -403,6 +404,29 @@ namespace Altinn.AccessManagement.Core.Helpers
             {
                 Description = $"Delegation of a right/action from {policyData.FromType}:{policyData.FromId} to {policyData.ToType}:{policyData.ToId}, for the resourceId: {policyData.ResourceId} instanceId: {policyData.InstanceId}, by: {policyData.PerformedByType}:{policyData.PerformedById}",
                 Target = BuildInstanceDelegationRuleTarget(policyData.ToId, policyData.ToType, rule)
+            };
+            return delegationRule;
+        }
+
+        /// <summary>
+        /// Builds a XacmlRule <see cref="XacmlRule"/> representation based on the Rule input
+        /// </summary>
+        /// <param name="resourceId">The identifier of the resource, either a resource in the resource registry or altinn app</param>
+        /// <param name="fromId">The id of the entity offering the delegated the policy</param>
+        /// <param name="fromType">The type of the entity offering the delegated policy</param>
+        /// <param name="toId">The id of the entity having received the delegated policy</param>
+        /// <param name="toType">The type of the entity having received the delegated policy</param>
+        /// <param name="performedById">The id of the entity delegated the policy</param>
+        /// <param name="performedByType">The type of the entity delegated the policy</param>
+        /// <param name="rule">The rule to be delegated</param>
+        public static XacmlRule BuildDelegationInstanceRule(string resourceId, string fromId, string fromType, string toId, string toType, string performedById, string performedByType, InstanceRule rule)
+        {
+            rule.RuleId = Guid.NewGuid().ToString();
+            
+            XacmlRule delegationRule = new XacmlRule(rule.RuleId, XacmlEffectType.Permit)
+            {
+                Description = $"Delegation of a right/action from {fromType}:{fromId} to {toType}:{toId}, for the resource: {resourceId}, by: {performedByType}:{performedById}",
+                Target = BuildInstanceDelegationRuleTarget(toId, toType, rule)
             };
             return delegationRule;
         }

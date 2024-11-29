@@ -1,4 +1,4 @@
-﻿#nullable enable
+﻿﻿#nullable enable
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;

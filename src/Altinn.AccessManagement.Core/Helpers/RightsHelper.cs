@@ -1,6 +1,7 @@
 ﻿using Altinn.AccessManagement.Core.Constants;
 using Altinn.AccessManagement.Core.Enums;
 using Altinn.AccessManagement.Core.Models;
+using Altinn.AccessManagement.Core.Models.AccessList;
 using Altinn.AccessManagement.Core.Models.ResourceRegistry;
 using Authorization.Platform.Authorization.Models;
 
@@ -87,7 +88,7 @@ namespace Altinn.AccessManagement.Core.Helpers
         /// <summary>
         /// Analyzes a Right model for a reason for the rights delegation access status
         /// </summary>
-        public static List<Detail> AnalyzeDelegationAccessReason(Right right)
+        public static List<Detail> AnalyzeDelegationAccessReason(Right right, AccessListAuthorizationResult accessListAuthorizationResult = AccessListAuthorizationResult.NotApplicable)
         {
             List<Detail> reasons = new();
 
@@ -130,10 +131,31 @@ namespace Altinn.AccessManagement.Core.Helpers
                         Parameters = new Dictionary<string, List<AttributeMatch>>() { { "DelegationRecipients", GetAttributeMatches(delegationPolicySources.SelectMany(delegationAccessSource => delegationAccessSource.PolicySubjects)) } }
                     });
                 }
-            }
 
-            // Analyze why not allowed to delegate
-            if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
+                // Analyze accessListAuthorizationResult
+                if (accessListAuthorizationResult != AccessListAuthorizationResult.NotApplicable)
+                {
+                    if (accessListAuthorizationResult == AccessListAuthorizationResult.Authorized)
+                    {
+                        reasons.Add(new Detail
+                        {
+                            Code = DetailCode.AccessListValidationPass,
+                            Description = "The fromParty has the right based on Access List delegation",
+                        });
+                    }
+                    else if (accessListAuthorizationResult == AccessListAuthorizationResult.NotAuthorized)
+                    {
+                        right.CanDelegate = false;
+
+                        reasons.Add(new Detail
+                        {
+                            Code = DetailCode.AccessListValidationFail,
+                            Description = "The fromParty does not have the right based on Access List delegation"
+                        });
+                    }
+                }
+            }
+            else if (right.CanDelegate.HasValue && !right.CanDelegate.Value)
             {
                 // Analyze for role access failure
                 List<RightSource> roleAccessSources = right.RightSources.Where(rs => rs.RightSourceType != Enums.RightSourceType.DelegationPolicy).ToList();

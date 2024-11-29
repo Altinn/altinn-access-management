@@ -1,0 +1,60 @@
+[
+  {
+    "rightKey": "generic-accesslist-resource:read",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-accesslist-resource"
+      }
+    ],
+    "action": "read",
+    "status": "Delegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      },
+      {
+        "code": "AccessListValidationPass",
+        "description": "The fromParty has the right based on Access List delegation"
+      }
+    ]
+  },
+  {
+    "rightKey": "generic-accesslist-resource:write",
+    "resource": [
+      {
+        "id": "urn:altinn:resource",
+        "value": "generic-accesslist-resource"
+      }
+    ],
+    "action": "write",
+    "status": "NotDelegable",
+    "details": [
+      {
+        "code": "RoleAccess",
+        "description": "Delegator have access through having one of the following role(s) for the reportee party: urn:altinn:rolecode:DAGL. Note: if the user is a Main Administrator (HADM) the user might not have direct access to the role other than for delegation purposes.",
+        "parameters": {
+          "RoleRequirementsMatches": [
+            {
+              "id": "urn:altinn:rolecode",
+              "value": "DAGL"
+            }
+          ]
+        }
+      },
+      {
+        "code": "AccessListValidationFail",
+        "description": "The fromParty does not have the right based on Access List delegation"
+      }
+    ]
+  }
+]

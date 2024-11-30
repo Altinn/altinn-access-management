@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Altinn.AccessManagement.Tests.Utils;
 using Altinn.Common.AccessTokenClient.Constants;
 using AltinnCore.Authentication.Constants;
+using Newtonsoft.Json;
 
 namespace Altinn.AccessManagement.Tests.Util
 {
@@ -35,6 +36,18 @@ namespace Altinn.AccessManagement.Tests.Util
             string token = JwtTokenMock.GenerateToken(principal, new TimeSpan(1, 1, 1));
 
             return token;
+        }
+
+        /// <summary>
+        /// Generates a system user token
+        /// </summary>
+        /// <param name="systemUserUuid">The systemUser uid</param>
+        /// <param name="systemUserOrg">The systemUser org</param>
+        /// <param name="systemId">Id for the system. Like Fiken or Business NXT based on systemRegister id</param>
+        /// <param name="consumer">The consumer</param>
+        public static string GetSystemUserToken(string systemUserUuid, string systemUserOrg, string systemId, string consumer)
+        {
+            return JwtTokenMock.GenerateSystemUserToken(systemUserUuid, systemUserOrg, systemId, consumer, new TimeSpan(1, 1, 1));
         }
 
         /// <summary>

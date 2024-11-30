@@ -67,7 +67,8 @@ public class AuthorizedPartiesController : ControllerBase
         try
         {
             int userId = AuthenticationHelper.GetUserId(HttpContext);
-            if (userId == 0)
+            string systemUserID = AuthenticationHelper.GetSystemUserId(HttpContext);
+            if (userId == 0 && string.IsNullOrEmpty(systemUserID))
             {
                 return Unauthorized();
             }

@@ -70,6 +70,17 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
         return $"Response don't contain authorized party with subunit having instance delegations with resource Id {resourceId} and instance id {instanceId}";
     };
 
+    private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsNotSubUnit(IParty party) => response =>
+    {
+        var result = response.Exists(delegation => delegation.Subunits.Exists(subunit => subunit.PartyId == party.Party.PartyId));
+        if (result)
+        {
+            return $"Response should not contain subunit with party ID {party.Party.PartyId} ({party.Party.Name})";
+        }
+
+        return null;
+    };
+
     private static Func<List<AuthorizedPartyExternal>, string> WithAssertResponseContainsParty(IParty party) => response =>
     {
         var result = response.Exists(authorizedParty => authorizedParty.PartyId == party.Party.PartyId);
@@ -119,6 +130,35 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
         /// </summary>
         public static TheoryData<GetAuthorizedParties> Seeds() => [
             new(
+                /* Acceptance Critieria: User Receiving Instance Access from a Primary Unit */ @"
+                GIVEN a user who has received instance delegation from a primary unit
+                WHEN the user's list of authorized parties is retrieved
+                THEN the access list should contain the primary unit from which the instance access is delegated
+                AND the primary unit's AuthorizedInstances should include an identifier specifying the resourceId and instanceId for the instance delegation
+                AND if the user has no other permissions for the primary unit or its subunits, no other subunits should be present in the list of authorized parties",
+                WithScenarios(
+                    DelegationScenarios.Defaults,
+                    DelegationScenarios.WhereUnitHasMainUnit(OrganizationSeeds.VossAccounting.Defaults, OrganizationSeeds.VossConsulting.Defaults),
+                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "sponge"),
+                    DelegationScenarios.WithInstanceDelegation(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_1"),
+                    DelegationScenarios.WithInstanceDelegation(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_2"),
+                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Olav.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_3"),
+                    TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)
+                ),
+                WithAssertResponseStatusCodeSuccessful,
+                WithAssertSuccessfulResponse(
+                    WithAssertResponseContainsParty(OrganizationSeeds.VossConsulting.Defaults),
+                    WithAssertResponseContainsNotSubUnit(OrganizationSeeds.VossAccounting.Defaults),
+                    WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
+                    WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
+                    WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
+                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "sponge"),
+                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
+                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2"),
+                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_3")
+                )
+            ),
+            new(
                 /* Acceptance Critieria: User Receiving Instance Access from an Individual */ @"
                 GIVEN a user who has received instance delegation directly from an individual
                 WHEN the user's list of authorized parties is retrieved
@@ -139,34 +179,6 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                     WithAssertResponseContainsParty(PersonSeeds.Kasper.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
                     WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1")
-                )
-            ),
-            new(
-                /* Acceptance Critieria: User Receiving Instance Access from a Primary Unit */ @"
-                GIVEN a user who has received instance delegation from a primary unit
-                WHEN the user's list of authorized parties is retrieved
-                THEN the access list should contain the primary unit from which the instance access is delegated
-                AND the primary unit's AuthorizedInstances should include an identifier specifying the resourceId and instanceId for the instance delegation
-                AND if the user has no other permissions for the primary unit or its subunits, no other subunits should be present in the list of authorized parties",
-                WithScenarios(
-                    DelegationScenarios.Defaults,
-                    DelegationScenarios.WhereUnitHasMainUnit(OrganizationSeeds.VossAccounting.Defaults, OrganizationSeeds.VossConsulting.Defaults),
-                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Paula.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "sponge"),
-                    DelegationScenarios.WithInstanceDelegation(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_1"),
-                    DelegationScenarios.WithInstanceDelegation(PersonSeeds.Paula.Defaults, OrganizationSeeds.VossConsulting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_2"),
-                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Olav.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_3"),
-                    TokenScenario.PersonToken(PersonSeeds.Paula.Defaults)
-                ),
-                WithAssertResponseStatusCodeSuccessful,
-                WithAssertSuccessfulResponse(
-                    WithAssertResponseContainsParty(OrganizationSeeds.VossConsulting.Defaults),
-                    WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
-                    WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
-                    WithAssertResponseContainsNotParty(OrganizationSeeds.VossAccounting.Defaults),
-                    WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "sponge"),
-                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_1"),
-                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_2"),
-                    WithAssertResponseContainsNotInstance(ResourceSeeds.ChalkboardResource.Identifier, "should_not_be_in_result_list_3")
                 )
             ),
             new(
@@ -290,20 +302,21 @@ public class V2AuthorizedPartiesControllerTest(WebApplicationFixture fixture) : 
                 THEN the list of authorized parties should contain the primary unit from which the instance access is delegated
                 AND the primary unit's AuthorizedInstances should include an identifier specifying the resourceId and instanceId for the instance delegation
                 AND if the organization has no other permissions for the primary unit or its subunits, no other subunits should be present in the list of authorized parties",
-                OrganizationSeeds.VossConsulting.PartyId,
+                OrganizationSeeds.VossAccounting.PartyId,
                 WithScenarios(
                     DelegationScenarios.Defaults,
                     TokenScenario.PersonToken(PersonSeeds.Olav.Defaults),
                     DelegationScenarios.WherePersonHasKeyRole(PersonSeeds.Olav.Defaults, OrganizationSeeds.VossConsulting.Defaults),
-                    DelegationScenarios.WhereUnitHasMainUnit(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.VossAccounting.Defaults),
-                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossAccounting.Defaults, OrganizationSeeds.VossConsulting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "color_1"),
-                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossAccounting.Defaults, PersonSeeds.Paula.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_1"),
-                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.VossConsulting.Defaults, PersonSeeds.Olav.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_2"),
+                    DelegationScenarios.WhereUnitHasMainUnit(OrganizationSeeds.VossConsulting.Defaults, OrganizationSeeds.Voss.Defaults),
+                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.Voss.Defaults, OrganizationSeeds.VossAccounting.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "color_1"),
+                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.Voss.Defaults, PersonSeeds.Paula.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_1"),
+                    DelegationScenarios.WithInstanceDelegation(OrganizationSeeds.Voss.Defaults, PersonSeeds.Olav.Defaults, ResourceSeeds.ChalkboardResource.Defaults, "should_not_be_in_result_list_2"),
                     TokenScenario.PersonToken(PersonSeeds.Olav.Defaults)),
 
                 WithAssertResponseStatusCodeSuccessful,
                 WithAssertSuccessfulResponse(
-                    WithAssertResponseContainsParty(OrganizationSeeds.VossAccounting.Defaults),
+                    WithAssertResponseContainsParty(OrganizationSeeds.Voss.Defaults),
+                    WithAssertResponseContainsNotSubUnit(OrganizationSeeds.VossConsulting.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Paula.Defaults),
                     WithAssertResponseContainsNotParty(PersonSeeds.Olav.Defaults),
                     WithAssertResponseContainsPartyWithInstance(ResourceSeeds.ChalkboardResource.Identifier, "color_1"),

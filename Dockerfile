@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine@sha256:ad6ab1a677854e5b681bc69f4fdb4ad9913e3798c4f89927254b6a53215d5b7d AS build
 WORKDIR /app
 
 # Copy everything and build
@@ -9,7 +9,7 @@ RUN dotnet restore
 RUN dotnet publish -c Release -o out ./src/Altinn.AccessManagement/Altinn.AccessManagement.csproj
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine@sha256:a6695199ce879ae4bcfc92f3dfd55b7db5e46e3bdc128a690c6594444f0e300a AS final
 EXPOSE 5110
 WORKDIR /app
 COPY --from=build /app/out .

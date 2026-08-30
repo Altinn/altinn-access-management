@@ -200,6 +200,20 @@ public class AuthorizedPartiesControllerTest : IClassFixture<CustomWebApplicatio
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
+    /// <summary>
+    /// Test to verify systemUser access to authorized parties
+    /// </summary>
+    /// <returns></returns>
+    [Theory]
+    [MemberData(nameof(TestDataAuthorizedParties.SystemUserAuthorizedParty), MemberType = typeof(TestDataAuthorizedParties))]
+    public async Task GetAuthoriedPartiesForSystemUSer(string userToken)
+    {
+        var client = GetTestClient(userToken);
+
+        // Act
+        HttpResponseMessage response = await client.GetAsync($"accessmanagement/api/v1/authorizedparties?includeAltinn2=false");
+    }
+
     private static void WithPDPMock(IServiceCollection services) => services.AddSingleton(new PepWithPDPAuthorizationMock());
 
     private HttpClient GetTestClient(string token, params Action<IServiceCollection>[] actions)
